@@ -42,9 +42,23 @@ _WARNING = """//
 // !!!THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND!!!
 //
 """
+_HEADER = """// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+import TensorFlow
+"""
 
 _OUTPUT_FILE = 'RawOpsGenerated.swift'
-_HEADER_FILE = 'headers.swift'
 _RENAMED_KEYWORDS = {
     '': 'empty',
     'in': 'in_',
@@ -329,9 +343,6 @@ def main(argv):
     tf_buffer = c_api.TF_GetAllOpList()
     proto.ParseFromString(c_api.TF_GetBuffer(tf_buffer))
 
-  headers_path = os.path.join(FLAGS.src_dir, _HEADER_FILE)
-  with tf.gfile.Open(headers_path, 'r') as fobj:
-    headers = fobj.read()
 
   op_codes = []
   enum_store = EnumStore()
@@ -345,7 +356,7 @@ def main(argv):
 
   swift_code = (
       _WARNING +
-      headers +
+      _HEADER +
       '\npublic enum Raw {\n\n' +
       '\n\n'.join(enum_store.enum_codes()) +
       '\n\n' +

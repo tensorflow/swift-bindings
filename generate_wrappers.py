@@ -34,9 +34,9 @@ flags.DEFINE_string(
     'path to the ops.pbtxt file')
 
 flags.DEFINE_string(
-    'src_dir',
+    'output_path',
     None,
-    'path to the source directory')
+    'path for the generated swift file')
 
 _WARNING = """//
 // !!!THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND!!!
@@ -333,6 +333,8 @@ public static func {function_name}{generics_type}({joined_inputs}
 
 def main(argv):
   del argv  # Unused.
+  if FLAGS.output_path is None:
+    raise ValueError('no output_path has been set')
 
   proto = op_def_pb2.OpList()
   if FLAGS.ops_path is not None:
@@ -342,7 +344,6 @@ def main(argv):
   else:
     tf_buffer = c_api.TF_GetAllOpList()
     proto.ParseFromString(c_api.TF_GetBuffer(tf_buffer))
-
 
   op_codes = []
   enum_store = EnumStore()
@@ -362,8 +363,7 @@ def main(argv):
       '\n\n' +
       '\n\n'.join(op_codes) +
       '\n\n}')
-  output_path = os.path.join(FLAGS.src_dir, _OUTPUT_FILE)
-  with tf.gfile.Open(output_path, 'w') as fobj:
+  with tf.gfile.Open(FLAGS.output_path, 'w') as fobj:
     fobj.write(swift_code)
 
 

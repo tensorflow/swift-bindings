@@ -11,9 +11,9 @@ in the main TensorFlow repo.
 
 ## How to regenerate the bindings
 
-To regenerate the swift ops bindings, run the following command from within
-this directory.
+To regenerate the swift ops bindings, run the following command. Note
+that this will use the TensorFlow python package.
 
 ``` shell
-python generate_wrappers.py --src_dir=.
+python generate_wrappers.py --output_path=RawOpsGenerated.swift
 ```

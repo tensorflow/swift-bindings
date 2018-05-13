@@ -17,10 +17,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import tensorflow as tf
 
 from google.protobuf import text_format
+from tensorflow.core.framework import api_def_pb2
 from tensorflow.core.framework import op_def_pb2
 from tensorflow.core.framework import types_pb2
 from tensorflow.python import pywrap_tensorflow as c_api
@@ -111,6 +111,59 @@ _SWIFTIFIED_ATTR_TYPES = {
     'list(bool)': '[Bool]',
     'list(string)': '[String]',
 }
+
+
+# TODO(mazare): use TensorFlow python ApiDefMap when available.
+class ApiDefMap(object):
+  """Wrapper around Tf_ApiDefMap that handles querying and deletion.
+
+  The OpDef protos are also stored in this class so that they could
+  be queried by op name.
+  """
+
+  def __init__(self, ops_path):
+    op_def_proto = op_def_pb2.OpList()
+    buf = c_api.TF_GetAllOpList()
+    try:
+      if ops_path is not None:
+        with tf.gfile.Open(ops_path, 'r') as fobj:
+          data = fobj.read()
+        text_format.Parse(data, op_def_proto)
+      else:
+        op_def_proto.ParseFromString(c_api.TF_GetBuffer(buf))
+      self._api_def_map = c_api.TF_NewApiDefMap(buf)
+    finally:
+      c_api.TF_DeleteBuffer(buf)
+
+    self._op_per_name = {}
+    for op in op_def_proto.op:
+      self._op_per_name[op.name] = op
+
+  def __del__(self):
+    # Note: when we're destructing the global context (i.e when the process is
+    # terminating) we can have already deleted other modules.
+    if c_api is not None and c_api.TF_DeleteApiDefMap is not None:
+      c_api.TF_DeleteApiDefMap(self._api_def_map)
+
+  def put_api_def(self, text):
+    c_api.TF_ApiDefMapPut(self._api_def_map, text, len(text))
+
+  def get_api_def(self, op_name):
+    api_def_proto = api_def_pb2.ApiDef()
+    buf = c_api.TF_ApiDefMapGet(self._api_def_map, op_name, len(op_name))
+    try:
+      api_def_proto.ParseFromString(c_api.TF_GetBuffer(buf))
+    finally:
+      c_api.TF_DeleteBuffer(buf)
+    return api_def_proto
+
+  def get_op_def(self, op_name):
+    if op_name in self._op_per_name:
+      return self._op_per_name[op_name]
+    raise ValueError('No entry found for ' + op_name + '.')
+
+  def op_names(self):
+    return self._op_per_name.keys()
 
 
 class UnableToGenerateCodeError(Exception):
@@ -336,24 +389,19 @@ def main(argv):
   if FLAGS.output_path is None:
     raise ValueError('no output_path has been set')
 
-  proto = op_def_pb2.OpList()
-  if FLAGS.ops_path is not None:
-    with tf.gfile.Open(FLAGS.ops_path, 'r') as fobj:
-      data = fobj.read()
-    text_format.Parse(data, proto)
-  else:
-    tf_buffer = c_api.TF_GetAllOpList()
-    proto.ParseFromString(c_api.TF_GetBuffer(tf_buffer))
+  api_def_map = ApiDefMap(FLAGS.ops_path)
 
   op_codes = []
   enum_store = EnumStore()
-  for op in sorted(proto.op, key=lambda x: x.name):
+  op_names = api_def_map.op_names()
+  for op_name in sorted(op_names):
     try:
-      if op.name[0] == '_': continue
+      if op_name[0] == '_': continue
+      op = api_def_map.get_op_def(op_name)
       op_codes.append(generate_code(op, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))
-  print('Generated code for %d/%d ops.'  % (len(op_codes), len(proto.op)))
+  print('Generated code for %d/%d ops.'  % (len(op_codes), len(op_names)))
 
   swift_code = (
       _WARNING +

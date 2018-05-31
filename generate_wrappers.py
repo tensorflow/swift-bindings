@@ -326,17 +326,21 @@ def arg_def_type_as_string(arg_def):
   return tensor_type
 
 
-def comment(line):
-  if line:
-    return '// ' + line + '\n'
-  return '//\n'
+def comment_block(text, indent_level):
+  indent = '  ' * indent_level
+  return ''.join([
+      '// ' + indent + line + '\n' if line else '//\n'
+      for line in text.split('\n')
+  ])
 
 
 def documentation(api_def):
+  doc = ''
   if api_def.summary:
-    summary = api_def.summary.split('\n')
-    return ''.join([comment(line) for line in summary])
-  return ''
+    doc = comment_block(api_def.summary, indent_level=0)
+  if api_def.description:
+    doc += comment_block(api_def.description, indent_level=0)
+  return doc
 
 
 def generate_code(op, api_def, enum_store):

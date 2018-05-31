@@ -464,10 +464,17 @@ def main(argv):
       print('Cannot generate code for %s: %s' % (op.name, e.details))
   print('Generated code for %d/%d ops.'  % (len(op_codes), len(op_names)))
 
+  version_codes = [
+      'static let generatedTensorFlowVersion = "%s"' % tf.__version__,
+      'static let generatedTensorFlowGitVersion = "%s"' % tf.__git_version__,
+  ]
+
   swift_code = (
       _WARNING +
       _HEADER +
       '\npublic enum Raw {\n\n' +
+      '\n'.join(version_codes) +
+      '\n\n' +
       '\n\n'.join(enum_store.enum_codes()) +
       '\n\n' +
       '\n\n'.join(op_codes) +

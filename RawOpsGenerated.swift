@@ -17,6 +17,9 @@
 
 public enum Raw {
 
+static let generatedTensorFlowVersion = "1.8.0"
+static let generatedTensorFlowGitVersion = "v1.8.0-0-g93bc2e2072"
+
 public enum A: String {
   case apples = "apples"
   case oranges = "oranges"

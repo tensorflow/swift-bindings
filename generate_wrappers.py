@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import tensorflow as tf
 
 from google.protobuf import text_format
@@ -32,6 +33,11 @@ flags.DEFINE_string(
     'ops_path',
     None,
     'path to the ops.pbtxt file')
+
+flags.DEFINE_string(
+    'api_def_path',
+    None,
+    'path to the api_def directory, e.g. tensorflow/core/api_def/base_api')
 
 flags.DEFINE_string(
     'output_path',
@@ -149,7 +155,7 @@ class ApiDefMap(object):
 
   def get_api_def(self, op_name):
     api_def_proto = api_def_pb2.ApiDef()
-    buf = c_api.TF_ApiDefMapGet(self._api_def_map, op_name, len(op_name))
+    buf = c_api.TF_ApiDefMapGet(self._api_def_map, bytes(op_name), len(op_name))
     try:
       api_def_proto.ParseFromString(c_api.TF_GetBuffer(buf))
     finally:
@@ -320,7 +326,20 @@ def arg_def_type_as_string(arg_def):
   return tensor_type
 
 
-def generate_code(op, enum_store):
+def comment(line):
+  if line:
+    return '// ' + line + '\n'
+  return '//\n'
+
+
+def documentation(api_def):
+  if api_def.summary:
+    summary = api_def.summary.split('\n')
+    return ''.join([comment(line) for line in summary])
+  return ''
+
+
+def generate_code(op, api_def, enum_store):
   """Generates some swift code for a given op."""
   types = [Types(a) for a in op.attr if attr_def_defines_a_type(a)]
   generics_type = ''
@@ -372,11 +391,12 @@ def generate_code(op, enum_store):
           attr_names_and_types +
           missing_types)]
   return (
-      """@_inlineable @inline(__always)
+      """{documentation}@_inlineable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}
 ){return_type} {{
   return #tfop({tfop_args})
-}}""".format(function_name=swiftified_name(op.name),
+}}""".format(documentation=documentation(api_def),
+             function_name=swiftified_name(op.name),
              generics_type=generics_type,
              joined_inputs=','.join(all_inputs),
              return_type=return_type,
@@ -393,11 +413,21 @@ def main(argv):
   op_codes = []
   enum_store = EnumStore()
   op_names = api_def_map.op_names()
+  if FLAGS.api_def_path is not None:
+    for op_name in op_names:
+      path = os.path.join(FLAGS.api_def_path, 'api_def_%s.pbtxt' % op_name)
+      if not tf.gfile.Exists(path):
+        continue
+      with tf.gfile.Open(path, 'r') as fobj:
+        data = fobj.read()
+      api_def_map.put_api_def(data)
+
   for op_name in sorted(op_names):
     try:
       if op_name[0] == '_': continue
       op = api_def_map.get_op_def(op_name)
-      op_codes.append(generate_code(op, enum_store))
+      api_def = api_def_map.get_api_def(op_name)
+      op_codes.append(generate_code(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))
   print('Generated code for %d/%d ops.'  % (len(op_codes), len(op_names)))

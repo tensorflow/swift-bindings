@@ -118,7 +118,8 @@ _SWIFTIFIED_ATTR_TYPES = {
 }
 
 
-# TODO(mazare): use TensorFlow python ApiDefMap when available.
+# TODO(mazare): use the python ApiDefMap wrapper which should be a part of
+# TensorFlow 1.9 (tensorflow.python.framework.c_api_util).
 class ApiDefMap(object):
   """Wrapper around Tf_ApiDefMap that handles querying and deletion.
 

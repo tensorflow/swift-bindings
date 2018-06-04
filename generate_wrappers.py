@@ -129,6 +129,8 @@ _SWIFTIFIED_ATTR_TYPES = {
     'list(string)': '[String]',
 }
 
+_OMITTED_PARAMETER_NAMES = set(['x', 'y', 'a', 'b', 'input'])
+
 
 # TODO(mazare): use the python ApiDefMap wrapper which should be a part of
 # TensorFlow 1.9 (tensorflow.python.framework.c_api_util).
@@ -384,6 +386,12 @@ def documentation(api_def):
   return doc
 
 
+def maybe_named(name):
+  if name in _OMITTED_PARAMETER_NAMES:
+    return '_ ' + name
+  return name
+
+
 def generate_code(op, api_def, enum_store):
   """Generates some swift code for a given op."""
   types = [Types(a) for a in op.attr if attr_def_defines_a_type(a)]
@@ -430,7 +438,7 @@ def generate_code(op, api_def, enum_store):
       ('type' + t.swift_name, t.swift_name + '.Type')
       for t in types if t.attr_def_name not in arg_types]
   all_inputs = [
-      '\n  ' + name + ': ' + type_and_default_value
+      '\n  ' + maybe_named(name) + ': ' + type_and_default_value
       for name, type_and_default_value in (
           input_names_and_types +
           attr_names_and_types +

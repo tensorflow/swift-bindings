@@ -145,7 +145,7 @@ public static func abort(
 // an output element, this operation computes \\(y = |x|\\).
 @_inlineable @inline(__always)
 public static func abs<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Abs",
     x,
@@ -155,7 +155,7 @@ public static func abs<T: Numeric>(
 // Computes acos of x element-wise.
 @_inlineable @inline(__always)
 public static func acos<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Acos",
     x,
@@ -165,7 +165,7 @@ public static func acos<T: Numeric>(
 // Computes inverse hyperbolic cosine of x element-wise.
 @_inlineable @inline(__always)
 public static func acosh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Acosh",
     x,
@@ -178,8 +178,8 @@ public static func acosh<T: BinaryFloatingPoint>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func add<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Add",
     x,
@@ -307,8 +307,8 @@ public static func addSparseToTensorsMap<T: AccelerableByTensorFlow>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func addV2<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("AddV2",
     x,
@@ -424,7 +424,7 @@ public static func adjustSaturation(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func all<Tidx: BinaryInteger>(
-  input: Tensor<Bool>,
+  _ input: Tensor<Bool>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<Bool> {
@@ -510,7 +510,7 @@ public static func allCandidateSampler(
 // @end_compatibility
 @_inlineable @inline(__always)
 public static func angle<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Tout> {
   return #tfop("Angle",
     input,
@@ -535,7 +535,7 @@ public static func angle<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func any<Tidx: BinaryInteger>(
-  input: Tensor<Bool>,
+  _ input: Tensor<Bool>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<Bool> {
@@ -1168,8 +1168,8 @@ public static func applyRMSProp<T: Numeric>(
 // Returns the truth value of abs(x-y) < tolerance element-wise.
 @_inlineable @inline(__always)
 public static func approximateEqual<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>,
+  _ x: Tensor<T>,
+  _ y: Tensor<T>,
   tolerance: Double = 1e-05
 ) -> Tensor<Bool> {
   return #tfop("ApproximateEqual",
@@ -1188,7 +1188,7 @@ public static func approximateEqual<T: Numeric>(
 //   use dimension = 0.
 @_inlineable @inline(__always)
 public static func argMax<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   dimension: Tensor<Tidx>
 ) -> Tensor<Output_type> {
   return #tfop("ArgMax",
@@ -1208,7 +1208,7 @@ public static func argMax<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryIn
 //   use dimension = 0.
 @_inlineable @inline(__always)
 public static func argMin<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   dimension: Tensor<Tidx>
 ) -> Tensor<Output_type> {
   return #tfop("ArgMin",
@@ -1222,7 +1222,7 @@ public static func argMin<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryIn
 // Computes asin of x element-wise.
 @_inlineable @inline(__always)
 public static func asin<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Asin",
     x,
@@ -1232,7 +1232,7 @@ public static func asin<T: Numeric>(
 // Computes inverse hyperbolic sine of x element-wise.
 @_inlineable @inline(__always)
 public static func asinh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Asinh",
     x,
@@ -1351,7 +1351,7 @@ public static func assignSub<T: Numeric>(
 // Computes atan of x element-wise.
 @_inlineable @inline(__always)
 public static func atan<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Atan",
     x,
@@ -1367,8 +1367,8 @@ public static func atan<T: Numeric>(
 // where \(r = \sqrt(x^2 + y^2) \).
 @_inlineable @inline(__always)
 public static func atan2<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
-  x: Tensor<T>
+  _ y: Tensor<T>,
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Atan2",
     y,
@@ -1379,7 +1379,7 @@ public static func atan2<T: BinaryFloatingPoint>(
 // Computes inverse hyperbolic tangent of x element-wise.
 @_inlineable @inline(__always)
 public static func atanh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Atanh",
     x,
@@ -1388,7 +1388,7 @@ public static func atanh<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func attr(
-  a: Int
+  _ a: Int
 ) {
   return #tfop("Attr",
     a: a)
@@ -1396,7 +1396,7 @@ public static func attr(
 
 @_inlineable @inline(__always)
 public static func attrBool(
-  a: Bool
+  _ a: Bool
 ) {
   return #tfop("AttrBool",
     a: a)
@@ -1404,7 +1404,7 @@ public static func attrBool(
 
 @_inlineable @inline(__always)
 public static func attrBoolList(
-  a: [Bool]
+  _ a: [Bool]
 ) {
   return #tfop("AttrBoolList",
     a: a)
@@ -1412,7 +1412,7 @@ public static func attrBoolList(
 
 @_inlineable @inline(__always)
 public static func attrDefault(
-  a: String = "banana"
+  _ a: String = "banana"
 ) {
   return #tfop("AttrDefault",
     a: a)
@@ -1420,7 +1420,7 @@ public static func attrDefault(
 
 @_inlineable @inline(__always)
 public static func attrEmptyListDefault(
-  a: [Double]
+  _ a: [Double]
 ) {
   return #tfop("AttrEmptyListDefault",
     a: a)
@@ -1428,7 +1428,7 @@ public static func attrEmptyListDefault(
 
 @_inlineable @inline(__always)
 public static func attrEnum(
-  a: A
+  _ a: A
 ) {
   return #tfop("AttrEnum",
     a: a.rawValue)
@@ -1436,7 +1436,7 @@ public static func attrEnum(
 
 @_inlineable @inline(__always)
 public static func attrEnumList(
-  a: [String]
+  _ a: [String]
 ) {
   return #tfop("AttrEnumList",
     a: a)
@@ -1444,7 +1444,7 @@ public static func attrEnumList(
 
 @_inlineable @inline(__always)
 public static func attrFloat(
-  a: Double
+  _ a: Double
 ) {
   return #tfop("AttrFloat",
     a: a)
@@ -1452,7 +1452,7 @@ public static func attrFloat(
 
 @_inlineable @inline(__always)
 public static func attrListDefault(
-  a: [Int]
+  _ a: [Int]
 ) {
   return #tfop("AttrListDefault",
     a: a)
@@ -1460,7 +1460,7 @@ public static func attrListDefault(
 
 @_inlineable @inline(__always)
 public static func attrListMin(
-  a: [Int]
+  _ a: [Int]
 ) {
   return #tfop("AttrListMin",
     a: a)
@@ -1468,8 +1468,8 @@ public static func attrListMin(
 
 @_inlineable @inline(__always)
 public static func attrListTypeDefault<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>],
-  b: [Tensor<T>]
+  _ a: [Tensor<T>],
+  _ b: [Tensor<T>]
 ) {
   return #tfop("AttrListTypeDefault",
     a,
@@ -1479,7 +1479,7 @@ public static func attrListTypeDefault<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func attrMin(
-  a: Int
+  _ a: Int
 ) {
   return #tfop("AttrMin",
     a: a)
@@ -1487,7 +1487,7 @@ public static func attrMin(
 
 @_inlineable @inline(__always)
 public static func attrTypeDefault<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) {
   return #tfop("AttrTypeDefault",
     a,
@@ -1534,7 +1534,7 @@ public static func attrTypeDefault<T: AccelerableByTensorFlow>(
 // - Output spectrogram: 3D representation of the audio frequencies as an image.
 @_inlineable @inline(__always)
 public static func audioSpectrogram(
-  input: Tensor<Float>,
+  _ input: Tensor<Float>,
   windowSize: Int,
   stride: Int,
   magnitudeSquared: Bool = false
@@ -1600,7 +1600,7 @@ public static func avgPool<T: BinaryFloatingPoint>(
 // - Output output: The average pooled output tensor.
 @_inlineable @inline(__always)
 public static func avgPool3D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   ksize: [Int],
   strides: [Int],
   padding: Padding,
@@ -1762,7 +1762,7 @@ public static func batch<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func batchCholesky<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BatchCholesky",
     input,
@@ -1812,8 +1812,8 @@ public static func batchCholeskyGrad<T: BinaryFloatingPoint>(
 // - Output output: 3-D or higher with shape `[..., r_o, c_o]`
 @_inlineable @inline(__always)
 public static func batchMatMul<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>,
+  _ x: Tensor<T>,
+  _ y: Tensor<T>,
   adjX: Bool = false,
   adjY: Bool = false
 ) -> Tensor<T> {
@@ -1827,7 +1827,7 @@ public static func batchMatMul<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func batchMatrixBandPart<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   numLower: Tensor<Int64>,
   numUpper: Tensor<Int64>
 ) -> Tensor<T> {
@@ -1840,7 +1840,7 @@ public static func batchMatrixBandPart<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func batchMatrixDeterminant<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BatchMatrixDeterminant",
     input,
@@ -1858,7 +1858,7 @@ public static func batchMatrixDiag<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func batchMatrixDiagPart<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BatchMatrixDiagPart",
     input,
@@ -1867,7 +1867,7 @@ public static func batchMatrixDiagPart<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func batchMatrixInverse<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
   return #tfop("BatchMatrixInverse",
@@ -1878,7 +1878,7 @@ public static func batchMatrixInverse<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func batchMatrixSetDiag<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BatchMatrixSetDiag",
@@ -2024,7 +2024,7 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func batchSelfAdjointEig<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BatchSelfAdjointEig",
     input,
@@ -2033,7 +2033,7 @@ public static func batchSelfAdjointEig<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func batchSelfAdjointEigV2<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   computeV: Bool = true
 ) -> (Tensor<T>, Tensor<T>) {
   return #tfop("BatchSelfAdjointEigV2",
@@ -2044,7 +2044,7 @@ public static func batchSelfAdjointEigV2<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func batchSvd<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   computeUv: Bool = true,
   fullMatrices: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<T>) {
@@ -2145,7 +2145,7 @@ public static func batchSvd<T: BinaryFloatingPoint>(
 //   ```
 @_inlineable @inline(__always)
 public static func batchToSpace<T: AccelerableByTensorFlow, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   crops: Tensor<Tidx>,
   blockSize: Int
 ) -> Tensor<T> {
@@ -2281,7 +2281,7 @@ public static func batchToSpace<T: AccelerableByTensorFlow, Tidx: BinaryInteger>
 //     ```
 @_inlineable @inline(__always)
 public static func batchToSpaceND<T: AccelerableByTensorFlow, Tblock_shape: BinaryInteger, Tcrops: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   blockShape: Tensor<Tblock_shape>,
   crops: Tensor<Tcrops>
 ) -> Tensor<T> {
@@ -2311,9 +2311,9 @@ public static func batchToSpaceND<T: AccelerableByTensorFlow, Tblock_shape: Bina
 // beta function.
 @_inlineable @inline(__always)
 public static func betainc<T: BinaryFloatingPoint>(
-  a: Tensor<T>,
-  b: Tensor<T>,
-  x: Tensor<T>
+  _ a: Tensor<T>,
+  _ b: Tensor<T>,
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Betainc",
     a,
@@ -2406,8 +2406,8 @@ public static func biasAddV1<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func binary<T: AccelerableByTensorFlow>(
-  a: Tensor<T>,
-  b: Tensor<T>
+  _ a: Tensor<T>,
+  _ b: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Binary",
     a,
@@ -2463,7 +2463,7 @@ public static func bincount<T: Numeric>(
 // endian orderings will give different results.
 @_inlineable @inline(__always)
 public static func bitcast<T: Numeric, Type: Numeric>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Type> {
   return #tfop("Bitcast",
     input,
@@ -2477,8 +2477,8 @@ public static func bitcast<T: Numeric, Type: Numeric>(
 // computation is performed on the underlying representations of `x` and `y`.
 @_inlineable @inline(__always)
 public static func bitwiseAnd<T: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BitwiseAnd",
     x,
@@ -2492,8 +2492,8 @@ public static func bitwiseAnd<T: BinaryInteger>(
 // computation is performed on the underlying representations of `x` and `y`.
 @_inlineable @inline(__always)
 public static func bitwiseOr<T: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BitwiseOr",
     x,
@@ -2507,8 +2507,8 @@ public static func bitwiseOr<T: BinaryInteger>(
 // computation is performed on the underlying representations of `x` and `y`.
 @_inlineable @inline(__always)
 public static func bitwiseXor<T: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("BitwiseXor",
     x,
@@ -2564,14 +2564,14 @@ public static func bitwiseXor<T: BinaryInteger>(
 @_inlineable @inline(__always)
 public static func blockLSTM<T: BinaryFloatingPoint>(
   seqLenMax: Tensor<Int64>,
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   csPrev: Tensor<T>,
   hPrev: Tensor<T>,
   w: Tensor<T>,
   wci: Tensor<T>,
   wcf: Tensor<T>,
   wco: Tensor<T>,
-  b: Tensor<T>,
+  _ b: Tensor<T>,
   forgetBias: Double = 1,
   cellClip: Double = 3,
   usePeephole: Bool = false
@@ -2631,14 +2631,14 @@ public static func blockLSTM<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func blockLSTMGrad<T: BinaryFloatingPoint>(
   seqLenMax: Tensor<Int64>,
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   csPrev: Tensor<T>,
   hPrev: Tensor<T>,
   w: Tensor<T>,
   wci: Tensor<T>,
   wcf: Tensor<T>,
   wco: Tensor<T>,
-  b: Tensor<T>,
+  _ b: Tensor<T>,
   i: Tensor<T>,
   cs: Tensor<T>,
   f: Tensor<T>,
@@ -2809,7 +2809,7 @@ public static func broadcastGradientArgs<T: BinaryInteger>(
 //   @end_compatibility
 @_inlineable @inline(__always)
 public static func bucketize<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   boundaries: [Double]
 ) -> Tensor<Int32> {
   return #tfop("Bucketize",
@@ -2952,7 +2952,7 @@ public static func cTCLoss(
 // Cast x of type SrcT to y of DstT.
 @_inlineable @inline(__always)
 public static func cast<Srct: AccelerableByTensorFlow, Dstt: AccelerableByTensorFlow>(
-  x: Tensor<Srct>
+  _ x: Tensor<Srct>
 ) -> Tensor<Dstt> {
   return #tfop("Cast",
     x,
@@ -2963,7 +2963,7 @@ public static func cast<Srct: AccelerableByTensorFlow, Dstt: AccelerableByTensor
 // Returns element-wise smallest integer in not less than x.
 @_inlineable @inline(__always)
 public static func ceil<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Ceil",
     x,
@@ -3008,7 +3008,7 @@ public static func checkNumerics<T: BinaryFloatingPoint>(
 // - Output output: Shape is `[..., M, M]`.
 @_inlineable @inline(__always)
 public static func cholesky<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Cholesky",
     input,
@@ -3071,7 +3071,7 @@ public static func clipByValue<T: Numeric>(
 // Mutually reduces multiple tensors of identical type and shape.
 @_inlineable @inline(__always)
 public static func collectiveReduce<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   groupSize: Int,
   groupKey: Int,
   instanceKey: Int,
@@ -3125,7 +3125,7 @@ public static func collectiveReduce<T: Numeric>(
 // - Output output: The bitpacked comparisons.
 @_inlineable @inline(__always)
 public static func compareAndBitpack<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   threshold: Tensor<T>
 ) -> Tensor<UInt8> {
   return #tfop("CompareAndBitpack",
@@ -3170,7 +3170,7 @@ public static func complex<T: BinaryFloatingPoint, Tout: AccelerableByTensorFlow
 // value is computed as \\( \sqrt{a^2 + b^2}\\).
 @_inlineable @inline(__always)
 public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<Tout> {
   return #tfop("ComplexAbs",
     x,
@@ -3319,7 +3319,7 @@ public static func concatV2<T: AccelerableByTensorFlow, Tidx: BinaryInteger>(
 // ```
 @_inlineable @inline(__always)
 public static func conj<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Conj",
     input,
@@ -3333,7 +3333,7 @@ public static func conj<T: AccelerableByTensorFlow>(
 //   `y[i,j,k,...,s,t,u] == conj(x[perm[i], perm[j], perm[k],...,perm[s], perm[t], perm[u]])`
 @_inlineable @inline(__always)
 public static func conjugateTranspose<T: AccelerableByTensorFlow, Tperm: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
   return #tfop("ConjugateTranspose",
@@ -3408,7 +3408,7 @@ public static func controlTrigger(
 //   `data_format`, see below for details.
 @_inlineable @inline(__always)
 public static func conv2D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   strides: [Int],
   useCudnnOnGpu: Bool = true,
@@ -3458,7 +3458,7 @@ public static func conv2D<T: BinaryFloatingPoint>(
 //   the `filter` input of the convolution.
 @_inlineable @inline(__always)
 public static func conv2DBackpropFilter<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filterSizes: Tensor<Int32>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -3559,7 +3559,7 @@ public static func conv2DBackpropInput<T: BinaryFloatingPoint>(
 //     depth dimensions must be 1.
 @_inlineable @inline(__always)
 public static func conv3D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   strides: [Int],
   padding: Padding,
@@ -3591,7 +3591,7 @@ public static func conv3D<T: BinaryFloatingPoint>(
 //   - padding: The type of padding algorithm to use.
 @_inlineable @inline(__always)
 public static func conv3DBackpropFilter<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -3633,7 +3633,7 @@ public static func conv3DBackpropFilter<T: BinaryFloatingPoint>(
 //     depth dimensions must be 1.
 @_inlineable @inline(__always)
 public static func conv3DBackpropFilterV2<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filterSizes: Tensor<Int32>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -3667,7 +3667,7 @@ public static func conv3DBackpropFilterV2<T: BinaryFloatingPoint>(
 //   - padding: The type of padding algorithm to use.
 @_inlineable @inline(__always)
 public static func conv3DBackpropInput<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -3752,7 +3752,7 @@ public static func conv3DBackpropInputV2<T: BinaryFloatingPoint>(
 // - Output output: Output tensor, deep-copied from input.
 @_inlineable @inline(__always)
 public static func copy<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   tensorName: String,
   debugOpsSpec: [String]
 ) -> Tensor<T> {
@@ -3785,7 +3785,7 @@ public static func copy<T: AccelerableByTensorFlow>(
 // - Output output: Output tensor, deep-copied from input.
 @_inlineable @inline(__always)
 public static func copyHost<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   tensorName: String,
   debugOpsSpec: [String]
 ) -> Tensor<T> {
@@ -3798,7 +3798,7 @@ public static func copyHost<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func copyOp<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("CopyOp",
     a,
@@ -3808,7 +3808,7 @@ public static func copyOp<T: AccelerableByTensorFlow>(
 // Computes cos of x element-wise.
 @_inlineable @inline(__always)
 public static func cos<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Cos",
     x,
@@ -3818,7 +3818,7 @@ public static func cos<T: BinaryFloatingPoint>(
 // Computes hyperbolic cosine of x element-wise.
 @_inlineable @inline(__always)
 public static func cosh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Cosh",
     x,
@@ -4003,8 +4003,8 @@ public static func cropAndResizeGradImage<T: BinaryFloatingPoint>(
 // - Output product: Pairwise cross product of the vectors in `a` and `b`.
 @_inlineable @inline(__always)
 public static func cross<T: Numeric>(
-  a: Tensor<T>,
-  b: Tensor<T>
+  _ a: Tensor<T>,
+  _ b: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Cross",
     a,
@@ -4046,7 +4046,7 @@ public static func cross<T: Numeric>(
 //   is only produced if is_training is false.
 @_inlineable @inline(__always)
 public static func cudnnRNN<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   inputH: Tensor<T>,
   inputC: Tensor<T>,
   params: Tensor<T>,
@@ -4116,7 +4116,7 @@ public static func cudnnRNN<T: BinaryFloatingPoint>(
 //     same shape as params.
 @_inlineable @inline(__always)
 public static func cudnnRNNBackprop<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   inputH: Tensor<T>,
   inputC: Tensor<T>,
   params: Tensor<T>,
@@ -4368,7 +4368,7 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint>(
 //   - reverse: A `bool` (default: False).
 @_inlineable @inline(__always)
 public static func cumprod<T: Numeric, Tidx: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   axis: Tensor<Tidx>,
   exclusive: Bool = false,
   reverse: Bool = false
@@ -4425,7 +4425,7 @@ public static func cumprod<T: Numeric, Tidx: BinaryInteger>(
 //   - reverse: A `bool` (default: False).
 @_inlineable @inline(__always)
 public static func cumsum<T: Numeric, Tidx: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   axis: Tensor<Tidx>,
   exclusive: Bool = false,
   reverse: Bool = false
@@ -4453,7 +4453,7 @@ public static func cumsum<T: Numeric, Tidx: BinaryInteger>(
 // - Output y: A Tensor with each element as a dimension index in destination data format.
 @_inlineable @inline(__always)
 public static func dataFormatDimMap<T: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   srcFormat: String = "NHWC",
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
@@ -4477,7 +4477,7 @@ public static func dataFormatDimMap<T: BinaryInteger>(
 // - Output y: Vector of size 4 or Tensor of shape (4, 2) in destination data format.
 @_inlineable @inline(__always)
 public static func dataFormatVecPermute<T: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   srcFormat: String = "NHWC",
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
@@ -4495,7 +4495,7 @@ public static func dataFormatVecPermute<T: BinaryInteger>(
 // This op operates on non-reference-type tensors.
 @_inlineable @inline(__always)
 public static func debugGradientIdentity<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("DebugGradientIdentity",
     input,
@@ -4509,7 +4509,7 @@ public static func debugGradientIdentity<T: AccelerableByTensorFlow>(
 // This op operates on reference-type tensors.
 @_inlineable @inline(__always)
 public static func debugGradientRefIdentity<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("DebugGradientRefIdentity",
     input,
@@ -4536,7 +4536,7 @@ public static func debugGradientRefIdentity<T: AccelerableByTensorFlow>(
 // - Output output: Output tensor that equals the input tensor.
 @_inlineable @inline(__always)
 public static func debugIdentity<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   deviceName: String,
   tensorName: String,
   debugUrls: [String],
@@ -4571,7 +4571,7 @@ public static func debugIdentity<T: AccelerableByTensorFlow>(
 // - Output output: An integer output tensor that is the number of NaNs in the input.
 @_inlineable @inline(__always)
 public static func debugNanCount<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   deviceName: String,
   tensorName: String,
   debugUrls: [String],
@@ -4639,7 +4639,7 @@ public static func debugNanCount<T: AccelerableByTensorFlow>(
 //     [14+]: Sizes of the dimensions.
 @_inlineable @inline(__always)
 public static func debugNumericSummary<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   deviceName: String,
   tensorName: String,
   debugUrls: [String],
@@ -4668,7 +4668,7 @@ public static func debugNumericSummary<T: AccelerableByTensorFlow>(
 //         is not an alias of `x`.
 @_inlineable @inline(__always)
 public static func deepCopy<T: AccelerableByTensorFlow>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("DeepCopy",
     x,
@@ -4861,7 +4861,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger>(
 // - Attr block_size: The size of the spatial block, same as in Space2Depth.
 @_inlineable @inline(__always)
 public static func depthToSpace<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   blockSize: Int,
   dataFormat: DataFormat2 = .nhwc
 ) -> Tensor<T> {
@@ -4909,7 +4909,7 @@ public static func depthToSpace<T: AccelerableByTensorFlow>(
 //     dimensions must be 1.
 @_inlineable @inline(__always)
 public static func depthwiseConv2dNative<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   strides: [Int],
   padding: Padding,
@@ -4960,7 +4960,7 @@ public static func depthwiseConv2dNative<T: BinaryFloatingPoint>(
 //   the `filter` input of the convolution.
 @_inlineable @inline(__always)
 public static func depthwiseConv2dNativeBackpropFilter<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filterSizes: Tensor<Int32>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -5113,7 +5113,7 @@ public static func depthwiseConv2dNativeBackpropInput<T: BinaryFloatingPoint>(
 //   - max_range: The maximum scalar value possibly produced for the input.
 @_inlineable @inline(__always)
 public static func dequantize<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   minRange: Tensor<Float>,
   maxRange: Tensor<Float>,
   mode: Mode = .minCombined
@@ -5265,7 +5265,7 @@ public static func diag<T: Numeric>(
 // - Output diagonal: The extracted diagonal.
 @_inlineable @inline(__always)
 public static func diagPart<T: Numeric>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("DiagPart",
     input,
@@ -5277,7 +5277,7 @@ public static func diagPart<T: Numeric>(
 // `Gamma(x)`), element-wise.
 @_inlineable @inline(__always)
 public static func digamma<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Digamma",
     x,
@@ -5324,7 +5324,7 @@ public static func digamma<T: BinaryFloatingPoint>(
 // - Output output: 4-D with shape `[batch, out_height, out_width, depth]`.
 @_inlineable @inline(__always)
 public static func dilation2D<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   strides: [Int],
   rates: [Int],
@@ -5356,7 +5356,7 @@ public static func dilation2D<T: Numeric>(
 // - Output filter_backprop: 3-D with shape `[filter_height, filter_width, depth]`.
 @_inlineable @inline(__always)
 public static func dilation2DBackpropFilter<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -5390,7 +5390,7 @@ public static func dilation2DBackpropFilter<T: Numeric>(
 // - Output in_backprop: 4-D with shape `[batch, in_height, in_width, depth]`.
 @_inlineable @inline(__always)
 public static func dilation2DBackpropInput<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int],
@@ -5413,8 +5413,8 @@ public static func dilation2DBackpropInput<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func div<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Div",
     x,
@@ -5591,7 +5591,7 @@ public static func dynamicStitch<T: AccelerableByTensorFlow>(
 // PyFunc.
 @_inlineable @inline(__always)
 public static func eagerPyFunc<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  input: [Tensor<Tin>],
+  _ input: [Tensor<Tin>],
   token: String
 ) -> [Tensor<Tout>] {
   return #tfop("EagerPyFunc",
@@ -5765,8 +5765,8 @@ public static func enter<T: AccelerableByTensorFlow>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func equal<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("Equal",
     x,
@@ -5777,7 +5777,7 @@ public static func equal<T: AccelerableByTensorFlow>(
 // Computes the Gauss error function of `x` element-wise.
 @_inlineable @inline(__always)
 public static func erf<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Erf",
     x,
@@ -5787,7 +5787,7 @@ public static func erf<T: BinaryFloatingPoint>(
 // Computes the complementary error function of `x` element-wise.
 @_inlineable @inline(__always)
 public static func erfc<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Erfc",
     x,
@@ -5813,7 +5813,7 @@ public static func exit<T: AccelerableByTensorFlow>(
 // Computes exponential of x element-wise.  \\(y = e^x\\).
 @_inlineable @inline(__always)
 public static func exp<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Exp",
     x,
@@ -5861,7 +5861,7 @@ public static func exp<T: BinaryFloatingPoint>(
 //   dimension of size 1 added.
 @_inlineable @inline(__always)
 public static func expandDims<T: AccelerableByTensorFlow, Tdim: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   dim: Tensor<Tdim>
 ) -> Tensor<T> {
   return #tfop("ExpandDims",
@@ -5876,7 +5876,7 @@ public static func expandDims<T: AccelerableByTensorFlow, Tdim: BinaryInteger>(
 // I.e., \\(y = (\exp x) - 1\\).
 @_inlineable @inline(__always)
 public static func expm1<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Expm1",
     x,
@@ -5928,7 +5928,7 @@ public static func expm1<T: BinaryFloatingPoint>(
 //   glimpse_height, glimpse_width, channels]`.
 @_inlineable @inline(__always)
 public static func extractGlimpse(
-  input: Tensor<Float>,
+  _ input: Tensor<Float>,
   size: Tensor<Int32>,
   offsets: Tensor<Float>,
   centered: Bool = true,
@@ -6308,7 +6308,7 @@ public static func fixedUnigramCandidateSampler(
 
 @_inlineable @inline(__always)
 public static func floatInput(
-  a: Tensor<Float>
+  _ a: Tensor<Float>
 ) {
   return #tfop("FloatInput",
     a)
@@ -6323,7 +6323,7 @@ public static func floatOutput(
 // Returns element-wise largest integer not greater than x.
 @_inlineable @inline(__always)
 public static func floor<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Floor",
     x,
@@ -6336,8 +6336,8 @@ public static func floor<T: BinaryFloatingPoint>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func floorDiv<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("FloorDiv",
     x,
@@ -6354,8 +6354,8 @@ public static func floorDiv<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func floorMod<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("FloorMod",
     x,
@@ -6365,8 +6365,8 @@ public static func floorMod<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func foo1(
-  a: Tensor<Float>,
-  b: Tensor<Int32>,
+  _ a: Tensor<Float>,
+  _ b: Tensor<Int32>,
   c: Tensor<Int32>
 ) -> (Tensor<Float>, Tensor<Int32>) {
   return #tfop("Foo1",
@@ -6643,7 +6643,7 @@ public static func fractionalMaxPoolGrad<T: Numeric>(
 //     in the cuDNN case), to be reused in the gradient computation.
 @_inlineable @inline(__always)
 public static func fusedBatchNorm<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   scale: Tensor<T>,
   offset: Tensor<T>,
   mean: Tensor<T>,
@@ -6701,7 +6701,7 @@ public static func fusedBatchNorm<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func fusedBatchNormGrad<T: BinaryFloatingPoint>(
   yBackprop: Tensor<T>,
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   scale: Tensor<T>,
   reserveSpace1: Tensor<T>,
   reserveSpace2: Tensor<T>,
@@ -6759,7 +6759,7 @@ public static func fusedBatchNormGrad<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func fusedBatchNormGradV2<T: BinaryFloatingPoint, U: BinaryFloatingPoint>(
   yBackprop: Tensor<T>,
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   scale: Tensor<Float>,
   reserveSpace1: Tensor<U>,
   reserveSpace2: Tensor<U>,
@@ -6814,7 +6814,7 @@ public static func fusedBatchNormGradV2<T: BinaryFloatingPoint, U: BinaryFloatin
 //     in the cuDNN case), to be reused in the gradient computation.
 @_inlineable @inline(__always)
 public static func fusedBatchNormV2<T: BinaryFloatingPoint, U: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   scale: Tensor<U>,
   offset: Tensor<U>,
   mean: Tensor<U>,
@@ -6863,7 +6863,7 @@ public static func fusedBatchNormV2<T: BinaryFloatingPoint, U: BinaryFloatingPoi
 //   - padding: The type of padding algorithm to use.
 @_inlineable @inline(__always)
 public static func fusedPadConv2D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
   mode: Mode3,
@@ -6910,7 +6910,7 @@ public static func fusedPadConv2D<T: BinaryFloatingPoint>(
 //   - padding: The type of padding algorithm to use.
 @_inlineable @inline(__always)
 public static func fusedResizeAndPadConv2D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   size: Tensor<Int32>,
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
@@ -6979,7 +6979,7 @@ public static func fusedResizeAndPadConv2D<T: BinaryFloatingPoint>(
 // ```
 @_inlineable @inline(__always)
 public static func gRUBlockCell<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   hPrev: Tensor<T>,
   wRu: Tensor<T>,
   wC: Tensor<T>,
@@ -7080,7 +7080,7 @@ public static func gRUBlockCell<T: BinaryFloatingPoint>(
 // ```
 @_inlineable @inline(__always)
 public static func gRUBlockCellGrad<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   hPrev: Tensor<T>,
   wRu: Tensor<T>,
   wC: Tensor<T>,
@@ -7333,8 +7333,8 @@ public static func graphDefVersion(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func greater<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("Greater",
     x,
@@ -7348,8 +7348,8 @@ public static func greater<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func greaterEqual<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("GreaterEqual",
     x,
@@ -7367,7 +7367,7 @@ public static func greaterEqual<T: Numeric>(
 // Returns the input tensor without modification.
 @_inlineable @inline(__always)
 public static func guaranteeConst<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("GuaranteeConst",
     input,
@@ -7437,7 +7437,7 @@ public static func histogramFixedWidth<T: Numeric, Dtype: BinaryInteger>(
 // Return a tensor with the same shape and contents as the input tensor or value.
 @_inlineable @inline(__always)
 public static func identity<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Identity",
     input,
@@ -7463,7 +7463,7 @@ public static func identity<T: AccelerableByTensorFlow>(
 // ```
 @_inlineable @inline(__always)
 public static func identityN<T: AccelerableByTensorFlow>(
-  input: [Tensor<T>]
+  _ input: [Tensor<T>]
 ) -> [Tensor<T>] {
   return #tfop("IdentityN",
     input)
@@ -7486,8 +7486,8 @@ public static func identityN<T: AccelerableByTensorFlow>(
 // Gamma function.
 @_inlineable @inline(__always)
 public static func igamma<T: BinaryFloatingPoint>(
-  a: Tensor<T>,
-  x: Tensor<T>
+  _ a: Tensor<T>,
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Igamma",
     a,
@@ -7511,8 +7511,8 @@ public static func igamma<T: BinaryFloatingPoint>(
 // Gamma function.
 @_inlineable @inline(__always)
 public static func igammac<T: BinaryFloatingPoint>(
-  a: Tensor<T>,
-  x: Tensor<T>
+  _ a: Tensor<T>,
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Igammac",
     a,
@@ -7535,7 +7535,7 @@ public static func igammac<T: BinaryFloatingPoint>(
 // ```
 @_inlineable @inline(__always)
 public static func imag<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Tout> {
   return #tfop("Imag",
     input,
@@ -7545,8 +7545,8 @@ public static func imag<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func inPolymorphicTwice<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>],
-  b: [Tensor<T>]
+  _ a: [Tensor<T>],
+  _ b: [Tensor<T>]
 ) {
   return #tfop("InPolymorphicTwice",
     a,
@@ -7639,7 +7639,7 @@ public static func inTopKV2<T: BinaryInteger>(
 // - Output y: A `Tensor` of type T. An alias of `x`. The content of `y` is undefined if there are duplicates in `i`.
 @_inlineable @inline(__always)
 public static func inplaceAdd<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
@@ -7662,7 +7662,7 @@ public static func inplaceAdd<T: AccelerableByTensorFlow>(
 // - Output y: A `Tensor` of type T. An alias of `x`. The content of `y` is undefined if there are duplicates in `i`.
 @_inlineable @inline(__always)
 public static func inplaceSub<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
@@ -7685,7 +7685,7 @@ public static func inplaceSub<T: AccelerableByTensorFlow>(
 // - Output y: A `Tensor` of type T. An alias of `x`. The content of `y` is undefined if there are duplicates in `i`.
 @_inlineable @inline(__always)
 public static func inplaceUpdate<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
@@ -7712,7 +7712,7 @@ public static func intAttr(
 
 @_inlineable @inline(__always)
 public static func intInput(
-  a: Tensor<Int32>
+  _ a: Tensor<Int32>
 ) {
   return #tfop("IntInput",
     a)
@@ -7720,8 +7720,8 @@ public static func intInput(
 
 @_inlineable @inline(__always)
 public static func intInputFloatInput(
-  a: Tensor<Int32>,
-  b: Tensor<Float>
+  _ a: Tensor<Int32>,
+  _ b: Tensor<Float>
 ) {
   return #tfop("IntInputFloatInput",
     a,
@@ -7730,7 +7730,7 @@ public static func intInputFloatInput(
 
 @_inlineable @inline(__always)
 public static func intInputIntOutput(
-  a: Tensor<Int32>
+  _ a: Tensor<Int32>
 ) -> Tensor<Int32> {
   return #tfop("IntInputIntOutput",
     a)
@@ -7753,7 +7753,7 @@ public static func intOutputFloatOutput(
 // I.e., \\(y = 1 / x\\).
 @_inlineable @inline(__always)
 public static func inv<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Inv",
     x,
@@ -7766,7 +7766,7 @@ public static func inv<T: Numeric>(
 // is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func invGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("InvGrad",
@@ -7781,7 +7781,7 @@ public static func invGrad<T: BinaryFloatingPoint>(
 // computation is performed on the underlying representation of x.
 @_inlineable @inline(__always)
 public static func invert<T: BinaryInteger>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Invert",
     x,
@@ -7811,7 +7811,7 @@ public static func invert<T: BinaryInteger>(
 // - Output y: 1-D.
 @_inlineable @inline(__always)
 public static func invertPermutation<T: BinaryInteger>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("InvertPermutation",
     x,
@@ -7825,7 +7825,7 @@ public static func invertPermutation<T: BinaryInteger>(
 // @end_compatibility
 @_inlineable @inline(__always)
 public static func isFinite<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("IsFinite",
     x,
@@ -7839,7 +7839,7 @@ public static func isFinite<T: BinaryFloatingPoint>(
 // @end_compatibility
 @_inlineable @inline(__always)
 public static func isInf<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("IsInf",
     x,
@@ -7853,7 +7853,7 @@ public static func isInf<T: BinaryFloatingPoint>(
 // @end_compatibility
 @_inlineable @inline(__always)
 public static func isNan<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("IsNan",
     x,
@@ -7917,7 +7917,7 @@ public static func l2Loss<T: BinaryFloatingPoint>(
 //   - beta: An exponent.
 @_inlineable @inline(__always)
 public static func lRN<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   depthRadius: Int = 5,
   bias: Double = 1,
   alpha: Double = 1,
@@ -8019,14 +8019,14 @@ public static func lRNGrad<T: BinaryFloatingPoint>(
 //   - h: The output h vector.
 @_inlineable @inline(__always)
 public static func lSTMBlockCell<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   csPrev: Tensor<T>,
   hPrev: Tensor<T>,
   w: Tensor<T>,
   wci: Tensor<T>,
   wcf: Tensor<T>,
   wco: Tensor<T>,
-  b: Tensor<T>,
+  _ b: Tensor<T>,
   forgetBias: Double = 1,
   cellClip: Double = 3,
   usePeephole: Bool = false
@@ -8078,14 +8078,14 @@ public static func lSTMBlockCell<T: BinaryFloatingPoint>(
 //   - wco_grad: The gradient for wco to be back-propped.
 @_inlineable @inline(__always)
 public static func lSTMBlockCellGrad<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   csPrev: Tensor<T>,
   hPrev: Tensor<T>,
   w: Tensor<T>,
   wci: Tensor<T>,
   wcf: Tensor<T>,
   wco: Tensor<T>,
-  b: Tensor<T>,
+  _ b: Tensor<T>,
   i: Tensor<T>,
   cs: Tensor<T>,
   f: Tensor<T>,
@@ -8180,8 +8180,8 @@ public static func learnedUnigramCandidateSampler(
 // result is implementation defined.
 @_inlineable @inline(__always)
 public static func leftShift<T: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("LeftShift",
     x,
@@ -8195,8 +8195,8 @@ public static func leftShift<T: BinaryInteger>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func less<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("Less",
     x,
@@ -8210,8 +8210,8 @@ public static func less<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func lessEqual<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("LessEqual",
     x,
@@ -8222,7 +8222,7 @@ public static func lessEqual<T: Numeric>(
 // Computes the log of the absolute value of `Gamma(x)` element-wise.
 @_inlineable @inline(__always)
 public static func lgamma<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Lgamma",
     x,
@@ -8294,8 +8294,8 @@ public static func linSpace<T: BinaryFloatingPoint, Tidx: BinaryInteger>(
 //   - idx: 1-D. Positions of `x` values preserved in `out`.
 @_inlineable @inline(__always)
 public static func listDiff<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> (Tensor<T>, Tensor<Out_idx>) {
   return #tfop("ListDiff",
     x,
@@ -8306,7 +8306,7 @@ public static func listDiff<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
 
 @_inlineable @inline(__always)
 public static func listInput<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>]
+  _ a: [Tensor<T>]
 ) {
   return #tfop("ListInput",
     a,
@@ -8324,7 +8324,7 @@ public static func listOutput<T: AccelerableByTensorFlow>(
 // I.e., \\(y = \log_e x\\).
 @_inlineable @inline(__always)
 public static func log<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Log",
     x,
@@ -8336,7 +8336,7 @@ public static func log<T: BinaryFloatingPoint>(
 // I.e., \\(y = \log_e (1 + x)\\).
 @_inlineable @inline(__always)
 public static func log1p<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Log1p",
     x,
@@ -8363,7 +8363,7 @@ public static func log1p<T: BinaryFloatingPoint>(
 //     of the N input matrices.  Shape is `[N]`.
 @_inlineable @inline(__always)
 public static func logMatrixDeterminant<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> (Tensor<T>, Tensor<T>) {
   return #tfop("LogMatrixDeterminant",
     input,
@@ -8451,8 +8451,8 @@ public static func logUniformCandidateSampler(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func logicalAnd(
-  x: Tensor<Bool>,
-  y: Tensor<Bool>
+  _ x: Tensor<Bool>,
+  _ y: Tensor<Bool>
 ) -> Tensor<Bool> {
   return #tfop("LogicalAnd",
     x,
@@ -8462,7 +8462,7 @@ public static func logicalAnd(
 // Returns the truth value of NOT x element-wise.
 @_inlineable @inline(__always)
 public static func logicalNot(
-  x: Tensor<Bool>
+  _ x: Tensor<Bool>
 ) -> Tensor<Bool> {
   return #tfop("LogicalNot",
     x)
@@ -8474,8 +8474,8 @@ public static func logicalNot(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func logicalOr(
-  x: Tensor<Bool>,
-  y: Tensor<Bool>
+  _ x: Tensor<Bool>,
+  _ y: Tensor<Bool>
 ) -> Tensor<Bool> {
   return #tfop("LogicalOr",
     x,
@@ -8492,7 +8492,7 @@ public static func logicalOr(
 // - Output output: The same tensor as `input`.
 @_inlineable @inline(__always)
 public static func loopCond(
-  input: Tensor<Bool>
+  _ input: Tensor<Bool>
 ) -> Tensor<Bool> {
   return #tfop("LoopCond",
     input)
@@ -8659,8 +8659,8 @@ public static func mapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
 //   - transpose_b: If true, "b" is transposed before multiplication.
 @_inlineable @inline(__always)
 public static func matMul<T: Numeric>(
-  a: Tensor<T>,
-  b: Tensor<T>,
+  _ a: Tensor<T>,
+  _ b: Tensor<T>,
   transposeA: Bool = false,
   transposeB: Bool = false
 ) -> Tensor<T> {
@@ -8724,7 +8724,7 @@ public static func matMul<T: Numeric>(
 // - Output band: Rank `k` tensor of the same shape as input. The extracted banded tensor.
 @_inlineable @inline(__always)
 public static func matrixBandPart<T: AccelerableByTensorFlow, Tindex: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   numLower: Tensor<Tindex>,
   numUpper: Tensor<Tindex>
 ) -> Tensor<T> {
@@ -8747,7 +8747,7 @@ public static func matrixBandPart<T: AccelerableByTensorFlow, Tindex: BinaryInte
 // - Output output: Shape is `[...]`.
 @_inlineable @inline(__always)
 public static func matrixDeterminant<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("MatrixDeterminant",
     input,
@@ -8832,7 +8832,7 @@ public static func matrixDiag<T: AccelerableByTensorFlow>(
 //   `diagonal.shape = input.shape[:-2] + [min(input.shape[-2:])]`.
 @_inlineable @inline(__always)
 public static func matrixDiagPart<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("MatrixDiagPart",
     input,
@@ -8861,7 +8861,7 @@ public static func matrixDiagPart<T: AccelerableByTensorFlow>(
 //   @end_compatibility
 @_inlineable @inline(__always)
 public static func matrixExponential<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("MatrixExponential",
     input,
@@ -8891,7 +8891,7 @@ public static func matrixExponential<T: BinaryFloatingPoint>(
 //   @end_compatibility
 @_inlineable @inline(__always)
 public static func matrixInverse<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
   return #tfop("MatrixInverse",
@@ -8927,7 +8927,7 @@ public static func matrixInverse<T: BinaryFloatingPoint>(
 //   @end_compatibility
 @_inlineable @inline(__always)
 public static func matrixLogarithm<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("MatrixLogarithm",
     input,
@@ -8956,7 +8956,7 @@ public static func matrixLogarithm<T: AccelerableByTensorFlow>(
 // - Output output: Rank `k+1`, with `output.shape = input.shape`.
 @_inlineable @inline(__always)
 public static func matrixSetDiag<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("MatrixSetDiag",
@@ -9122,7 +9122,7 @@ public static func matrixTriangularSolve<T: BinaryFloatingPoint>(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func max<T: Numeric, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
@@ -9152,7 +9152,7 @@ public static func max<T: Numeric, Tidx: BinaryInteger>(
 // - Output output: The max pooled output tensor.
 @_inlineable @inline(__always)
 public static func maxPool<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   ksize: [Int],
   strides: [Int],
   padding: Padding,
@@ -9186,7 +9186,7 @@ public static func maxPool<T: Numeric>(
 // - Output output: The max pooled output tensor.
 @_inlineable @inline(__always)
 public static func maxPool3D<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   ksize: [Int],
   strides: [Int],
   padding: Padding,
@@ -9419,7 +9419,7 @@ public static func maxPoolGradGradV2<T: Numeric>(
 // - Output output: Gradients of gradients w.r.t. the input of `max_pool`.
 @_inlineable @inline(__always)
 public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger, T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   grad: Tensor<T>,
   argmax: Tensor<Targmax>,
   ksize: [Int],
@@ -9494,7 +9494,7 @@ public static func maxPoolGradV2<T: Numeric>(
 // - Output output: Gradients w.r.t. the input of `max_pool`.
 @_inlineable @inline(__always)
 public static func maxPoolGradWithArgmax<Targmax: BinaryInteger, T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   grad: Tensor<T>,
   argmax: Tensor<Targmax>,
   ksize: [Int],
@@ -9531,7 +9531,7 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger, T: Numeric>(
 // - Output output: The max pooled output tensor.
 @_inlineable @inline(__always)
 public static func maxPoolV2<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
@@ -9570,7 +9570,7 @@ public static func maxPoolV2<T: Numeric>(
 //   - argmax: 4-D.  The flattened indices of the max values chosen for each output.
 @_inlineable @inline(__always)
 public static func maxPoolWithArgmax<Targmax: BinaryInteger, T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   ksize: [Int],
   strides: [Int],
   padding: Padding
@@ -9590,8 +9590,8 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger, T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func maximum<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Maximum",
     x,
@@ -9616,7 +9616,7 @@ public static func maximum<T: Numeric>(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func mean<T: Numeric, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
@@ -9706,7 +9706,7 @@ public static func mfcc(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func min<T: Numeric, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
@@ -9724,8 +9724,8 @@ public static func min<T: Numeric, Tidx: BinaryInteger>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func minimum<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Minimum",
     x,
@@ -9775,7 +9775,7 @@ public static func minimum<T: Numeric>(
 // - Output output: The padded tensor.
 @_inlineable @inline(__always)
 public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
   mode: Mode3
 ) -> Tensor<T> {
@@ -9818,7 +9818,7 @@ public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryIntege
 // - Output output: The folded tensor.
 @_inlineable @inline(__always)
 public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
   mode: Mode3
 ) -> Tensor<T> {
@@ -9847,8 +9847,8 @@ public static func mixedStruct(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func mod<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Mod",
     x,
@@ -9862,8 +9862,8 @@ public static func mod<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func mul<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Mul",
     x,
@@ -9903,8 +9903,8 @@ public static func multinomial<T: Numeric, Output_dtype: BinaryInteger>(
 
 @_inlineable @inline(__always)
 public static func nInPolymorphicTwice<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>],
-  b: [Tensor<T>]
+  _ a: [Tensor<T>],
+  _ b: [Tensor<T>]
 ) {
   return #tfop("NInPolymorphicTwice",
     a,
@@ -9914,8 +9914,8 @@ public static func nInPolymorphicTwice<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func nInTwoTypeVariables<S: AccelerableByTensorFlow, T: AccelerableByTensorFlow>(
-  a: [Tensor<S>],
-  b: [Tensor<T>]
+  _ a: [Tensor<S>],
+  _ b: [Tensor<T>]
 ) {
   return #tfop("NInTwoTypeVariables",
     a,
@@ -9926,7 +9926,7 @@ public static func nInTwoTypeVariables<S: AccelerableByTensorFlow, T: Accelerabl
 
 @_inlineable @inline(__always)
 public static func nIntsIn(
-  a: [Tensor<Int32>]
+  _ a: [Tensor<Int32>]
 ) {
   return #tfop("NIntsIn",
     a)
@@ -9950,7 +9950,7 @@ public static func nIntsOutDefault(
 
 @_inlineable @inline(__always)
 public static func nPolymorphicIn<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>]
+  _ a: [Tensor<T>]
 ) {
   return #tfop("NPolymorphicIn",
     a,
@@ -9977,7 +9977,7 @@ public static func nPolymorphicOutDefault<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func nPolymorphicRestrictIn<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>]
+  _ a: [Tensor<T>]
 ) {
   return #tfop("NPolymorphicRestrictIn",
     a,
@@ -9998,7 +9998,7 @@ public static func nPolymorphicRestrictOut<T: AccelerableByTensorFlow>(
 // I.e., \\(y = -x\\).
 @_inlineable @inline(__always)
 public static func neg<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Neg",
     x,
@@ -10160,8 +10160,8 @@ public static func none(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func notEqual<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<Bool> {
   return #tfop("NotEqual",
     x,
@@ -10190,7 +10190,7 @@ public static func notEqual<T: AccelerableByTensorFlow>(
 // - Output values: The `n`-th order statistic along each last dimensional slice.
 @_inlineable @inline(__always)
 public static func nthElement<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   n: Tensor<Int32>,
   reverse: Bool = false
 ) -> Tensor<T> {
@@ -10332,7 +10332,7 @@ public static func oneHot<T: AccelerableByTensorFlow, Ti: BinaryInteger>(
 // - Output y: a tensor of the same shape and type as x but filled with ones.
 @_inlineable @inline(__always)
 public static func onesLike<T: AccelerableByTensorFlow>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("OnesLike",
     x,
@@ -10587,7 +10587,7 @@ public static func pack<T: AccelerableByTensorFlow>(
 //
 @_inlineable @inline(__always)
 public static func pad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
   return #tfop("Pad",
@@ -10625,7 +10625,7 @@ public static func pad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
 // ```
 @_inlineable @inline(__always)
 public static func padV2<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
   constantValues: Tensor<T>
 ) -> Tensor<T> {
@@ -10765,8 +10765,8 @@ public static func parameterizedTruncatedNormal<Dtype: BinaryFloatingPoint, T: B
 // where \\(\psi(x)\\) is the digamma function.
 @_inlineable @inline(__always)
 public static func polygamma<T: BinaryFloatingPoint>(
-  a: Tensor<T>,
-  x: Tensor<T>
+  _ a: Tensor<T>,
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Polygamma",
     a,
@@ -10776,7 +10776,7 @@ public static func polygamma<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func polymorphic<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Polymorphic",
     a,
@@ -10807,7 +10807,7 @@ public static func polymorphicOut<T: AccelerableByTensorFlow>(
 // 8- or 16-bit inputs and then aggregate the resulting counts.
 @_inlineable @inline(__always)
 public static func populationCount<T: BinaryInteger>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<UInt8> {
   return #tfop("PopulationCount",
     x,
@@ -10826,8 +10826,8 @@ public static func populationCount<T: BinaryInteger>(
 // ```
 @_inlineable @inline(__always)
 public static func pow<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Pow",
     x,
@@ -10853,7 +10853,7 @@ public static func pow<T: Numeric>(
 // - Output output: the same input tensor.
 @_inlineable @inline(__always)
 public static func preventGradient<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   message: String
 ) -> Tensor<T> {
   return #tfop("PreventGradient",
@@ -10878,7 +10878,7 @@ public static func preventGradient<T: AccelerableByTensorFlow>(
 // - Output output: = The unmodified `input` tensor
 @_inlineable @inline(__always)
 public static func print<T: AccelerableByTensorFlow, U: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   data: [Tensor<U>],
   message: String,
   firstN: Int = -1,
@@ -10910,7 +10910,7 @@ public static func print<T: AccelerableByTensorFlow, U: AccelerableByTensorFlow>
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func prod<T: Numeric, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
@@ -10938,7 +10938,7 @@ public static func prod<T: Numeric, Tidx: BinaryInteger>(
 // - Output output: The outputs from the Op.
 @_inlineable @inline(__always)
 public static func pyFunc<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  input: [Tensor<Tin>],
+  _ input: [Tensor<Tin>],
   token: String
 ) -> [Tensor<Tout>] {
   return #tfop("PyFunc",
@@ -10949,7 +10949,7 @@ public static func pyFunc<Tin: AccelerableByTensorFlow, Tout: AccelerableByTenso
 // A stateless version of PyFunc.
 @_inlineable @inline(__always)
 public static func pyFuncStateless<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  input: [Tensor<Tin>],
+  _ input: [Tensor<Tin>],
   token: String
 ) -> [Tensor<Tout>] {
   return #tfop("PyFuncStateless",
@@ -10984,7 +10984,7 @@ public static func pyFuncStateless<Tin: AccelerableByTensorFlow, Tout: Accelerab
 //     `[..., P, N]`. If `full_matrices` is `True` then shape is `[..., M, N]`.
 @_inlineable @inline(__always)
 public static func qr<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   fullMatrices: Bool = false
 ) -> (Tensor<T>, Tensor<T>) {
   return #tfop("Qr",
@@ -10996,7 +10996,7 @@ public static func qr<T: BinaryFloatingPoint>(
 // Use QuantizeAndDequantizeV2 instead.
 @_inlineable @inline(__always)
 public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   signedInput: Bool = true,
   numBits: Int = 8,
   rangeGiven: Bool = false,
@@ -11081,7 +11081,7 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
 //   - range_given: Whether the range is given or should be determined from the `input` tensor.
 @_inlineable @inline(__always)
 public static func quantizeAndDequantizeV2<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   inputMin: Tensor<T>,
   inputMax: Tensor<T>,
   signedInput: Bool = true,
@@ -11104,7 +11104,7 @@ public static func quantizeAndDequantizeV2<T: BinaryFloatingPoint>(
 // tensor, so its value can change during training.
 @_inlineable @inline(__always)
 public static func quantizeAndDequantizeV3<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   inputMin: Tensor<T>,
   inputMax: Tensor<T>,
   numBits: Tensor<Int32>,
@@ -11159,7 +11159,7 @@ public static func quantizeAndDequantizeV3<T: BinaryFloatingPoint>(
 //   - output_max: The float value that the maximum quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
-  input: Tensor<Tinput>,
+  _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
 ) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
@@ -11282,7 +11282,7 @@ public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, O
 //   - output_max: The actual maximum scalar value used for the output.
 @_inlineable @inline(__always)
 public static func quantizeV2<T: AccelerableByTensorFlow>(
-  input: Tensor<Float>,
+  _ input: Tensor<Float>,
   minRange: Tensor<Float>,
   maxRange: Tensor<Float>,
   mode: Mode = .minCombined,
@@ -11313,8 +11313,8 @@ public static func quantizeV2<T: AccelerableByTensorFlow>(
 //     broadcasting [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func quantizedAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, Toutput: AccelerableByTensorFlow>(
-  x: Tensor<T1>,
-  y: Tensor<T2>,
+  _ x: Tensor<T1>,
+  _ y: Tensor<T2>,
   minX: Tensor<Float>,
   maxX: Tensor<Float>,
   minY: Tensor<Float>,
@@ -11351,7 +11351,7 @@ public static func quantizedAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTe
 //   - max_output: The float value that the highest quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizedAvgPool<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   minInput: Tensor<Float>,
   maxInput: Tensor<Float>,
   ksize: [Int],
@@ -11459,7 +11459,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
 //   - max_out: The float value that the highest quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
-  input: Tensor<T1>,
+  _ input: Tensor<T1>,
   bias: Tensor<T2>,
   minInput: Tensor<Float>,
   maxInput: Tensor<Float>,
@@ -11538,7 +11538,7 @@ public static func quantizedConcat<T: AccelerableByTensorFlow>(
 //   - max_output: The float value that the highest quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
-  input: Tensor<Tinput>,
+  _ input: Tensor<Tinput>,
   filter: Tensor<Tfilter>,
   minInput: Tensor<Float>,
   maxInput: Tensor<Float>,
@@ -11585,7 +11585,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
 //   - y_max: The value represented by the highest quantized output.
 @_inlineable @inline(__always)
 public static func quantizedInstanceNorm<T: AccelerableByTensorFlow>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   xMin: Tensor<Float>,
   xMax: Tensor<Float>,
   outputRangeGiven: Bool = false,
@@ -11632,8 +11632,8 @@ public static func quantizedInstanceNorm<T: AccelerableByTensorFlow>(
 //   - max_out: The float value that the highest quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizedMatMul<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, Toutput: AccelerableByTensorFlow, Tactivation: AccelerableByTensorFlow>(
-  a: Tensor<T1>,
-  b: Tensor<T2>,
+  _ a: Tensor<T1>,
+  _ b: Tensor<T2>,
   minA: Tensor<Float>,
   maxA: Tensor<Float>,
   minB: Tensor<Float>,
@@ -11676,7 +11676,7 @@ public static func quantizedMatMul<T1: AccelerableByTensorFlow, T2: AccelerableB
 //   - max_output: The float value that the highest quantized output value represents.
 @_inlineable @inline(__always)
 public static func quantizedMaxPool<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   minInput: Tensor<Float>,
   maxInput: Tensor<Float>,
   ksize: [Int],
@@ -11709,8 +11709,8 @@ public static func quantizedMaxPool<T: AccelerableByTensorFlow>(
 //     broadcasting [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func quantizedMul<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, Toutput: AccelerableByTensorFlow>(
-  x: Tensor<T1>,
-  y: Tensor<T2>,
+  _ x: Tensor<T1>,
+  _ y: Tensor<T2>,
   minX: Tensor<Float>,
   maxX: Tensor<Float>,
   minY: Tensor<Float>,
@@ -12198,7 +12198,7 @@ public static func range<Tidx: Numeric>(
 // of the tensor. Rank is also known as "order", "degree", or "ndims."
 @_inlineable @inline(__always)
 public static func rank<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Int32> {
   return #tfop("Rank",
     input,
@@ -12220,7 +12220,7 @@ public static func rank<T: AccelerableByTensorFlow>(
 // ```
 @_inlineable @inline(__always)
 public static func real<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Tout> {
   return #tfop("Real",
     input,
@@ -12236,8 +12236,8 @@ public static func real<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func realDiv<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("RealDiv",
     x,
@@ -12250,7 +12250,7 @@ public static func realDiv<T: Numeric>(
 // I.e., \\(y = 1 / x\\).
 @_inlineable @inline(__always)
 public static func reciprocal<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Reciprocal",
     x,
@@ -12263,7 +12263,7 @@ public static func reciprocal<T: Numeric>(
 // is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func reciprocalGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("ReciprocalGrad",
@@ -12321,7 +12321,7 @@ public static func refExit<T: AccelerableByTensorFlow>(
 // Return the same ref tensor as the input ref tensor.
 @_inlineable @inline(__always)
 public static func refIdentity<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("RefIdentity",
     input,
@@ -12330,7 +12330,7 @@ public static func refIdentity<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func refIn<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) {
   return #tfop("RefIn",
     a,
@@ -12339,8 +12339,8 @@ public static func refIn<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func refInputFloatInput(
-  a: Tensor<Float>,
-  b: Tensor<Float>
+  _ a: Tensor<Float>,
+  _ b: Tensor<Float>
 ) {
   return #tfop("RefInputFloatInput",
     a,
@@ -12349,8 +12349,8 @@ public static func refInputFloatInput(
 
 @_inlineable @inline(__always)
 public static func refInputFloatInputIntOutput(
-  a: Tensor<Float>,
-  b: Tensor<Float>
+  _ a: Tensor<Float>,
+  _ b: Tensor<Float>
 ) -> Tensor<Int32> {
   return #tfop("RefInputFloatInputIntOutput",
     a,
@@ -12359,8 +12359,8 @@ public static func refInputFloatInputIntOutput(
 
 @_inlineable @inline(__always)
 public static func refInputIntInput(
-  a: Tensor<Int32>,
-  b: Tensor<Int32>
+  _ a: Tensor<Int32>,
+  _ b: Tensor<Int32>
 ) {
   return #tfop("RefInputIntInput",
     a,
@@ -12567,7 +12567,7 @@ public static func remoteFusedGraphExecute<Tinputs: AccelerableByTensorFlow, Tou
 //   - output_max: the computed max output.
 @_inlineable @inline(__always)
 public static func requantizationRange<Tinput: AccelerableByTensorFlow>(
-  input: Tensor<Tinput>,
+  _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
 ) -> (Tensor<Float>, Tensor<Float>) {
@@ -12602,7 +12602,7 @@ public static func requantizationRange<Tinput: AccelerableByTensorFlow>(
 //   - output_max: The requested_output_max value is copied into this output.
 @_inlineable @inline(__always)
 public static func requantize<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
-  input: Tensor<Tinput>,
+  _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>,
   requestedOutputMin: Tensor<Float>,
@@ -12634,7 +12634,7 @@ public static func reservedAttr(
 
 @_inlineable @inline(__always)
 public static func reservedInput(
-  input: Tensor<Int32>
+  _ input: Tensor<Int32>
 ) {
   return #tfop("ReservedInput",
     input)
@@ -12907,7 +12907,7 @@ public static func resizeNearestNeighborGrad<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func restrict<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Restrict",
     a,
@@ -13046,7 +13046,7 @@ public static func reverse<T: AccelerableByTensorFlow>(
 // - Output output: The partially reversed input. It has the same shape as `input`.
 @_inlineable @inline(__always)
 public static func reverseSequence<T: AccelerableByTensorFlow, Tlen: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   seqLengths: Tensor<Tlen>,
   seqDim: Int,
   batchDim: Int = 0
@@ -13136,8 +13136,8 @@ public static func reverseV2<Tidx: BinaryInteger, T: AccelerableByTensorFlow>(
 // the result is implementation defined.
 @_inlineable @inline(__always)
 public static func rightShift<T: BinaryInteger>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("RightShift",
     x,
@@ -13158,7 +13158,7 @@ public static func rightShift<T: BinaryInteger>(
 // ```
 @_inlineable @inline(__always)
 public static func rint<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Rint",
     x,
@@ -13203,7 +13203,7 @@ public static func rint<T: BinaryFloatingPoint>(
 //   dimensions of `axis`.
 @_inlineable @inline(__always)
 public static func roll<T: AccelerableByTensorFlow, Tshift: BinaryInteger, Taxis: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   shift: Tensor<Tshift>,
   axis: Tensor<Taxis>
 ) -> Tensor<T> {
@@ -13222,7 +13222,7 @@ public static func roll<T: AccelerableByTensorFlow, Tshift: BinaryInteger, Taxis
 // according to the current system rounding mode use std::cint.
 @_inlineable @inline(__always)
 public static func round<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Round",
     x,
@@ -13234,7 +13234,7 @@ public static func round<T: Numeric>(
 // I.e., \\(y = 1 / \sqrt{x}\\).
 @_inlineable @inline(__always)
 public static func rsqrt<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Rsqrt",
     x,
@@ -13247,7 +13247,7 @@ public static func rsqrt<T: BinaryFloatingPoint>(
 // is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func rsqrtGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("RsqrtGrad",
@@ -13915,7 +13915,7 @@ public static func scatterNdAdd<T: Numeric, Tindices: BinaryInteger>(
 //   updated with `updates`.
 @_inlineable @inline(__always)
 public static func scatterNdNonAliasingAdd<T: Numeric, Tindices: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   indices: Tensor<Tindices>,
   updates: Tensor<T>
 ) -> Tensor<T> {
@@ -14519,7 +14519,7 @@ public static func select<T: AccelerableByTensorFlow>(
 // - Output output: Shape is `[..., M+1, M]`.
 @_inlineable @inline(__always)
 public static func selfAdjointEig<T: BinaryFloatingPoint>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("SelfAdjointEig",
     input,
@@ -14550,7 +14550,7 @@ public static func selfAdjointEig<T: BinaryFloatingPoint>(
 //   - v: Eigenvectors. Shape is `[N, N]`.
 @_inlineable @inline(__always)
 public static func selfAdjointEigV2<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   computeV: Bool = true
 ) -> (Tensor<T>, Tensor<T>) {
   return #tfop("SelfAdjointEigV2",
@@ -14690,7 +14690,7 @@ public static func setSize<T: BinaryInteger>(
 // ```
 @_inlineable @inline(__always)
 public static func shape<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Out_type> {
   return #tfop("Shape",
     input,
@@ -14703,7 +14703,7 @@ public static func shape<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
 // This operation returns N 1-D integer tensors representing shape of `input[i]s`.
 @_inlineable @inline(__always)
 public static func shapeN<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
-  input: [Tensor<T>]
+  _ input: [Tensor<T>]
 ) -> [Tensor<Out_type>] {
   return #tfop("ShapeN",
     input,
@@ -14716,7 +14716,7 @@ public static func shapeN<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
 // Specifically, `y = 1 / (1 + exp(-x))`.
 @_inlineable @inline(__always)
 public static func sigmoid<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sigmoid",
     x,
@@ -14729,7 +14729,7 @@ public static func sigmoid<T: BinaryFloatingPoint>(
 // `dy` is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func sigmoidGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("SigmoidGrad",
@@ -14745,7 +14745,7 @@ public static func sigmoidGrad<T: BinaryFloatingPoint>(
 // For complex numbers, `y = sign(x) = x / |x|` if `x != 0`, otherwise `y = 0`.
 @_inlineable @inline(__always)
 public static func sign<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sign",
     x,
@@ -14754,7 +14754,7 @@ public static func sign<T: Numeric>(
 
 @_inlineable @inline(__always)
 public static func simple(
-  a: Tensor<Int32>
+  _ a: Tensor<Int32>
 ) -> Tensor<Float> {
   return #tfop("Simple",
     a)
@@ -14771,7 +14771,7 @@ public static func simpleStruct(
 // Computes sin of x element-wise.
 @_inlineable @inline(__always)
 public static func sin<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sin",
     x,
@@ -14781,7 +14781,7 @@ public static func sin<T: BinaryFloatingPoint>(
 // Computes hyperbolic sine of x element-wise.
 @_inlineable @inline(__always)
 public static func sinh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sinh",
     x,
@@ -14801,7 +14801,7 @@ public static func sinh<T: BinaryFloatingPoint>(
 // ```
 @_inlineable @inline(__always)
 public static func size<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Out_type> {
   return #tfop("Size",
     input,
@@ -14827,7 +14827,7 @@ public static func size<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
 //     size[i] = input.dim_size(i) - begin[i]).
 @_inlineable @inline(__always)
 public static func slice<T: AccelerableByTensorFlow, Index: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   begin: Tensor<Index>,
   size: Tensor<Index>
 ) -> Tensor<T> {
@@ -14842,7 +14842,7 @@ public static func slice<T: AccelerableByTensorFlow, Index: BinaryInteger>(
 // Returns a copy of the input tensor.
 @_inlineable @inline(__always)
 public static func snapshot<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Snapshot",
     input,
@@ -15046,7 +15046,7 @@ public static func softsignGrad<T: Numeric>(
 //     regular convolution.
 @_inlineable @inline(__always)
 public static func spaceToBatch<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
   blockSize: Int
 ) -> Tensor<T> {
@@ -15183,7 +15183,7 @@ public static func spaceToBatch<T: AccelerableByTensorFlow, Tpaddings: BinaryInt
 //     regular convolution.
 @_inlineable @inline(__always)
 public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: BinaryInteger, Tpaddings: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   blockShape: Tensor<Tblock_shape>,
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
@@ -15285,7 +15285,7 @@ public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: Bina
 // - Attr block_size: The size of the spatial block.
 @_inlineable @inline(__always)
 public static func spaceToDepth<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   blockSize: Int,
   dataFormat: DataFormat2 = .nhwc
 ) -> Tensor<T> {
@@ -16221,8 +16221,8 @@ public static func sparseFillEmptyRowsGrad<T: AccelerableByTensorFlow>(
 // in the input gradient when that gradient comes from a Relu.
 @_inlineable @inline(__always)
 public static func sparseMatMul<Ta: BinaryFloatingPoint, Tb: BinaryFloatingPoint>(
-  a: Tensor<Ta>,
-  b: Tensor<Tb>,
+  _ a: Tensor<Ta>,
+  _ b: Tensor<Tb>,
   transposeA: Bool = false,
   transposeB: Bool = false,
   aIsSparse: Bool = false,
@@ -17009,7 +17009,7 @@ public static func sparseTensorDenseAdd<T: Numeric, Tindices: BinaryInteger>(
   aIndices: Tensor<Tindices>,
   aValues: Tensor<T>,
   aShape: Tensor<Tindices>,
-  b: Tensor<T>
+  _ b: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("SparseTensorDenseAdd",
     aIndices,
@@ -17048,7 +17048,7 @@ public static func sparseTensorDenseMatMul<T: AccelerableByTensorFlow, Tindices:
   aIndices: Tensor<Tindices>,
   aValues: Tensor<T>,
   aShape: Tensor<Int64>,
-  b: Tensor<T>,
+  _ b: Tensor<T>,
   adjointA: Bool = false,
   adjointB: Bool = false
 ) -> Tensor<T> {
@@ -17247,7 +17247,7 @@ public static func splitV<T: AccelerableByTensorFlow, Tlen: BinaryInteger>(
 // I.e., \\(y = \sqrt{x} = x^{1/2}\\).
 @_inlineable @inline(__always)
 public static func sqrt<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sqrt",
     x,
@@ -17260,7 +17260,7 @@ public static func sqrt<T: BinaryFloatingPoint>(
 // is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func sqrtGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("SqrtGrad",
@@ -17274,7 +17274,7 @@ public static func sqrtGrad<T: BinaryFloatingPoint>(
 // I.e., \\(y = x * x = x^2\\).
 @_inlineable @inline(__always)
 public static func square<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Square",
     x,
@@ -17287,8 +17287,8 @@ public static func square<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func squaredDifference<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("SquaredDifference",
     x,
@@ -17327,7 +17327,7 @@ public static func squaredDifference<T: Numeric>(
 //   size 1 removed.
 @_inlineable @inline(__always)
 public static func squeeze<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   squeezeDims: [Int]
 ) -> Tensor<T> {
   return #tfop("Squeeze",
@@ -17525,7 +17525,7 @@ public static func statelessTruncatedNormal<Dtype: BinaryFloatingPoint, T: Binar
 //    example generation process.
 @_inlineable @inline(__always)
 public static func stopGradient<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("StopGradient",
     input,
@@ -17661,7 +17661,7 @@ public static func stopGradient<T: AccelerableByTensorFlow>(
 //     `shrink_axis_mask` being 2.
 @_inlineable @inline(__always)
 public static func stridedSlice<T: AccelerableByTensorFlow, Index: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   begin: Tensor<Index>,
   end: Tensor<Index>,
   strides: Tensor<Index>,
@@ -17761,8 +17761,8 @@ public static func stridedSliceGrad<T: AccelerableByTensorFlow, Index: BinaryInt
 
 @_inlineable @inline(__always)
 public static func stringListAttr(
-  a: [String],
-  b: String
+  _ a: [String],
+  _ b: String
 ) {
   return #tfop("StringListAttr",
     a: a,
@@ -17775,8 +17775,8 @@ public static func stringListAttr(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func sub<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Sub",
     x,
@@ -17801,7 +17801,7 @@ public static func sub<T: Numeric>(
 // - Output output: The reduced tensor.
 @_inlineable @inline(__always)
 public static func sum<T: Numeric, Tidx: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
@@ -17848,7 +17848,7 @@ public static func sum<T: Numeric, Tidx: BinaryInteger>(
 //     Undefined if `compute_uv` is false.
 @_inlineable @inline(__always)
 public static func svd<T: BinaryFloatingPoint>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   computeUv: Bool = true,
   fullMatrices: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<T>) {
@@ -17966,7 +17966,7 @@ public static func takeManySparseFromTensorsMap<Dtype: AccelerableByTensorFlow>(
 // Computes tan of x element-wise.
 @_inlineable @inline(__always)
 public static func tan<T: Numeric>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Tan",
     x,
@@ -17976,7 +17976,7 @@ public static func tan<T: Numeric>(
 // Computes hyperbolic tangent of `x` element-wise.
 @_inlineable @inline(__always)
 public static func tanh<T: BinaryFloatingPoint>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Tanh",
     x,
@@ -17989,7 +17989,7 @@ public static func tanh<T: BinaryFloatingPoint>(
 // is the corresponding input gradient.
 @_inlineable @inline(__always)
 public static func tanhGrad<T: BinaryFloatingPoint>(
-  y: Tensor<T>,
+  _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("TanhGrad",
@@ -18075,7 +18075,7 @@ public static func threadUnsafeUnigramCandidateSampler(
 //   - multiples: 1-D. Length must be the same as the number of dimensions in `input`
 @_inlineable @inline(__always)
 public static func tile<T: AccelerableByTensorFlow, Tmultiples: BinaryInteger>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   multiples: Tensor<Tmultiples>
 ) -> Tensor<T> {
   return #tfop("Tile",
@@ -18092,7 +18092,7 @@ public static func tile<T: AccelerableByTensorFlow, Tmultiples: BinaryInteger>(
 // each repeated tile of `input` into `output`.
 @_inlineable @inline(__always)
 public static func tileGrad<T: AccelerableByTensorFlow>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   multiples: Tensor<Int32>
 ) -> Tensor<T> {
   return #tfop("TileGrad",
@@ -18141,7 +18141,7 @@ public static func timestamp(
 //   - indices: The indices of `values` within the last dimension of `input`.
 @_inlineable @inline(__always)
 public static func topK<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   k: Int,
   sorted: Bool = true
 ) -> (Tensor<T>, Tensor<Int32>) {
@@ -18178,7 +18178,7 @@ public static func topK<T: Numeric>(
 //   - indices: The indices of `values` within the last dimension of `input`.
 @_inlineable @inline(__always)
 public static func topKV2<T: Numeric>(
-  input: Tensor<T>,
+  _ input: Tensor<T>,
   k: Tensor<Int32>,
   sorted: Bool = true
 ) -> (Tensor<T>, Tensor<Int32>) {
@@ -18195,7 +18195,7 @@ public static func topKV2<T: Numeric>(
 //   `y.shape[i] == x.shape[perm[i]] for i in [0, 1, ..., rank(x) - 1]`
 @_inlineable @inline(__always)
 public static func transpose<T: AccelerableByTensorFlow, Tperm: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
   return #tfop("Transpose",
@@ -18216,8 +18216,8 @@ public static func transpose<T: AccelerableByTensorFlow, Tperm: BinaryInteger>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func truncateDiv<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("TruncateDiv",
     x,
@@ -18234,8 +18234,8 @@ public static func truncateDiv<T: Numeric>(
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
 public static func truncateMod<T: Numeric>(
-  x: Tensor<T>,
-  y: Tensor<T>
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("TruncateMod",
     x,
@@ -18276,8 +18276,8 @@ public static func truncatedNormal<Dtype: BinaryFloatingPoint, T: BinaryInteger>
 
 @_inlineable @inline(__always)
 public static func twoFloatInputs(
-  a: Tensor<Float>,
-  b: Tensor<Float>
+  _ a: Tensor<Float>,
+  _ b: Tensor<Float>
 ) {
   return #tfop("TwoFloatInputs",
     a,
@@ -18286,8 +18286,8 @@ public static func twoFloatInputs(
 
 @_inlineable @inline(__always)
 public static func twoFloatInputsFloatOutput(
-  a: Tensor<Float>,
-  b: Tensor<Float>
+  _ a: Tensor<Float>,
+  _ b: Tensor<Float>
 ) -> Tensor<Float> {
   return #tfop("TwoFloatInputsFloatOutput",
     a,
@@ -18296,8 +18296,8 @@ public static func twoFloatInputsFloatOutput(
 
 @_inlineable @inline(__always)
 public static func twoFloatInputsIntOutput(
-  a: Tensor<Float>,
-  b: Tensor<Float>
+  _ a: Tensor<Float>,
+  _ b: Tensor<Float>
 ) -> Tensor<Int32> {
   return #tfop("TwoFloatInputsIntOutput",
     a,
@@ -18312,8 +18312,8 @@ public static func twoFloatOutputs(
 
 @_inlineable @inline(__always)
 public static func twoIntInputs(
-  a: Tensor<Int32>,
-  b: Tensor<Int32>
+  _ a: Tensor<Int32>,
+  _ b: Tensor<Int32>
 ) {
   return #tfop("TwoIntInputs",
     a,
@@ -18328,8 +18328,8 @@ public static func twoIntOutputs(
 
 @_inlineable @inline(__always)
 public static func twoRefsIn<T: AccelerableByTensorFlow>(
-  a: Tensor<T>,
-  b: Tensor<T>
+  _ a: Tensor<T>,
+  _ b: Tensor<T>
 ) {
   return #tfop("TwoRefsIn",
     a,
@@ -18339,7 +18339,7 @@ public static func twoRefsIn<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func typeList<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>]
+  _ a: [Tensor<T>]
 ) {
   return #tfop("TypeList",
     a)
@@ -18347,7 +18347,7 @@ public static func typeList<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func typeListRestrict<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>]
+  _ a: [Tensor<T>]
 ) {
   return #tfop("TypeListRestrict",
     a)
@@ -18355,8 +18355,8 @@ public static func typeListRestrict<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func typeListTwice<T: AccelerableByTensorFlow>(
-  a: [Tensor<T>],
-  b: [Tensor<T>]
+  _ a: [Tensor<T>],
+  _ b: [Tensor<T>]
 ) {
   return #tfop("TypeListTwice",
     a,
@@ -18365,7 +18365,7 @@ public static func typeListTwice<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func unary<T: AccelerableByTensorFlow>(
-  a: Tensor<T>
+  _ a: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Unary",
     a,
@@ -18528,7 +18528,7 @@ public static func uniformCandidateSampler(
 //   - idx: 1-D.
 @_inlineable @inline(__always)
 public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> (Tensor<T>, Tensor<Out_idx>) {
   return #tfop("Unique",
     x,
@@ -18593,7 +18593,7 @@ public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
 //     value of x in the output y.
 @_inlineable @inline(__always)
 public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   axis: Tensor<Taxis>
 ) -> (Tensor<T>, Tensor<Out_idx>) {
   return #tfop("UniqueV2",
@@ -18632,7 +18632,7 @@ public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Ou
 //   - count: 1-D.
 @_inlineable @inline(__always)
 public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> (Tensor<T>, Tensor<Out_idx>, Tensor<Out_idx>) {
   return #tfop("UniqueWithCounts",
     x,
@@ -18702,7 +18702,7 @@ public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryI
 //   - count: A 1-D Tensor. The count of each value of x in the output y.
 @_inlineable @inline(__always)
 public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   axis: Tensor<Taxis>
 ) -> (Tensor<T>, Tensor<Out_idx>, Tensor<Out_idx>) {
   return #tfop("UniqueWithCountsV2",
@@ -19007,7 +19007,7 @@ public static func unstage<Dtypes: AccelerableByTensorFlow>(
 // ```
 @_inlineable @inline(__always)
 public static func where_<T: AccelerableByTensorFlow>(
-  input: Tensor<T>
+  _ input: Tensor<T>
 ) -> Tensor<Int64> {
   return #tfop("Where",
     input,
@@ -19021,7 +19021,7 @@ public static func where_<T: AccelerableByTensorFlow>(
 // - Output y: a tensor of the same shape and type as x but filled with zeros.
 @_inlineable @inline(__always)
 public static func zerosLike<T: AccelerableByTensorFlow>(
-  x: Tensor<T>
+  _ x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("ZerosLike",
     x,
@@ -19036,7 +19036,7 @@ public static func zerosLike<T: AccelerableByTensorFlow>(
 // \\(\zeta(x, q) = \sum_{n=0}^{\infty} (q + n)^{-x}\\)
 @_inlineable @inline(__always)
 public static func zeta<T: BinaryFloatingPoint>(
-  x: Tensor<T>,
+  _ x: Tensor<T>,
   q: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Zeta",

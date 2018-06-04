@@ -3124,7 +3124,7 @@ public static func collectiveReduce<T: Numeric>(
 //
 // - Output output: The bitpacked comparisons.
 @_inlineable @inline(__always)
-public static func compareAndBitpack<T: Numeric>(
+public static func compareAndBitpack<T: AccelerableByTensorFlow>(
   input: Tensor<T>,
   threshold: Tensor<T>
 ) -> Tensor<UInt8> {
@@ -5764,7 +5764,7 @@ public static func enter<T: AccelerableByTensorFlow>(
 // *NOTE*: `Equal` supports broadcasting. More about broadcasting
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
-public static func equal<T: Numeric>(
+public static func equal<T: AccelerableByTensorFlow>(
   x: Tensor<T>,
   y: Tensor<T>
 ) -> Tensor<Bool> {
@@ -9976,7 +9976,7 @@ public static func nPolymorphicOutDefault<T: AccelerableByTensorFlow>(
 }
 
 @_inlineable @inline(__always)
-public static func nPolymorphicRestrictIn<T: Numeric>(
+public static func nPolymorphicRestrictIn<T: AccelerableByTensorFlow>(
   a: [Tensor<T>]
 ) {
   return #tfop("NPolymorphicRestrictIn",
@@ -9985,7 +9985,7 @@ public static func nPolymorphicRestrictIn<T: Numeric>(
 }
 
 @_inlineable @inline(__always)
-public static func nPolymorphicRestrictOut<T: Numeric>(
+public static func nPolymorphicRestrictOut<T: AccelerableByTensorFlow>(
   n: Int
 ) -> [Tensor<T>] {
   return #tfop("NPolymorphicRestrictOut",
@@ -10159,7 +10159,7 @@ public static func none(
 // *NOTE*: `NotEqual` supports broadcasting. More about broadcasting
 // [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 @_inlineable @inline(__always)
-public static func notEqual<T: Numeric>(
+public static func notEqual<T: AccelerableByTensorFlow>(
   x: Tensor<T>,
   y: Tensor<T>
 ) -> Tensor<Bool> {
@@ -10331,7 +10331,7 @@ public static func oneHot<T: AccelerableByTensorFlow, Ti: BinaryInteger>(
 //
 // - Output y: a tensor of the same shape and type as x but filled with ones.
 @_inlineable @inline(__always)
-public static func onesLike<T: Numeric>(
+public static func onesLike<T: AccelerableByTensorFlow>(
   x: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("OnesLike",
@@ -10516,7 +10516,7 @@ public static func outTypeList<T: AccelerableByTensorFlow>(
 }
 
 @_inlineable @inline(__always)
-public static func outTypeListRestrict<T: Numeric>(
+public static func outTypeListRestrict<T: AccelerableByTensorFlow>(
 ) -> [Tensor<T>] {
   return #tfop("OutTypeListRestrict")
 }
@@ -12906,7 +12906,7 @@ public static func resizeNearestNeighborGrad<T: Numeric>(
 }
 
 @_inlineable @inline(__always)
-public static func restrict<T: Numeric>(
+public static func restrict<T: AccelerableByTensorFlow>(
   a: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Restrict",
@@ -12967,7 +12967,7 @@ public static func restrict<T: Numeric>(
 //
 // - Output output: The same shape as `tensor`.
 @_inlineable @inline(__always)
-public static func reverse<T: Numeric>(
+public static func reverse<T: AccelerableByTensorFlow>(
   tensor: Tensor<T>,
   dims: Tensor<Bool>
 ) -> Tensor<T> {
@@ -13116,7 +13116,7 @@ public static func reverseSequence<T: AccelerableByTensorFlow, Tlen: BinaryInteg
 //
 // - Output output: The same shape as `tensor`.
 @_inlineable @inline(__always)
-public static func reverseV2<Tidx: BinaryInteger, T: Numeric>(
+public static func reverseV2<Tidx: BinaryInteger, T: AccelerableByTensorFlow>(
   tensor: Tensor<T>,
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
@@ -18346,7 +18346,7 @@ public static func typeList<T: AccelerableByTensorFlow>(
 }
 
 @_inlineable @inline(__always)
-public static func typeListRestrict<T: Numeric>(
+public static func typeListRestrict<T: AccelerableByTensorFlow>(
   a: [Tensor<T>]
 ) {
   return #tfop("TypeListRestrict",
@@ -19006,7 +19006,7 @@ public static func unstage<Dtypes: AccelerableByTensorFlow>(
 //                   [2, 1, 1]]
 // ```
 @_inlineable @inline(__always)
-public static func where_<T: Numeric>(
+public static func where_<T: AccelerableByTensorFlow>(
   input: Tensor<T>
 ) -> Tensor<Int64> {
   return #tfop("Where",

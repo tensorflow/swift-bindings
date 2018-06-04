@@ -259,7 +259,7 @@ class Types(object):
     self.attr_def_name = attr_def.name
     allowed_types = set(attr_def.allowed_values.list.type)
     allowed_types &= set(_SWIFTIFIED_TYPES.keys())
-    self._protocol_name = 'Numeric'
+    self._protocol_name = 'AccelerableByTensorFlow'
     for handled_types, protocol_name in _TYPE_PROTOCOLS:
       if allowed_types.issubset(handled_types):
         self._protocol_name = protocol_name

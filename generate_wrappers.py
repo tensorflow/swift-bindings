@@ -277,6 +277,12 @@ class Types(object):
     return self.attr_def_name + ': ' + self.swift_name + '.self'
 
 
+def swift_float(f):
+  if f == float('inf'): return 'Double.infinity'
+  if f == float('-inf'): return '-Double.infinity'
+  return '%g' % f
+
+
 def swift_default_value(attr_value, use_enum):
   """Converts the default value for an attr to a swift value."""
   if attr_value.HasField('b'):
@@ -284,12 +290,18 @@ def swift_default_value(attr_value, use_enum):
   if attr_value.HasField('i'):
     return str(attr_value.i)
   if attr_value.HasField('f'):
-    if attr_value.f == float('inf'): return 'Double.infinity'
-    if attr_value.f == float('-inf'): return '-Double.infinity'
-    return '%g' % attr_value.f
+    return swift_float(attr_value.f)
   if attr_value.HasField('s') and attr_value.s:
     s = str(attr_value.s)
     return '.' + swiftified_name_for_enums(s) if use_enum else '"' + s + '"'
+  if attr_value.HasField('list'):
+    if attr_value.list.i:
+      default_values = [str(s) for s in attr_value.list.i]
+      return '[' + ', '.join(default_values) + ']'
+    if attr_value.list.f:
+      default_values = [swift_float(s) for s in attr_value.list.f]
+      return '[' + ', '.join(default_values) + ']'
+    return None
   return None
 
 

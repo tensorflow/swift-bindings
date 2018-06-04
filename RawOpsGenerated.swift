@@ -1452,7 +1452,7 @@ public static func attrFloat(
 
 @_inlineable @inline(__always)
 public static func attrListDefault(
-  _ a: [Int32]
+  _ a: [Int32] = [5, 15]
 ) {
   return #tfop("AttrListDefault",
     a: a)
@@ -3414,7 +3414,7 @@ public static func conv2D<T: BinaryFloatingPoint>(
   useCudnnOnGpu: Bool = true,
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv2D",
     input,
@@ -3465,7 +3465,7 @@ public static func conv2DBackpropFilter<T: BinaryFloatingPoint>(
   useCudnnOnGpu: Bool = true,
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv2DBackpropFilter",
     input,
@@ -3516,7 +3516,7 @@ public static func conv2DBackpropInput<T: BinaryFloatingPoint>(
   useCudnnOnGpu: Bool = true,
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv2DBackpropInput",
     inputSizes,
@@ -3564,7 +3564,7 @@ public static func conv3D<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv3D",
     input,
@@ -3639,7 +3639,7 @@ public static func conv3DBackpropFilterV2<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv3DBackpropFilterV2",
     input,
@@ -3715,7 +3715,7 @@ public static func conv3DBackpropInputV2<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv3DBackpropInputV2",
     inputSizes,
@@ -4914,7 +4914,7 @@ public static func depthwiseConv2dNative<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("DepthwiseConv2dNative",
     input,
@@ -4966,7 +4966,7 @@ public static func depthwiseConv2dNativeBackpropFilter<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("DepthwiseConv2dNativeBackpropFilter",
     input,
@@ -5019,7 +5019,7 @@ public static func depthwiseConv2dNativeBackpropInput<T: BinaryFloatingPoint>(
   strides: [Int32],
   padding: Padding,
   dataFormat: DataFormat = .nhwc,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("DepthwiseConv2dNativeBackpropInput",
     inputSizes,
@@ -11546,7 +11546,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
   maxFilter: Tensor<Float>,
   strides: [Int32],
   padding: Padding,
-  dilations: [Int32]
+  dilations: [Int32] = [1, 1, 1, 1]
 ) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
   return #tfop("QuantizedConv2D",
     input,
@@ -13336,8 +13336,8 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger>(
   seed: Int32 = 0,
   seed2: Int32 = 0,
   minObjectCovered: Double = 0.1,
-  aspectRatioRange: [Double],
-  areaRange: [Double],
+  aspectRatioRange: [Double] = [0.75, 1.33],
+  areaRange: [Double] = [0.05, 1],
   maxAttempts: Int32 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {
@@ -13434,8 +13434,8 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger>(
   minObjectCovered: Tensor<Float>,
   seed: Int32 = 0,
   seed2: Int32 = 0,
-  aspectRatioRange: [Double],
-  areaRange: [Double],
+  aspectRatioRange: [Double] = [0.75, 1.33],
+  areaRange: [Double] = [0.05, 1],
   maxAttempts: Int32 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {

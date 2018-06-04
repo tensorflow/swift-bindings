@@ -272,7 +272,7 @@ class Types(object):
     # Do not pass list(type) attr as these have to use an array of types.
     if self._is_list_attr:
       return None
-    return self.swift_name + ': ' + self.swift_name + '.self'
+    return self.attr_def_name + ': ' + self.swift_name + '.self'
 
 
 def swift_default_value(attr_value, use_enum):

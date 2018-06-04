@@ -2978,7 +2978,7 @@ public static func ceil<T: BinaryFloatingPoint>(
 // - Attr message: Prefix of the error message.
 @_inlineable @inline(__always)
 public static func checkNumerics<T: BinaryFloatingPoint>(
-  tensor: Tensor<T>,
+  _ tensor: Tensor<T>,
   message: String
 ) -> Tensor<T> {
   return #tfop("CheckNumerics",
@@ -11816,7 +11816,7 @@ public static func quantizedReluX<Tinput: AccelerableByTensorFlow, Out_type: Acc
 //   - output_max: This value is copied from input_max.
 @_inlineable @inline(__always)
 public static func quantizedReshape<T: AccelerableByTensorFlow, Tshape: BinaryInteger>(
-  tensor: Tensor<T>,
+  _ tensor: Tensor<T>,
   shape: Tensor<Tshape>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
@@ -12702,7 +12702,7 @@ public static func reservedInput(
 // - Parameter shape: Defines the shape of the output tensor.
 @_inlineable @inline(__always)
 public static func reshape<T: AccelerableByTensorFlow, Tshape: BinaryInteger>(
-  tensor: Tensor<T>,
+  _ tensor: Tensor<T>,
   shape: Tensor<Tshape>
 ) -> Tensor<T> {
   return #tfop("Reshape",
@@ -12968,7 +12968,7 @@ public static func restrict<T: AccelerableByTensorFlow>(
 // - Output output: The same shape as `tensor`.
 @_inlineable @inline(__always)
 public static func reverse<T: AccelerableByTensorFlow>(
-  tensor: Tensor<T>,
+  _ tensor: Tensor<T>,
   dims: Tensor<Bool>
 ) -> Tensor<T> {
   return #tfop("Reverse",
@@ -13117,7 +13117,7 @@ public static func reverseSequence<T: AccelerableByTensorFlow, Tlen: BinaryInteg
 // - Output output: The same shape as `tensor`.
 @_inlineable @inline(__always)
 public static func reverseV2<Tidx: BinaryInteger, T: AccelerableByTensorFlow>(
-  tensor: Tensor<T>,
+  _ tensor: Tensor<T>,
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
   return #tfop("ReverseV2",

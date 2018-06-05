@@ -363,7 +363,7 @@ def comment_block(text, indent_level):
     return '  ' * (indent_level - 1) + '- '
 
   return ''.join([
-      '// ' + indent(line_index) + line + '\n' if line else '//\n'
+      '/// ' + indent(line_index) + line + '\n' if line else '///\n'
       for line_index, line in enumerate(text.split('\n'))
   ])
 
@@ -375,10 +375,10 @@ def documentation(api_def):
     args = [arg for arg in args if arg.description]
     if len(args) == 1:
       block = '%s %s: %s' % (arg_type, args[0].name, args[0].description)
-      doc += '//\n'
+      doc += '///\n'
       doc += comment_block(block, indent_level=1)
     elif len(args) > 1:
-      doc += '//\n// - %ss:\n' % arg_type
+      doc += '///\n/// - %ss:\n' % arg_type
       for arg in args:
         block = '%s: %s' % (arg.name, arg.description)
         doc += comment_block(block, indent_level=2)
@@ -388,7 +388,7 @@ def documentation(api_def):
   if api_def.summary:
     doc = comment_block(api_def.summary, indent_level=0)
   if api_def.description:
-    doc += '//\n'
+    doc += '///\n'
     doc += comment_block(api_def.description, indent_level=0)
   doc = append_list(doc, api_def.in_arg, 'Parameter')
   doc = append_list(doc, api_def.attr, 'Attr')

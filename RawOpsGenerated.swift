@@ -474,11 +474,11 @@ public static func all<Tidx: BinaryInteger>(
 @_inlineable @inline(__always)
 public static func allCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("AllCandidateSampler",
     trueClasses,
@@ -1253,7 +1253,7 @@ public static func asinh<T: BinaryFloatingPoint>(
 public static func assert<T: AccelerableByTensorFlow>(
   condition: Tensor<Bool>,
   data: [Tensor<T>],
-  summarize: Int32 = 3
+  summarize: Int64 = 3
 ) {
   return #tfop("Assert",
     condition,
@@ -1388,7 +1388,7 @@ public static func atanh<T: BinaryFloatingPoint>(
 
 @_inlineable @inline(__always)
 public static func attr(
-  _ a: Int32
+  _ a: Int64
 ) {
   return #tfop("Attr",
     a: a)
@@ -1479,7 +1479,7 @@ public static func attrListTypeDefault<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func attrMin(
-  _ a: Int32
+  _ a: Int64
 ) {
   return #tfop("AttrMin",
     a: a)
@@ -1535,8 +1535,8 @@ public static func attrTypeDefault<T: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func audioSpectrogram(
   _ input: Tensor<Float>,
-  windowSize: Int32,
-  stride: Int32,
+  windowSize: Int64,
+  stride: Int64,
   magnitudeSquared: Bool = false
 ) -> Tensor<Float> {
   return #tfop("AudioSpectrogram",
@@ -1737,12 +1737,12 @@ public static func b(
 @_inlineable @inline(__always)
 public static func batch<T: AccelerableByTensorFlow>(
   inTensors: [Tensor<T>],
-  numBatchThreads: Int32,
-  maxBatchSize: Int32,
-  maxEnqueuedBatches: Int32 = 10,
-  batchTimeoutMicros: Int32,
+  numBatchThreads: Int64,
+  maxBatchSize: Int64,
+  maxEnqueuedBatches: Int64 = 10,
+  batchTimeoutMicros: Int64,
   allowedBatchSizes: [Int32],
-  gradTimeoutMicros: Int32,
+  gradTimeoutMicros: Int64,
   container: String,
   sharedName: String,
   batchingQueue: String
@@ -2147,7 +2147,7 @@ public static func batchSvd<T: BinaryFloatingPoint>(
 public static func batchToSpace<T: AccelerableByTensorFlow, Tidx: BinaryInteger>(
   _ input: Tensor<T>,
   crops: Tensor<Tidx>,
-  blockSize: Int32
+  blockSize: Int64
 ) -> Tensor<T> {
   return #tfop("BatchToSpace",
     input,
@@ -2710,7 +2710,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   l2: Tensor<Float>,
   treeComplexity: Tensor<Float>,
   minNodeWeight: Tensor<Float>,
-  maxSplits: Int32
+  maxSplits: Int64
 ) -> ([Tensor<Int32>], [Tensor<Float>], [Tensor<Int32>], [Tensor<Float>], [Tensor<Float>]) {
   return #tfop("BoostedTreesCalculateBestGainsPerFeature",
     nodeIdRange,
@@ -2744,8 +2744,8 @@ public static func boostedTreesMakeStatsSummary(
   gradients: Tensor<Float>,
   hessians: Tensor<Float>,
   bucketizedFeaturesList: [Tensor<Int32>],
-  maxSplits: Int32,
-  numBuckets: Int32
+  maxSplits: Int64,
+  numBuckets: Int64
 ) -> Tensor<Float> {
   return #tfop("BoostedTreesMakeStatsSummary",
     nodeIds,
@@ -2851,8 +2851,8 @@ public static func bucketize<T: Numeric>(
 public static func cTCBeamSearchDecoder(
   inputs: Tensor<Float>,
   sequenceLength: Tensor<Int32>,
-  beamWidth: Int32,
-  topPaths: Int32,
+  beamWidth: Int64,
+  topPaths: Int64,
   mergeRepeated: Bool = true
 ) -> ([Tensor<Int64>], [Tensor<Int64>], [Tensor<Int64>], Tensor<Float>) {
   return #tfop("CTCBeamSearchDecoder",
@@ -3072,9 +3072,9 @@ public static func clipByValue<T: Numeric>(
 @_inlineable @inline(__always)
 public static func collectiveReduce<T: Numeric>(
   _ input: Tensor<T>,
-  groupSize: Int32,
-  groupKey: Int32,
-  instanceKey: Int32,
+  groupSize: Int64,
+  groupKey: Int64,
+  instanceKey: Int64,
   mergeOp: MergeOp,
   finalOp: FinalOp,
   subdivOffsets: [Int32]
@@ -3180,8 +3180,8 @@ public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPo
 
 @_inlineable @inline(__always)
 public static func complexStruct<T_c: AccelerableByTensorFlow>(
-  nA: Int32,
-  nB: Int32
+  nA: Int64,
+  nB: Int64
 ) -> ([Tensor<Int32>], [Tensor<Int64>], [Tensor<T_c>]) {
   return #tfop("ComplexStruct",
     n_a: nA,
@@ -3216,9 +3216,9 @@ public static func complexStruct<T_c: AccelerableByTensorFlow>(
 public static func computeAccidentalHits(
   trueClasses: Tensor<Int64>,
   sampledCandidates: Tensor<Int64>,
-  numTrue: Int32,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  numTrue: Int64,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int32>, Tensor<Int64>, Tensor<Float>) {
   return #tfop("ComputeAccidentalHits",
     trueClasses,
@@ -3837,7 +3837,7 @@ public static func cosh<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func countUpTo<T: BinaryInteger>(
   ref: Tensor<T>,
-  limit: Int32
+  limit: Int64
 ) -> Tensor<T> {
   return #tfop("CountUpTo",
     ref,
@@ -4054,8 +4054,8 @@ public static func cudnnRNN<T: BinaryFloatingPoint>(
   inputMode: InputMode = .linearInput,
   direction: Direction = .unidirectional,
   dropout: Double = 0,
-  seed: Int32 = 0,
-  seed2: Int32 = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
   isTraining: Bool = true
 ) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
   return #tfop("CudnnRNN",
@@ -4131,8 +4131,8 @@ public static func cudnnRNNBackprop<T: BinaryFloatingPoint>(
   inputMode: InputMode = .linearInput,
   direction: Direction = .unidirectional,
   dropout: Double = 0,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
   return #tfop("CudnnRNNBackprop",
     input,
@@ -4197,8 +4197,8 @@ public static func cudnnRNNCanonicalToParams<T: BinaryFloatingPoint>(
   inputMode: InputMode = .linearInput,
   direction: Direction = .unidirectional,
   dropout: Double = 0,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("CudnnRNNCanonicalToParams",
     numLayers,
@@ -4247,8 +4247,8 @@ public static func cudnnRNNParamsSize<T: BinaryFloatingPoint, S: BinaryInteger>(
   inputMode: InputMode = .linearInput,
   direction: Direction = .unidirectional,
   dropout: Double = 0,
-  seed: Int32 = 0,
-  seed2: Int32 = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
   typeT: T.Type
 ) -> Tensor<S> {
   return #tfop("CudnnRNNParamsSize",
@@ -4302,13 +4302,13 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint>(
   numUnits: Tensor<Int32>,
   inputSize: Tensor<Int32>,
   params: Tensor<T>,
-  numParams: Int32,
+  numParams: Int64,
   rnnMode: RnnMode = .lstm,
   inputMode: InputMode = .linearInput,
   direction: Direction = .unidirectional,
   dropout: Double = 0,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> ([Tensor<T>], [Tensor<T>]) {
   return #tfop("CudnnRNNParamsToCanonical",
     numLayers,
@@ -4862,7 +4862,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger>(
 @_inlineable @inline(__always)
 public static func depthToSpace<T: AccelerableByTensorFlow>(
   _ input: Tensor<T>,
-  blockSize: Int32,
+  blockSize: Int64,
   dataFormat: DataFormat2 = .nhwc
 ) -> Tensor<T> {
   return #tfop("DepthToSpace",
@@ -5501,7 +5501,7 @@ public static func drawBoundingBoxes<T: BinaryFloatingPoint>(
 public static func dynamicPartition<T: AccelerableByTensorFlow>(
   data: Tensor<T>,
   partitions: Tensor<Int32>,
-  numPartitions: Int32
+  numPartitions: Int64
 ) -> [Tensor<T>] {
   return #tfop("DynamicPartition",
     data,
@@ -5749,7 +5749,7 @@ public static func enter<T: AccelerableByTensorFlow>(
   data: Tensor<T>,
   frameName: String,
   isConstant: Bool = false,
-  parallelIterations: Int32 = 10
+  parallelIterations: Int64 = 10
 ) -> Tensor<T> {
   return #tfop("Enter",
     data,
@@ -6003,7 +6003,7 @@ public static func fakeQuantWithMinMaxArgs(
   inputs: Tensor<Float>,
   min: Double = -6,
   max: Double = 6,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
   return #tfop("FakeQuantWithMinMaxArgs",
@@ -6028,7 +6028,7 @@ public static func fakeQuantWithMinMaxArgsGradient(
   inputs: Tensor<Float>,
   min: Double = -6,
   max: Double = 6,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
   return #tfop("FakeQuantWithMinMaxArgsGradient",
@@ -6057,7 +6057,7 @@ public static func fakeQuantWithMinMaxVars(
   inputs: Tensor<Float>,
   min: Tensor<Float>,
   max: Tensor<Float>,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
   return #tfop("FakeQuantWithMinMaxVars",
@@ -6092,7 +6092,7 @@ public static func fakeQuantWithMinMaxVarsGradient(
   inputs: Tensor<Float>,
   min: Tensor<Float>,
   max: Tensor<Float>,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> (Tensor<Float>, Tensor<Float>, Tensor<Float>) {
   return #tfop("FakeQuantWithMinMaxVarsGradient",
@@ -6122,7 +6122,7 @@ public static func fakeQuantWithMinMaxVarsPerChannel(
   inputs: Tensor<Float>,
   min: Tensor<Float>,
   max: Tensor<Float>,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
   return #tfop("FakeQuantWithMinMaxVarsPerChannel",
@@ -6160,7 +6160,7 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   inputs: Tensor<Float>,
   min: Tensor<Float>,
   max: Tensor<Float>,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> (Tensor<Float>, Tensor<Float>, Tensor<Float>) {
   return #tfop("FakeQuantWithMinMaxVarsPerChannelGradient",
@@ -6277,18 +6277,18 @@ public static func fiveFloatOutputs(
 @_inlineable @inline(__always)
 public static func fixedUnigramCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  rangeMax: Int32,
+  rangeMax: Int64,
   vocabFile: String,
   distortion: Double = 1,
-  numReservedIds: Int32 = 0,
-  numShards: Int32 = 1,
-  shard: Int32 = 0,
+  numReservedIds: Int64 = 0,
+  numShards: Int64 = 1,
+  shard: Int64 = 0,
   unigrams: [Double],
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("FixedUnigramCandidateSampler",
     trueClasses,
@@ -6423,8 +6423,8 @@ public static func fractionalAvgPool<T: Numeric>(
   pseudoRandom: Bool = false,
   overlapping: Bool = false,
   deterministic: Bool = false,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<T>, Tensor<Int64>, Tensor<Int64>) {
   return #tfop("FractionalAvgPool",
     value,
@@ -6554,8 +6554,8 @@ public static func fractionalMaxPool<T: Numeric>(
   pseudoRandom: Bool = false,
   overlapping: Bool = false,
   deterministic: Bool = false,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<T>, Tensor<Int64>, Tensor<Int64>) {
   return #tfop("FractionalMaxPool",
     value,
@@ -7582,7 +7582,7 @@ public static func inPolymorphicTwice<T: AccelerableByTensorFlow>(
 public static func inTopK<T: BinaryInteger>(
   predictions: Tensor<Float>,
   targets: Tensor<T>,
-  k: Int32
+  k: Int64
 ) -> Tensor<Bool> {
   return #tfop("InTopK",
     predictions,
@@ -7704,7 +7704,7 @@ public static func int64Output(
 
 @_inlineable @inline(__always)
 public static func intAttr(
-  foo: Int32 = 1
+  foo: Int64 = 1
 ) -> Tensor<Int64> {
   return #tfop("IntAttr",
     foo: foo)
@@ -7918,7 +7918,7 @@ public static func l2Loss<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func lRN<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
-  depthRadius: Int32 = 5,
+  depthRadius: Int64 = 5,
   bias: Double = 1,
   alpha: Double = 1,
   beta: Double = 0.5
@@ -7951,7 +7951,7 @@ public static func lRNGrad<T: BinaryFloatingPoint>(
   inputGrads: Tensor<T>,
   inputImage: Tensor<T>,
   outputImage: Tensor<T>,
-  depthRadius: Int32 = 5,
+  depthRadius: Int64 = 5,
   bias: Double = 1,
   alpha: Double = 1,
   beta: Double = 0.5
@@ -8157,12 +8157,12 @@ public static func lSTMBlockCellGrad<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func learnedUnigramCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  rangeMax: Int32,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  rangeMax: Int64,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("LearnedUnigramCandidateSampler",
     trueClasses,
@@ -8428,12 +8428,12 @@ public static func logSoftmax<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func logUniformCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  rangeMax: Int32,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  rangeMax: Int64,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("LogUniformCandidateSampler",
     trueClasses,
@@ -8501,8 +8501,8 @@ public static func loopCond(
 // Op removes all elements in the underlying container.
 @_inlineable @inline(__always)
 public static func mapClear<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -8517,8 +8517,8 @@ public static func mapClear<Dtypes: AccelerableByTensorFlow>(
 // Op returns the number of incomplete elements in the underlying container.
 @_inlineable @inline(__always)
 public static func mapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -8538,8 +8538,8 @@ public static func mapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
 public static func mapPeek<Dtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {
@@ -8555,8 +8555,8 @@ public static func mapPeek<Dtypes: AccelerableByTensorFlow>(
 // Op returns the number of elements in the underlying container.
 @_inlineable @inline(__always)
 public static func mapSize<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -8586,8 +8586,8 @@ public static func mapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes: Accele
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   values: [Tensor<Fake_dtypes>],
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -8610,8 +8610,8 @@ public static func mapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes: Accele
 public static func mapUnstage<Dtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {
@@ -8631,8 +8631,8 @@ public static func mapUnstage<Dtypes: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func mapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> (Tensor<Int64>, [Tensor<Dtypes>]) {
@@ -9677,8 +9677,8 @@ public static func mfcc(
   sampleRate: Tensor<Int32>,
   upperFrequencyLimit: Double = 4000,
   lowerFrequencyLimit: Double = 20,
-  filterbankChannelCount: Int32 = 40,
-  dctCoefficientCount: Int32 = 13
+  filterbankChannelCount: Int64 = 40,
+  dctCoefficientCount: Int64 = 13
 ) -> Tensor<Float> {
   return #tfop("Mfcc",
     spectrogram,
@@ -9832,7 +9832,7 @@ public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryIn
 
 @_inlineable @inline(__always)
 public static func mixedStruct(
-  nA: Int32
+  nA: Int64
 ) -> ([Tensor<Int32>], Tensor<Float>) {
   return #tfop("MixedStruct",
     n_a: nA)
@@ -9889,8 +9889,8 @@ public static func mul<T: Numeric>(
 public static func multinomial<T: Numeric, Output_dtype: BinaryInteger>(
   logits: Tensor<T>,
   numSamples: Tensor<Int32>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Output_dtype> {
   return #tfop("Multinomial",
     logits,
@@ -9934,7 +9934,7 @@ public static func nIntsIn(
 
 @_inlineable @inline(__always)
 public static func nIntsOut(
-  n: Int32
+  n: Int64
 ) -> [Tensor<Int32>] {
   return #tfop("NIntsOut",
     N: n)
@@ -9942,7 +9942,7 @@ public static func nIntsOut(
 
 @_inlineable @inline(__always)
 public static func nIntsOutDefault(
-  n: Int32 = 3
+  n: Int64 = 3
 ) -> [Tensor<Int32>] {
   return #tfop("NIntsOutDefault",
     N: n)
@@ -9959,7 +9959,7 @@ public static func nPolymorphicIn<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func nPolymorphicOut<T: AccelerableByTensorFlow>(
-  n: Int32
+  n: Int64
 ) -> [Tensor<T>] {
   return #tfop("NPolymorphicOut",
     T: T.self,
@@ -9968,7 +9968,7 @@ public static func nPolymorphicOut<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func nPolymorphicOutDefault<T: AccelerableByTensorFlow>(
-  n: Int32 = 2
+  n: Int64 = 2
 ) -> [Tensor<T>] {
   return #tfop("NPolymorphicOutDefault",
     T: T.self,
@@ -9986,7 +9986,7 @@ public static func nPolymorphicRestrictIn<T: AccelerableByTensorFlow>(
 
 @_inlineable @inline(__always)
 public static func nPolymorphicRestrictOut<T: AccelerableByTensorFlow>(
-  n: Int32
+  n: Int64
 ) -> [Tensor<T>] {
   return #tfop("NPolymorphicRestrictOut",
     T: T.self,
@@ -10024,7 +10024,7 @@ public static func negTrain(
   labels: Tensor<Int32>,
   lr: Tensor<Float>,
   vocabCount: [Int32],
-  numNegativeSamples: Int32
+  numNegativeSamples: Int64
 ) {
   return #tfop("NegTrain",
     wIn,
@@ -10313,7 +10313,7 @@ public static func oneHot<T: AccelerableByTensorFlow, Ti: BinaryInteger>(
   depth: Tensor<Int32>,
   onValue: Tensor<T>,
   offValue: Tensor<T>,
-  axis: Int32 = -1
+  axis: Int64 = -1
 ) -> Tensor<T> {
   return #tfop("OneHot",
     indices,
@@ -10356,8 +10356,8 @@ public static func opWithFutureDefaultAttr(
 // Op removes all elements in the underlying container.
 @_inlineable @inline(__always)
 public static func orderedMapClear<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -10372,8 +10372,8 @@ public static func orderedMapClear<Dtypes: AccelerableByTensorFlow>(
 // Op returns the number of incomplete elements in the underlying container.
 @_inlineable @inline(__always)
 public static func orderedMapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -10394,8 +10394,8 @@ public static func orderedMapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
 public static func orderedMapPeek<Dtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {
@@ -10411,8 +10411,8 @@ public static func orderedMapPeek<Dtypes: AccelerableByTensorFlow>(
 // Op returns the number of elements in the underlying container.
 @_inlineable @inline(__always)
 public static func orderedMapSize<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -10444,8 +10444,8 @@ public static func orderedMapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes:
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   values: [Tensor<Fake_dtypes>],
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -10468,8 +10468,8 @@ public static func orderedMapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes:
 public static func orderedMapUnstage<Dtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {
@@ -10489,8 +10489,8 @@ public static func orderedMapUnstage<Dtypes: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func orderedMapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
   indices: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> (Tensor<Int64>, [Tensor<Dtypes>]) {
@@ -10552,7 +10552,7 @@ public static func outTypeListRestrict<T: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func pack<T: AccelerableByTensorFlow>(
   values: [Tensor<T>],
-  axis: Int32 = 0
+  axis: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("Pack",
     values,
@@ -10740,8 +10740,8 @@ public static func parameterizedTruncatedNormal<Dtype: BinaryFloatingPoint, T: B
   stdevs: Tensor<Dtype>,
   minvals: Tensor<Dtype>,
   maxvals: Tensor<Dtype>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("ParameterizedTruncatedNormal",
     shape,
@@ -10881,8 +10881,8 @@ public static func print<T: AccelerableByTensorFlow, U: AccelerableByTensorFlow>
   _ input: Tensor<T>,
   data: [Tensor<U>],
   message: String,
-  firstN: Int32 = -1,
-  summarize: Int32 = 3
+  firstN: Int64 = -1,
+  summarize: Int64 = 3
 ) -> Tensor<T> {
   return #tfop("Print",
     input,
@@ -10998,7 +10998,7 @@ public static func qr<T: BinaryFloatingPoint>(
 public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   signedInput: Bool = true,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   rangeGiven: Bool = false,
   inputMin: Double = 0,
   inputMax: Double = 0
@@ -11016,6 +11016,7 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
 // Quantizes then dequantizes a tensor.
 //
 // This op simulates the precision loss from the quantized forward pass by:
+//
 // 1. Quantizing the tensor to fixed point numbers, which should match the target
 //    quantization method when it is used in inference.
 // 2. Dequantizing it back to floating point numbers for the following ops, most
@@ -11057,9 +11058,9 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
 //     10.0]: it would use a scale_factor of 127 / 10.0 = 12.7 In this case, it
 //     would update input_min to be 128.0 / 12.7 = -10.07874
 // *   if the output is unsigned, input_min is forced to be 0, and only the
-//     specifide input_max is used.
+//     specified input_max is used.
 //
-// After determining the scale_factor and updating the input tange, it applies the
+// After determining the scale_factor and updating the input range, it applies the
 // following to each value in the 'input' tensor.
 //
 // output = round(clamp(value, input_min, input_max) * scale_factor) / scale_factor.
@@ -11085,7 +11086,7 @@ public static func quantizeAndDequantizeV2<T: BinaryFloatingPoint>(
   inputMin: Tensor<T>,
   inputMax: Tensor<T>,
   signedInput: Bool = true,
-  numBits: Int32 = 8,
+  numBits: Int64 = 8,
   rangeGiven: Bool = false
 ) -> Tensor<T> {
   return #tfop("QuantizeAndDequantizeV2",
@@ -11907,8 +11908,8 @@ public static func rGBToHSV<T: BinaryFloatingPoint>(
 public static func randomCrop<T: Numeric>(
   image: Tensor<T>,
   size: Tensor<Int64>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("RandomCrop",
     image,
@@ -11943,8 +11944,8 @@ public static func randomCrop<T: Numeric>(
 public static func randomGamma<S: BinaryInteger, T: BinaryFloatingPoint>(
   shape: Tensor<S>,
   alpha: Tensor<T>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("RandomGamma",
     shape,
@@ -11960,8 +11961,8 @@ public static func randomGamma<S: BinaryInteger, T: BinaryFloatingPoint>(
 public static func randomPoisson<S: BinaryInteger, Dtype: BinaryFloatingPoint>(
   shape: Tensor<S>,
   rate: Tensor<Dtype>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("RandomPoisson",
     shape,
@@ -12003,8 +12004,8 @@ public static func randomPoisson<S: BinaryInteger, Dtype: BinaryFloatingPoint>(
 public static func randomPoissonV2<S: BinaryInteger, R: Numeric, Dtype: Numeric>(
   shape: Tensor<S>,
   rate: Tensor<R>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("RandomPoissonV2",
     shape,
@@ -12041,8 +12042,8 @@ public static func randomPoissonV2<S: BinaryInteger, R: Numeric, Dtype: Numeric>
 @_inlineable @inline(__always)
 public static func randomShuffle<T: AccelerableByTensorFlow>(
   value: Tensor<T>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("RandomShuffle",
     value,
@@ -12068,8 +12069,8 @@ public static func randomShuffle<T: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func randomStandardNormal<Dtype: BinaryFloatingPoint, T: BinaryInteger>(
   shape: Tensor<T>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("RandomStandardNormal",
     shape,
@@ -12097,8 +12098,8 @@ public static func randomStandardNormal<Dtype: BinaryFloatingPoint, T: BinaryInt
 @_inlineable @inline(__always)
 public static func randomUniform<Dtype: BinaryFloatingPoint, T: BinaryInteger>(
   shape: Tensor<T>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("RandomUniform",
     shape,
@@ -12135,8 +12136,8 @@ public static func randomUniformInt<Tout: BinaryInteger, T: BinaryInteger>(
   shape: Tensor<T>,
   minval: Tensor<Tout>,
   maxval: Tensor<Tout>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Tout> {
   return #tfop("RandomUniformInt",
     shape,
@@ -12292,7 +12293,7 @@ public static func refEnter<T: AccelerableByTensorFlow>(
   data: Tensor<T>,
   frameName: String,
   isConstant: Bool = false,
-  parallelIterations: Int32 = 10
+  parallelIterations: Int64 = 10
 ) -> Tensor<T> {
   return #tfop("RefEnter",
     data,
@@ -12626,7 +12627,7 @@ public static func requiresOlderGraphVersion(
 
 @_inlineable @inline(__always)
 public static func reservedAttr(
-  range: Int32
+  range: Int64
 ) {
   return #tfop("ReservedAttr",
     range: range)
@@ -13048,8 +13049,8 @@ public static func reverse<T: AccelerableByTensorFlow>(
 public static func reverseSequence<T: AccelerableByTensorFlow, Tlen: BinaryInteger>(
   _ input: Tensor<T>,
   seqLengths: Tensor<Tlen>,
-  seqDim: Int32,
-  batchDim: Int32 = 0
+  seqDim: Int64,
+  batchDim: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("ReverseSequence",
     input,
@@ -13333,12 +13334,12 @@ public static func rsqrtGrad<T: BinaryFloatingPoint>(
 public static func sampleDistortedBoundingBox<T: BinaryInteger>(
   imageSize: Tensor<T>,
   boundingBoxes: Tensor<Float>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
   minObjectCovered: Double = 0.1,
   aspectRatioRange: [Double] = [0.75, 1.33],
   areaRange: [Double] = [0.05, 1],
-  maxAttempts: Int32 = 100,
+  maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {
   return #tfop("SampleDistortedBoundingBox",
@@ -13432,11 +13433,11 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger>(
   imageSize: Tensor<T>,
   boundingBoxes: Tensor<Float>,
   minObjectCovered: Tensor<Float>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
   aspectRatioRange: [Double] = [0.75, 1.33],
   areaRange: [Double] = [0.05, 1],
-  maxAttempts: Int32 = 100,
+  maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {
   return #tfop("SampleDistortedBoundingBoxV2",
@@ -14239,8 +14240,8 @@ public static func sdcaOptimizer(
   adaptative: Bool = false,
   l1: Double,
   l2: Double,
-  numLossPartitions: Int32,
-  numInnerIterations: Int32
+  numLossPartitions: Int64,
+  numInnerIterations: Int64
 ) -> (Tensor<Float>, [Tensor<Float>], [Tensor<Float>]) {
   return #tfop("SdcaOptimizer",
     sparseExampleIndices,
@@ -14762,7 +14763,7 @@ public static func simple(
 
 @_inlineable @inline(__always)
 public static func simpleStruct(
-  nA: Int32
+  nA: Int64
 ) -> [Tensor<Int32>] {
   return #tfop("SimpleStruct",
     n_a: nA)
@@ -15048,7 +15049,7 @@ public static func softsignGrad<T: Numeric>(
 public static func spaceToBatch<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
-  blockSize: Int32
+  blockSize: Int64
 ) -> Tensor<T> {
   return #tfop("SpaceToBatch",
     input,
@@ -15286,7 +15287,7 @@ public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: Bina
 @_inlineable @inline(__always)
 public static func spaceToDepth<T: AccelerableByTensorFlow>(
   _ input: Tensor<T>,
-  blockSize: Int32,
+  blockSize: Int64,
   dataFormat: DataFormat2 = .nhwc
 ) -> Tensor<T> {
   return #tfop("SpaceToDepth",
@@ -15929,7 +15930,7 @@ public static func sparseConcat<T: AccelerableByTensorFlow>(
   indices: [Tensor<Int64>],
   values: [Tensor<T>],
   shapes: [Tensor<Int64>],
-  concatDim: Int32
+  concatDim: Int64
 ) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
   return #tfop("SparseConcat",
     indices,
@@ -16004,8 +16005,8 @@ public static func sparseCross<Sparse_types: BinaryInteger, Dense_types: BinaryI
   shapes: [Tensor<Int64>],
   denseInputs: [Tensor<Dense_types>],
   hashedOutput: Bool,
-  numBuckets: Int32,
-  hashKey: Int32,
+  numBuckets: Int64,
+  hashKey: Int64,
   typeInternal_type: Internal_type.Type
 ) -> (Tensor<Int64>, Tensor<Out_type>, Tensor<Int64>) {
   return #tfop("SparseCross",
@@ -16984,7 +16985,7 @@ public static func sparseSplit<T: AccelerableByTensorFlow>(
   indices: Tensor<Int64>,
   values: Tensor<T>,
   shape: Tensor<Int64>,
-  numSplit: Int32
+  numSplit: Int64
 ) -> ([Tensor<Int64>], [Tensor<T>], [Tensor<Int64>]) {
   return #tfop("SparseSplit",
     splitDim,
@@ -17204,7 +17205,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger>(
 public static func split<T: AccelerableByTensorFlow>(
   splitDim: Tensor<Int32>,
   value: Tensor<T>,
-  numSplit: Int32
+  numSplit: Int64
 ) -> [Tensor<T>] {
   return #tfop("Split",
     splitDim,
@@ -17231,7 +17232,7 @@ public static func splitV<T: AccelerableByTensorFlow, Tlen: BinaryInteger>(
   value: Tensor<T>,
   sizeSplits: Tensor<Tlen>,
   splitDim: Tensor<Int32>,
-  numSplit: Int32
+  numSplit: Int64
 ) -> [Tensor<T>] {
   return #tfop("SplitV",
     value,
@@ -17355,8 +17356,8 @@ public static func squeeze<T: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func stage<Dtypes: AccelerableByTensorFlow>(
   values: [Tensor<Dtypes>],
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) {
@@ -17371,8 +17372,8 @@ public static func stage<Dtypes: AccelerableByTensorFlow>(
 // Op removes all elements in the underlying container.
 @_inlineable @inline(__always)
 public static func stageClear<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -17392,8 +17393,8 @@ public static func stageClear<Dtypes: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func stagePeek<Dtypes: AccelerableByTensorFlow>(
   index: Tensor<Int32>,
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {
@@ -17408,8 +17409,8 @@ public static func stagePeek<Dtypes: AccelerableByTensorFlow>(
 // Op returns the number of elements in the underlying container.
 @_inlineable @inline(__always)
 public static func stageSize<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String,
   typeDtypes: Dtypes.Type
@@ -17665,11 +17666,11 @@ public static func stridedSlice<T: AccelerableByTensorFlow, Index: BinaryInteger
   begin: Tensor<Index>,
   end: Tensor<Index>,
   strides: Tensor<Index>,
-  beginMask: Int32 = 0,
-  endMask: Int32 = 0,
-  ellipsisMask: Int32 = 0,
-  newAxisMask: Int32 = 0,
-  shrinkAxisMask: Int32 = 0
+  beginMask: Int64 = 0,
+  endMask: Int64 = 0,
+  ellipsisMask: Int64 = 0,
+  newAxisMask: Int64 = 0,
+  shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("StridedSlice",
     input,
@@ -17700,11 +17701,11 @@ public static func stridedSliceAssign<T: AccelerableByTensorFlow, Index: BinaryI
   end: Tensor<Index>,
   strides: Tensor<Index>,
   value: Tensor<T>,
-  beginMask: Int32 = 0,
-  endMask: Int32 = 0,
-  ellipsisMask: Int32 = 0,
-  newAxisMask: Int32 = 0,
-  shrinkAxisMask: Int32 = 0
+  beginMask: Int64 = 0,
+  endMask: Int64 = 0,
+  ellipsisMask: Int64 = 0,
+  newAxisMask: Int64 = 0,
+  shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("StridedSliceAssign",
     ref,
@@ -17738,11 +17739,11 @@ public static func stridedSliceGrad<T: AccelerableByTensorFlow, Index: BinaryInt
   end: Tensor<Index>,
   strides: Tensor<Index>,
   dy: Tensor<T>,
-  beginMask: Int32 = 0,
-  endMask: Int32 = 0,
-  ellipsisMask: Int32 = 0,
-  newAxisMask: Int32 = 0,
-  shrinkAxisMask: Int32 = 0
+  beginMask: Int64 = 0,
+  endMask: Int64 = 0,
+  ellipsisMask: Int64 = 0,
+  newAxisMask: Int64 = 0,
+  shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   return #tfop("StridedSliceGrad",
     shape,
@@ -18045,12 +18046,12 @@ public static func testAttr<T: BinaryFloatingPoint>(
 @_inlineable @inline(__always)
 public static func threadUnsafeUnigramCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  rangeMax: Int32,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  rangeMax: Int64,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("ThreadUnsafeUnigramCandidateSampler",
     trueClasses,
@@ -18142,7 +18143,7 @@ public static func timestamp(
 @_inlineable @inline(__always)
 public static func topK<T: Numeric>(
   _ input: Tensor<T>,
-  k: Int32,
+  k: Int64,
   sorted: Bool = true
 ) -> (Tensor<T>, Tensor<Int32>) {
   return #tfop("TopK",
@@ -18263,8 +18264,8 @@ public static func truncateMod<T: Numeric>(
 @_inlineable @inline(__always)
 public static func truncatedNormal<Dtype: BinaryFloatingPoint, T: BinaryInteger>(
   shape: Tensor<T>,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   return #tfop("TruncatedNormal",
     shape,
@@ -18397,7 +18398,7 @@ public static func unbatch<T: AccelerableByTensorFlow>(
   batchedTensor: Tensor<T>,
   batchIndex: Tensor<Int64>,
   id: Tensor<Int64>,
-  timeoutMicros: Int32,
+  timeoutMicros: Int64,
   container: String,
   sharedName: String
 ) -> Tensor<T> {
@@ -18486,12 +18487,12 @@ public static func unbatchGrad<T: AccelerableByTensorFlow>(
 @_inlineable @inline(__always)
 public static func uniformCandidateSampler(
   trueClasses: Tensor<Int64>,
-  numTrue: Int32,
-  numSampled: Int32,
+  numTrue: Int64,
+  numSampled: Int64,
   unique: Bool,
-  rangeMax: Int32,
-  seed: Int32 = 0,
-  seed2: Int32 = 0
+  rangeMax: Int64,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
 ) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
   return #tfop("UniformCandidateSampler",
     trueClasses,
@@ -18737,8 +18738,8 @@ public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryI
 @_inlineable @inline(__always)
 public static func unpack<T: AccelerableByTensorFlow>(
   value: Tensor<T>,
-  num: Int32,
-  axis: Int32 = 0
+  num: Int64,
+  axis: Int64 = 0
 ) -> [Tensor<T>] {
   return #tfop("Unpack",
     value,
@@ -18932,8 +18933,8 @@ public static func unsortedSegmentSum<T: Numeric, Tindices: BinaryInteger, Tnums
 // capabilities and options.  This Op is optimized for performance.
 @_inlineable @inline(__always)
 public static func unstage<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int32 = 0,
-  memoryLimit: Int32 = 0,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
 ) -> [Tensor<Dtypes>] {

@@ -119,7 +119,7 @@ _SWIFTIFIED_TYPES = {
 }
 
 _SWIFTIFIED_ATTR_TYPES = {
-    'int': 'Int32',
+    'int': 'Int64',
     'float': 'Double',
     'bool': 'Bool',
     'string': 'String',

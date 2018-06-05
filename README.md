@@ -17,3 +17,11 @@ that this will use the TensorFlow python package.
 ``` shell
 python generate_wrappers.py --output_path=RawOpsGenerated.swift
 ```
+
+Documentation gets automatically generated when adding a path to the
+`api_def` proto directory. This directory should contain per operator
+`api_def` protos with names like `api_def_OpName.pbtxt`.
+
+```shell
+python generate_wrappers.py --output_path=RawOpsGenerated.swift --api_def_path=/path/to/tensorflow/core/api_def/base_api
+```

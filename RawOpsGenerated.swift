@@ -17,8 +17,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.8.0"
-static let generatedTensorFlowGitVersion = "v1.8.0-0-g93bc2e2072"
+static let generatedTensorFlowVersion = "1.9.0-rc0"
+static let generatedTensorFlowGitVersion = "v1.9.0-rc0-2716-ge1436b2952"
 
 public enum A: String {
   case apples = "apples"
@@ -35,7 +35,7 @@ public enum DataFormat1: String {
   case ndhwc = "NDHWC"
 }
 
-public enum DataFormat2: String {
+public enum DataFormat3: String {
   case nchw = "NCHW"
   case nchwVectC = "NCHW_VECT_C"
   case nhwc = "NHWC"
@@ -84,6 +84,11 @@ public enum MergeOp: String {
 
 public enum Method: String {
   case bilinear = "bilinear"
+  case nearest = "nearest"
+}
+
+public enum Method2: String {
+  case bilinear = "bilinear"
 }
 
 public enum Mode: String {
@@ -92,7 +97,7 @@ public enum Mode: String {
   case scaled = "SCALED"
 }
 
-public enum Mode3: String {
+public enum Mode4: String {
   case reflect = "REFLECT"
   case symmetric = "SYMMETRIC"
 }
@@ -546,6 +551,55 @@ public static func any<Tidx: BinaryInteger>(
     keep_dims: keepDims)
 }
 
+/// Update '*var' according to the AdaMax algorithm.
+///
+/// m_t <- beta1 * m_{t-1} + (1 - beta1) * g
+/// v_t <- max(beta2 * v_{t-1}, abs(g))
+/// variable <- variable - learning_rate / (1 - beta1^t) * m_t / (v_t + epsilon)
+///
+/// - Parameters:
+///   - var: Should be from a Variable().
+///   - m: Should be from a Variable().
+///   - v: Should be from a Variable().
+///   - beta1_power: Must be a scalar.
+///   - lr: Scaling factor. Must be a scalar.
+///   - beta1: Momentum factor. Must be a scalar.
+///   - beta2: Momentum factor. Must be a scalar.
+///   - epsilon: Ridge term. Must be a scalar.
+///   - grad: The gradient.
+///
+/// - Attr use_locking: If `True`, updating of the var, m, and v tensors will be protected
+///   by a lock; otherwise the behavior is undefined, but may exhibit less
+///   contention.
+///
+/// - Output out: Same as "var".
+@_inlineable @inline(__always)
+public static func applyAdaMax<T: Numeric>(
+  var_: Tensor<T>,
+  m: Tensor<T>,
+  v: Tensor<T>,
+  beta1Power: Tensor<T>,
+  lr: Tensor<T>,
+  beta1: Tensor<T>,
+  beta2: Tensor<T>,
+  epsilon: Tensor<T>,
+  grad: Tensor<T>,
+  useLocking: Bool = false
+) -> Tensor<T> {
+  return #tfop("ApplyAdaMax",
+    var_,
+    m,
+    v,
+    beta1Power,
+    lr,
+    beta1,
+    beta2,
+    epsilon,
+    grad,
+    T: T.self,
+    use_locking: useLocking)
+}
+
 /// Update '*var' according to the adadelta scheme.
 ///
 /// accum = rho() * accum + (1 - rho()) * grad.square();
@@ -611,7 +665,8 @@ public static func applyAdagrad<T: Numeric>(
   accum: Tensor<T>,
   lr: Tensor<T>,
   grad: Tensor<T>,
-  useLocking: Bool = false
+  useLocking: Bool = false,
+  updateSlots: Bool = true
 ) -> Tensor<T> {
   return #tfop("ApplyAdagrad",
     var_,
@@ -619,7 +674,8 @@ public static func applyAdagrad<T: Numeric>(
     lr,
     grad,
     T: T.self,
-    use_locking: useLocking)
+    use_locking: useLocking,
+    update_slots: updateSlots)
 }
 
 /// Update '*var' according to the proximal adagrad scheme.
@@ -2785,6 +2841,43 @@ public static func broadcastGradientArgs<T: BinaryInteger>(
     T: T.self)
 }
 
+/// Broadcast an array for a compatible shape.
+///
+/// Broadcasting is the process of making arrays to have compatible shapes
+/// for arithmetic operations. Two shapes are compatible if for each
+/// dimension pair they are either equal or one of them is one. When trying
+/// to broadcast a Tensor to a shape, it starts with the trailing dimensions,
+/// and works its way forward.
+///
+/// For example,
+/// ```
+/// >>> x = tf.constant([1, 2, 3])
+/// >>> y = tf.broadcast_to(x, [3, 3])
+/// >>> sess.run(y)
+/// array([[1, 2, 3],
+///        [1, 2, 3],
+///        [1, 2, 3]], dtype=int32)
+/// ```
+/// In the above example, the input Tensor with the shape of `[1, 3]`
+/// is broadcasted to output Tensor with shape of `[3, 3]`.
+///
+/// - Parameters:
+///   - input: A Tensor to broadcast.
+///   - shape: An 1-D `int` Tensor. The shape of the desired output.
+///
+/// - Output output: A Tensor.
+@_inlineable @inline(__always)
+public static func broadcastTo<T: AccelerableByTensorFlow, Tidx: BinaryInteger>(
+  _ input: Tensor<T>,
+  shape: Tensor<Tidx>
+) -> Tensor<T> {
+  return #tfop("BroadcastTo",
+    input,
+    shape,
+    T: T.self,
+    Tidx: Tidx.self)
+}
+
 /// Bucketizes 'input' based on 'boundaries'.
 ///
 /// For example, if the inputs are
@@ -3595,7 +3688,8 @@ public static func conv3DBackpropFilter<T: BinaryFloatingPoint>(
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int32],
-  padding: Padding
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv3DBackpropFilter",
     input,
@@ -3603,7 +3697,8 @@ public static func conv3DBackpropFilter<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.rawValue,
+    dilations: dilations)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
@@ -3671,7 +3766,8 @@ public static func conv3DBackpropInput<T: BinaryFloatingPoint>(
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int32],
-  padding: Padding
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   return #tfop("Conv3DBackpropInput",
     input,
@@ -3679,7 +3775,8 @@ public static func conv3DBackpropInput<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.rawValue,
+    dilations: dilations)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the input.
@@ -3708,8 +3805,8 @@ public static func conv3DBackpropInput<T: BinaryFloatingPoint>(
 ///     value of `data_format`, see above for details. Dilations in the batch and
 ///     depth dimensions must be 1.
 @_inlineable @inline(__always)
-public static func conv3DBackpropInputV2<T: BinaryFloatingPoint>(
-  inputSizes: Tensor<Int32>,
+public static func conv3DBackpropInputV2<T: BinaryFloatingPoint, Tshape: BinaryInteger>(
+  inputSizes: Tensor<Tshape>,
   filter: Tensor<T>,
   outBackprop: Tensor<T>,
   strides: [Int32],
@@ -3722,6 +3819,7 @@ public static func conv3DBackpropInputV2<T: BinaryFloatingPoint>(
     filter,
     outBackprop,
     T: T.self,
+    Tshape: Tshape.self,
     strides: strides,
     padding: padding.rawValue,
     data_format: dataFormat.rawValue,
@@ -3938,7 +4036,7 @@ public static func cropAndResizeGradBoxes<T: Numeric>(
   image: Tensor<T>,
   boxes: Tensor<Float>,
   boxInd: Tensor<Int32>,
-  method: Method = .bilinear
+  method: Method2 = .bilinear
 ) -> Tensor<Float> {
   return #tfop("CropAndResizeGradBoxes",
     grads,
@@ -4155,6 +4253,93 @@ public static func cudnnRNNBackprop<T: BinaryFloatingPoint>(
     seed2: seed2)
 }
 
+/// Backprop step of CudnnRNN.
+///
+/// Compute the backprop of both data and weights in a RNN. Takes an extra
+///     "host_reserved" inupt than CudnnRNNBackprop, which is used to determine RNN
+///     cudnnRNNAlgo_t and cudnnMathType_t.
+///
+/// rnn_mode: Indicates the type of the RNN model.
+/// input_mode: Indicates whether there is a linear projection between the input and
+///     the actual computation before the first layer. 'skip_input' is only allowed
+///     when input_size == num_units; 'auto_select' implies 'skip_input' when
+///     input_size == num_units; otherwise, it implies 'linear_input'.
+/// direction: Indicates whether a bidirectional model will be used. Should be
+///   "unidirectional" or "bidirectional".
+/// dropout: Dropout probability. When set to 0., dropout is disabled.
+/// seed: The 1st part of a seed to initialize dropout.
+/// seed2: The 2nd part of a seed to initialize dropout.
+/// input: A 3-D tensor with the shape of [seq_length, batch_size, input_size].
+/// input_h: A 3-D tensor with the shape of [num_layer * dir, batch_size,
+///     num_units].
+/// input_c: For LSTM, a 3-D tensor with the shape of
+///     [num_layer * dir, batch, num_units]. For other models, it is ignored.
+/// params: A 1-D tensor that contains the weights and biases in an opaque layout.
+///     The size must be created through CudnnRNNParamsSize, and initialized
+///     separately. Note that they might not be compatible across different
+///     generations. So it is a good idea to save and restore
+/// output: A 3-D tensor with the shape of [seq_length, batch_size,
+///     dir * num_units].
+/// output_h: The same shape has input_h.
+/// output_c: The same shape as input_c for LSTM. An empty tensor for other models.
+/// output_backprop: A 3-D tensor with the same shape as output in the forward pass.
+/// output_h_backprop: A 3-D tensor with the same shape as output_h in the forward
+///     pass.
+/// output_c_backprop: A 3-D tensor with the same shape as output_c in the forward
+///     pass.
+/// reserve_space: The same reserve_space produced in the forward operation.
+/// host_reserved: The same host_reserved produced in the forward operation.
+/// input_backprop: The backprop to input in the forward pass. Has the same shape
+///     as input.
+/// input_h_backprop: The backprop to input_h in the forward pass. Has the same
+///     shape as input_h.
+/// input_c_backprop: The backprop to input_c in the forward pass. Has the same
+///     shape as input_c.
+/// params_backprop: The backprop to the params buffer in the forward pass. Has the
+///     same shape as params.
+@_inlineable @inline(__always)
+public static func cudnnRNNBackpropV2<T: BinaryFloatingPoint>(
+  _ input: Tensor<T>,
+  inputH: Tensor<T>,
+  inputC: Tensor<T>,
+  params: Tensor<T>,
+  output: Tensor<T>,
+  outputH: Tensor<T>,
+  outputC: Tensor<T>,
+  outputBackprop: Tensor<T>,
+  outputHBackprop: Tensor<T>,
+  outputCBackprop: Tensor<T>,
+  reserveSpace: Tensor<T>,
+  hostReserved: Tensor<Int8>,
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
+  dropout: Double = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0
+) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+  return #tfop("CudnnRNNBackpropV2",
+    input,
+    inputH,
+    inputC,
+    params,
+    output,
+    outputH,
+    outputC,
+    outputBackprop,
+    outputHBackprop,
+    outputCBackprop,
+    reserveSpace,
+    hostReserved,
+    T: T.self,
+    rnn_mode: rnnMode.rawValue,
+    input_mode: inputMode.rawValue,
+    direction: direction.rawValue,
+    dropout: dropout,
+    seed: seed,
+    seed2: seed2)
+}
+
 /// Converts CudnnRNN params from canonical form to usable form.
 ///
 /// Writes a set of weights into the opaque params buffer so they can be used in
@@ -4323,6 +4508,70 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint>(
     dropout: dropout,
     seed: seed,
     seed2: seed2)
+}
+
+/// A RNN backed by cuDNN.
+///
+/// Computes the RNN from the input and initial states, with respect to the params
+/// buffer. Produces one extra output "host_reserved" than CudnnRNN.
+///
+/// rnn_mode: Indicates the type of the RNN model.
+/// input_mode: Indicates whether there is a linear projection between the input and
+///   the actual computation before the first layer. 'skip_input' is only allowed
+///   when input_size == num_units; 'auto_select' implies 'skip_input' when
+///   input_size == num_units; otherwise, it implies 'linear_input'.
+/// direction: Indicates whether a bidirectional model will be used. Should be
+///   "unidirectional" or "bidirectional".
+/// dropout: Dropout probability. When set to 0., dropout is disabled.
+/// seed: The 1st part of a seed to initialize dropout.
+/// seed2: The 2nd part of a seed to initialize dropout.
+/// input: A 3-D tensor with the shape of [seq_length, batch_size, input_size].
+/// input_h: A 3-D tensor with the shape of [num_layer * dir, batch_size,
+///     num_units].
+/// input_c: For LSTM, a 3-D tensor with the shape of
+///     [num_layer * dir, batch, num_units]. For other models, it is ignored.
+/// params: A 1-D tensor that contains the weights and biases in an opaque layout.
+///     The size must be created through CudnnRNNParamsSize, and initialized
+///     separately. Note that they might not be compatible across different
+///     generations. So it is a good idea to save and restore
+/// output: A 3-D tensor with the shape of [seq_length, batch_size,
+///     dir * num_units].
+/// output_h: The same shape has input_h.
+/// output_c: The same shape as input_c for LSTM. An empty tensor for other models.
+/// is_training: Indicates whether this operation is used for inferenece or
+///   training.
+/// reserve_space: An opaque tensor that can be used in backprop calculation. It
+///   is only produced if is_training is true.
+/// host_reserved: An opaque tensor that can be used in backprop calculation. It is
+///   only produced if is_training is true. It is output on host memory rather than
+///   device memory.
+@_inlineable @inline(__always)
+public static func cudnnRNNV2<T: BinaryFloatingPoint>(
+  _ input: Tensor<T>,
+  inputH: Tensor<T>,
+  inputC: Tensor<T>,
+  params: Tensor<T>,
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
+  dropout: Double = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
+  isTraining: Bool = true
+) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<Int8>) {
+  return #tfop("CudnnRNNV2",
+    input,
+    inputH,
+    inputC,
+    params,
+    T: T.self,
+    rnn_mode: rnnMode.rawValue,
+    input_mode: inputMode.rawValue,
+    direction: direction.rawValue,
+    dropout: dropout,
+    seed: seed,
+    seed2: seed2,
+    is_training: isTraining)
 }
 
 /// Compute the cumulative product of the tensor `x` along `axis`.
@@ -4863,7 +5112,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger>(
 public static func depthToSpace<T: AccelerableByTensorFlow>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat2 = .nhwc
+  dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
   return #tfop("DepthToSpace",
     input,
@@ -5989,6 +6238,72 @@ public static func extractImagePatches<T: Numeric>(
     padding: padding.rawValue)
 }
 
+/// Fast Fourier transform.
+///
+/// Computes the 1-dimensional discrete Fourier transform over the inner-most
+/// dimension of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most
+///     dimension of `input` is replaced with its 1D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.fft
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func fFT<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("FFT",
+    input,
+    Tcomplex: Tcomplex.self)
+}
+
+/// 2D fast Fourier transform.
+///
+/// Computes the 2-dimensional discrete Fourier transform over the inner-most
+/// 2 dimensions of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most 2
+///     dimensions of `input` are replaced with their 2D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.fft2
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func fFT2D<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("FFT2D",
+    input,
+    Tcomplex: Tcomplex.self)
+}
+
+/// 3D fast Fourier transform.
+///
+/// Computes the 3-dimensional discrete Fourier transform over the inner-most 3
+/// dimensions of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most 3
+///     dimensions of `input` are replaced with their 3D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.fftn with 3 dimensions.
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func fFT3D<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("FFT3D",
+    input,
+    Tcomplex: Tcomplex.self)
+}
+
 /// Fake-quantize the 'inputs' tensor, type float to 'outputs' tensor of same type.
 ///
 /// Attributes `[min; max]` define the clamping range for the `inputs` data.
@@ -6866,7 +7181,7 @@ public static func fusedPadConv2D<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
-  mode: Mode3,
+  mode: Mode4,
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
@@ -6915,7 +7230,7 @@ public static func fusedResizeAndPadConv2D<T: BinaryFloatingPoint>(
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
   resizeAlignCorners: Bool = false,
-  mode: Mode3,
+  mode: Mode4,
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
@@ -7432,6 +7747,72 @@ public static func histogramFixedWidth<T: Numeric, Dtype: BinaryInteger>(
     nbins,
     T: T.self,
     dtype: Dtype.self)
+}
+
+/// Inverse fast Fourier transform.
+///
+/// Computes the inverse 1-dimensional discrete Fourier transform over the
+/// inner-most dimension of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most
+///     dimension of `input` is replaced with its inverse 1D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.ifft
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func iFFT<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("IFFT",
+    input,
+    Tcomplex: Tcomplex.self)
+}
+
+/// Inverse 2D fast Fourier transform.
+///
+/// Computes the inverse 2-dimensional discrete Fourier transform over the
+/// inner-most 2 dimensions of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most 2
+///     dimensions of `input` are replaced with their inverse 2D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.ifft2
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func iFFT2D<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("IFFT2D",
+    input,
+    Tcomplex: Tcomplex.self)
+}
+
+/// Inverse 3D fast Fourier transform.
+///
+/// Computes the inverse 3-dimensional discrete Fourier transform over the
+/// inner-most 3 dimensions of `input`.
+///
+/// - Parameter input: A complex64 tensor.
+///
+/// - Output output: A complex64 tensor of the same shape as `input`. The inner-most 3
+///     dimensions of `input` are replaced with their inverse 3D Fourier transform.
+///
+///   @compatibility(numpy)
+///   Equivalent to np.fft.ifftn with 3 dimensions.
+///   @end_compatibility
+@_inlineable @inline(__always)
+public static func iFFT3D<Tcomplex: AccelerableByTensorFlow>(
+  _ input: Tensor<Tcomplex>
+) -> Tensor<Tcomplex> {
+  return #tfop("IFFT3D",
+    input,
+    Tcomplex: Tcomplex.self)
 }
 
 /// Return a tensor with the same shape and contents as the input tensor or value.
@@ -9156,7 +9537,7 @@ public static func maxPool<T: Numeric>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat2 = .nhwc
+  dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
   return #tfop("MaxPool",
     input,
@@ -9535,7 +9916,7 @@ public static func maxPoolV2<T: Numeric>(
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
-  dataFormat: DataFormat2 = .nhwc
+  dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
   return #tfop("MaxPoolV2",
     input,
@@ -9777,7 +10158,7 @@ public static func minimum<T: Numeric>(
 public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
-  mode: Mode3
+  mode: Mode4
 ) -> Tensor<T> {
   return #tfop("MirrorPad",
     input,
@@ -9820,7 +10201,7 @@ public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryIntege
 public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger>(
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
-  mode: Mode3
+  mode: Mode4
 ) -> Tensor<T> {
   return #tfop("MirrorPadGrad",
     input,
@@ -10146,6 +10527,55 @@ public static func nonMaxSuppressionV2(
     scores,
     maxOutputSize,
     iouThreshold)
+}
+
+/// Greedily selects a subset of bounding boxes in descending order of score,
+///
+/// pruning away boxes that have high intersection-over-union (IOU) overlap
+/// with previously selected boxes.  Bounding boxes with score less than
+/// `score_threshold` are removed.  Bounding boxes are supplied as
+/// [y1, x1, y2, x2], where (y1, x1) and (y2, x2) are the coordinates of any
+/// diagonal pair of box corners and the coordinates can be provided as normalized
+/// (i.e., lying in the interval [0, 1]) or absolute.  Note that this algorithm
+/// is agnostic to where the origin is in the coordinate system and more
+/// generally is invariant to orthogonal transformations and translations
+/// of the coordinate system; thus translating or reflections of the coordinate
+/// system result in the same boxes being selected by the algorithm.
+/// The output of this operation is a set of integers indexing into the input
+/// collection of bounding boxes representing the selected boxes.  The bounding
+/// box coordinates corresponding to the selected indices can then be obtained
+/// using the `tf.gather operation`.  For example:
+///   selected_indices = tf.image.non_max_suppression_v2(
+///       boxes, scores, max_output_size, iou_threshold, score_threshold)
+///   selected_boxes = tf.gather(boxes, selected_indices)
+///
+/// - Parameters:
+///   - boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
+///   - scores: A 1-D float tensor of shape `[num_boxes]` representing a single
+///     score corresponding to each box (each row of boxes).
+///   - max_output_size: A scalar integer tensor representing the maximum number of
+///     boxes to be selected by non max suppression.
+///   - iou_threshold: A 0-D float tensor representing the threshold for deciding whether
+///     boxes overlap too much with respect to IOU.
+///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
+///     boxes based on score.
+///
+/// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
+///   indices from the boxes tensor, where `M <= max_output_size`.
+@_inlineable @inline(__always)
+public static func nonMaxSuppressionV3(
+  boxes: Tensor<Float>,
+  scores: Tensor<Float>,
+  maxOutputSize: Tensor<Int32>,
+  iouThreshold: Tensor<Float>,
+  scoreThreshold: Tensor<Float>
+) -> Tensor<Int32> {
+  return #tfop("NonMaxSuppressionV3",
+    boxes,
+    scores,
+    maxOutputSize,
+    iouThreshold,
+    scoreThreshold)
 }
 
 @_inlineable @inline(__always)
@@ -15288,7 +15718,7 @@ public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: Bina
 public static func spaceToDepth<T: AccelerableByTensorFlow>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat2 = .nhwc
+  dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
   return #tfop("SpaceToDepth",
     input,
@@ -15445,7 +15875,8 @@ public static func sparseApplyAdagrad<T: Numeric, Tindices: BinaryInteger>(
   lr: Tensor<T>,
   grad: Tensor<T>,
   indices: Tensor<Tindices>,
-  useLocking: Bool = false
+  useLocking: Bool = false,
+  updateSlots: Bool = true
 ) -> Tensor<T> {
   return #tfop("SparseApplyAdagrad",
     var_,
@@ -15455,7 +15886,8 @@ public static func sparseApplyAdagrad<T: Numeric, Tindices: BinaryInteger>(
     indices,
     T: T.self,
     Tindices: Tindices.self,
-    use_locking: useLocking)
+    use_locking: useLocking,
+    update_slots: updateSlots)
 }
 
 /// Update entries in '*var' and '*accum' according to the proximal adagrad scheme.
@@ -17420,6 +17852,31 @@ public static func stageSize<Dtypes: AccelerableByTensorFlow>(
     memory_limit: memoryLimit,
     container: container,
     shared_name: sharedName)
+}
+
+/// Draws samples from a multinomial distribution.
+///
+/// - Parameters:
+///   - logits: 2-D Tensor with shape `[batch_size, num_classes]`.  Each slice `[i, :]`
+///     represents the unnormalized log probabilities for all classes.
+///   - num_samples: 0-D.  Number of independent samples to draw for each row slice.
+///   - seed: 2 seeds (shape [2]).
+///
+/// - Output output: 2-D Tensor with shape `[batch_size, num_samples]`.  Each slice `[i, :]`
+///   contains the drawn class labels with range `[0, num_classes)`.
+@_inlineable @inline(__always)
+public static func statelessMultinomial<T: Numeric, Tseed: BinaryInteger, Output_dtype: BinaryInteger>(
+  logits: Tensor<T>,
+  numSamples: Tensor<Int32>,
+  seed: Tensor<Tseed>
+) -> Tensor<Output_dtype> {
+  return #tfop("StatelessMultinomial",
+    logits,
+    numSamples,
+    seed,
+    T: T.self,
+    Tseed: Tseed.self,
+    output_dtype: Output_dtype.self)
 }
 
 /// Outputs deterministic pseudorandom values from a normal distribution.

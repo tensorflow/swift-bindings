@@ -20,7 +20,7 @@ public enum Raw {
 static let generatedTensorFlowVersion = "1.9.0-rc0"
 static let generatedTensorFlowGitVersion = "v1.9.0-rc0-2716-ge1436b2952"
 
-@_fixed_layout
+@_frozen
 public enum A {
   case apples
   case oranges
@@ -37,7 +37,7 @@ public enum A {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum DataFormat {
   case nchw
   case nhwc
@@ -54,7 +54,7 @@ public enum DataFormat {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum DataFormat1 {
   case ncdhw
   case ndhwc
@@ -71,7 +71,7 @@ public enum DataFormat1 {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum DataFormat3 {
   case nchw
   case nchwVectC
@@ -90,7 +90,7 @@ public enum DataFormat3 {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum DensityUnit {
   case cm
   case in_
@@ -107,7 +107,7 @@ public enum DensityUnit {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Direction {
   case bidirectional
   case unidirectional
@@ -124,7 +124,7 @@ public enum Direction {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum FinalOp {
   case div
   case id
@@ -141,7 +141,7 @@ public enum FinalOp {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Format {
   case empty
   case grayscale
@@ -160,7 +160,7 @@ public enum Format {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum InputMode {
   case autoSelect
   case linearInput
@@ -179,7 +179,7 @@ public enum InputMode {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum LossType {
   case hingeLoss
   case logisticLoss
@@ -200,7 +200,7 @@ public enum LossType {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum MergeOp {
   case add
   case max
@@ -221,7 +221,7 @@ public enum MergeOp {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Method {
   case bilinear
   case nearest
@@ -238,7 +238,7 @@ public enum Method {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Method2 {
   case bilinear
 
@@ -253,7 +253,7 @@ public enum Method2 {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Mode {
   case minCombined
   case minFirst
@@ -272,7 +272,7 @@ public enum Mode {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Mode4 {
   case reflect
   case symmetric
@@ -289,7 +289,7 @@ public enum Mode4 {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum Padding {
   case same
   case valid
@@ -306,7 +306,7 @@ public enum Padding {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum RnnMode {
   case gru
   case lstm
@@ -327,7 +327,7 @@ public enum RnnMode {
   }
 }
 
-@_fixed_layout
+@_frozen
 public enum RoundMode {
   case halfAwayFromZero
   case halfToEven

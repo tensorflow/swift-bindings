@@ -20,8 +20,6 @@ from __future__ import print_function
 import os
 import tensorflow as tf
 
-from google.protobuf import text_format
-from tensorflow.core.framework import api_def_pb2
 from tensorflow.core.framework import types_pb2
 from tensorflow.python.framework import c_api_util
 
@@ -172,6 +170,7 @@ class EnumStore(object):
     self._counter = 1
 
   def enum_codes(self):
+    """Generates the swift code for enums."""
     codes = []
     entries = list(self._entries.iteritems())
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
@@ -188,11 +187,11 @@ class EnumStore(object):
           '      switch self {\n' +
           '\n'.join(['      case .{}: return "{}"'.format(
               swiftified_name_for_enums(a), a) for a in allowed_values]) +
-         '\n' +
-         '      }\n' +
-         '    }\n' +
-         '  }\n' +
-         '}')
+          '\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}')
     return codes
 
   def maybe_add(self, allowed_values, attr_def_name):

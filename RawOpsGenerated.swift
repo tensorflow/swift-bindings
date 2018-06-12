@@ -21,120 +21,327 @@ static let generatedTensorFlowVersion = "1.9.0-rc0"
 static let generatedTensorFlowGitVersion = "v1.9.0-rc0-2716-ge1436b2952"
 
 @_fixed_layout
-public enum A: String {
-  case apples = "apples"
-  case oranges = "oranges"
+public enum A {
+  case apples
+  case oranges
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .apples: return "apples"
+      case .oranges: return "oranges"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum DataFormat: String {
-  case nchw = "NCHW"
-  case nhwc = "NHWC"
+public enum DataFormat {
+  case nchw
+  case nhwc
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .nchw: return "NCHW"
+      case .nhwc: return "NHWC"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum DataFormat1: String {
-  case ncdhw = "NCDHW"
-  case ndhwc = "NDHWC"
+public enum DataFormat1 {
+  case ncdhw
+  case ndhwc
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .ncdhw: return "NCDHW"
+      case .ndhwc: return "NDHWC"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum DataFormat3: String {
-  case nchw = "NCHW"
-  case nchwVectC = "NCHW_VECT_C"
-  case nhwc = "NHWC"
+public enum DataFormat3 {
+  case nchw
+  case nchwVectC
+  case nhwc
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .nchw: return "NCHW"
+      case .nchwVectC: return "NCHW_VECT_C"
+      case .nhwc: return "NHWC"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum DensityUnit: String {
-  case cm = "cm"
-  case in_ = "in"
+public enum DensityUnit {
+  case cm
+  case in_
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .cm: return "cm"
+      case .in_: return "in"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Direction: String {
-  case bidirectional = "bidirectional"
-  case unidirectional = "unidirectional"
+public enum Direction {
+  case bidirectional
+  case unidirectional
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .bidirectional: return "bidirectional"
+      case .unidirectional: return "unidirectional"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum FinalOp: String {
-  case div = "Div"
-  case id = "Id"
+public enum FinalOp {
+  case div
+  case id
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .div: return "Div"
+      case .id: return "Id"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Format: String {
-  case empty = ""
-  case grayscale = "grayscale"
-  case rgb = "rgb"
+public enum Format {
+  case empty
+  case grayscale
+  case rgb
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .empty: return ""
+      case .grayscale: return "grayscale"
+      case .rgb: return "rgb"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum InputMode: String {
-  case autoSelect = "auto_select"
-  case linearInput = "linear_input"
-  case skipInput = "skip_input"
+public enum InputMode {
+  case autoSelect
+  case linearInput
+  case skipInput
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .autoSelect: return "auto_select"
+      case .linearInput: return "linear_input"
+      case .skipInput: return "skip_input"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum LossType: String {
-  case hingeLoss = "hinge_loss"
-  case logisticLoss = "logistic_loss"
-  case smoothHingeLoss = "smooth_hinge_loss"
-  case squaredLoss = "squared_loss"
+public enum LossType {
+  case hingeLoss
+  case logisticLoss
+  case smoothHingeLoss
+  case squaredLoss
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .hingeLoss: return "hinge_loss"
+      case .logisticLoss: return "logistic_loss"
+      case .smoothHingeLoss: return "smooth_hinge_loss"
+      case .squaredLoss: return "squared_loss"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum MergeOp: String {
-  case add = "Add"
-  case max = "Max"
-  case min = "Min"
-  case mul = "Mul"
+public enum MergeOp {
+  case add
+  case max
+  case min
+  case mul
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .add: return "Add"
+      case .max: return "Max"
+      case .min: return "Min"
+      case .mul: return "Mul"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Method: String {
-  case bilinear = "bilinear"
-  case nearest = "nearest"
+public enum Method {
+  case bilinear
+  case nearest
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .bilinear: return "bilinear"
+      case .nearest: return "nearest"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Method2: String {
-  case bilinear = "bilinear"
+public enum Method2 {
+  case bilinear
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .bilinear: return "bilinear"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Mode: String {
-  case minCombined = "MIN_COMBINED"
-  case minFirst = "MIN_FIRST"
-  case scaled = "SCALED"
+public enum Mode {
+  case minCombined
+  case minFirst
+  case scaled
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .minCombined: return "MIN_COMBINED"
+      case .minFirst: return "MIN_FIRST"
+      case .scaled: return "SCALED"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Mode4: String {
-  case reflect = "REFLECT"
-  case symmetric = "SYMMETRIC"
+public enum Mode4 {
+  case reflect
+  case symmetric
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .reflect: return "REFLECT"
+      case .symmetric: return "SYMMETRIC"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum Padding: String {
-  case same = "SAME"
-  case valid = "VALID"
+public enum Padding {
+  case same
+  case valid
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .same: return "SAME"
+      case .valid: return "VALID"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum RnnMode: String {
-  case gru = "gru"
-  case lstm = "lstm"
-  case rnnRelu = "rnn_relu"
-  case rnnTanh = "rnn_tanh"
+public enum RnnMode {
+  case gru
+  case lstm
+  case rnnRelu
+  case rnnTanh
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .gru: return "gru"
+      case .lstm: return "lstm"
+      case .rnnRelu: return "rnn_relu"
+      case .rnnTanh: return "rnn_tanh"
+      }
+    }
+  }
 }
 
 @_fixed_layout
-public enum RoundMode: String {
-  case halfAwayFromZero = "HALF_AWAY_FROM_ZERO"
-  case halfToEven = "HALF_TO_EVEN"
+public enum RoundMode {
+  case halfAwayFromZero
+  case halfToEven
+
+  @_versioned @_inlineable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .halfAwayFromZero: return "HALF_AWAY_FROM_ZERO"
+      case .halfToEven: return "HALF_TO_EVEN"
+      }
+    }
+  }
 }
 
 @_inlineable @inline(__always)
@@ -1505,7 +1712,7 @@ public static func attrEnum(
   _ a: A
 ) {
   return #tfop("AttrEnum",
-    a: a.rawValue)
+    a: a.cName)
 }
 
 @_inlineable @inline(__always)
@@ -1651,8 +1858,8 @@ public static func avgPool<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Performs 3D average pooling on the input.
@@ -1685,8 +1892,8 @@ public static func avgPool3D<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes gradients of average pooling function.
@@ -1723,8 +1930,8 @@ public static func avgPool3DGrad<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes gradients of the average pooling function.
@@ -1760,8 +1967,8 @@ public static func avgPoolGrad<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 @_inlineable @inline(__always)
@@ -2424,7 +2631,7 @@ public static func biasAdd<T: Numeric>(
     value,
     bias,
     T: T.self,
-    data_format: dataFormat.rawValue)
+    data_format: dataFormat.cName)
 }
 
 /// The backward operation for "BiasAdd" on the "bias" tensor.
@@ -2452,7 +2659,7 @@ public static func biasAddGrad<T: Numeric>(
   return #tfop("BiasAddGrad",
     outBackprop,
     T: T.self,
-    data_format: dataFormat.rawValue)
+    data_format: dataFormat.cName)
 }
 
 /// Adds `bias` to `value`.
@@ -3196,8 +3403,8 @@ public static func collectiveReduce<T: Numeric>(
     group_size: groupSize,
     group_key: groupKey,
     instance_key: instanceKey,
-    merge_op: mergeOp.rawValue,
-    final_op: finalOp.rawValue,
+    merge_op: mergeOp.cName,
+    final_op: finalOp.cName,
     subdiv_offsets: subdivOffsets)
 }
 
@@ -3533,8 +3740,8 @@ public static func conv2D<T: BinaryFloatingPoint>(
     T: T.self,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -3585,8 +3792,8 @@ public static func conv2DBackpropFilter<T: BinaryFloatingPoint>(
     T: T.self,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -3636,8 +3843,8 @@ public static func conv2DBackpropInput<T: BinaryFloatingPoint>(
     T: T.self,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -3682,8 +3889,8 @@ public static func conv3D<T: BinaryFloatingPoint>(
     filter,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -3715,7 +3922,7 @@ public static func conv3DBackpropFilter<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
+    padding: padding.cName,
     dilations: dilations)
 }
 
@@ -3760,8 +3967,8 @@ public static func conv3DBackpropFilterV2<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -3793,7 +4000,7 @@ public static func conv3DBackpropInput<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
+    padding: padding.cName,
     dilations: dilations)
 }
 
@@ -3839,8 +4046,8 @@ public static func conv3DBackpropInputV2<T: BinaryFloatingPoint, Tshape: BinaryI
     T: T.self,
     Tshape: Tshape.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -4021,7 +4228,7 @@ public static func cropAndResize<T: Numeric>(
     boxInd,
     cropSize,
     T: T.self,
-    method: method.rawValue,
+    method: method.cName,
     extrapolation_value: extrapolationValue)
 }
 
@@ -4062,7 +4269,7 @@ public static func cropAndResizeGradBoxes<T: Numeric>(
     boxes,
     boxInd,
     T: T.self,
-    method: method.rawValue)
+    method: method.cName)
 }
 
 /// Computes the gradient of the crop_and_resize op wrt the input image tensor.
@@ -4103,7 +4310,7 @@ public static func cropAndResizeGradImage<T: BinaryFloatingPoint>(
     boxInd,
     imageSize,
     T: T.self,
-    method: method.rawValue)
+    method: method.cName)
 }
 
 /// Compute the pairwise cross product.
@@ -4180,9 +4387,9 @@ public static func cudnnRNN<T: BinaryFloatingPoint>(
     inputC,
     params,
     T: T.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2,
@@ -4263,9 +4470,9 @@ public static func cudnnRNNBackprop<T: BinaryFloatingPoint>(
     outputCBackprop,
     reserveSpace,
     T: T.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2)
@@ -4350,9 +4557,9 @@ public static func cudnnRNNBackpropV2<T: BinaryFloatingPoint>(
     reserveSpace,
     hostReserved,
     T: T.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2)
@@ -4410,9 +4617,9 @@ public static func cudnnRNNCanonicalToParams<T: BinaryFloatingPoint>(
     weights,
     biases,
     T: T.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2)
@@ -4460,9 +4667,9 @@ public static func cudnnRNNParamsSize<T: BinaryFloatingPoint, S: BinaryInteger>(
     inputSize,
     T: T.self,
     S: S.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2)
@@ -4520,9 +4727,9 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint>(
     params,
     T: T.self,
     num_params: numParams,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2)
@@ -4583,9 +4790,9 @@ public static func cudnnRNNV2<T: BinaryFloatingPoint>(
     inputC,
     params,
     T: T.self,
-    rnn_mode: rnnMode.rawValue,
-    input_mode: inputMode.rawValue,
-    direction: direction.rawValue,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
     dropout: dropout,
     seed: seed,
     seed2: seed2,
@@ -5136,7 +5343,7 @@ public static func depthToSpace<T: AccelerableByTensorFlow>(
     input,
     T: T.self,
     block_size: blockSize,
-    data_format: dataFormat.rawValue)
+    data_format: dataFormat.cName)
 }
 
 /// Computes a 2-D depthwise convolution given 4-D `input` and `filter` tensors.
@@ -5188,8 +5395,8 @@ public static func depthwiseConv2dNative<T: BinaryFloatingPoint>(
     filter,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -5241,8 +5448,8 @@ public static func depthwiseConv2dNativeBackpropFilter<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -5294,8 +5501,8 @@ public static func depthwiseConv2dNativeBackpropInput<T: BinaryFloatingPoint>(
     outBackprop,
     T: T.self,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue,
+    padding: padding.cName,
+    data_format: dataFormat.cName,
     dilations: dilations)
 }
 
@@ -5390,7 +5597,7 @@ public static func dequantize<T: AccelerableByTensorFlow>(
     minRange,
     maxRange,
     T: T.self,
-    mode: mode.rawValue)
+    mode: mode.cName)
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -5603,7 +5810,7 @@ public static func dilation2D<T: Numeric>(
     T: T.self,
     strides: strides,
     rates: rates,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the filter.
@@ -5637,7 +5844,7 @@ public static func dilation2DBackpropFilter<T: Numeric>(
     T: T.self,
     strides: strides,
     rates: rates,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the input.
@@ -5671,7 +5878,7 @@ public static func dilation2DBackpropInput<T: Numeric>(
     T: T.self,
     strides: strides,
     rates: rates,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Returns x / y element-wise.
@@ -6253,7 +6460,7 @@ public static func extractImagePatches<T: Numeric>(
     ksizes: ksizes,
     strides: strides,
     rates: rates,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Fast Fourier transform.
@@ -7208,9 +7415,9 @@ public static func fusedPadConv2D<T: BinaryFloatingPoint>(
     paddings,
     filter,
     T: T.self,
-    mode: mode.rawValue,
+    mode: mode.cName,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Performs a resize and padding as a preprocess during a convolution.
@@ -7259,9 +7466,9 @@ public static func fusedResizeAndPadConv2D<T: BinaryFloatingPoint>(
     filter,
     T: T.self,
     resize_align_corners: resizeAlignCorners,
-    mode: mode.rawValue,
+    mode: mode.cName,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Computes the GRU cell forward propagation for 1 time step.
@@ -9562,8 +9769,8 @@ public static func maxPool<T: Numeric>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Performs 3D max pooling on the input.
@@ -9596,8 +9803,8 @@ public static func maxPool3D<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes gradients of max pooling function.
@@ -9636,8 +9843,8 @@ public static func maxPool3DGrad<T: BinaryFloatingPoint, Tinput: BinaryFloatingP
     TInput: Tinput.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -9677,8 +9884,8 @@ public static func maxPool3DGradGrad<T: BinaryFloatingPoint>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -9717,8 +9924,8 @@ public static func maxPoolGrad<T: Numeric>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -9757,8 +9964,8 @@ public static func maxPoolGradGrad<T: Numeric>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -9797,8 +10004,8 @@ public static func maxPoolGradGradV2<T: Numeric>(
     ksize,
     strides,
     T: T.self,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -9833,7 +10040,7 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger, T: Numeric>
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -9872,8 +10079,8 @@ public static func maxPoolGradV2<T: Numeric>(
     ksize,
     strides,
     T: T.self,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -9908,7 +10115,7 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger, T: Numeric>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Performs max pooling on the input.
@@ -9941,8 +10148,8 @@ public static func maxPoolV2<T: Numeric>(
     ksize,
     strides,
     T: T.self,
-    padding: padding.rawValue,
-    data_format: dataFormat.rawValue)
+    padding: padding.cName,
+    data_format: dataFormat.cName)
 }
 
 /// Performs max pooling on the input and outputs both max values and indices.
@@ -9980,7 +10187,7 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger, T: Numeric>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Returns the max of x and y (i.e. x > y ? x : y) element-wise.
@@ -10183,7 +10390,7 @@ public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryIntege
     paddings,
     T: T.self,
     Tpaddings: Tpaddings.self,
-    mode: mode.rawValue)
+    mode: mode.cName)
 }
 
 /// Gradient op for `MirrorPad` op. This op folds a mirror-padded tensor.
@@ -10226,7 +10433,7 @@ public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryIn
     paddings,
     T: T.self,
     Tpaddings: Tpaddings.self,
-    mode: mode.rawValue)
+    mode: mode.cName)
 }
 
 @_inlineable @inline(__always)
@@ -11742,8 +11949,8 @@ public static func quantizeV2<T: AccelerableByTensorFlow>(
     minRange,
     maxRange,
     T: T.self,
-    mode: mode.rawValue,
-    round_mode: roundMode.rawValue)
+    mode: mode.cName,
+    round_mode: roundMode.cName)
 }
 
 /// Returns x + y element-wise, working on quantized buffers.
@@ -11814,7 +12021,7 @@ public static func quantizedAvgPool<T: AccelerableByTensorFlow>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Quantized Batch normalization.
@@ -12008,7 +12215,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
     Tfilter: Tfilter.self,
     out_type: Out_type.self,
     strides: strides,
-    padding: padding.rawValue,
+    padding: padding.cName,
     dilations: dilations)
 }
 
@@ -12139,7 +12346,7 @@ public static func quantizedMaxPool<T: AccelerableByTensorFlow>(
     T: T.self,
     ksize: ksize,
     strides: strides,
-    padding: padding.rawValue)
+    padding: padding.cName)
 }
 
 /// Returns x * y element-wise, working on quantized buffers.
@@ -14702,7 +14909,7 @@ public static func sdcaOptimizer(
     sparseWeights,
     denseWeights,
     exampleStateData,
-    loss_type: lossType.rawValue,
+    loss_type: lossType.cName,
     adaptative: adaptative,
     l1: l1,
     l2: l2,
@@ -15742,7 +15949,7 @@ public static func spaceToDepth<T: AccelerableByTensorFlow>(
     input,
     T: T.self,
     block_size: blockSize,
-    data_format: dataFormat.rawValue)
+    data_format: dataFormat.cName)
 }
 
 /// Adds two `SparseTensor` objects to produce another `SparseTensor`.

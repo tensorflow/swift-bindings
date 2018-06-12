@@ -177,10 +177,22 @@ class EnumStore(object):
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
       codes.append(
           '@_fixed_layout\n' +
-          'public enum {}: String {{\n'.format(type_name) +
-          '\n'.join(['  case {} = "{}"'.format(
+          'public enum {} {{\n'.format(type_name) +
+          '\n'.join(['  case {}'.format(
+              swiftified_name_for_enums(a)) for a in allowed_values]) +
+          '\n\n' +
+          '  @_versioned @_inlineable\n' +
+          '  var cName: String {\n' +
+          '    @inline(__always)\n' +
+          '    get {\n' +
+          '      switch self {\n' +
+          '\n'.join(['      case .{}: return "{}"'.format(
               swiftified_name_for_enums(a), a) for a in allowed_values]) +
-          '\n}')
+         '\n' +
+         '      }\n' +
+         '    }\n' +
+         '  }\n' +
+         '}')
     return codes
 
   def maybe_add(self, allowed_values, attr_def_name):
@@ -273,7 +285,7 @@ class AttributeAsInput(object):
     self.tfop_name = attr_def.name
     self.swift_value = (
         self.swift_name if not use_enum
-        else self.swift_name + '.rawValue')
+        else self.swift_name + '.cName')
 
 
 def attr_def_defines_a_type(attr_def):

@@ -22,17 +22,11 @@ import tensorflow as tf
 
 from google.protobuf import text_format
 from tensorflow.core.framework import api_def_pb2
-from tensorflow.core.framework import op_def_pb2
 from tensorflow.core.framework import types_pb2
-from tensorflow.python import pywrap_tensorflow as c_api
+from tensorflow.python.framework import c_api_util
 
 flags = tf.flags
 FLAGS = flags.FLAGS
-
-flags.DEFINE_string(
-    'ops_path',
-    None,
-    'path to the ops.pbtxt file')
 
 flags.DEFINE_string(
     'api_def_path',
@@ -132,60 +126,6 @@ _SWIFTIFIED_ATTR_TYPES = {
 _OMITTED_PARAMETER_NAMES = set(['x', 'y', 'a', 'b', 'input', 'tensor'])
 
 _START_COMMENT = '///'
-
-
-# TODO(mazare): use the python ApiDefMap wrapper which should be a part of
-# TensorFlow 1.9 (tensorflow.python.framework.c_api_util).
-class ApiDefMap(object):
-  """Wrapper around Tf_ApiDefMap that handles querying and deletion.
-
-  The OpDef protos are also stored in this class so that they could
-  be queried by op name.
-  """
-
-  def __init__(self, ops_path):
-    op_def_proto = op_def_pb2.OpList()
-    buf = c_api.TF_GetAllOpList()
-    try:
-      if ops_path is not None:
-        with tf.gfile.Open(ops_path, 'r') as fobj:
-          data = fobj.read()
-        text_format.Parse(data, op_def_proto)
-      else:
-        op_def_proto.ParseFromString(c_api.TF_GetBuffer(buf))
-      self._api_def_map = c_api.TF_NewApiDefMap(buf)
-    finally:
-      c_api.TF_DeleteBuffer(buf)
-
-    self._op_per_name = {}
-    for op in op_def_proto.op:
-      self._op_per_name[op.name] = op
-
-  def __del__(self):
-    # Note: when we're destructing the global context (i.e when the process is
-    # terminating) we can have already deleted other modules.
-    if c_api is not None and c_api.TF_DeleteApiDefMap is not None:
-      c_api.TF_DeleteApiDefMap(self._api_def_map)
-
-  def put_api_def(self, text):
-    c_api.TF_ApiDefMapPut(self._api_def_map, text, len(text))
-
-  def get_api_def(self, op_name):
-    api_def_proto = api_def_pb2.ApiDef()
-    buf = c_api.TF_ApiDefMapGet(self._api_def_map, bytes(op_name), len(op_name))
-    try:
-      api_def_proto.ParseFromString(c_api.TF_GetBuffer(buf))
-    finally:
-      c_api.TF_DeleteBuffer(buf)
-    return api_def_proto
-
-  def get_op_def(self, op_name):
-    if op_name in self._op_per_name:
-      return self._op_per_name[op_name]
-    raise ValueError('No entry found for ' + op_name + '.')
-
-  def op_names(self):
-    return self._op_per_name.keys()
 
 
 class UnableToGenerateCodeError(Exception):
@@ -476,7 +416,7 @@ def main(argv):
   if FLAGS.output_path is None:
     raise ValueError('no output_path has been set')
 
-  api_def_map = ApiDefMap(FLAGS.ops_path)
+  api_def_map = c_api_util.ApiDefMap()
 
   op_codes = []
   enum_store = EnumStore()
@@ -494,7 +434,7 @@ def main(argv):
     try:
       if op_name[0] == '_': continue
       op = api_def_map.get_op_def(op_name)
-      api_def = api_def_map.get_api_def(op_name)
+      api_def = api_def_map.get_api_def(bytes(op_name))
       op_codes.append(generate_code(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))

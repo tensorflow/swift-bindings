@@ -176,6 +176,7 @@ class EnumStore(object):
     entries = list(self._entries.iteritems())
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
       codes.append(
+          '@_fixed_layout\n' +
           'public enum {}: String {{\n'.format(type_name) +
           '\n'.join(['  case {} = "{}"'.format(
               swiftified_name_for_enums(a), a) for a in allowed_values]) +

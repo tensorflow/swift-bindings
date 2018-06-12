@@ -20,54 +20,64 @@ public enum Raw {
 static let generatedTensorFlowVersion = "1.9.0-rc0"
 static let generatedTensorFlowGitVersion = "v1.9.0-rc0-2716-ge1436b2952"
 
+@_fixed_layout
 public enum A: String {
   case apples = "apples"
   case oranges = "oranges"
 }
 
+@_fixed_layout
 public enum DataFormat: String {
   case nchw = "NCHW"
   case nhwc = "NHWC"
 }
 
+@_fixed_layout
 public enum DataFormat1: String {
   case ncdhw = "NCDHW"
   case ndhwc = "NDHWC"
 }
 
+@_fixed_layout
 public enum DataFormat3: String {
   case nchw = "NCHW"
   case nchwVectC = "NCHW_VECT_C"
   case nhwc = "NHWC"
 }
 
+@_fixed_layout
 public enum DensityUnit: String {
   case cm = "cm"
   case in_ = "in"
 }
 
+@_fixed_layout
 public enum Direction: String {
   case bidirectional = "bidirectional"
   case unidirectional = "unidirectional"
 }
 
+@_fixed_layout
 public enum FinalOp: String {
   case div = "Div"
   case id = "Id"
 }
 
+@_fixed_layout
 public enum Format: String {
   case empty = ""
   case grayscale = "grayscale"
   case rgb = "rgb"
 }
 
+@_fixed_layout
 public enum InputMode: String {
   case autoSelect = "auto_select"
   case linearInput = "linear_input"
   case skipInput = "skip_input"
 }
 
+@_fixed_layout
 public enum LossType: String {
   case hingeLoss = "hinge_loss"
   case logisticLoss = "logistic_loss"
@@ -75,6 +85,7 @@ public enum LossType: String {
   case squaredLoss = "squared_loss"
 }
 
+@_fixed_layout
 public enum MergeOp: String {
   case add = "Add"
   case max = "Max"
@@ -82,31 +93,37 @@ public enum MergeOp: String {
   case mul = "Mul"
 }
 
+@_fixed_layout
 public enum Method: String {
   case bilinear = "bilinear"
   case nearest = "nearest"
 }
 
+@_fixed_layout
 public enum Method2: String {
   case bilinear = "bilinear"
 }
 
+@_fixed_layout
 public enum Mode: String {
   case minCombined = "MIN_COMBINED"
   case minFirst = "MIN_FIRST"
   case scaled = "SCALED"
 }
 
+@_fixed_layout
 public enum Mode4: String {
   case reflect = "REFLECT"
   case symmetric = "SYMMETRIC"
 }
 
+@_fixed_layout
 public enum Padding: String {
   case same = "SAME"
   case valid = "VALID"
 }
 
+@_fixed_layout
 public enum RnnMode: String {
   case gru = "gru"
   case lstm = "lstm"
@@ -114,6 +131,7 @@ public enum RnnMode: String {
   case rnnTanh = "rnn_tanh"
 }
 
+@_fixed_layout
 public enum RoundMode: String {
   case halfAwayFromZero = "HALF_AWAY_FROM_ZERO"
   case halfToEven = "HALF_TO_EVEN"

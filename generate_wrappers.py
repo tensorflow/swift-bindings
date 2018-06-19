@@ -180,7 +180,7 @@ class EnumStore(object):
           '\n'.join(['  case {}'.format(
               swiftified_name_for_enums(a)) for a in allowed_values]) +
           '\n\n' +
-          '  @_versioned @_inlineable\n' +
+          '  @inlinable\n' +
           '  var cName: String {\n' +
           '    @inline(__always)\n' +
           '    get {\n' +
@@ -411,7 +411,7 @@ def generate_code(op, api_def, enum_store):
           attr_names_and_types +
           missing_types)]
   return (
-      """{documentation}@_inlineable @inline(__always)
+      """{documentation}@inlinable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}
 ){return_type} {{
   return #tfop({tfop_args})

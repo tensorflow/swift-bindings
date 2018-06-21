@@ -17,8 +17,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.9.0-rc0"
-static let generatedTensorFlowGitVersion = "v1.9.0-rc0-2716-ge1436b2952"
+static let generatedTensorFlowVersion = "1.9.0-rc1"
+static let generatedTensorFlowGitVersion = "v1.9.0-rc0-35-g17d6639b55"
 
 @_frozen
 public enum A {
@@ -7859,6 +7859,18 @@ public static func gatherV2<Tparams: AccelerableByTensorFlow, Tindices: BinaryIn
     Tparams: Tparams.self,
     Tindices: Tindices.self,
     Taxis: Taxis.self)
+}
+
+@inlinable @inline(__always)
+public static func gcsConfigureBlockCache(
+  maxCacheSize: Tensor<UInt64>,
+  blockSize: Tensor<UInt64>,
+  maxStaleness: Tensor<UInt64>
+) {
+  return #tfop("GcsConfigureBlockCache",
+    maxCacheSize,
+    blockSize,
+    maxStaleness)
 }
 
 @inlinable @inline(__always)

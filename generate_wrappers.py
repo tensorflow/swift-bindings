@@ -260,7 +260,7 @@ def swift_default_value(attr_value, use_enum):
 
 
 class AttributeAsInput(object):
-  """Extract from an attr_def some swift related fields."""
+  """Extracts from an attr_def some swift related fields."""
 
   def __init__(self, attr_def, enum_store):
     if attr_def.type not in _SWIFTIFIED_ATTR_TYPES:

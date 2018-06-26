@@ -121,7 +121,7 @@ _SWIFTIFIED_ATTR_TYPES = {
     'list(string)': '[String]',
 }
 
-_OMITTED_PARAMETER_NAMES = set(['x', 'y', 'a', 'b', 'input', 'tensor'])
+_OMITTED_PARAMETER_NAMES = set(['x', 'y', 'a', 'b', 'input', 'tensor', 'values'])
 
 _START_COMMENT = '///'
 

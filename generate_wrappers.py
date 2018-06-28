@@ -121,7 +121,8 @@ _SWIFTIFIED_ATTR_TYPES = {
     'list(string)': '[String]',
 }
 
-_OMITTED_PARAMETER_NAMES = set(['x', 'y', 'a', 'b', 'input', 'tensor', 'values'])
+_OMITTED_PARAMETER_NAMES = set(
+    ['x', 'y', 'a', 'b', 'input', 'tensor', 'values'])
 
 _START_COMMENT = '///'
 
@@ -379,12 +380,15 @@ def generate_code(op, api_def, enum_store):
       if not attr_def_defines_a_type(a) and a.name not in excluded_attributes
   ]
 
-  return_types = [arg_def_type_as_string(a) for a in op.output_arg]
+  return_name_and_types = [
+      (swiftified_name(a.name), arg_def_type_as_string(a))
+      for a in op.output_arg]
   return_type = ''
-  if len(return_types) == 1:
-    return_type = ' -> ' + return_types[0]
-  elif len(return_types) > 1:
-    return_type = ' -> (' + ', '.join(return_types) + ')'
+  if len(return_name_and_types) == 1:
+    return_type = ' -> ' + return_name_and_types[0][1]
+  elif len(return_name_and_types) > 1:
+    named_types = [n + ': ' + t for n, t in return_name_and_types]
+    return_type = ' -> (' + ', '.join(named_types) + ')'
 
   tfop_args = ',\n    '.join(
       ['"' + op.name + '"'] +

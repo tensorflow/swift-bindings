@@ -709,7 +709,7 @@ public static func allCandidateSampler(
   unique: Bool,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("AllCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -2027,7 +2027,7 @@ public static func batch<T: AccelerableByTensorFlow>(
   container: String,
   sharedName: String,
   batchingQueue: String
-) -> ([Tensor<T>], Tensor<Int64>, Tensor<Int64>) {
+) -> (batchedTensors: [Tensor<T>], batchIndex: Tensor<Int64>, id: Tensor<Int64>) {
   return #tfop("Batch",
     inTensors,
     num_batch_threads: numBatchThreads,
@@ -2291,7 +2291,7 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric>(
   backprop: Tensor<T>,
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (dx: Tensor<T>, dm: Tensor<T>, dv: Tensor<T>, db: Tensor<T>, dg: Tensor<T>) {
   return #tfop("BatchNormWithGlobalNormalizationGrad",
     t,
     m,
@@ -2316,7 +2316,7 @@ public static func batchSelfAdjointEig<T: BinaryFloatingPoint>(
 public static func batchSelfAdjointEigV2<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   computeV: Bool = true
-) -> (Tensor<T>, Tensor<T>) {
+) -> (e: Tensor<T>, v: Tensor<T>) {
   return #tfop("BatchSelfAdjointEigV2",
     input,
     T: T.self,
@@ -2328,7 +2328,7 @@ public static func batchSvd<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   computeUv: Bool = true,
   fullMatrices: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   return #tfop("BatchSvd",
     input,
     T: T.self,
@@ -2856,7 +2856,7 @@ public static func blockLSTM<T: BinaryFloatingPoint>(
   forgetBias: Double = 1,
   cellClip: Double = 3,
   usePeephole: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
   return #tfop("BlockLSTM",
     seqLenMax,
     x,
@@ -2930,7 +2930,7 @@ public static func blockLSTMGrad<T: BinaryFloatingPoint>(
   csGrad: Tensor<T>,
   hGrad: Tensor<T>,
   usePeephole: Bool
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (xGrad: Tensor<T>, csPrevGrad: Tensor<T>, hPrevGrad: Tensor<T>, wGrad: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>, bGrad: Tensor<T>) {
   return #tfop("BlockLSTMGrad",
     seqLenMax,
     x,
@@ -2992,7 +2992,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   treeComplexity: Tensor<Float>,
   minNodeWeight: Tensor<Float>,
   maxSplits: Int64
-) -> ([Tensor<Int32>], [Tensor<Float>], [Tensor<Int32>], [Tensor<Float>], [Tensor<Float>]) {
+) -> (nodeIdsList: [Tensor<Int32>], gainsList: [Tensor<Float>], thresholdsList: [Tensor<Int32>], leftNodeContribsList: [Tensor<Float>], rightNodeContribsList: [Tensor<Float>]) {
   return #tfop("BoostedTreesCalculateBestGainsPerFeature",
     nodeIdRange,
     statsSummaryList,
@@ -3059,7 +3059,7 @@ public static func broadcastArgs<T: BinaryInteger>(
 public static func broadcastGradientArgs<T: BinaryInteger>(
   s0: Tensor<T>,
   s1: Tensor<T>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (r0: Tensor<T>, r1: Tensor<T>) {
   return #tfop("BroadcastGradientArgs",
     s0,
     s1,
@@ -3172,7 +3172,7 @@ public static func cTCBeamSearchDecoder(
   beamWidth: Int64,
   topPaths: Int64,
   mergeRepeated: Bool = true
-) -> ([Tensor<Int64>], [Tensor<Int64>], [Tensor<Int64>], Tensor<Float>) {
+) -> (decodedIndices: [Tensor<Int64>], decodedValues: [Tensor<Int64>], decodedShape: [Tensor<Int64>], logProbability: Tensor<Float>) {
   return #tfop("CTCBeamSearchDecoder",
     inputs,
     sequenceLength,
@@ -3213,7 +3213,7 @@ public static func cTCGreedyDecoder(
   inputs: Tensor<Float>,
   sequenceLength: Tensor<Int32>,
   mergeRepeated: Bool = false
-) -> (Tensor<Int64>, Tensor<Int64>, Tensor<Int64>, Tensor<Float>) {
+) -> (decodedIndices: Tensor<Int64>, decodedValues: Tensor<Int64>, decodedShape: Tensor<Int64>, logProbability: Tensor<Float>) {
   return #tfop("CTCGreedyDecoder",
     inputs,
     sequenceLength,
@@ -3256,7 +3256,7 @@ public static func cTCLoss(
   preprocessCollapseRepeated: Bool = false,
   ctcMergeRepeated: Bool = true,
   ignoreLongerOutputsThanInputs: Bool = false
-) -> (Tensor<Float>, Tensor<Float>) {
+) -> (loss: Tensor<Float>, gradient: Tensor<Float>) {
   return #tfop("CTCLoss",
     inputs,
     labelsIndices,
@@ -3500,7 +3500,7 @@ public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPo
 public static func complexStruct<T_c: AccelerableByTensorFlow>(
   nA: Int64,
   nB: Int64
-) -> ([Tensor<Int32>], [Tensor<Int64>], [Tensor<T_c>]) {
+) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: [Tensor<T_c>]) {
   return #tfop("ComplexStruct",
     n_a: nA,
     n_b: nB)
@@ -3537,7 +3537,7 @@ public static func computeAccidentalHits(
   numTrue: Int64,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int32>, Tensor<Int64>, Tensor<Float>) {
+) -> (indices: Tensor<Int32>, ids: Tensor<Int64>, weights: Tensor<Float>) {
   return #tfop("ComputeAccidentalHits",
     trueClasses,
     sampledCandidates,
@@ -4380,7 +4380,7 @@ public static func cudnnRNN<T: BinaryFloatingPoint>(
   seed: Int64 = 0,
   seed2: Int64 = 0,
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>) {
   return #tfop("CudnnRNN",
     input,
     inputH,
@@ -4456,7 +4456,7 @@ public static func cudnnRNNBackprop<T: BinaryFloatingPoint>(
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
   return #tfop("CudnnRNNBackprop",
     input,
     inputH,
@@ -4542,7 +4542,7 @@ public static func cudnnRNNBackpropV2<T: BinaryFloatingPoint>(
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
   return #tfop("CudnnRNNBackpropV2",
     input,
     inputH,
@@ -4719,7 +4719,7 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint>(
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> ([Tensor<T>], [Tensor<T>]) {
+) -> (weights: [Tensor<T>], biases: [Tensor<T>]) {
   return #tfop("CudnnRNNParamsToCanonical",
     numLayers,
     numUnits,
@@ -4783,7 +4783,7 @@ public static func cudnnRNNV2<T: BinaryFloatingPoint>(
   seed: Int64 = 0,
   seed2: Int64 = 0,
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<Int8>) {
+) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>, hostReserved: Tensor<Int8>) {
   return #tfop("CudnnRNNV2",
     input,
     inputH,
@@ -5177,7 +5177,7 @@ public static func denseToDenseSetOperation<T: BinaryInteger>(
   set2: Tensor<T>,
   setOperation: String,
   validateIndices: Bool = true
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   return #tfop("DenseToDenseSetOperation",
     set1,
     set2,
@@ -5229,7 +5229,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger>(
   set2Shape: Tensor<Int64>,
   setOperation: String,
   validateIndices: Bool = true
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   return #tfop("DenseToSparseSetOperation",
     set1,
     set2Indices,
@@ -5651,7 +5651,7 @@ public static func dequantize<T: AccelerableByTensorFlow>(
 @inlinable @inline(__always)
 public static func deserializeSparse<Dtype: AccelerableByTensorFlow, Tserialized: AccelerableByTensorFlow>(
   serializedSparse: Tensor<Tserialized>
-) -> (Tensor<Int64>, Tensor<Dtype>, Tensor<Int64>) {
+) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   return #tfop("DeserializeSparse",
     serializedSparse,
     dtype: Dtype.self,
@@ -6634,7 +6634,7 @@ public static func fakeQuantWithMinMaxVarsGradient(
   max: Tensor<Float>,
   numBits: Int64 = 8,
   narrowRange: Bool = false
-) -> (Tensor<Float>, Tensor<Float>, Tensor<Float>) {
+) -> (backpropsWrtInput: Tensor<Float>, backpropWrtMin: Tensor<Float>, backpropWrtMax: Tensor<Float>) {
   return #tfop("FakeQuantWithMinMaxVarsGradient",
     gradients,
     inputs,
@@ -6702,7 +6702,7 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   max: Tensor<Float>,
   numBits: Int64 = 8,
   narrowRange: Bool = false
-) -> (Tensor<Float>, Tensor<Float>, Tensor<Float>) {
+) -> (backpropsWrtInput: Tensor<Float>, backpropWrtMin: Tensor<Float>, backpropWrtMax: Tensor<Float>) {
   return #tfop("FakeQuantWithMinMaxVarsPerChannelGradient",
     gradients,
     inputs,
@@ -6745,7 +6745,7 @@ public static func fill<T: AccelerableByTensorFlow, Index_type: BinaryInteger>(
 
 @inlinable @inline(__always)
 public static func fiveFloatOutputs(
-) -> (Tensor<Float>, Tensor<Float>, Tensor<Float>, Tensor<Float>, Tensor<Float>) {
+) -> (a: Tensor<Float>, b: Tensor<Float>, c: Tensor<Float>, d: Tensor<Float>, e: Tensor<Float>) {
   return #tfop("FiveFloatOutputs")
 }
 
@@ -6829,7 +6829,7 @@ public static func fixedUnigramCandidateSampler(
   unigrams: [Double],
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("FixedUnigramCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -6908,7 +6908,7 @@ public static func foo1(
   _ a: Tensor<Float>,
   _ b: Tensor<Int32>,
   c: Tensor<Int32>
-) -> (Tensor<Float>, Tensor<Int32>) {
+) -> (d: Tensor<Float>, e: Tensor<Int32>) {
   return #tfop("Foo1",
     a,
     b,
@@ -6965,7 +6965,7 @@ public static func fractionalAvgPool<T: Numeric>(
   deterministic: Bool = false,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<T>, Tensor<Int64>, Tensor<Int64>) {
+) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   return #tfop("FractionalAvgPool",
     value,
     T: T.self,
@@ -7096,7 +7096,7 @@ public static func fractionalMaxPool<T: Numeric>(
   deterministic: Bool = false,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<T>, Tensor<Int64>, Tensor<Int64>) {
+) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   return #tfop("FractionalMaxPool",
     value,
     T: T.self,
@@ -7191,7 +7191,7 @@ public static func fusedBatchNorm<T: BinaryFloatingPoint>(
   epsilon: Double = 0.0001,
   dataFormat: String = "NHWC",
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (y: Tensor<T>, batchMean: Tensor<T>, batchVariance: Tensor<T>, reserveSpace1: Tensor<T>, reserveSpace2: Tensor<T>) {
   return #tfop("FusedBatchNorm",
     x,
     scale,
@@ -7248,7 +7248,7 @@ public static func fusedBatchNormGrad<T: BinaryFloatingPoint>(
   epsilon: Double = 0.0001,
   dataFormat: String = "NHWC",
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<T>, offsetBackprop: Tensor<T>, reserveSpace3: Tensor<T>, reserveSpace4: Tensor<T>) {
   return #tfop("FusedBatchNormGrad",
     yBackprop,
     x,
@@ -7306,7 +7306,7 @@ public static func fusedBatchNormGradV2<T: BinaryFloatingPoint, U: BinaryFloatin
   epsilon: Double = 0.0001,
   dataFormat: String = "NHWC",
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<U>, Tensor<U>, Tensor<U>, Tensor<U>) {
+) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<U>, offsetBackprop: Tensor<U>, reserveSpace3: Tensor<U>, reserveSpace4: Tensor<U>) {
   return #tfop("FusedBatchNormGradV2",
     yBackprop,
     x,
@@ -7362,7 +7362,7 @@ public static func fusedBatchNormV2<T: BinaryFloatingPoint, U: BinaryFloatingPoi
   epsilon: Double = 0.0001,
   dataFormat: String = "NHWC",
   isTraining: Bool = true
-) -> (Tensor<T>, Tensor<U>, Tensor<U>, Tensor<U>, Tensor<U>) {
+) -> (y: Tensor<T>, batchMean: Tensor<U>, batchVariance: Tensor<U>, reserveSpace1: Tensor<U>, reserveSpace2: Tensor<U>) {
   return #tfop("FusedBatchNormV2",
     x,
     scale,
@@ -7525,7 +7525,7 @@ public static func gRUBlockCell<T: BinaryFloatingPoint>(
   wC: Tensor<T>,
   bRu: Tensor<T>,
   bC: Tensor<T>
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (r: Tensor<T>, u: Tensor<T>, c: Tensor<T>, h: Tensor<T>) {
   return #tfop("GRUBlockCell",
     x,
     hPrev,
@@ -7630,7 +7630,7 @@ public static func gRUBlockCellGrad<T: BinaryFloatingPoint>(
   u: Tensor<T>,
   c: Tensor<T>,
   dH: Tensor<T>
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (dX: Tensor<T>, dHPrev: Tensor<T>, dCBar: Tensor<T>, dRBarUBar: Tensor<T>) {
   return #tfop("GRUBlockCellGrad",
     x,
     hPrev,
@@ -8362,7 +8362,7 @@ public static func intOutput(
 
 @inlinable @inline(__always)
 public static func intOutputFloatOutput(
-) -> (Tensor<Int32>, Tensor<Float>) {
+) -> (a: Tensor<Int32>, b: Tensor<Float>) {
   return #tfop("IntOutputFloatOutput")
 }
 
@@ -8648,7 +8648,7 @@ public static func lSTMBlockCell<T: BinaryFloatingPoint>(
   forgetBias: Double = 1,
   cellClip: Double = 3,
   usePeephole: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
   return #tfop("LSTMBlockCell",
     x,
     csPrev,
@@ -8713,7 +8713,7 @@ public static func lSTMBlockCellGrad<T: BinaryFloatingPoint>(
   csGrad: Tensor<T>,
   hGrad: Tensor<T>,
   usePeephole: Bool
-) -> (Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (csPrevGrad: Tensor<T>, dicfo: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>) {
   return #tfop("LSTMBlockCellGrad",
     x,
     csPrev,
@@ -8781,7 +8781,7 @@ public static func learnedUnigramCandidateSampler(
   rangeMax: Int64,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("LearnedUnigramCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -8914,7 +8914,7 @@ public static func linSpace<T: BinaryFloatingPoint, Tidx: BinaryInteger>(
 public static func listDiff<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
-) -> (Tensor<T>, Tensor<Out_idx>) {
+) -> (out: Tensor<T>, idx: Tensor<Out_idx>) {
   return #tfop("ListDiff",
     x,
     y,
@@ -8982,7 +8982,7 @@ public static func log1p<T: BinaryFloatingPoint>(
 @inlinable @inline(__always)
 public static func logMatrixDeterminant<T: BinaryFloatingPoint>(
   _ input: Tensor<T>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (sign: Tensor<T>, logAbsDeterminant: Tensor<T>) {
   return #tfop("LogMatrixDeterminant",
     input,
     T: T.self)
@@ -9052,7 +9052,7 @@ public static func logUniformCandidateSampler(
   rangeMax: Int64,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("LogUniformCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -9253,7 +9253,7 @@ public static func mapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
   memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
-) -> (Tensor<Int64>, [Tensor<Dtypes>]) {
+) -> (key: Tensor<Int64>, values: [Tensor<Dtypes>]) {
   return #tfop("MapUnstageNoKey",
     indices,
     capacity: capacity,
@@ -10192,7 +10192,7 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger, T: Numeric>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding
-) -> (Tensor<T>, Tensor<Targmax>) {
+) -> (output: Tensor<T>, argmax: Tensor<Targmax>) {
   return #tfop("MaxPoolWithArgmax",
     input,
     Targmax: Targmax.self,
@@ -10262,7 +10262,7 @@ public static func mean<T: Numeric, Tidx: BinaryInteger>(
 @inlinable @inline(__always)
 public static func merge<T: AccelerableByTensorFlow>(
   inputs: [Tensor<T>]
-) -> (Tensor<T>, Tensor<Int32>) {
+) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
   return #tfop("Merge",
     inputs,
     T: T.self)
@@ -10451,7 +10451,7 @@ public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryIn
 @inlinable @inline(__always)
 public static func mixedStruct(
   nA: Int64
-) -> ([Tensor<Int32>], Tensor<Float>) {
+) -> (a: [Tensor<Int32>], b: Tensor<Float>) {
   return #tfop("MixedStruct",
     n_a: nA)
 }
@@ -11160,7 +11160,7 @@ public static func orderedMapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
   memoryLimit: Int64 = 0,
   container: String,
   sharedName: String
-) -> (Tensor<Int64>, [Tensor<Dtypes>]) {
+) -> (key: Tensor<Int64>, values: [Tensor<Dtypes>]) {
   return #tfop("OrderedMapUnstageNoKey",
     indices,
     capacity: capacity,
@@ -11653,7 +11653,7 @@ public static func pyFuncStateless<Tin: AccelerableByTensorFlow, Tout: Accelerab
 public static func qr<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   fullMatrices: Bool = false
-) -> (Tensor<T>, Tensor<T>) {
+) -> (q: Tensor<T>, r: Tensor<T>) {
   return #tfop("Qr",
     input,
     T: T.self,
@@ -11830,7 +11830,7 @@ public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, O
   _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<Out_type>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("QuantizeDownAndShrinkRange",
     input,
     inputMin,
@@ -11955,7 +11955,7 @@ public static func quantizeV2<T: AccelerableByTensorFlow>(
   maxRange: Tensor<Float>,
   mode: Mode = .minCombined,
   roundMode: RoundMode = .halfAwayFromZero
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("QuantizeV2",
     input,
     minRange,
@@ -11987,7 +11987,7 @@ public static func quantizedAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTe
   maxX: Tensor<Float>,
   minY: Tensor<Float>,
   maxY: Tensor<Float>
-) -> (Tensor<Toutput>, Tensor<Float>, Tensor<Float>) {
+) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
   return #tfop("QuantizedAdd",
     x,
     y,
@@ -12025,7 +12025,7 @@ public static func quantizedAvgPool<T: AccelerableByTensorFlow>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   return #tfop("QuantizedAvgPool",
     input,
     minInput,
@@ -12088,7 +12088,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
   gammaMax: Tensor<Float>,
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (result: Tensor<Out_type>, resultMin: Tensor<Float>, resultMax: Tensor<Float>) {
   return #tfop("QuantizedBatchNormWithGlobalNormalization",
     t,
     tMin,
@@ -12133,7 +12133,7 @@ public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: Accelerable
   maxInput: Tensor<Float>,
   minBias: Tensor<Float>,
   maxBias: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<Out_type>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
   return #tfop("QuantizedBiasAdd",
     input,
     bias,
@@ -12168,7 +12168,7 @@ public static func quantizedConcat<T: AccelerableByTensorFlow>(
   _ values: [Tensor<T>],
   inputMins: [Tensor<Float>],
   inputMaxes: [Tensor<Float>]
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("QuantizedConcat",
     concatDim,
     values,
@@ -12215,7 +12215,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
   strides: [Int32],
   padding: Padding,
   dilations: [Int32] = [1, 1, 1, 1]
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<Out_type>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   return #tfop("QuantizedConv2D",
     input,
     filter,
@@ -12261,7 +12261,7 @@ public static func quantizedInstanceNorm<T: AccelerableByTensorFlow>(
   givenYMax: Double = 0,
   varianceEpsilon: Double = 1e-05,
   minSeparation: Double = 0.001
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (y: Tensor<T>, yMin: Tensor<Float>, yMax: Tensor<Float>) {
   return #tfop("QuantizedInstanceNorm",
     x,
     xMin,
@@ -12309,7 +12309,7 @@ public static func quantizedMatMul<T1: AccelerableByTensorFlow, T2: AccelerableB
   transposeA: Bool = false,
   transposeB: Bool = false,
   typeTactivation: Tactivation.Type
-) -> (Tensor<Toutput>, Tensor<Float>, Tensor<Float>) {
+) -> (out: Tensor<Toutput>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
   return #tfop("QuantizedMatMul",
     a,
     b,
@@ -12350,7 +12350,7 @@ public static func quantizedMaxPool<T: AccelerableByTensorFlow>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   return #tfop("QuantizedMaxPool",
     input,
     minInput,
@@ -12383,7 +12383,7 @@ public static func quantizedMul<T1: AccelerableByTensorFlow, T2: AccelerableByTe
   maxX: Tensor<Float>,
   minY: Tensor<Float>,
   maxY: Tensor<Float>
-) -> (Tensor<Toutput>, Tensor<Float>, Tensor<Float>) {
+) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
   return #tfop("QuantizedMul",
     x,
     y,
@@ -12411,7 +12411,7 @@ public static func quantizedRelu<Tinput: AccelerableByTensorFlow, Out_type: Acce
   features: Tensor<Tinput>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedRelu",
     features,
     minFeatures,
@@ -12435,7 +12435,7 @@ public static func quantizedRelu6<Tinput: AccelerableByTensorFlow, Out_type: Acc
   features: Tensor<Tinput>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedRelu6",
     features,
     minFeatures,
@@ -12460,7 +12460,7 @@ public static func quantizedReluX<Tinput: AccelerableByTensorFlow, Out_type: Acc
   maxValue: Tensor<Float>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedReluX",
     features,
     maxValue,
@@ -12488,7 +12488,7 @@ public static func quantizedReshape<T: AccelerableByTensorFlow, Tshape: BinaryIn
   shape: Tensor<Tshape>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("QuantizedReshape",
     tensor,
     shape,
@@ -12519,7 +12519,7 @@ public static func quantizedResizeBilinear<T: BinaryFloatingPoint>(
   min: Tensor<Float>,
   max: Tensor<Float>,
   alignCorners: Bool = false
-) -> (Tensor<T>, Tensor<Float>, Tensor<Float>) {
+) -> (resizedImages: Tensor<T>, outMin: Tensor<Float>, outMax: Tensor<Float>) {
   return #tfop("QuantizedResizeBilinear",
     images,
     size,
@@ -13051,7 +13051,7 @@ public static func refInputIntInput(
 @inlinable @inline(__always)
 public static func refMerge<T: AccelerableByTensorFlow>(
   inputs: [Tensor<T>]
-) -> (Tensor<T>, Tensor<Int32>) {
+) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
   return #tfop("RefMerge",
     inputs,
     T: T.self)
@@ -13086,7 +13086,7 @@ public static func refOutput(
 
 @inlinable @inline(__always)
 public static func refOutputFloatOutput(
-) -> (Tensor<Float>, Tensor<Float>) {
+) -> (a: Tensor<Float>, b: Tensor<Float>) {
   return #tfop("RefOutputFloatOutput")
 }
 
@@ -13126,7 +13126,7 @@ public static func refSelect<T: AccelerableByTensorFlow>(
 public static func refSwitch<T: AccelerableByTensorFlow>(
   data: Tensor<T>,
   pred: Tensor<Bool>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
   return #tfop("RefSwitch",
     data,
     pred,
@@ -13238,7 +13238,7 @@ public static func requantizationRange<Tinput: AccelerableByTensorFlow>(
   _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
-) -> (Tensor<Float>, Tensor<Float>) {
+) -> (outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("RequantizationRange",
     input,
     inputMin,
@@ -13275,7 +13275,7 @@ public static func requantize<Tinput: AccelerableByTensorFlow, Out_type: Acceler
   inputMax: Tensor<Float>,
   requestedOutputMin: Tensor<Float>,
   requestedOutputMax: Tensor<Float>
-) -> (Tensor<Out_type>, Tensor<Float>, Tensor<Float>) {
+) -> (output: Tensor<Out_type>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("Requantize",
     input,
     inputMin,
@@ -14008,7 +14008,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger>(
   areaRange: [Double] = [0.05, 1],
   maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {
+) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
   return #tfop("SampleDistortedBoundingBox",
     imageSize,
     boundingBoxes,
@@ -14106,7 +14106,7 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger>(
   areaRange: [Double] = [0.05, 1],
   maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<Float>) {
+) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
   return #tfop("SampleDistortedBoundingBoxV2",
     imageSize,
     boundingBoxes,
@@ -14909,7 +14909,7 @@ public static func sdcaOptimizer(
   l2: Double,
   numLossPartitions: Int64,
   numInnerIterations: Int64
-) -> (Tensor<Float>, [Tensor<Float>], [Tensor<Float>]) {
+) -> (outExampleStateData: Tensor<Float>, outDeltaSparseWeights: [Tensor<Float>], outDeltaDenseWeights: [Tensor<Float>]) {
   return #tfop("SdcaOptimizer",
     sparseExampleIndices,
     sparseFeatureIndices,
@@ -15220,7 +15220,7 @@ public static func selfAdjointEig<T: BinaryFloatingPoint>(
 public static func selfAdjointEigV2<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   computeV: Bool = true
-) -> (Tensor<T>, Tensor<T>) {
+) -> (e: Tensor<T>, v: Tensor<T>) {
   return #tfop("SelfAdjointEigV2",
     input,
     T: T.self,
@@ -15556,7 +15556,7 @@ public static func softmax<T: BinaryFloatingPoint>(
 public static func softmaxCrossEntropyWithLogits<T: BinaryFloatingPoint>(
   features: Tensor<T>,
   labels: Tensor<T>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (loss: Tensor<T>, backprop: Tensor<T>) {
   return #tfop("SoftmaxCrossEntropyWithLogits",
     features,
     labels,
@@ -16002,7 +16002,7 @@ public static func sparseAdd<T: Numeric, Treal: Numeric>(
   bValues: Tensor<T>,
   bShape: Tensor<Int64>,
   thresh: Tensor<Treal>
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (sumIndices: Tensor<Int64>, sumValues: Tensor<T>, sumShape: Tensor<Int64>) {
   return #tfop("SparseAdd",
     aIndices,
     aValues,
@@ -16041,7 +16041,7 @@ public static func sparseAddGrad<T: Numeric>(
   aIndices: Tensor<Int64>,
   bIndices: Tensor<Int64>,
   sumIndices: Tensor<Int64>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (aValGrad: Tensor<T>, bValGrad: Tensor<T>) {
   return #tfop("SparseAddGrad",
     backpropValGrad,
     aIndices,
@@ -16604,7 +16604,7 @@ public static func sparseConcat<T: AccelerableByTensorFlow>(
   _ values: [Tensor<T>],
   shapes: [Tensor<Int64>],
   concatDim: Int64
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   return #tfop("SparseConcat",
     indices,
     values,
@@ -16681,7 +16681,7 @@ public static func sparseCross<Sparse_types: BinaryInteger, Dense_types: BinaryI
   numBuckets: Int64,
   hashKey: Int64,
   typeInternal_type: Internal_type.Type
-) -> (Tensor<Int64>, Tensor<Out_type>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<Out_type>, outputShape: Tensor<Int64>) {
   return #tfop("SparseCross",
     indices,
     values,
@@ -16846,7 +16846,7 @@ public static func sparseFillEmptyRows<T: AccelerableByTensorFlow>(
   _ values: Tensor<T>,
   denseShape: Tensor<Int64>,
   defaultValue: Tensor<T>
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Bool>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, emptyRowIndicator: Tensor<Bool>, reverseIndexMap: Tensor<Int64>) {
   return #tfop("SparseFillEmptyRows",
     indices,
     values,
@@ -16877,7 +16877,7 @@ public static func sparseFillEmptyRows<T: AccelerableByTensorFlow>(
 public static func sparseFillEmptyRowsGrad<T: AccelerableByTensorFlow>(
   reverseIndexMap: Tensor<Int64>,
   gradValues: Tensor<T>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (dValues: Tensor<T>, dDefaultValue: Tensor<T>) {
   return #tfop("SparseFillEmptyRowsGrad",
     reverseIndexMap,
     gradValues,
@@ -16987,7 +16987,7 @@ public static func sparseReduceMaxSparse<T: Numeric>(
   inputShape: Tensor<Int64>,
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   return #tfop("SparseReduceMaxSparse",
     inputIndices,
     inputValues,
@@ -17069,7 +17069,7 @@ public static func sparseReduceSumSparse<T: Numeric>(
   inputShape: Tensor<Int64>,
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   return #tfop("SparseReduceSumSparse",
     inputIndices,
     inputValues,
@@ -17105,7 +17105,7 @@ public static func sparseReorder<T: AccelerableByTensorFlow>(
   inputIndices: Tensor<Int64>,
   inputValues: Tensor<T>,
   inputShape: Tensor<Int64>
-) -> (Tensor<Int64>, Tensor<T>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   return #tfop("SparseReorder",
     inputIndices,
     inputValues,
@@ -17148,7 +17148,7 @@ public static func sparseReshape(
   inputIndices: Tensor<Int64>,
   inputShape: Tensor<Int64>,
   newShape: Tensor<Int64>
-) -> (Tensor<Int64>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputShape: Tensor<Int64>) {
   return #tfop("SparseReshape",
     inputIndices,
     inputShape,
@@ -17471,7 +17471,7 @@ public static func sparseSlice<T: AccelerableByTensorFlow>(
   shape: Tensor<Int64>,
   start: Tensor<Int64>,
   size: Tensor<Int64>
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   return #tfop("SparseSlice",
     indices,
     values,
@@ -17540,7 +17540,7 @@ public static func sparseSoftmax<T: BinaryFloatingPoint>(
 public static func sparseSoftmaxCrossEntropyWithLogits<T: BinaryFloatingPoint, Tlabels: BinaryInteger>(
   features: Tensor<T>,
   labels: Tensor<Tlabels>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (loss: Tensor<T>, backprop: Tensor<T>) {
   return #tfop("SparseSoftmaxCrossEntropyWithLogits",
     features,
     labels,
@@ -17572,7 +17572,7 @@ public static func sparseSparseMaximum<T: Numeric>(
   bIndices: Tensor<Int64>,
   bValues: Tensor<T>,
   bShape: Tensor<Int64>
-) -> (Tensor<Int64>, Tensor<T>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   return #tfop("SparseSparseMaximum",
     aIndices,
     aValues,
@@ -17607,7 +17607,7 @@ public static func sparseSparseMinimum<T: Numeric>(
   bIndices: Tensor<Int64>,
   bValues: Tensor<T>,
   bShape: Tensor<Int64>
-) -> (Tensor<Int64>, Tensor<T>) {
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   return #tfop("SparseSparseMinimum",
     aIndices,
     aValues,
@@ -17661,7 +17661,7 @@ public static func sparseSplit<T: AccelerableByTensorFlow>(
   _ values: Tensor<T>,
   shape: Tensor<Int64>,
   numSplit: Int64
-) -> ([Tensor<Int64>], [Tensor<T>], [Tensor<Int64>]) {
+) -> (outputIndices: [Tensor<Int64>], outputValues: [Tensor<T>], outputShape: [Tensor<Int64>]) {
   return #tfop("SparseSplit",
     splitDim,
     indices,
@@ -17850,7 +17850,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger>(
   set2Shape: Tensor<Int64>,
   setOperation: String,
   validateIndices: Bool = true
-) -> (Tensor<Int64>, Tensor<T>, Tensor<Int64>) {
+) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   return #tfop("SparseToSparseSetOperation",
     set1Indices,
     set1Values,
@@ -18552,7 +18552,7 @@ public static func svd<T: BinaryFloatingPoint>(
   _ input: Tensor<T>,
   computeUv: Bool = true,
   fullMatrices: Bool = false
-) -> (Tensor<T>, Tensor<T>, Tensor<T>) {
+) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   return #tfop("Svd",
     input,
     T: T.self,
@@ -18578,7 +18578,7 @@ public static func svd<T: BinaryFloatingPoint>(
 public static func switch_<T: AccelerableByTensorFlow>(
   data: Tensor<T>,
   pred: Tensor<Bool>
-) -> (Tensor<T>, Tensor<T>) {
+) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
   return #tfop("Switch",
     data,
     pred,
@@ -18656,7 +18656,7 @@ public static func takeManySparseFromTensorsMap<Dtype: AccelerableByTensorFlow>(
   sparseHandles: Tensor<Int64>,
   container: String,
   sharedName: String
-) -> (Tensor<Int64>, Tensor<Dtype>, Tensor<Int64>) {
+) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   return #tfop("TakeManySparseFromTensorsMap",
     sparseHandles,
     dtype: Dtype.self,
@@ -18752,7 +18752,7 @@ public static func threadUnsafeUnigramCandidateSampler(
   rangeMax: Int64,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("ThreadUnsafeUnigramCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -18845,7 +18845,7 @@ public static func topK<T: Numeric>(
   _ input: Tensor<T>,
   k: Int64,
   sorted: Bool = true
-) -> (Tensor<T>, Tensor<Int32>) {
+) -> (values: Tensor<T>, indices: Tensor<Int32>) {
   return #tfop("TopK",
     input,
     T: T.self,
@@ -18882,7 +18882,7 @@ public static func topKV2<T: Numeric>(
   _ input: Tensor<T>,
   k: Tensor<Int32>,
   sorted: Bool = true
-) -> (Tensor<T>, Tensor<Int32>) {
+) -> (values: Tensor<T>, indices: Tensor<Int32>) {
   return #tfop("TopKV2",
     input,
     k,
@@ -19007,7 +19007,7 @@ public static func twoFloatInputsIntOutput(
 
 @inlinable @inline(__always)
 public static func twoFloatOutputs(
-) -> (Tensor<Float>, Tensor<Float>) {
+) -> (a: Tensor<Float>, b: Tensor<Float>) {
   return #tfop("TwoFloatOutputs")
 }
 
@@ -19023,7 +19023,7 @@ public static func twoIntInputs(
 
 @inlinable @inline(__always)
 public static func twoIntOutputs(
-) -> (Tensor<Int32>, Tensor<Int32>) {
+) -> (a: Tensor<Int32>, b: Tensor<Int32>) {
   return #tfop("TwoIntOutputs")
 }
 
@@ -19193,7 +19193,7 @@ public static func uniformCandidateSampler(
   rangeMax: Int64,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> (Tensor<Int64>, Tensor<Float>, Tensor<Float>) {
+) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
   return #tfop("UniformCandidateSampler",
     trueClasses,
     num_true: numTrue,
@@ -19230,7 +19230,7 @@ public static func uniformCandidateSampler(
 @inlinable @inline(__always)
 public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
   _ x: Tensor<T>
-) -> (Tensor<T>, Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<Out_idx>) {
   return #tfop("Unique",
     x,
     T: T.self,
@@ -19296,7 +19296,7 @@ public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
 public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
-) -> (Tensor<T>, Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<Out_idx>) {
   return #tfop("UniqueV2",
     x,
     axis,
@@ -19334,7 +19334,7 @@ public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Ou
 @inlinable @inline(__always)
 public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
   _ x: Tensor<T>
-) -> (Tensor<T>, Tensor<Out_idx>, Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<Out_idx>, count: Tensor<Out_idx>) {
   return #tfop("UniqueWithCounts",
     x,
     T: T.self,
@@ -19405,7 +19405,7 @@ public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryI
 public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
-) -> (Tensor<T>, Tensor<Out_idx>, Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<Out_idx>, count: Tensor<Out_idx>) {
   return #tfop("UniqueWithCountsV2",
     x,
     axis,

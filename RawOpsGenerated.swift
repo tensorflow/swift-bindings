@@ -1468,16 +1468,16 @@ public static func approximateEqual<T: Numeric>(
 ///   Describes which dimension of the input Tensor to reduce across. For vectors,
 ///   use dimension = 0.
 @inlinable @inline(__always)
-public static func argMax<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryInteger>(
+public static func argMax<T: Numeric, Tidx: BinaryInteger, OutputType: BinaryInteger>(
   _ input: Tensor<T>,
   dimension: Tensor<Tidx>
-) -> Tensor<Output_type> {
+) -> Tensor<OutputType> {
   return #tfop("ArgMax",
     input,
     dimension,
     T: T.self,
     Tidx: Tidx.self,
-    output_type: Output_type.self)
+    output_type: OutputType.self)
 }
 
 /// Returns the index with the smallest value across dimensions of a tensor.
@@ -1488,16 +1488,16 @@ public static func argMax<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryIn
 ///   Describes which dimension of the input Tensor to reduce across. For vectors,
 ///   use dimension = 0.
 @inlinable @inline(__always)
-public static func argMin<T: Numeric, Tidx: BinaryInteger, Output_type: BinaryInteger>(
+public static func argMin<T: Numeric, Tidx: BinaryInteger, OutputType: BinaryInteger>(
   _ input: Tensor<T>,
   dimension: Tensor<Tidx>
-) -> Tensor<Output_type> {
+) -> Tensor<OutputType> {
   return #tfop("ArgMin",
     input,
     dimension,
     T: T.self,
     Tidx: Tidx.self,
-    output_type: Output_type.self)
+    output_type: OutputType.self)
 }
 
 /// Computes asin of x element-wise.
@@ -2561,9 +2561,9 @@ public static func batchToSpace<T: AccelerableByTensorFlow, Tidx: BinaryInteger>
 ///           [[13], [14], [15],  [16]]]]
 ///     ```
 @inlinable @inline(__always)
-public static func batchToSpaceND<T: AccelerableByTensorFlow, Tblock_shape: BinaryInteger, Tcrops: BinaryInteger>(
+public static func batchToSpaceND<T: AccelerableByTensorFlow, TblockShape: BinaryInteger, Tcrops: BinaryInteger>(
   _ input: Tensor<T>,
-  blockShape: Tensor<Tblock_shape>,
+  blockShape: Tensor<TblockShape>,
   crops: Tensor<Tcrops>
 ) -> Tensor<T> {
   return #tfop("BatchToSpaceND",
@@ -2571,7 +2571,7 @@ public static func batchToSpaceND<T: AccelerableByTensorFlow, Tblock_shape: Bina
     blockShape,
     crops,
     T: T.self,
-    Tblock_shape: Tblock_shape.self,
+    Tblock_shape: TblockShape.self,
     Tcrops: Tcrops.self)
 }
 
@@ -3497,10 +3497,10 @@ public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPo
 }
 
 @inlinable @inline(__always)
-public static func complexStruct<T_c: AccelerableByTensorFlow>(
+public static func complexStruct<TC: AccelerableByTensorFlow>(
   nA: Int64,
   nB: Int64
-) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: [Tensor<T_c>]) {
+) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: [Tensor<TC>]) {
   return #tfop("ComplexStruct",
     n_a: nA,
     n_b: nB)
@@ -6732,15 +6732,15 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
 ///     Equivalent to np.full
 ///     @end_compatibility
 @inlinable @inline(__always)
-public static func fill<T: AccelerableByTensorFlow, Index_type: BinaryInteger>(
-  dims: Tensor<Index_type>,
+public static func fill<T: AccelerableByTensorFlow, IndexType: BinaryInteger>(
+  dims: Tensor<IndexType>,
   value: Tensor<T>
 ) -> Tensor<T> {
   return #tfop("Fill",
     dims,
     value,
     T: T.self,
-    index_type: Index_type.self)
+    index_type: IndexType.self)
 }
 
 @inlinable @inline(__always)
@@ -8911,15 +8911,15 @@ public static func linSpace<T: BinaryFloatingPoint, Tidx: BinaryInteger>(
 ///   - out: 1-D. Values present in `x` but not in `y`.
 ///   - idx: 1-D. Positions of `x` values preserved in `out`.
 @inlinable @inline(__always)
-public static func listDiff<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
+public static func listDiff<T: AccelerableByTensorFlow, OutIdx: BinaryInteger>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
-) -> (out: Tensor<T>, idx: Tensor<Out_idx>) {
+) -> (out: Tensor<T>, idx: Tensor<OutIdx>) {
   return #tfop("ListDiff",
     x,
     y,
     T: T.self,
-    out_idx: Out_idx.self)
+    out_idx: OutIdx.self)
 }
 
 @inlinable @inline(__always)
@@ -9200,10 +9200,10 @@ public static func mapSize<Dtypes: AccelerableByTensorFlow>(
 ///     a default container is used.
 ///   - shared_name: It is necessary to match this name to the matching Unstage Op.
 @inlinable @inline(__always)
-public static func mapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes: AccelerableByTensorFlow>(
+public static func mapStage<Dtypes: AccelerableByTensorFlow, FakeDtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  _ values: [Tensor<Fake_dtypes>],
+  _ values: [Tensor<FakeDtypes>],
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
   container: String,
@@ -10504,17 +10504,17 @@ public static func mul<T: Numeric>(
 /// - Output output: 2-D Tensor with shape `[batch_size, num_samples]`.  Each slice `[i, :]`
 ///   contains the drawn class labels with range `[0, num_classes)`.
 @inlinable @inline(__always)
-public static func multinomial<T: Numeric, Output_dtype: BinaryInteger>(
+public static func multinomial<T: Numeric, OutputDtype: BinaryInteger>(
   logits: Tensor<T>,
   numSamples: Tensor<Int32>,
   seed: Int64 = 0,
   seed2: Int64 = 0
-) -> Tensor<Output_dtype> {
+) -> Tensor<OutputDtype> {
   return #tfop("Multinomial",
     logits,
     numSamples,
     T: T.self,
-    output_dtype: Output_dtype.self,
+    output_dtype: OutputDtype.self,
     seed: seed,
     seed2: seed2)
 }
@@ -11107,10 +11107,10 @@ public static func orderedMapSize<Dtypes: AccelerableByTensorFlow>(
 ///     a default container is used.
 ///   - shared_name: It is necessary to match this name to the matching Unstage Op.
 @inlinable @inline(__always)
-public static func orderedMapStage<Dtypes: AccelerableByTensorFlow, Fake_dtypes: AccelerableByTensorFlow>(
+public static func orderedMapStage<Dtypes: AccelerableByTensorFlow, FakeDtypes: AccelerableByTensorFlow>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
-  _ values: [Tensor<Fake_dtypes>],
+  _ values: [Tensor<FakeDtypes>],
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
   container: String,
@@ -11826,17 +11826,17 @@ public static func quantizeAndDequantizeV3<T: BinaryFloatingPoint>(
 ///   - output_min: The float value that the minimum quantized output value represents.
 ///   - output_max: The float value that the maximum quantized output value represents.
 @inlinable @inline(__always)
-public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
-) -> (output: Tensor<Out_type>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
+) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("QuantizeDownAndShrinkRange",
     input,
     inputMin,
     inputMax,
     Tinput: Tinput.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Quantize the 'input' tensor of type float to 'output' tensor of type 'T'.
@@ -12070,7 +12070,7 @@ public static func quantizedAvgPool<T: AccelerableByTensorFlow>(
 ///   - scale_after_normalization: A bool indicating whether the resulted tensor
 ///     needs to be multiplied with gamma.
 @inlinable @inline(__always)
-public static func quantizedBatchNormWithGlobalNormalization<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedBatchNormWithGlobalNormalization<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   t: Tensor<Tinput>,
   tMin: Tensor<Float>,
   tMax: Tensor<Float>,
@@ -12088,7 +12088,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
   gammaMax: Tensor<Float>,
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
-) -> (result: Tensor<Out_type>, resultMin: Tensor<Float>, resultMax: Tensor<Float>) {
+) -> (result: Tensor<OutType>, resultMin: Tensor<Float>, resultMax: Tensor<Float>) {
   return #tfop("QuantizedBatchNormWithGlobalNormalization",
     t,
     tMin,
@@ -12106,7 +12106,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
     gammaMin,
     gammaMax,
     Tinput: Tinput.self,
-    out_type: Out_type.self,
+    out_type: OutType.self,
     variance_epsilon: varianceEpsilon,
     scale_after_normalization: scaleAfterNormalization)
 }
@@ -12126,14 +12126,14 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
 ///   - min_out: The float value that the lowest quantized output value represents.
 ///   - max_out: The float value that the highest quantized output value represents.
 @inlinable @inline(__always)
-public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   _ input: Tensor<T1>,
   bias: Tensor<T2>,
   minInput: Tensor<Float>,
   maxInput: Tensor<Float>,
   minBias: Tensor<Float>,
   maxBias: Tensor<Float>
-) -> (output: Tensor<Out_type>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
+) -> (output: Tensor<OutType>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
   return #tfop("QuantizedBiasAdd",
     input,
     bias,
@@ -12143,7 +12143,7 @@ public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: Accelerable
     maxBias,
     T1: T1.self,
     T2: T2.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Concatenates quantized tensors along one dimension.
@@ -12205,7 +12205,7 @@ public static func quantizedConcat<T: AccelerableByTensorFlow>(
 ///   - min_output: The float value that the lowest quantized output value represents.
 ///   - max_output: The float value that the highest quantized output value represents.
 @inlinable @inline(__always)
-public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   _ input: Tensor<Tinput>,
   filter: Tensor<Tfilter>,
   minInput: Tensor<Float>,
@@ -12215,7 +12215,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
   strides: [Int32],
   padding: Padding,
   dilations: [Int32] = [1, 1, 1, 1]
-) -> (output: Tensor<Out_type>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   return #tfop("QuantizedConv2D",
     input,
     filter,
@@ -12225,7 +12225,7 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
     maxFilter,
     Tinput: Tinput.self,
     Tfilter: Tfilter.self,
-    out_type: Out_type.self,
+    out_type: OutType.self,
     strides: strides,
     padding: padding.cName,
     dilations: dilations)
@@ -12407,17 +12407,17 @@ public static func quantizedMul<T1: AccelerableByTensorFlow, T2: AccelerableByTe
 ///   - min_activations: The float value that the lowest quantized value represents.
 ///   - max_activations: The float value that the highest quantized value represents.
 @inlinable @inline(__always)
-public static func quantizedRelu<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedRelu<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   features: Tensor<Tinput>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
+) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedRelu",
     features,
     minFeatures,
     maxFeatures,
     Tinput: Tinput.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Computes Quantized Rectified Linear 6: `min(max(features, 0), 6)`
@@ -12431,17 +12431,17 @@ public static func quantizedRelu<Tinput: AccelerableByTensorFlow, Out_type: Acce
 ///   - min_activations: The float value that the lowest quantized value represents.
 ///   - max_activations: The float value that the highest quantized value represents.
 @inlinable @inline(__always)
-public static func quantizedRelu6<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedRelu6<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   features: Tensor<Tinput>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
+) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedRelu6",
     features,
     minFeatures,
     maxFeatures,
     Tinput: Tinput.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Computes Quantized Rectified Linear X: `min(max(features, 0), max_value)`
@@ -12455,19 +12455,19 @@ public static func quantizedRelu6<Tinput: AccelerableByTensorFlow, Out_type: Acc
 ///   - min_activations: The float value that the lowest quantized value represents.
 ///   - max_activations: The float value that the highest quantized value represents.
 @inlinable @inline(__always)
-public static func quantizedReluX<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func quantizedReluX<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   features: Tensor<Tinput>,
   maxValue: Tensor<Float>,
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
-) -> (activations: Tensor<Out_type>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
+) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   return #tfop("QuantizedReluX",
     features,
     maxValue,
     minFeatures,
     maxFeatures,
     Tinput: Tinput.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Reshapes a quantized tensor as per the Reshape op.
@@ -13269,13 +13269,13 @@ public static func requantizationRange<Tinput: AccelerableByTensorFlow>(
 ///   - output_min: The requested_output_min value is copied into this output.
 ///   - output_max: The requested_output_max value is copied into this output.
 @inlinable @inline(__always)
-public static func requantize<Tinput: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func requantize<Tinput: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   _ input: Tensor<Tinput>,
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>,
   requestedOutputMin: Tensor<Float>,
   requestedOutputMax: Tensor<Float>
-) -> (output: Tensor<Out_type>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
+) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   return #tfop("Requantize",
     input,
     inputMin,
@@ -13283,7 +13283,7 @@ public static func requantize<Tinput: AccelerableByTensorFlow, Out_type: Acceler
     requestedOutputMin,
     requestedOutputMax,
     Tinput: Tinput.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 @inlinable @inline(__always)
@@ -15282,17 +15282,17 @@ public static func seluGrad<T: BinaryFloatingPoint>(
 /// - Attr out_type: The `dtype` to use for serialization; the supported types are `string`
 ///   (default) and `variant`.
 @inlinable @inline(__always)
-public static func serializeManySparse<T: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func serializeManySparse<T: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   sparseIndices: Tensor<Int64>,
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
-) -> Tensor<Out_type> {
+) -> Tensor<OutType> {
   return #tfop("SerializeManySparse",
     sparseIndices,
     sparseValues,
     sparseShape,
     T: T.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
@@ -15305,17 +15305,17 @@ public static func serializeManySparse<T: AccelerableByTensorFlow, Out_type: Acc
 /// - Attr out_type: The `dtype` to use for serialization; the supported types are `string`
 ///   (default) and `variant`.
 @inlinable @inline(__always)
-public static func serializeSparse<T: AccelerableByTensorFlow, Out_type: AccelerableByTensorFlow>(
+public static func serializeSparse<T: AccelerableByTensorFlow, OutType: AccelerableByTensorFlow>(
   sparseIndices: Tensor<Int64>,
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
-) -> Tensor<Out_type> {
+) -> Tensor<OutType> {
   return #tfop("SerializeSparse",
     sparseIndices,
     sparseValues,
     sparseShape,
     T: T.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Number of unique elements along last dimension of input `set`.
@@ -15361,26 +15361,26 @@ public static func setSize<T: BinaryInteger>(
 /// shape(t) ==> [2, 2, 3]
 /// ```
 @inlinable @inline(__always)
-public static func shape<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
+public static func shape<T: AccelerableByTensorFlow, OutType: BinaryInteger>(
   _ input: Tensor<T>
-) -> Tensor<Out_type> {
+) -> Tensor<OutType> {
   return #tfop("Shape",
     input,
     T: T.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Returns shape of tensors.
 ///
 /// This operation returns N 1-D integer tensors representing shape of `input[i]s`.
 @inlinable @inline(__always)
-public static func shapeN<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
+public static func shapeN<T: AccelerableByTensorFlow, OutType: BinaryInteger>(
   _ input: [Tensor<T>]
-) -> [Tensor<Out_type>] {
+) -> [Tensor<OutType>] {
   return #tfop("ShapeN",
     input,
     T: T.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Computes sigmoid of `x` element-wise.
@@ -15472,13 +15472,13 @@ public static func sinh<T: BinaryFloatingPoint>(
 /// size(t) ==> 12
 /// ```
 @inlinable @inline(__always)
-public static func size<T: AccelerableByTensorFlow, Out_type: BinaryInteger>(
+public static func size<T: AccelerableByTensorFlow, OutType: BinaryInteger>(
   _ input: Tensor<T>
-) -> Tensor<Out_type> {
+) -> Tensor<OutType> {
   return #tfop("Size",
     input,
     T: T.self,
-    out_type: Out_type.self)
+    out_type: OutType.self)
 }
 
 /// Return a slice from 'input'.
@@ -15854,9 +15854,9 @@ public static func spaceToBatch<T: AccelerableByTensorFlow, Tpaddings: BinaryInt
 ///     Among others, this operation is useful for reducing atrous convolution into
 ///     regular convolution.
 @inlinable @inline(__always)
-public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: BinaryInteger, Tpaddings: BinaryInteger>(
+public static func spaceToBatchND<T: AccelerableByTensorFlow, TblockShape: BinaryInteger, Tpaddings: BinaryInteger>(
   _ input: Tensor<T>,
-  blockShape: Tensor<Tblock_shape>,
+  blockShape: Tensor<TblockShape>,
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
   return #tfop("SpaceToBatchND",
@@ -15864,7 +15864,7 @@ public static func spaceToBatchND<T: AccelerableByTensorFlow, Tblock_shape: Bina
     blockShape,
     paddings,
     T: T.self,
-    Tblock_shape: Tblock_shape.self,
+    Tblock_shape: TblockShape.self,
     Tpaddings: Tpaddings.self)
 }
 
@@ -16672,23 +16672,23 @@ public static func sparseConcat<T: AccelerableByTensorFlow>(
 ///     `SparseTensor`.
 ///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
 @inlinable @inline(__always)
-public static func sparseCross<Sparse_types: BinaryInteger, Dense_types: BinaryInteger, Out_type: BinaryInteger, Internal_type: BinaryInteger>(
+public static func sparseCross<SparseTypes: BinaryInteger, DenseTypes: BinaryInteger, OutType: BinaryInteger, InternalType: BinaryInteger>(
   indices: [Tensor<Int64>],
-  _ values: [Tensor<Sparse_types>],
+  _ values: [Tensor<SparseTypes>],
   shapes: [Tensor<Int64>],
-  denseInputs: [Tensor<Dense_types>],
+  denseInputs: [Tensor<DenseTypes>],
   hashedOutput: Bool,
   numBuckets: Int64,
   hashKey: Int64,
-  typeInternal_type: Internal_type.Type
-) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<Out_type>, outputShape: Tensor<Int64>) {
+  typeInternalType: InternalType.Type
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<OutType>, outputShape: Tensor<Int64>) {
   return #tfop("SparseCross",
     indices,
     values,
     shapes,
     denseInputs,
-    out_type: Out_type.self,
-    internal_type: Internal_type.self,
+    out_type: OutType.self,
+    internal_type: InternalType.self,
     hashed_output: hashedOutput,
     num_buckets: numBuckets,
     hash_key: hashKey)
@@ -18108,18 +18108,18 @@ public static func stageSize<Dtypes: AccelerableByTensorFlow>(
 /// - Output output: 2-D Tensor with shape `[batch_size, num_samples]`.  Each slice `[i, :]`
 ///   contains the drawn class labels with range `[0, num_classes)`.
 @inlinable @inline(__always)
-public static func statelessMultinomial<T: Numeric, Tseed: BinaryInteger, Output_dtype: BinaryInteger>(
+public static func statelessMultinomial<T: Numeric, Tseed: BinaryInteger, OutputDtype: BinaryInteger>(
   logits: Tensor<T>,
   numSamples: Tensor<Int32>,
   seed: Tensor<Tseed>
-) -> Tensor<Output_dtype> {
+) -> Tensor<OutputDtype> {
   return #tfop("StatelessMultinomial",
     logits,
     numSamples,
     seed,
     T: T.self,
     Tseed: Tseed.self,
-    output_dtype: Output_dtype.self)
+    output_dtype: OutputDtype.self)
 }
 
 /// Outputs deterministic pseudorandom values from a normal distribution.
@@ -19228,13 +19228,13 @@ public static func uniformCandidateSampler(
 ///   - y: 1-D.
 ///   - idx: 1-D.
 @inlinable @inline(__always)
-public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
+public static func unique<T: AccelerableByTensorFlow, OutIdx: BinaryInteger>(
   _ x: Tensor<T>
-) -> (y: Tensor<T>, idx: Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
   return #tfop("Unique",
     x,
     T: T.self,
-    out_idx: Out_idx.self)
+    out_idx: OutIdx.self)
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -19293,16 +19293,16 @@ public static func unique<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
 ///   - idx: A 1-D Tensor. Has the same type as x that contains the index of each
 ///     value of x in the output y.
 @inlinable @inline(__always)
-public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
+public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, OutIdx: BinaryInteger>(
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
-) -> (y: Tensor<T>, idx: Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
   return #tfop("UniqueV2",
     x,
     axis,
     T: T.self,
     Taxis: Taxis.self,
-    out_idx: Out_idx.self)
+    out_idx: OutIdx.self)
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -19332,13 +19332,13 @@ public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Ou
 ///   - idx: 1-D.
 ///   - count: 1-D.
 @inlinable @inline(__always)
-public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryInteger>(
+public static func uniqueWithCounts<T: AccelerableByTensorFlow, OutIdx: BinaryInteger>(
   _ x: Tensor<T>
-) -> (y: Tensor<T>, idx: Tensor<Out_idx>, count: Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
   return #tfop("UniqueWithCounts",
     x,
     T: T.self,
-    out_idx: Out_idx.self)
+    out_idx: OutIdx.self)
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -19402,16 +19402,16 @@ public static func uniqueWithCounts<T: AccelerableByTensorFlow, Out_idx: BinaryI
 ///     value of x in the output y.
 ///   - count: A 1-D Tensor. The count of each value of x in the output y.
 @inlinable @inline(__always)
-public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, Out_idx: BinaryInteger>(
+public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger, OutIdx: BinaryInteger>(
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
-) -> (y: Tensor<T>, idx: Tensor<Out_idx>, count: Tensor<Out_idx>) {
+) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
   return #tfop("UniqueWithCountsV2",
     x,
     axis,
     T: T.self,
     Taxis: Taxis.self,
-    out_idx: Out_idx.self)
+    out_idx: OutIdx.self)
 }
 
 /// Unpacks a given dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors.

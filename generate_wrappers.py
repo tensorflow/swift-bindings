@@ -212,7 +212,7 @@ class Types(object):
 
   def __init__(self, attr_def):
     self._is_list_attr = attr_def.type == 'list(type)'
-    self.swift_name = attr_def.name.capitalize()
+    self.swift_name = swift_compatible(attr_def.name.capitalize())
     self.attr_def_name = attr_def.name
     allowed_types = set(attr_def.allowed_values.list.type)
     allowed_types &= set(_SWIFTIFIED_TYPES.keys())
@@ -295,9 +295,9 @@ def attr_def_defines_a_type(attr_def):
 def arg_def_type_as_string(arg_def):
   """Returns the tensor type for the provided input/output argument."""
   if arg_def.type_attr:
-    base_type = arg_def.type_attr.capitalize()
+    base_type = swift_compatible(arg_def.type_attr.capitalize())
   elif arg_def.type_list_attr:
-    base_type = arg_def.type_list_attr.capitalize()
+    base_type = swift_compatible(arg_def.type_list_attr.capitalize())
   elif arg_def.type in _SWIFTIFIED_TYPES:
     base_type = _SWIFTIFIED_TYPES[arg_def.type]
   else:

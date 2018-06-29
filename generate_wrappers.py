@@ -137,10 +137,12 @@ class UnableToGenerateCodeError(Exception):
     return self.details
 
 
-def swift_compatible(s):
+def swift_compatible(s, capitalize=False):
   """Transforms an identifier to be more swift idiomatic."""
   if s in _RENAMED_KEYWORDS:
     return _RENAMED_KEYWORDS[s]
+  if capitalize:
+    s = s.capitalize()
   without_underscores = []
   prev_char_was_underscore = False
   for c in s:
@@ -198,7 +200,7 @@ class EnumStore(object):
   def maybe_add(self, allowed_values, attr_def_name):
     if allowed_values in self._entries:
       return self._entries[allowed_values]
-    type_name = swift_compatible(attr_def_name.capitalize())
+    type_name = swift_compatible(attr_def_name, capitalize=True)
     while type_name in self._type_names:
       type_name += str(self._counter)
       self._counter += 1
@@ -212,7 +214,7 @@ class Types(object):
 
   def __init__(self, attr_def):
     self._is_list_attr = attr_def.type == 'list(type)'
-    self.swift_name = swift_compatible(attr_def.name.capitalize())
+    self.swift_name = swift_compatible(attr_def.name, capitalize=True)
     self.attr_def_name = attr_def.name
     allowed_types = set(attr_def.allowed_values.list.type)
     allowed_types &= set(_SWIFTIFIED_TYPES.keys())
@@ -295,9 +297,9 @@ def attr_def_defines_a_type(attr_def):
 def arg_def_type_as_string(arg_def):
   """Returns the tensor type for the provided input/output argument."""
   if arg_def.type_attr:
-    base_type = swift_compatible(arg_def.type_attr.capitalize())
+    base_type = swift_compatible(arg_def.type_attr, capitalize=True)
   elif arg_def.type_list_attr:
-    base_type = swift_compatible(arg_def.type_list_attr.capitalize())
+    base_type = swift_compatible(arg_def.type_list_attr, capitalize=True)
   elif arg_def.type in _SWIFTIFIED_TYPES:
     base_type = _SWIFTIFIED_TYPES[arg_def.type]
   else:

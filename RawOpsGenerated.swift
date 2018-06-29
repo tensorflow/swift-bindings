@@ -13982,7 +13982,7 @@ public static func rsqrtGrad<T: BinaryFloatingPoint>(
 ///   - aspect_ratio_range: The cropped area of the image must have an aspect ratio =
 ///     width / height within this range.
 ///   - area_range: The cropped area of the image must contain a fraction of the
-///     supplied image within in this range.
+///     supplied image within this range.
 ///   - max_attempts: Number of attempts at generating a cropped region of the image
 ///     of the specified constraints. After `max_attempts` failures, return the entire
 ///     image.
@@ -14080,7 +14080,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger>(
 ///   - aspect_ratio_range: The cropped area of the image must have an aspect ratio =
 ///     width / height within this range.
 ///   - area_range: The cropped area of the image must contain a fraction of the
-///     supplied image within in this range.
+///     supplied image within this range.
 ///   - max_attempts: Number of attempts at generating a cropped region of the image
 ///     of the specified constraints. After `max_attempts` failures, return the entire
 ///     image.

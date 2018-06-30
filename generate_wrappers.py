@@ -293,8 +293,7 @@ class AttributeAsInput(object):
 def attr_def_defines_a_type(attr_def):
   return attr_def.type in ['type', 'list(type)']
 
-
-def arg_def_type_as_string(arg_def):
+def arg_def_type_as_string(arg_def, handle=False):
   """Returns the tensor type for the provided input/output argument."""
   if arg_def.type_attr:
     base_type = swift_compatible(arg_def.type_attr, capitalize=True)
@@ -304,7 +303,8 @@ def arg_def_type_as_string(arg_def):
     base_type = _SWIFTIFIED_TYPES[arg_def.type]
   else:
     raise UnableToGenerateCodeError('unsupported type for ' + arg_def.name)
-  tensor_type = 'Tensor<' + base_type + '>'
+  tensor_type = 'TensorHandle' if handle else 'Tensor';
+  tensor_type += '<' + base_type + '>'
   if arg_def.number_attr or arg_def.type_list_attr:
     return '[' + tensor_type + ']'
   return tensor_type
@@ -361,6 +361,17 @@ def maybe_named(name):
     return '_ ' + name
   return name
 
+# Two cases based on if handle_var is TensorHandle or [TensorHandle]:
+# 1. Case TensorHandle: h -> Tensor(handle: h)
+# 2. Case [TensorHandle]: h -> h.map(Tensor.init)
+def convert_handle_to_tensor(handle_var, is_list):
+  if is_list:
+    return handle_var + '.map(Tensor.init)'
+  return 'Tensor(handle: ' + handle_var + ')'
+
+# If type_name is [TensorHandle<T>], it is a list type.
+def type_is_list(type_name):
+  return type_name.startswith('[')
 
 def generate_code(op, api_def, enum_store):
   """Generates some swift code for a given op."""
@@ -385,12 +396,13 @@ def generate_code(op, api_def, enum_store):
   return_name_and_types = [
       (swiftified_name(a.name), arg_def_type_as_string(a))
       for a in op.output_arg]
+  has_arrow = ' -> ' if len(return_name_and_types) > 0 else ''
   return_type = ''
   if len(return_name_and_types) == 1:
-    return_type = ' -> ' + return_name_and_types[0][1]
+    return_type = return_name_and_types[0][1]
   elif len(return_name_and_types) > 1:
     named_types = [n + ': ' + t for n, t in return_name_and_types]
-    return_type = ' -> (' + ', '.join(named_types) + ')'
+    return_type = '(' + ', '.join(named_types) + ')'
 
   tfop_args = ',\n    '.join(
       ['"' + op.name + '"'] +
@@ -416,17 +428,57 @@ def generate_code(op, api_def, enum_store):
           input_names_and_types +
           attr_names_and_types +
           missing_types)]
+  body = ''
+  if len(return_name_and_types) == 0:
+    body = 'return #tfop({tfop_args})'.format(tfop_args=tfop_args)
+  elif len(return_name_and_types) >= 1:
+    # Example body with 1 return tensor:
+    # let ret: [TensorHandle<Int32>] = #tfop("ConcatOffset",
+    #   concatDim,
+    #   shape)
+    # return ret.0.map(Tensor.init)
+    #
+    # Example body with 2 return tensors:
+    # let ret: (loss: Tensor<T>, backprop: Tensor<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
+    #   features,
+    #   labels,
+    #   T: T.self)
+    # return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+    # if ret.0 is [TensorHandle<T>], then we construct ret.0.map(Tensor.init) to
+    # convert it to [Tensor<T>]
+    return_name_and_handle_types = [
+        (swiftified_name(a.name), arg_def_type_as_string(a, handle=True))
+        for a in op.output_arg]
+    return_handle_type = ''
+    if len(return_name_and_types) > 1:
+      named_handle_types = [n + ': ' + t for n, t in return_name_and_handle_types]
+      return_handle_type = '(' + ', '.join(named_handle_types) + ')'
+    else:
+      return_handle_type = return_name_and_handle_types[0][1]
+    body = 'let ret: {return_handle_type} = #tfop({tfop_args})'.format(
+        return_handle_type=return_handle_type, tfop_args=tfop_args)
+    body += '\n  return '
+    if len(return_name_and_types) > 1:
+      tuple = [convert_handle_to_tensor(
+          'ret.' + str(ind),
+          is_list=type_is_list(named_type[1]))
+               for ind, named_type in enumerate(return_name_and_types)]
+      body += '(' + ', '.join(tuple) + ')'
+    else:
+      body += convert_handle_to_tensor(
+          'ret', is_list=type_is_list(return_name_and_handle_types[0][1]))
   return (
       """{documentation}@inlinable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}
-){return_type} {{
-  return #tfop({tfop_args})
+){has_arrow}{return_type} {{
+  {body}
 }}""".format(documentation=documentation(api_def),
              function_name=swiftified_name(op.name),
              generics_type=generics_type,
              joined_inputs=','.join(all_inputs),
+             has_arrow=has_arrow,
              return_type=return_type,
-             tfop_args=tfop_args))
+             body=body))
 
 
 def main(argv):

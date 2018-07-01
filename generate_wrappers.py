@@ -439,7 +439,7 @@ def generate_code(op, api_def, enum_store):
     # return ret.0.map(Tensor.init)
     #
     # Example body with 2 return tensors:
-    # let ret: (loss: Tensor<T>, backprop: Tensor<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
+    # let ret: (loss: TensorHandle<T>, backprop: TensorHandle<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
     #   features,
     #   labels,
     #   T: T.self)

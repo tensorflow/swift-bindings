@@ -293,6 +293,7 @@ class AttributeAsInput(object):
 def attr_def_defines_a_type(attr_def):
   return attr_def.type in ['type', 'list(type)']
 
+
 def arg_def_type_as_string(arg_def, handle=False):
   """Returns the tensor type for the provided input/output argument."""
   if arg_def.type_attr:
@@ -303,14 +304,16 @@ def arg_def_type_as_string(arg_def, handle=False):
     base_type = _SWIFTIFIED_TYPES[arg_def.type]
   else:
     raise UnableToGenerateCodeError('unsupported type for ' + arg_def.name)
-  tensor_type = 'TensorHandle' if handle else 'Tensor';
+  tensor_type = 'TensorHandle' if handle else 'Tensor'
   tensor_type += '<' + base_type + '>'
   if arg_def.number_attr or arg_def.type_list_attr:
     return '[' + tensor_type + ']'
   return tensor_type
 
+
 def arg_def_type_is_list(arg_def):
   return arg_def.number_attr or arg_def.type_list_attr
+
 
 def comment_block(text, indent_level):
   """Returns a commented block of text with some specified indentation."""
@@ -363,6 +366,7 @@ def maybe_named(name):
     return '_ ' + name
   return name
 
+
 # Two cases based on if handle_var is TensorHandle or [TensorHandle]:
 # 1. Case TensorHandle: h -> Tensor(handle: h)
 # 2. Case [TensorHandle]: h -> h.map(Tensor.init)
@@ -370,6 +374,7 @@ def convert_handle_to_tensor(handle_var, is_list):
   if is_list:
     return handle_var + '.map(Tensor.init)'
   return 'Tensor(handle: ' + handle_var + ')'
+
 
 def generate_code(op, api_def, enum_store):
   """Generates some swift code for a given op."""
@@ -395,13 +400,15 @@ def generate_code(op, api_def, enum_store):
   # ('batch', '[Tensor<Float>]', True)
   # The third component is a bool indicating if the entry is a tensor list.
   return_name_and_types = [
-      (swiftified_name(a.name), arg_def_type_as_string(a), arg_def_type_is_list(a))
+      (swiftified_name(a.name),
+       arg_def_type_as_string(a),
+       arg_def_type_is_list(a))
       for a in op.output_arg]
   return_type = ''
   if len(return_name_and_types) == 1:
     return_type = ' -> ' + return_name_and_types[0][1]
   elif len(return_name_and_types) > 1:
-    named_types = [n + ': ' + t for n, t, is_list in return_name_and_types]
+    named_types = [n + ': ' + t for n, t, _ in return_name_and_types]
     return_type = ' -> (' + ', '.join(named_types) + ')'
 
   tfop_args = ',\n    '.join(
@@ -429,7 +436,7 @@ def generate_code(op, api_def, enum_store):
           attr_names_and_types +
           missing_types)]
   body = ''
-  if len(return_name_and_types) == 0:
+  if not return_name_and_types:
     body = 'return #tfop({tfop_args})'.format(tfop_args=tfop_args)
   elif len(return_name_and_types) >= 1:
     # Example body with 1 return tensor:
@@ -439,7 +446,7 @@ def generate_code(op, api_def, enum_store):
     # return ret.0.map(Tensor.init)
     #
     # Example body with 2 return tensors:
-    # let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
+    # let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntr...",
     #   features,
     #   labels,
     #   T: T.self)
@@ -459,11 +466,10 @@ def generate_code(op, api_def, enum_store):
         return_handle_type=return_handle_type, tfop_args=tfop_args)
     body += '\n  return '
     if len(return_name_and_types) > 1:
-      tuple = [convert_handle_to_tensor(
-          'ret.' + str(ind),
-          is_list=named_type[2])
-               for ind, named_type in enumerate(return_name_and_types)]
-      body += '(' + ', '.join(tuple) + ')'
+      returned_tuple = [
+          convert_handle_to_tensor('ret.' + str(ind), is_list=named_type[2])
+          for ind, named_type in enumerate(return_name_and_types)]
+      body += '(' + ', '.join(returned_tuple) + ')'
     else:
       body += convert_handle_to_tensor(
           'ret', is_list=return_name_and_types[0][2])

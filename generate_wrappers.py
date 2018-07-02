@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import os
 import tensorflow as tf
 
@@ -367,6 +368,10 @@ def maybe_named(name):
   return name
 
 
+OutputArg = collections.namedtuple(
+    'output_arg', ['swift_name', 'swift_type', 'swift_handle_type', 'is_list'])
+
+
 # Two cases based on if handle_var is TensorHandle or [TensorHandle]:
 # 1. Case TensorHandle: h -> Tensor(handle: h)
 # 2. Case [TensorHandle]: h -> h.map(Tensor.init)
@@ -396,19 +401,17 @@ def generate_code(op, api_def, enum_store):
       if not attr_def_defines_a_type(a) and a.name not in excluded_attributes
   ]
 
-  # An example triplet entry can be:
-  # ('batch', '[Tensor<Float>]', True)
-  # The third component is a bool indicating if the entry is a tensor list.
-  return_name_and_types = [
-      (swiftified_name(a.name),
-       arg_def_type_as_string(a),
-       arg_def_type_is_list(a))
+  output_args = [
+      OutputArg(swift_name=swiftified_name(a.name),
+                swift_type=arg_def_type_as_string(a),
+                swift_handle_type=arg_def_type_as_string(a, handle=True),
+                is_list=arg_def_type_is_list(a))
       for a in op.output_arg]
   return_type = ''
-  if len(return_name_and_types) == 1:
-    return_type = ' -> ' + return_name_and_types[0][1]
-  elif len(return_name_and_types) > 1:
-    named_types = [n + ': ' + t for n, t, _ in return_name_and_types]
+  if len(output_args) == 1:
+    return_type = ' -> ' + output_args[0].swift_type
+  elif len(output_args) > 1:
+    named_types = [o.swift_name + ': ' + o.swift_type for o in output_args]
     return_type = ' -> (' + ', '.join(named_types) + ')'
 
   tfop_args = ',\n    '.join(
@@ -436,9 +439,9 @@ def generate_code(op, api_def, enum_store):
           attr_names_and_types +
           missing_types)]
   body = ''
-  if not return_name_and_types:
+  if not output_args:
     body = 'return #tfop({tfop_args})'.format(tfop_args=tfop_args)
-  elif len(return_name_and_types) >= 1:
+  elif len(output_args) >= 1:
     # Example body with 1 return tensor:
     # let ret: [TensorHandle<Int32>] = #tfop("ConcatOffset",
     #   concatDim,
@@ -453,26 +456,23 @@ def generate_code(op, api_def, enum_store):
     # return (Tensor(handle: ret.0), Tensor(handle: ret.1))
     # if ret.0 is [TensorHandle<T>], then we construct ret.0.map(Tensor.init) to
     # convert it to [Tensor<T>]
-    return_name_and_handle_types = [
-        (swiftified_name(a.name), arg_def_type_as_string(a, handle=True))
-        for a in op.output_arg]
     return_handle_type = ''
-    if len(return_name_and_handle_types) > 1:
-      handle_types = [t for n, t in return_name_and_handle_types]
+    if len(output_args) > 1:
+      handle_types = [o.swift_handle_type for o in output_args]
       return_handle_type = '(' + ', '.join(handle_types) + ')'
     else:
-      return_handle_type = return_name_and_handle_types[0][1]
+      return_handle_type = output_args[0].swift_handle_type
     body = 'let ret: {return_handle_type} = #tfop({tfop_args})'.format(
         return_handle_type=return_handle_type, tfop_args=tfop_args)
     body += '\n  return '
-    if len(return_name_and_types) > 1:
+    if len(output_args) > 1:
       returned_tuple = [
-          convert_handle_to_tensor('ret.' + str(ind), is_list=named_type[2])
-          for ind, named_type in enumerate(return_name_and_types)]
+          convert_handle_to_tensor('ret.' + str(ind), is_list=o.is_list)
+          for ind, o in enumerate(output_args)]
       body += '(' + ', '.join(returned_tuple) + ')'
     else:
       body += convert_handle_to_tensor(
-          'ret', is_list=return_name_and_types[0][2])
+          'ret', is_list=output_args[0].is_list)
   return (
       """{documentation}@inlinable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}

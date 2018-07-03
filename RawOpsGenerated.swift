@@ -17,8 +17,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.9.0-rc1"
-static let generatedTensorFlowGitVersion = "v1.9.0-rc1-0-g17d6639b55"
+static let generatedTensorFlowVersion = "1.9.0-rc2"
+static let generatedTensorFlowGitVersion = "v1.9.0-rc1-44-gf09aaf0dd3"
 
 @_frozen
 public enum A {
@@ -7898,7 +7898,7 @@ public static func gather<Tparams: AccelerableByTensorFlow, Tindices: BinaryInte
 /// (K-1)-dimensional tensor of indices into `params`, where each element defines a
 /// slice of `params`:
 ///
-///     output[i_0, ..., i_{K-2}] = params[indices[i0, ..., i_{K-2}]]
+///     output[\\(i_0, ..., i_{K-2}\\)] = params[indices[\\(i_0, ..., i_{K-2}\\)]]
 ///
 /// Whereas in @{tf.gather} `indices` defines slices into the first
 /// dimension of `params`, in `tf.gather_nd`, `indices` defines slices into the
@@ -8069,11 +8069,6 @@ public static func gatherV2<Tparams: AccelerableByTensorFlow, Tindices: BinaryIn
   return Tensor(handle: ret)
 }
 
-/// Re-configures the GCS block cache with the new configuration values.
-///
-/// If the values are the same as already configured values, this op is a no-op. If
-/// they are different, the current contents of the block cache is dropped, and a
-/// new block cache is created fresh.
 @inlinable @inline(__always)
 public static func gcsConfigureBlockCache(
   maxCacheSize: Tensor<UInt64>,
@@ -9115,9 +9110,9 @@ public static func lgamma<T: BinaryFloatingPoint>(
 /// ```
 ///
 /// - Parameters:
-///   - start: First entry in the range.
-///   - stop: Last entry in the range.
-///   - num: Number of values to generate.
+///   - start: 0-D tensor. First entry in the range.
+///   - stop: 0-D tensor. Last entry in the range.
+///   - num: 0-D tensor. Number of values to generate.
 ///
 /// - Output output: 1-D. The generated values.
 @inlinable @inline(__always)
@@ -9736,7 +9731,7 @@ public static func matrixDiagPart<T: AccelerableByTensorFlow>(
 
 /// Computes the matrix exponential of one or more square matrices:
 ///
-/// exp(A) = \sum_{n=0}^\infty A^n/n!
+/// \\(exp(A) = \sum_{n=0}^\infty A^n/n!\\)
 ///
 /// The exponential is computed using a combination of the scaling and squaring
 /// method and the Pade approximation. Details can be founds in:
@@ -9800,7 +9795,7 @@ public static func matrixInverse<T: BinaryFloatingPoint>(
 /// Computes the matrix logarithm of one or more square matrices:
 ///
 ///
-/// log(exp(A)) = A
+/// \\(log(exp(A)) = A\\)
 ///
 /// This op is only defined for complex matrices. If A is positive-definite and
 /// real, then casting to a complex matrix, taking the logarithm and casting back
@@ -12033,6 +12028,7 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
 /// Quantizes then dequantizes a tensor.
 ///
 /// This op simulates the precision loss from the quantized forward pass by:
+///
 /// 1. Quantizing the tensor to fixed point numbers, which should match the target
 ///    quantization method when it is used in inference.
 /// 2. Dequantizing it back to floating point numbers for the following ops, most
@@ -12074,9 +12070,9 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint>(
 ///     10.0]: it would use a scale_factor of 127 / 10.0 = 12.7 In this case, it
 ///     would update input_min to be 128.0 / 12.7 = -10.07874
 /// *   if the output is unsigned, input_min is forced to be 0, and only the
-///     specifide input_max is used.
+///     specified input_max is used.
 ///
-/// After determining the scale_factor and updating the input tange, it applies the
+/// After determining the scale_factor and updating the input range, it applies the
 /// following to each value in the 'input' tensor.
 ///
 /// output = round(clamp(value, input_min, input_max) * scale_factor) / scale_factor.
@@ -14402,7 +14398,7 @@ public static func rsqrtGrad<T: BinaryFloatingPoint>(
 ///   - aspect_ratio_range: The cropped area of the image must have an aspect ratio =
 ///     width / height within this range.
 ///   - area_range: The cropped area of the image must contain a fraction of the
-///     supplied image within in this range.
+///     supplied image within this range.
 ///   - max_attempts: Number of attempts at generating a cropped region of the image
 ///     of the specified constraints. After `max_attempts` failures, return the entire
 ///     image.
@@ -14501,7 +14497,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger>(
 ///   - aspect_ratio_range: The cropped area of the image must have an aspect ratio =
 ///     width / height within this range.
 ///   - area_range: The cropped area of the image must contain a fraction of the
-///     supplied image within in this range.
+///     supplied image within this range.
 ///   - max_attempts: Number of attempts at generating a cropped region of the image
 ///     of the specified constraints. After `max_attempts` failures, return the entire
 ///     image.
@@ -14904,7 +14900,7 @@ public static func scatterNd<T: AccelerableByTensorFlow, Tindices: BinaryInteger
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
+/// It must be shape `\\([d_0, ..., d_{Q-2}, K]\\)` where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
@@ -14912,9 +14908,7 @@ public static func scatterNd<T: AccelerableByTensorFlow, Tindices: BinaryInteger
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// ```
-/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].
-/// ```
+/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
 ///
 /// For example, say we want to add 4 scattered elements to a rank-1 tensor to 8
 /// elements. In Python, that addition would look like this:
@@ -14973,7 +14967,7 @@ public static func scatterNdAdd<T: Numeric, Tindices: BinaryInteger>(
 /// `input` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `input`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
+/// It must be shape \\([d_0, ..., d_{Q-2}, K]\\) where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or `(P-K)`-dimensional slices
@@ -14981,9 +14975,7 @@ public static func scatterNdAdd<T: Numeric, Tindices: BinaryInteger>(
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// ```
-/// [d_0, ..., d_{Q-2}, input.shape[K], ..., input.shape[P-1]].
-/// ```
+/// $$[d_0, ..., d_{Q-2}, input.shape[K], ..., input.shape[P-1]].$$
 ///
 /// For example, say we want to add 4 scattered elements to a rank-1 tensor to 8
 /// elements. In Python, that addition would look like this:
@@ -15032,7 +15024,7 @@ public static func scatterNdNonAliasingAdd<T: Numeric, Tindices: BinaryInteger>(
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
+/// It must be shape \\([d_0, ..., d_{Q-2}, K]\\) where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
@@ -15040,9 +15032,7 @@ public static func scatterNdNonAliasingAdd<T: Numeric, Tindices: BinaryInteger>(
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// ```
-/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].
-/// ```
+/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
 ///
 /// For example, say we want to subtract 4 scattered elements from a rank-1 tensor
 /// with 8 elements. In Python, that subtraction would look like this:
@@ -15098,7 +15088,7 @@ public static func scatterNdSub<T: Numeric, Tindices: BinaryInteger>(
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
+/// It must be shape \\([d_0, ..., d_{Q-2}, K]\\) where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
@@ -15106,9 +15096,7 @@ public static func scatterNdSub<T: Numeric, Tindices: BinaryInteger>(
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// ```
-/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].
-/// ```
+/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
 ///
 /// For example, say we want to update 4 scattered elements to a rank-1 tensor to
 /// 8 elements. In Python, that update would look like this:
@@ -15674,6 +15662,10 @@ public static func selfAdjointEigV2<T: BinaryFloatingPoint>(
 ///
 /// if < 0, `scale * features` otherwise.
 ///
+/// To be used together with
+/// `initializer = tf.variance_scaling_initializer(factor=1.0, mode='FAN_IN')`.
+/// For correct dropout, use `tf.contrib.nn.alpha_dropout`.
+///
 /// See [Self-Normalizing Neural Networks](https://arxiv.org/abs/1706.02515)
 @inlinable @inline(__always)
 public static func selu<T: BinaryFloatingPoint>(
@@ -15981,7 +15973,7 @@ public static func snapshot<T: AccelerableByTensorFlow>(
 ///
 /// For each batch `i` and class `j` we have
 ///
-///     softmax[i, j] = exp(logits[i, j]) / sum_j(exp(logits[i, j]))
+///     $$softmax[i, j] = exp(logits[i, j]) / sum_j(exp(logits[i, j]))$$
 ///
 /// - Parameter logits: 2-D with shape `[batch_size, num_classes]`.
 ///
@@ -16562,8 +16554,8 @@ public static func sparseApplyAdadelta<T: Numeric, Tindices: BinaryInteger>(
 /// Update relevant entries in '*var' and '*accum' according to the adagrad scheme.
 ///
 /// That is for rows we have grad for, we update var and accum as follows:
-/// accum += grad * grad
-/// var -= lr * grad * (1 / sqrt(accum))
+/// $$accum += grad * grad$$
+/// $$var -= lr * grad * (1 / sqrt(accum))$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16661,9 +16653,9 @@ public static func sparseApplyAdagradDA<T: Numeric, Tindices: BinaryInteger>(
 /// mean_grad = decay * mean_grad + (1-decay) * gradient
 /// Delta = learning_rate * gradient / sqrt(mean_square + epsilon - mean_grad ** 2)
 ///
-/// ms <- rho * ms_{t-1} + (1-rho) * grad * grad
-/// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
-/// var <- var - mom
+/// $$ms <- rho * ms_{t-1} + (1-rho) * grad * grad$$
+/// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
+/// $$var <- var - mom$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16715,11 +16707,11 @@ public static func sparseApplyCenteredRMSProp<T: Numeric, Tindices: BinaryIntege
 /// Update relevant entries in '*var' according to the Ftrl-proximal scheme.
 ///
 /// That is for rows we have grad for, we update var, accum and linear as follows:
-/// accum_new = accum + grad * grad
-/// linear += grad + (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
-/// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
-/// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
-/// accum = accum_new
+/// $$accum_new = accum + grad * grad$$
+/// $$linear += grad + (accum_{new}^{-lr_{power}} - accum^{-lr_{power}} / lr * var$$
+/// $$quadratic = 1.0 / (accum_{new}^{lr_{power}} * lr) + 2 * l2$$
+/// $$var = (sign(linear) * l1 - linear) / quadratic\ if\ |linear| > l1\ else\ 0.0$$
+/// $$accum = accum_{new}$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16830,8 +16822,8 @@ public static func sparseApplyFtrlV2<T: Numeric, Tindices: BinaryInteger>(
 ///
 /// That is for rows we have grad for, we update var and accum as follows:
 ///
-/// accum = accum * momentum + grad
-/// var -= lr * accum
+/// $$accum = accum * momentum + grad$$
+/// $$var -= lr * accum$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16878,10 +16870,10 @@ public static func sparseApplyMomentum<T: Numeric, Tindices: BinaryInteger>(
 /// Sparse update entries in '*var' and '*accum' according to FOBOS algorithm.
 ///
 /// That is for rows we have grad for, we update var and accum as follows:
-/// accum += grad * grad
-/// prox_v = var
-/// prox_v -= lr * grad * (1 / sqrt(accum))
-/// var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}
+/// $$accum += grad * grad$$
+/// $$prox_v = var$$
+/// $$prox_v -= lr * grad * (1 / sqrt(accum))$$
+/// $$var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16924,8 +16916,8 @@ public static func sparseApplyProximalAdagrad<T: Numeric, Tindices: BinaryIntege
 /// Sparse update '*var' as FOBOS algorithm with fixed learning rate.
 ///
 /// That is for rows we have grad for, we update var as follows:
-/// prox_v = var - alpha * grad
-/// var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}
+/// $$prox_v = var - alpha * grad$$
+/// $$var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -16971,9 +16963,9 @@ public static func sparseApplyProximalGradientDescent<T: Numeric, Tindices: Bina
 /// mean_square = decay * mean_square + (1-decay) * gradient ** 2
 /// Delta = learning_rate * gradient / sqrt(mean_square + epsilon)
 ///
-/// ms <- rho * ms_{t-1} + (1-rho) * grad * grad
-/// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
-/// var <- var - mom
+/// $$ms <- rho * ms_{t-1} + (1-rho) * grad * grad$$
+/// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
+/// $$var <- var - mom$$
 ///
 /// - Parameters:
 ///   - var: Should be from a Variable().
@@ -17371,9 +17363,11 @@ public static func sparseFillEmptyRowsGrad<T: AccelerableByTensorFlow>(
 /// Multiply matrix "a" by matrix "b".
 ///
 /// The inputs must be two-dimensional matrices and the inner dimension of "a" must
-/// match the outer dimension of "b". This op is optimized for the case where at
-/// least one of "a" or "b" is sparse. The breakeven for using this versus a dense
-/// matrix multiply on one platform was 30% zero values in the sparse matrix.
+/// match the outer dimension of "b". Both "a" and "b" must be `Tensor`s not
+/// `SparseTensor`s.  This op is optimized for the case where at least one of "a" or
+/// "b" is sparse, in the sense that they have a large proportion of zero values.
+/// The breakeven for using this versus a dense matrix multiply on one platform was
+/// 30% zero values in the sparse matrix.
 ///
 /// The gradient computation of this operation will only take advantage of sparsity
 /// in the input gradient when that gradient comes from a Relu.
@@ -20152,7 +20146,7 @@ public static func unsortedSegmentProd<T: Numeric, Tindices: BinaryInteger, Tnum
 /// segments.
 ///
 /// Computes a tensor such that
-/// `(output[i] = sum_{j...} data[j...]` where the sum is over tuples `j...` such
+/// \\(output[i] = sum_{j...} data[j...]\\) where the sum is over tuples `j...` such
 /// that `segment_ids[j...] == i`.  Unlike `SegmentSum`, `segment_ids`
 /// need not be sorted and need not cover all values in the full
 /// range of valid values.

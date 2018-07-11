@@ -17,8 +17,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.9.0-rc2"
-static let generatedTensorFlowGitVersion = "v1.9.0-rc1-44-gf09aaf0dd3"
+static let generatedTensorFlowVersion = "1.9.0"
+static let generatedTensorFlowGitVersion = "v1.9.0-0-g25c197e023"
 
 @_frozen
 public enum A {

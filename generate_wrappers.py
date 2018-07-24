@@ -503,7 +503,10 @@ def main(argv):
         continue
       with tf.gfile.Open(path, 'r') as fobj:
         data = fobj.read()
-      api_def_map.put_api_def(data)
+      try:
+        api_def_map.put_api_def(data)
+      except Exception as e:
+        print('Cannot load api def for %s: %s' % (op_name, str(e)))
 
   for op_name in sorted(op_names):
     try:

@@ -17,8 +17,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.9.0"
-static let generatedTensorFlowGitVersion = "v1.9.0-0-g25c197e023"
+static let generatedTensorFlowVersion = "1.10.0-rc0"
+static let generatedTensorFlowGitVersion = "v1.10.0-rc0-0-g586a7f1d2c"
 
 @_frozen
 public enum A {
@@ -2641,6 +2641,38 @@ public static func batchToSpaceND<T: AccelerableByTensorFlow, TblockShape: Binar
     T: T.self,
     Tblock_shape: TblockShape.self,
     Tcrops: Tcrops.self)
+  return Tensor(handle: ret)
+}
+
+/// Computes the Bessel i0e function of `x` element-wise.
+///
+/// Exponentially scaled modified Bessel function of order 0 defined as
+/// `bessel_i0e(x) = exp(-abs(x)) bessel_i0(x)`.
+///
+/// This function is faster and numerically stabler than `bessel_i0(x)`.
+@inlinable @inline(__always)
+public static func besselI0e<T: BinaryFloatingPoint>(
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("BesselI0e",
+    x,
+    T: T.self)
+  return Tensor(handle: ret)
+}
+
+/// Computes the Bessel i1e function of `x` element-wise.
+///
+/// Exponentially scaled modified Bessel function of order 0 defined as
+/// `bessel_i1e(x) = exp(-abs(x)) bessel_i1(x)`.
+///
+/// This function is faster and numerically stabler than `bessel_i1(x)`.
+@inlinable @inline(__always)
+public static func besselI1e<T: BinaryFloatingPoint>(
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("BesselI1e",
+    x,
+    T: T.self)
   return Tensor(handle: ret)
 }
 
@@ -6064,7 +6096,7 @@ public static func div<T: Numeric>(
 ///
 /// For example, if an image is 100 x 200 pixels (height x width) and the bounding
 /// box is `[0.1, 0.2, 0.5, 0.9]`, the upper-left and bottom-right coordinates of
-/// the bounding box will be `(40, 10)` to `(100, 50)` (in (x,y) coordinates).
+/// the bounding box will be `(40, 10)` to `(180, 50)` (in (x,y) coordinates).
 ///
 /// Parts of the bounding box may fall outside the image.
 ///
@@ -8069,6 +8101,11 @@ public static func gatherV2<Tparams: AccelerableByTensorFlow, Tindices: BinaryIn
   return Tensor(handle: ret)
 }
 
+/// Re-configures the GCS block cache with the new configuration values.
+///
+/// If the values are the same as already configured values, this op is a no-op. If
+/// they are different, the current contents of the block cache is dropped, and a
+/// new block cache is created fresh.
 @inlinable @inline(__always)
 public static func gcsConfigureBlockCache(
   maxCacheSize: Tensor<UInt64>,
@@ -8327,6 +8364,19 @@ public static func igamma<T: BinaryFloatingPoint>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Igamma",
+    a,
+    x,
+    T: T.self)
+  return Tensor(handle: ret)
+}
+
+/// Computes the gradient of `igamma(a, x)` wrt `a`.
+@inlinable @inline(__always)
+public static func igammaGradA<T: BinaryFloatingPoint>(
+  _ a: Tensor<T>,
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("IgammaGradA",
     a,
     x,
     T: T.self)
@@ -10163,7 +10213,7 @@ public static func maxPool3DGrad<T: BinaryFloatingPoint, Tinput: BinaryFloatingP
 ///
 /// - Output output: Gradients of gradients w.r.t. the input to `max_pool`.
 @inlinable @inline(__always)
-public static func maxPool3DGradGrad<T: BinaryFloatingPoint>(
+public static func maxPool3DGradGrad<T: Numeric>(
   origInput: Tensor<T>,
   origOutput: Tensor<T>,
   grad: Tensor<T>,
@@ -11125,6 +11175,54 @@ public static func nonMaxSuppressionV3(
     scores,
     maxOutputSize,
     iouThreshold,
+    scoreThreshold)
+  return Tensor(handle: ret)
+}
+
+/// Greedily selects a subset of bounding boxes in descending order of score,
+///
+/// pruning away boxes that have high overlaps
+/// with previously selected boxes.  Bounding boxes with score less than
+/// `score_threshold` are removed. N-by-n overlap values are supplied as square matrix,
+/// which allows for defining a custom overlap criterium (eg. intersection over union,
+/// intersection over area, etc.).
+///
+/// The output of this operation is a set of integers indexing into the input
+/// collection of bounding boxes representing the selected boxes.  The bounding
+/// box coordinates corresponding to the selected indices can then be obtained
+/// using the `tf.gather operation`.  For example:
+///
+///   selected_indices = tf.image.non_max_suppression_with_overlaps(
+///       overlaps, scores, max_output_size, overlap_threshold, score_threshold)
+///   selected_boxes = tf.gather(boxes, selected_indices)
+///
+/// - Parameters:
+///   - overlaps: A 2-D float tensor of shape `[num_boxes, num_boxes]` representing
+///     the n-by-n box overlap values.
+///   - scores: A 1-D float tensor of shape `[num_boxes]` representing a single
+///     score corresponding to each box (each row of boxes).
+///   - max_output_size: A scalar integer tensor representing the maximum number of
+///     boxes to be selected by non max suppression.
+///   - overlap_threshold: A 0-D float tensor representing the threshold for deciding whether
+///     boxes overlap too.
+///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
+///     boxes based on score.
+///
+/// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
+///   indices from the boxes tensor, where `M <= max_output_size`.
+@inlinable @inline(__always)
+public static func nonMaxSuppressionWithOverlaps(
+  overlaps: Tensor<Float>,
+  scores: Tensor<Float>,
+  maxOutputSize: Tensor<Int32>,
+  overlapThreshold: Tensor<Float>,
+  scoreThreshold: Tensor<Float>
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionWithOverlaps",
+    overlaps,
+    scores,
+    maxOutputSize,
+    overlapThreshold,
     scoreThreshold)
   return Tensor(handle: ret)
 }
@@ -12990,6 +13088,19 @@ public static func randomGamma<S: BinaryInteger, T: BinaryFloatingPoint>(
   return Tensor(handle: ret)
 }
 
+/// Computes the derivative of a Gamma random sample w.r.t. `alpha`.
+@inlinable @inline(__always)
+public static func randomGammaGrad<T: BinaryFloatingPoint>(
+  alpha: Tensor<T>,
+  sample: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("RandomGammaGrad",
+    alpha,
+    sample,
+    T: T.self)
+  return Tensor(handle: ret)
+}
+
 /// Use RandomPoissonV2 instead.
 @inlinable @inline(__always)
 public static func randomPoisson<S: BinaryInteger, Dtype: BinaryFloatingPoint>(
@@ -14801,8 +14912,12 @@ public static func scatterMul<T: Numeric, Tindices: BinaryInteger>(
 /// the given `shape` according to indices.  This operator is the inverse of the
 /// @{tf.gather_nd} operator which extracts values or slices from a given tensor.
 ///
+/// If `indices` contains duplicates, then their updates are accumulated (summed).
+///
 /// **WARNING**: The order in which updates are applied is nondeterministic, so the
-/// output will be nondeterministic if `indices` contains duplicates.
+/// output will be nondeterministic if `indices` contains duplicates -- because
+/// of some numerical approximation issues, numbers summed in different order
+/// may yield different results.
 ///
 /// `indices` is an integer tensor containing indices into a new tensor of shape
 /// `shape`.  The last dimension of `indices` can be at most the rank of `shape`:
@@ -17971,6 +18086,36 @@ public static func sparseSlice<T: AccelerableByTensorFlow>(
     size,
     T: T.self)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// The gradient operator for the SparseSlice op.
+///
+/// This op takes in the upstream gradient w.r.t. non-empty values of
+/// the sliced `SparseTensor`, and outputs the gradients w.r.t.
+/// the non-empty values of input `SparseTensor`.
+///
+/// - Parameters:
+///   - backprop_val_grad: 1-D. The gradient with respect to
+///     the non-empty values of the sliced `SparseTensor`.
+///   - input_indices: 2-D.  The `indices` of the input `SparseTensor`.
+///   - input_start: 1-D. tensor represents the start of the slice.
+///   - output_indices: 2-D.  The `indices` of the sliced `SparseTensor`.
+///
+/// - Output val_grad: 1-D. The gradient with respect to the non-empty values of input `SparseTensor`.
+@inlinable @inline(__always)
+public static func sparseSliceGrad<T: Numeric>(
+  backpropValGrad: Tensor<T>,
+  inputIndices: Tensor<Int64>,
+  inputStart: Tensor<Int64>,
+  outputIndices: Tensor<Int64>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("SparseSliceGrad",
+    backpropValGrad,
+    inputIndices,
+    inputStart,
+    outputIndices,
+    T: T.self)
+  return Tensor(handle: ret)
 }
 
 /// Applies softmax to a batched N-D `SparseTensor`.

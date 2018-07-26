@@ -1,4 +1,3 @@
-//
 // !!!THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND!!!
 //
 // Copyright 2018 Google LLC

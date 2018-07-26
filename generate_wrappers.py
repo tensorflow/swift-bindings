@@ -37,8 +37,7 @@ flags.DEFINE_string(
     None,
     'path for the generated swift file')
 
-_WARNING = """//
-// !!!THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND!!!
+_WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!
 //
 """
 _HEADER = """// Copyright 2018 Google LLC
@@ -516,7 +515,7 @@ def main(argv):
       op_codes.append(generate_code(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))
-  print('Generated code for %d/%d ops.'  % (len(op_codes), len(op_names)))
+  print('Generated code for %d/%d ops.' % (len(op_codes), len(op_names)))
 
   version_codes = [
       'static let generatedTensorFlowVersion = "%s"' % tf.__version__,

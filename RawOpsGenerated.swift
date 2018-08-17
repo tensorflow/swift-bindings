@@ -1,4 +1,4 @@
-// !!!THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND!!!
+// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!
 //
 // Copyright 2018 Google LLC
 //
@@ -16,8 +16,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.10.0-rc0"
-static let generatedTensorFlowGitVersion = "v1.10.0-rc0-0-g586a7f1d2c"
+static let generatedTensorFlowVersion = "1.9.0-rc0"
+static let generatedTensorFlowGitVersion = "v1.8.0-3901-g9590c4c32d"
 
 @_frozen
 public enum A {
@@ -38,6 +38,8 @@ public enum A {
 
 @_frozen
 public enum DataFormat {
+  case hwcn
+  case hwnc
   case nchw
   case nhwc
 
@@ -46,6 +48,8 @@ public enum DataFormat {
     @inline(__always)
     get {
       switch self {
+      case .hwcn: return "HWCN"
+      case .hwnc: return "HWNC"
       case .nchw: return "NCHW"
       case .nhwc: return "NHWC"
       }
@@ -3400,7 +3404,7 @@ public static func cast<Srct: AccelerableByTensorFlow, Dstt: AccelerableByTensor
   return Tensor(handle: ret)
 }
 
-/// Returns element-wise smallest integer in not less than x.
+/// Returns element-wise smallest integer not less than x.
 @inlinable @inline(__always)
 public static func ceil<T: BinaryFloatingPoint>(
   _ x: Tensor<T>
@@ -11174,54 +11178,6 @@ public static func nonMaxSuppressionV3(
     scores,
     maxOutputSize,
     iouThreshold,
-    scoreThreshold)
-  return Tensor(handle: ret)
-}
-
-/// Greedily selects a subset of bounding boxes in descending order of score,
-///
-/// pruning away boxes that have high overlaps
-/// with previously selected boxes.  Bounding boxes with score less than
-/// `score_threshold` are removed. N-by-n overlap values are supplied as square matrix,
-/// which allows for defining a custom overlap criterium (eg. intersection over union,
-/// intersection over area, etc.).
-///
-/// The output of this operation is a set of integers indexing into the input
-/// collection of bounding boxes representing the selected boxes.  The bounding
-/// box coordinates corresponding to the selected indices can then be obtained
-/// using the `tf.gather operation`.  For example:
-///
-///   selected_indices = tf.image.non_max_suppression_with_overlaps(
-///       overlaps, scores, max_output_size, overlap_threshold, score_threshold)
-///   selected_boxes = tf.gather(boxes, selected_indices)
-///
-/// - Parameters:
-///   - overlaps: A 2-D float tensor of shape `[num_boxes, num_boxes]` representing
-///     the n-by-n box overlap values.
-///   - scores: A 1-D float tensor of shape `[num_boxes]` representing a single
-///     score corresponding to each box (each row of boxes).
-///   - max_output_size: A scalar integer tensor representing the maximum number of
-///     boxes to be selected by non max suppression.
-///   - overlap_threshold: A 0-D float tensor representing the threshold for deciding whether
-///     boxes overlap too.
-///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
-///     boxes based on score.
-///
-/// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
-///   indices from the boxes tensor, where `M <= max_output_size`.
-@inlinable @inline(__always)
-public static func nonMaxSuppressionWithOverlaps(
-  overlaps: Tensor<Float>,
-  scores: Tensor<Float>,
-  maxOutputSize: Tensor<Int32>,
-  overlapThreshold: Tensor<Float>,
-  scoreThreshold: Tensor<Float>
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionWithOverlaps",
-    overlaps,
-    scores,
-    maxOutputSize,
-    overlapThreshold,
     scoreThreshold)
   return Tensor(handle: ret)
 }

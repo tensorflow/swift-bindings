@@ -69,7 +69,7 @@ _TYPE_PROTOCOLS = [
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
-          types_pb2.DT_UINT64]), 'UnsignedInteger'),
+          types_pb2.DT_UINT64]), 'UnsignedInteger & AccelerableByTensorFlow'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
@@ -77,11 +77,11 @@ _TYPE_PROTOCOLS = [
           types_pb2.DT_INT8,
           types_pb2.DT_INT16,
           types_pb2.DT_INT32,
-          types_pb2.DT_INT64]), 'BinaryInteger'),
+          types_pb2.DT_INT64]), 'BinaryInteger & AccelerableByTensorFlow'),
     (set([types_pb2.DT_FLOAT,
           types_pb2.DT_DOUBLE,
           types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'BinaryFloatingPoint'),
+          types_pb2.DT_BFLOAT16]), 'BinaryFloatingPoint & AccelerableByTensorFlow'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
@@ -93,7 +93,7 @@ _TYPE_PROTOCOLS = [
           types_pb2.DT_FLOAT,
           types_pb2.DT_DOUBLE,
           types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'Numeric'),
+          types_pb2.DT_BFLOAT16]), 'Numeric & AccelerableByTensorFlow'),
 ]
 
 _SWIFTIFIED_TYPES = {
@@ -231,7 +231,7 @@ class Types(object):
     # Do not pass list(type) attr as these have to use an array of types.
     if self._is_list_attr:
       return None
-    return self.attr_def_name + ': ' + self.swift_name + '.self'
+    return self.attr_def_name + '$dtype: ' + self.swift_name + '.cDataType'
 
 
 def swift_float(f):

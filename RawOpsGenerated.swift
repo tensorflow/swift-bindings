@@ -379,7 +379,7 @@ public static func abs<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Abs",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -390,7 +390,7 @@ public static func acos<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Acos",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -401,7 +401,7 @@ public static func acosh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Acosh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -417,7 +417,7 @@ public static func add<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Add",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -472,7 +472,7 @@ public static func addManySparseToTensorsMap<T: AccelerableByTensorFlow>(
     sparseIndices,
     sparseValues,
     sparseShape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     container: container,
     shared_name: sharedName)
   return Tensor(handle: ret)
@@ -487,7 +487,7 @@ public static func addN<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AddN",
     inputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -532,7 +532,7 @@ public static func addSparseToTensorsMap<T: AccelerableByTensorFlow>(
     sparseIndices,
     sparseValues,
     sparseShape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     container: container,
     shared_name: sharedName)
   return Tensor(handle: ret)
@@ -550,7 +550,7 @@ public static func addV2<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("AddV2",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -567,7 +567,7 @@ public static func adjustContrast<T: Numeric & AccelerableByTensorFlow>(
     contrastFactor,
     minValue,
     maxValue,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -673,7 +673,7 @@ public static func all<Tidx: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("All",
     input,
     reductionIndices,
-    Tidx$dtype: Tidx.cDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -758,8 +758,8 @@ public static func angle<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint &
 ) -> Tensor<Tout> {
   let ret: TensorHandle<Tout> = #tfop("Angle",
     input,
-    T$dtype: T.cDataType,
-    Tout$dtype: Tout.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -787,7 +787,7 @@ public static func any<Tidx: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("Any",
     input,
     reductionIndices,
-    Tidx$dtype: Tidx.cDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -837,7 +837,7 @@ public static func applyAdaMax<T: Numeric & AccelerableByTensorFlow>(
     beta2,
     epsilon,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -881,7 +881,7 @@ public static func applyAdadelta<T: Numeric & AccelerableByTensorFlow>(
     rho,
     epsilon,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -916,7 +916,7 @@ public static func applyAdagrad<T: Numeric & AccelerableByTensorFlow>(
     accum,
     lr,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking,
     update_slots: updateSlots)
   return Tensor(handle: ret)
@@ -959,7 +959,7 @@ public static func applyAdagradDA<T: Numeric & AccelerableByTensorFlow>(
     l1,
     l2,
     globalStep,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1016,7 +1016,7 @@ public static func applyAdam<T: Numeric & AccelerableByTensorFlow>(
     beta2,
     epsilon,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking,
     use_nesterov: useNesterov)
   return Tensor(handle: ret)
@@ -1061,7 +1061,7 @@ public static func applyAddSign<T: Numeric & AccelerableByTensorFlow>(
     signDecay,
     beta,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1125,7 +1125,7 @@ public static func applyCenteredRMSProp<T: Numeric & AccelerableByTensorFlow>(
     momentum,
     epsilon,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1174,7 +1174,7 @@ public static func applyFtrl<T: Numeric & AccelerableByTensorFlow>(
     l1,
     l2,
     lrPower,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1227,7 +1227,7 @@ public static func applyFtrlV2<T: Numeric & AccelerableByTensorFlow>(
     l2,
     l2Shrinkage,
     lrPower,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1254,7 +1254,7 @@ public static func applyGradientDescent<T: Numeric & AccelerableByTensorFlow>(
     var_,
     alpha,
     delta,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1298,7 +1298,7 @@ public static func applyMomentum<T: Numeric & AccelerableByTensorFlow>(
     lr,
     grad,
     momentum,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking,
     use_nesterov: useNesterov)
   return Tensor(handle: ret)
@@ -1343,7 +1343,7 @@ public static func applyPowerSign<T: Numeric & AccelerableByTensorFlow>(
     signDecay,
     beta,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1383,7 +1383,7 @@ public static func applyProximalAdagrad<T: Numeric & AccelerableByTensorFlow>(
     l1,
     l2,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1419,7 +1419,7 @@ public static func applyProximalGradientDescent<T: Numeric & AccelerableByTensor
     l1,
     l2,
     delta,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1472,7 +1472,7 @@ public static func applyRMSProp<T: Numeric & AccelerableByTensorFlow>(
     momentum,
     epsilon,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1487,7 +1487,7 @@ public static func approximateEqual<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("ApproximateEqual",
     x,
     y,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     tolerance: tolerance)
   return Tensor(handle: ret)
 }
@@ -1507,9 +1507,9 @@ public static func argMax<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInte
   let ret: TensorHandle<OutputType> = #tfop("ArgMax",
     input,
     dimension,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
-    output_type$dtype: OutputType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    output_type$dtype: OutputType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1528,9 +1528,9 @@ public static func argMin<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInte
   let ret: TensorHandle<OutputType> = #tfop("ArgMin",
     input,
     dimension,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
-    output_type$dtype: OutputType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    output_type$dtype: OutputType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1541,7 +1541,7 @@ public static func asin<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Asin",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1552,7 +1552,7 @@ public static func asinh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Asinh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1606,7 +1606,7 @@ public static func assign<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Assign",
     ref,
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     validate_shape: validateShape,
     use_locking: useLocking)
   return Tensor(handle: ret)
@@ -1635,7 +1635,7 @@ public static func assignAdd<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("AssignAdd",
     ref,
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1663,7 +1663,7 @@ public static func assignSub<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("AssignSub",
     ref,
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -1675,7 +1675,7 @@ public static func atan<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Atan",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1694,7 +1694,7 @@ public static func atan2<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Atan2",
     y,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1705,7 +1705,7 @@ public static func atanh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Atanh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -1797,7 +1797,7 @@ public static func attrListTypeDefault<T: AccelerableByTensorFlow>(
   return #tfop("AttrListTypeDefault",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -1814,7 +1814,7 @@ public static func attrTypeDefault<T: AccelerableByTensorFlow>(
 ) {
   return #tfop("AttrTypeDefault",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 /// Produces a visualization of audio data over time.
@@ -1898,7 +1898,7 @@ public static func avgPool<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPool",
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -1933,7 +1933,7 @@ public static func avgPool3D<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPool3D",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -1972,7 +1972,7 @@ public static func avgPool3DGrad<T: BinaryFloatingPoint & AccelerableByTensorFlo
   let ret: TensorHandle<T> = #tfop("AvgPool3DGrad",
     origInputShape,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -2010,7 +2010,7 @@ public static func avgPoolGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>
   let ret: TensorHandle<T> = #tfop("AvgPoolGrad",
     origInputShape,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -2096,7 +2096,7 @@ public static func batchCholesky<T: BinaryFloatingPoint & AccelerableByTensorFlo
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchCholesky",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2108,7 +2108,7 @@ public static func batchCholeskyGrad<T: BinaryFloatingPoint & AccelerableByTenso
   let ret: TensorHandle<T> = #tfop("BatchCholeskyGrad",
     l,
     grad,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2152,7 +2152,7 @@ public static func batchMatMul<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BatchMatMul",
     x,
     y,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     adj_x: adjX,
     adj_y: adjY)
   return Tensor(handle: ret)
@@ -2168,7 +2168,7 @@ public static func batchMatrixBandPart<T: AccelerableByTensorFlow>(
     input,
     numLower,
     numUpper,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2178,7 +2178,7 @@ public static func batchMatrixDeterminant<T: BinaryFloatingPoint & AccelerableBy
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchMatrixDeterminant",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2188,7 +2188,7 @@ public static func batchMatrixDiag<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchMatrixDiag",
     diagonal,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2198,7 +2198,7 @@ public static func batchMatrixDiagPart<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchMatrixDiagPart",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2209,7 +2209,7 @@ public static func batchMatrixInverse<T: BinaryFloatingPoint & AccelerableByTens
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchMatrixInverse",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     adjoint: adjoint)
   return Tensor(handle: ret)
 }
@@ -2222,7 +2222,7 @@ public static func batchMatrixSetDiag<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BatchMatrixSetDiag",
     input,
     diagonal,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2235,7 +2235,7 @@ public static func batchMatrixSolve<T: BinaryFloatingPoint & AccelerableByTensor
   let ret: TensorHandle<T> = #tfop("BatchMatrixSolve",
     matrix,
     rhs,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     adjoint: adjoint)
   return Tensor(handle: ret)
 }
@@ -2251,7 +2251,7 @@ public static func batchMatrixSolveLs<T: BinaryFloatingPoint & AccelerableByTens
     matrix,
     rhs,
     l2Regularizer,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     fast: fast)
   return Tensor(handle: ret)
 }
@@ -2266,7 +2266,7 @@ public static func batchMatrixTriangularSolve<T: BinaryFloatingPoint & Accelerab
   let ret: TensorHandle<T> = #tfop("BatchMatrixTriangularSolve",
     matrix,
     rhs,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     lower: lower,
     adjoint: adjoint)
   return Tensor(handle: ret)
@@ -2310,7 +2310,7 @@ public static func batchNormWithGlobalNormalization<T: Numeric & AccelerableByTe
     v,
     beta,
     gamma,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     variance_epsilon: varianceEpsilon,
     scale_after_normalization: scaleAfterNormalization)
   return Tensor(handle: ret)
@@ -2360,7 +2360,7 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & Accelerable
     v,
     gamma,
     backprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     variance_epsilon: varianceEpsilon,
     scale_after_normalization: scaleAfterNormalization)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
@@ -2372,7 +2372,7 @@ public static func batchSelfAdjointEig<T: BinaryFloatingPoint & AccelerableByTen
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchSelfAdjointEig",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2383,7 +2383,7 @@ public static func batchSelfAdjointEigV2<T: BinaryFloatingPoint & AccelerableByT
 ) -> (e: Tensor<T>, v: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("BatchSelfAdjointEigV2",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     compute_v: computeV)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
@@ -2396,7 +2396,7 @@ public static func batchSvd<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("BatchSvd",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     compute_uv: computeUv,
     full_matrices: fullMatrices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -2499,8 +2499,8 @@ public static func batchToSpace<T: AccelerableByTensorFlow, Tidx: BinaryInteger 
   let ret: TensorHandle<T> = #tfop("BatchToSpace",
     input,
     crops,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     block_size: blockSize)
   return Tensor(handle: ret)
 }
@@ -2637,9 +2637,9 @@ public static func batchToSpaceND<T: AccelerableByTensorFlow, TblockShape: Binar
     input,
     blockShape,
     crops,
-    T$dtype: T.cDataType,
-    Tblock_shape$dtype: TblockShape.cDataType,
-    Tcrops$dtype: Tcrops.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tblock_shape$dtype: TblockShape.tensorFlowDataType,
+    Tcrops$dtype: Tcrops.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2655,7 +2655,7 @@ public static func besselI0e<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BesselI0e",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2671,7 +2671,7 @@ public static func besselI1e<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BesselI1e",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2700,7 +2700,7 @@ public static func betainc<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
     a,
     b,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2731,7 +2731,7 @@ public static func biasAdd<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BiasAdd",
     value,
     bias,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
 }
@@ -2760,7 +2760,7 @@ public static func biasAddGrad<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BiasAddGrad",
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
 }
@@ -2785,7 +2785,7 @@ public static func biasAddV1<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BiasAddV1",
     value,
     bias,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2797,7 +2797,7 @@ public static func binary<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Binary",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2830,7 +2830,7 @@ public static func bincount<T: Numeric & AccelerableByTensorFlow>(
     arr,
     size,
     weights,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2854,8 +2854,8 @@ public static func bitcast<T: Numeric & AccelerableByTensorFlow, Type: Numeric &
 ) -> Tensor<Type> {
   let ret: TensorHandle<Type> = #tfop("Bitcast",
     input,
-    T$dtype: T.cDataType,
-    type$dtype: Type.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    type$dtype: Type.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2871,7 +2871,7 @@ public static func bitwiseAnd<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BitwiseAnd",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2887,7 +2887,7 @@ public static func bitwiseOr<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BitwiseOr",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2903,7 +2903,7 @@ public static func bitwiseXor<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BitwiseXor",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -2977,7 +2977,7 @@ public static func blockLSTM<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
     wcf,
     wco,
     b,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     forget_bias: forgetBias,
     cell_clip: cellClip,
     use_peephole: usePeephole)
@@ -3061,7 +3061,7 @@ public static func blockLSTMGrad<T: BinaryFloatingPoint & AccelerableByTensorFlo
     h,
     csGrad,
     hGrad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_peephole: usePeephole)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6), Tensor(handle: ret.7))
 }
@@ -3163,7 +3163,7 @@ public static func broadcastArgs<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("BroadcastArgs",
     s0,
     s1,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3178,7 +3178,7 @@ public static func broadcastGradientArgs<T: BinaryInteger & AccelerableByTensorF
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("BroadcastGradientArgs",
     s0,
     s1,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -3215,8 +3215,8 @@ public static func broadcastTo<T: AccelerableByTensorFlow, Tidx: BinaryInteger &
   let ret: TensorHandle<T> = #tfop("BroadcastTo",
     input,
     shape,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3249,7 +3249,7 @@ public static func bucketize<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<Int32> {
   let ret: TensorHandle<Int32> = #tfop("Bucketize",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     boundaries: boundaries)
   return Tensor(handle: ret)
 }
@@ -3395,8 +3395,8 @@ public static func cast<Srct: AccelerableByTensorFlow, Dstt: AccelerableByTensor
 ) -> Tensor<Dstt> {
   let ret: TensorHandle<Dstt> = #tfop("Cast",
     x,
-    SrcT$dtype: Srct.cDataType,
-    DstT$dtype: Dstt.cDataType)
+    SrcT$dtype: Srct.tensorFlowDataType,
+    DstT$dtype: Dstt.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3407,7 +3407,7 @@ public static func ceil<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Ceil",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3424,7 +3424,7 @@ public static func checkNumerics<T: BinaryFloatingPoint & AccelerableByTensorFlo
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CheckNumerics",
     tensor,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     message: message)
   return Tensor(handle: ret)
 }
@@ -3454,7 +3454,7 @@ public static func cholesky<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Cholesky",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3480,7 +3480,7 @@ public static func choleskyGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow
   let ret: TensorHandle<T> = #tfop("CholeskyGrad",
     l,
     grad,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3509,7 +3509,7 @@ public static func clipByValue<T: Numeric & AccelerableByTensorFlow>(
     t,
     clipValueMin,
     clipValueMax,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3526,7 +3526,7 @@ public static func collectiveReduce<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CollectiveReduce",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     group_size: groupSize,
     group_key: groupKey,
     instance_key: instanceKey,
@@ -3577,7 +3577,7 @@ public static func compareAndBitpack<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<UInt8> = #tfop("CompareAndBitpack",
     input,
     threshold,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3605,8 +3605,8 @@ public static func complex<T: BinaryFloatingPoint & AccelerableByTensorFlow, Tou
   let ret: TensorHandle<Tout> = #tfop("Complex",
     real,
     imag,
-    T$dtype: T.cDataType,
-    Tout$dtype: Tout.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3622,8 +3622,8 @@ public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPo
 ) -> Tensor<Tout> {
   let ret: TensorHandle<Tout> = #tfop("ComplexAbs",
     x,
-    T$dtype: T.cDataType,
-    Tout$dtype: Tout.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3698,7 +3698,7 @@ public static func concat<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Concat",
     concatDim,
     values,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3751,8 +3751,8 @@ public static func concatV2<T: AccelerableByTensorFlow, Tidx: BinaryInteger & Ac
   let ret: TensorHandle<T> = #tfop("ConcatV2",
     values,
     axis,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3777,7 +3777,7 @@ public static func conj<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conj",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3794,8 +3794,8 @@ public static func conjugateTranspose<T: AccelerableByTensorFlow, Tperm: BinaryI
   let ret: TensorHandle<T> = #tfop("ConjugateTranspose",
     x,
     perm,
-    T$dtype: T.cDataType,
-    Tperm$dtype: Tperm.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tperm$dtype: Tperm.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -3875,7 +3875,7 @@ public static func conv2D<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Conv2D",
     input,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
@@ -3928,7 +3928,7 @@ public static func conv2DBackpropFilter<T: BinaryFloatingPoint & AccelerableByTe
     input,
     filterSizes,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
@@ -3980,7 +3980,7 @@ public static func conv2DBackpropInput<T: BinaryFloatingPoint & AccelerableByTen
     inputSizes,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
@@ -4028,7 +4028,7 @@ public static func conv3D<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Conv3D",
     input,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -4062,7 +4062,7 @@ public static func conv3DBackpropFilter<T: BinaryFloatingPoint & AccelerableByTe
     input,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     dilations: dilations)
@@ -4108,7 +4108,7 @@ public static func conv3DBackpropFilterV2<T: BinaryFloatingPoint & AccelerableBy
     input,
     filterSizes,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -4142,7 +4142,7 @@ public static func conv3DBackpropInput<T: BinaryFloatingPoint & AccelerableByTen
     input,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     dilations: dilations)
@@ -4188,8 +4188,8 @@ public static func conv3DBackpropInputV2<T: BinaryFloatingPoint & AccelerableByT
     inputSizes,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
-    Tshape$dtype: Tshape.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tshape$dtype: Tshape.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -4227,7 +4227,7 @@ public static func copy<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Copy",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     tensor_name: tensorName,
     debug_ops_spec: debugOpsSpec)
   return Tensor(handle: ret)
@@ -4261,7 +4261,7 @@ public static func copyHost<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CopyHost",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     tensor_name: tensorName,
     debug_ops_spec: debugOpsSpec)
   return Tensor(handle: ret)
@@ -4273,7 +4273,7 @@ public static func copyOp<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CopyOp",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -4284,7 +4284,7 @@ public static func cos<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Cos",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -4295,7 +4295,7 @@ public static func cosh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Cosh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -4315,7 +4315,7 @@ public static func countUpTo<T: BinaryInteger & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CountUpTo",
     ref,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     limit: limit)
   return Tensor(handle: ret)
 }
@@ -4379,7 +4379,7 @@ public static func cropAndResize<T: Numeric & AccelerableByTensorFlow>(
     boxes,
     boxInd,
     cropSize,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     method: method.cName,
     extrapolation_value: extrapolationValue)
   return Tensor(handle: ret)
@@ -4421,7 +4421,7 @@ public static func cropAndResizeGradBoxes<T: Numeric & AccelerableByTensorFlow>(
     image,
     boxes,
     boxInd,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     method: method.cName)
   return Tensor(handle: ret)
 }
@@ -4463,7 +4463,7 @@ public static func cropAndResizeGradImage<T: BinaryFloatingPoint & AccelerableBy
     boxes,
     boxInd,
     imageSize,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     method: method.cName)
   return Tensor(handle: ret)
 }
@@ -4487,7 +4487,7 @@ public static func cross<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Cross",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -4542,7 +4542,7 @@ public static func cudnnRNN<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
     inputH,
     inputC,
     params,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -4626,7 +4626,7 @@ public static func cudnnRNNBackprop<T: BinaryFloatingPoint & AccelerableByTensor
     outputHBackprop,
     outputCBackprop,
     reserveSpace,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -4714,7 +4714,7 @@ public static func cudnnRNNBackpropV2<T: BinaryFloatingPoint & AccelerableByTens
     outputCBackprop,
     reserveSpace,
     hostReserved,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -4775,7 +4775,7 @@ public static func cudnnRNNCanonicalToParams<T: BinaryFloatingPoint & Accelerabl
     inputSize,
     weights,
     biases,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -4825,8 +4825,8 @@ public static func cudnnRNNParamsSize<T: BinaryFloatingPoint & AccelerableByTens
     numLayers,
     numUnits,
     inputSize,
-    T$dtype: T.cDataType,
-    S$dtype: S.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    S$dtype: S.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -4886,7 +4886,7 @@ public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint & Accelerabl
     numUnits,
     inputSize,
     params,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     num_params: numParams,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
@@ -4951,7 +4951,7 @@ public static func cudnnRNNV2<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
     inputH,
     inputC,
     params,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     rnn_mode: rnnMode.cName,
     input_mode: inputMode.cName,
     direction: direction.cName,
@@ -5013,8 +5013,8 @@ public static func cumprod<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInt
   let ret: TensorHandle<T> = #tfop("Cumprod",
     x,
     axis,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     exclusive: exclusive,
     reverse: reverse)
   return Tensor(handle: ret)
@@ -5071,8 +5071,8 @@ public static func cumsum<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInte
   let ret: TensorHandle<T> = #tfop("Cumsum",
     x,
     axis,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     exclusive: exclusive,
     reverse: reverse)
   return Tensor(handle: ret)
@@ -5098,7 +5098,7 @@ public static func dataFormatDimMap<T: BinaryInteger & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DataFormatDimMap",
     x,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     src_format: srcFormat,
     dst_format: dstFormat)
   return Tensor(handle: ret)
@@ -5123,7 +5123,7 @@ public static func dataFormatVecPermute<T: BinaryInteger & AccelerableByTensorFl
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DataFormatVecPermute",
     x,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     src_format: srcFormat,
     dst_format: dstFormat)
   return Tensor(handle: ret)
@@ -5140,7 +5140,7 @@ public static func debugGradientIdentity<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DebugGradientIdentity",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5155,7 +5155,7 @@ public static func debugGradientRefIdentity<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DebugGradientRefIdentity",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5187,7 +5187,7 @@ public static func debugIdentity<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DebugIdentity",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     device_name: deviceName,
     tensor_name: tensorName,
     debug_urls: debugUrls,
@@ -5223,7 +5223,7 @@ public static func debugNanCount<T: AccelerableByTensorFlow>(
 ) -> Tensor<Int64> {
   let ret: TensorHandle<Int64> = #tfop("DebugNanCount",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     device_name: deviceName,
     tensor_name: tensorName,
     debug_urls: debugUrls,
@@ -5295,7 +5295,7 @@ public static func debugNumericSummary<T: AccelerableByTensorFlow>(
 ) -> Tensor<Double> {
   let ret: TensorHandle<Double> = #tfop("DebugNumericSummary",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     device_name: deviceName,
     tensor_name: tensorName,
     debug_urls: debugUrls,
@@ -5318,7 +5318,7 @@ public static func deepCopy<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DeepCopy",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5354,7 +5354,7 @@ public static func denseToDenseSetOperation<T: BinaryInteger & AccelerableByTens
   let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("DenseToDenseSetOperation",
     set1,
     set2,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     set_operation: setOperation,
     validate_indices: validateIndices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -5409,7 +5409,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger & AccelerableByTen
     set2Indices,
     set2Values,
     set2Shape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     set_operation: setOperation,
     validate_indices: validateIndices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -5516,7 +5516,7 @@ public static func depthToSpace<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthToSpace",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     block_size: blockSize,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
@@ -5569,7 +5569,7 @@ public static func depthwiseConv2dNative<T: BinaryFloatingPoint & AccelerableByT
   let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNative",
     input,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -5623,7 +5623,7 @@ public static func depthwiseConv2dNativeBackpropFilter<T: BinaryFloatingPoint & 
     input,
     filterSizes,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -5677,7 +5677,7 @@ public static func depthwiseConv2dNativeBackpropInput<T: BinaryFloatingPoint & A
     inputSizes,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     data_format: dataFormat.cName,
@@ -5775,7 +5775,7 @@ public static func dequantize<T: AccelerableByTensorFlow>(
     input,
     minRange,
     maxRange,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     mode: mode.cName)
   return Tensor(handle: ret)
 }
@@ -5834,8 +5834,8 @@ public static func deserializeSparse<Dtype: AccelerableByTensorFlow, Tserialized
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("DeserializeSparse",
     serializedSparse,
-    dtype$dtype: Dtype.cDataType,
-    Tserialized$dtype: Tserialized.cDataType)
+    dtype$dtype: Dtype.tensorFlowDataType,
+    Tserialized$dtype: Tserialized.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -5860,7 +5860,7 @@ public static func destroyTemporaryVariable<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DestroyTemporaryVariable",
     ref,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     var_name: varName)
   return Tensor(handle: ret)
 }
@@ -5892,7 +5892,7 @@ public static func diag<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Diag",
     diagonal,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5926,7 +5926,7 @@ public static func diagPart<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DiagPart",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5939,7 +5939,7 @@ public static func digamma<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Digamma",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -5992,7 +5992,7 @@ public static func dilation2D<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Dilation2D",
     input,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     rates: rates,
     padding: padding.cName)
@@ -6027,7 +6027,7 @@ public static func dilation2DBackpropFilter<T: Numeric & AccelerableByTensorFlow
     input,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     rates: rates,
     padding: padding.cName)
@@ -6062,7 +6062,7 @@ public static func dilation2DBackpropInput<T: Numeric & AccelerableByTensorFlow>
     input,
     filter,
     outBackprop,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     strides: strides,
     rates: rates,
     padding: padding.cName)
@@ -6081,7 +6081,7 @@ public static func div<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Div",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6114,7 +6114,7 @@ public static func drawBoundingBoxes<T: BinaryFloatingPoint & AccelerableByTenso
   let ret: TensorHandle<T> = #tfop("DrawBoundingBoxes",
     images,
     boxes,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6170,7 +6170,7 @@ public static func dynamicPartition<T: AccelerableByTensorFlow>(
   let ret: [TensorHandle<T>] = #tfop("DynamicPartition",
     data,
     partitions,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     num_partitions: numPartitions)
   return ret.map(Tensor.init)
 }
@@ -6247,7 +6247,7 @@ public static func dynamicStitch<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("DynamicStitch",
     indices,
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6339,7 +6339,7 @@ public static func editDistance<T: AccelerableByTensorFlow>(
     truthIndices,
     truthValues,
     truthShape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     normalize: normalize)
   return Tensor(handle: ret)
 }
@@ -6354,7 +6354,7 @@ public static func elu<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Elu",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6374,7 +6374,7 @@ public static func eluGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("EluGrad",
     gradients,
     outputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6394,7 +6394,7 @@ public static func empty<Dtype: AccelerableByTensorFlow>(
 ) -> Tensor<Dtype> {
   let ret: TensorHandle<Dtype> = #tfop("Empty",
     shape,
-    dtype$dtype: Dtype.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
     init: init_)
   return Tensor(handle: ret)
 }
@@ -6424,7 +6424,7 @@ public static func enter<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Enter",
     data,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     frame_name: frameName,
     is_constant: isConstant,
     parallel_iterations: parallelIterations)
@@ -6443,7 +6443,7 @@ public static func equal<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("Equal",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6454,7 +6454,7 @@ public static func erf<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Erf",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6465,7 +6465,7 @@ public static func erfc<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Erfc",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6482,7 +6482,7 @@ public static func exit<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Exit",
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6493,7 +6493,7 @@ public static func exp<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Exp",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6544,8 +6544,8 @@ public static func expandDims<T: AccelerableByTensorFlow, Tdim: BinaryInteger & 
   let ret: TensorHandle<T> = #tfop("ExpandDims",
     input,
     dim,
-    T$dtype: T.cDataType,
-    Tdim$dtype: Tdim.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tdim$dtype: Tdim.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6558,7 +6558,7 @@ public static func expm1<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Expm1",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6662,7 +6662,7 @@ public static func extractImagePatches<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ExtractImagePatches",
     images,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksizes: ksizes,
     strides: strides,
     rates: rates,
@@ -6689,7 +6689,7 @@ public static func fFT<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("FFT",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6712,7 +6712,7 @@ public static func fFT2D<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("FFT2D",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6735,7 +6735,7 @@ public static func fFT3D<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("FFT3D",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -6965,8 +6965,8 @@ public static func fill<T: AccelerableByTensorFlow, IndexType: BinaryInteger & A
   let ret: TensorHandle<T> = #tfop("Fill",
     dims,
     value,
-    T$dtype: T.cDataType,
-    index_type$dtype: IndexType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    index_type$dtype: IndexType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -7097,7 +7097,7 @@ public static func floor<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Floor",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -7113,7 +7113,7 @@ public static func floorDiv<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("FloorDiv",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -7132,7 +7132,7 @@ public static func floorMod<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("FloorMod",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -7202,7 +7202,7 @@ public static func fractionalAvgPool<T: Numeric & AccelerableByTensorFlow>(
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   let ret: (TensorHandle<T>, TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("FractionalAvgPool",
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     pooling_ratio: poolingRatio,
     pseudo_random: pseudoRandom,
     overlapping: overlapping,
@@ -7253,7 +7253,7 @@ public static func fractionalAvgPoolGrad<T: Numeric & AccelerableByTensorFlow>(
     outBackprop,
     rowPoolingSequence,
     colPoolingSequence,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     overlapping: overlapping)
   return Tensor(handle: ret)
 }
@@ -7335,7 +7335,7 @@ public static func fractionalMaxPool<T: Numeric & AccelerableByTensorFlow>(
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   let ret: (TensorHandle<T>, TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("FractionalMaxPool",
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     pooling_ratio: poolingRatio,
     pseudo_random: pseudoRandom,
     overlapping: overlapping,
@@ -7383,7 +7383,7 @@ public static func fractionalMaxPoolGrad<T: Numeric & AccelerableByTensorFlow>(
     outBackprop,
     rowPoolingSequence,
     colPoolingSequence,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     overlapping: overlapping)
   return Tensor(handle: ret)
 }
@@ -7436,7 +7436,7 @@ public static func fusedBatchNorm<T: BinaryFloatingPoint & AccelerableByTensorFl
     offset,
     mean,
     variance,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     epsilon: epsilon,
     data_format: dataFormat,
     is_training: isTraining)
@@ -7494,7 +7494,7 @@ public static func fusedBatchNormGrad<T: BinaryFloatingPoint & AccelerableByTens
     scale,
     reserveSpace1,
     reserveSpace2,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     epsilon: epsilon,
     data_format: dataFormat,
     is_training: isTraining)
@@ -7553,8 +7553,8 @@ public static func fusedBatchNormGradV2<T: BinaryFloatingPoint & AccelerableByTe
     scale,
     reserveSpace1,
     reserveSpace2,
-    T$dtype: T.cDataType,
-    U$dtype: U.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    U$dtype: U.tensorFlowDataType,
     epsilon: epsilon,
     data_format: dataFormat,
     is_training: isTraining)
@@ -7610,8 +7610,8 @@ public static func fusedBatchNormV2<T: BinaryFloatingPoint & AccelerableByTensor
     offset,
     mean,
     variance,
-    T$dtype: T.cDataType,
-    U$dtype: U.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    U$dtype: U.tensorFlowDataType,
     epsilon: epsilon,
     data_format: dataFormat,
     is_training: isTraining)
@@ -7656,7 +7656,7 @@ public static func fusedPadConv2D<T: BinaryFloatingPoint & AccelerableByTensorFl
     input,
     paddings,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     mode: mode.cName,
     strides: strides,
     padding: padding.cName)
@@ -7707,7 +7707,7 @@ public static func fusedResizeAndPadConv2D<T: BinaryFloatingPoint & AccelerableB
     size,
     paddings,
     filter,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     resize_align_corners: resizeAlignCorners,
     mode: mode.cName,
     strides: strides,
@@ -7777,7 +7777,7 @@ public static func gRUBlockCell<T: BinaryFloatingPoint & AccelerableByTensorFlow
     wC,
     bRu,
     bC,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
@@ -7887,7 +7887,7 @@ public static func gRUBlockCellGrad<T: BinaryFloatingPoint & AccelerableByTensor
     u,
     c,
     dH,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
@@ -7927,8 +7927,8 @@ public static func gather<Tparams: AccelerableByTensorFlow, Tindices: BinaryInte
   let ret: TensorHandle<Tparams> = #tfop("Gather",
     params,
     indices,
-    Tparams$dtype: Tparams.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    Tparams$dtype: Tparams.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     validate_indices: validateIndices)
   return Tensor(handle: ret)
 }
@@ -8054,8 +8054,8 @@ public static func gatherNd<Tparams: AccelerableByTensorFlow, Tindices: BinaryIn
   let ret: TensorHandle<Tparams> = #tfop("GatherNd",
     params,
     indices,
-    Tparams$dtype: Tparams.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    Tparams$dtype: Tparams.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8108,9 +8108,9 @@ public static func gatherV2<Tparams: AccelerableByTensorFlow, Tindices: BinaryIn
     params,
     indices,
     axis,
-    Tparams$dtype: Tparams.cDataType,
-    Tindices$dtype: Tindices.cDataType,
-    Taxis$dtype: Taxis.cDataType)
+    Tparams$dtype: Tparams.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    Taxis$dtype: Taxis.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8150,7 +8150,7 @@ public static func greater<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("Greater",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8166,7 +8166,7 @@ public static func greaterEqual<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("GreaterEqual",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8184,7 +8184,7 @@ public static func guaranteeConst<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("GuaranteeConst",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8205,7 +8205,7 @@ public static func hSVToRGB<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("HSVToRGB",
     images,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8245,8 +8245,8 @@ public static func histogramFixedWidth<T: Numeric & AccelerableByTensorFlow, Dty
     values,
     valueRange,
     nbins,
-    T$dtype: T.cDataType,
-    dtype$dtype: Dtype.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    dtype$dtype: Dtype.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8269,7 +8269,7 @@ public static func iFFT<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("IFFT",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8292,7 +8292,7 @@ public static func iFFT2D<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("IFFT2D",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8315,7 +8315,7 @@ public static func iFFT3D<Tcomplex: AccelerableByTensorFlow>(
 ) -> Tensor<Tcomplex> {
   let ret: TensorHandle<Tcomplex> = #tfop("IFFT3D",
     input,
-    Tcomplex$dtype: Tcomplex.cDataType)
+    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8326,7 +8326,7 @@ public static func identity<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Identity",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8365,7 +8365,7 @@ public static func identityN<T: AccelerableByTensorFlow>(
 ///
 /// where
 ///
-/// \\(gamma(a, x) = int_{0}^{x} t^{a-1} exp(-t) dt\\)
+/// \\(gamma(a, x) = \\int_{0}^{x} t^{a-1} exp(-t) dt\\)
 ///
 /// is the lower incomplete Gamma function.
 ///
@@ -8379,7 +8379,7 @@ public static func igamma<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Igamma",
     a,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8392,7 +8392,7 @@ public static func igammaGradA<T: BinaryFloatingPoint & AccelerableByTensorFlow>
   let ret: TensorHandle<T> = #tfop("IgammaGradA",
     a,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8418,7 +8418,7 @@ public static func igammac<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Igammac",
     a,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8441,8 +8441,8 @@ public static func imag<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint & 
 ) -> Tensor<Tout> {
   let ret: TensorHandle<Tout> = #tfop("Imag",
     input,
-    T$dtype: T.cDataType,
-    Tout$dtype: Tout.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8454,7 +8454,7 @@ public static func inPolymorphicTwice<T: AccelerableByTensorFlow>(
   return #tfop("InPolymorphicTwice",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 /// Says whether the targets are in the top `K` predictions.
@@ -8490,7 +8490,7 @@ public static func inTopK<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("InTopK",
     predictions,
     targets,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     k: k)
   return Tensor(handle: ret)
 }
@@ -8528,7 +8528,7 @@ public static func inTopKV2<T: BinaryInteger & AccelerableByTensorFlow>(
     predictions,
     targets,
     k,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8552,7 +8552,7 @@ public static func inplaceAdd<T: AccelerableByTensorFlow>(
     x,
     i,
     v,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8576,7 +8576,7 @@ public static func inplaceSub<T: AccelerableByTensorFlow>(
     x,
     i,
     v,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8600,7 +8600,7 @@ public static func inplaceUpdate<T: AccelerableByTensorFlow>(
     x,
     i,
     v,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8670,7 +8670,7 @@ public static func inv<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Inv",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8686,7 +8686,7 @@ public static func invGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("InvGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8700,7 +8700,7 @@ public static func invert<T: BinaryInteger & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Invert",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8731,7 +8731,7 @@ public static func invertPermutation<T: BinaryInteger & AccelerableByTensorFlow>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("InvertPermutation",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8746,7 +8746,7 @@ public static func isFinite<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<Bool> {
   let ret: TensorHandle<Bool> = #tfop("IsFinite",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8761,7 +8761,7 @@ public static func isInf<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<Bool> {
   let ret: TensorHandle<Bool> = #tfop("IsInf",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8776,7 +8776,7 @@ public static func isNan<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<Bool> {
   let ret: TensorHandle<Bool> = #tfop("IsNan",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8793,7 +8793,7 @@ public static func isVariableInitialized<Dtype: AccelerableByTensorFlow>(
 ) -> Tensor<Bool> {
   let ret: TensorHandle<Bool> = #tfop("IsVariableInitialized",
     ref,
-    dtype$dtype: Dtype.cDataType)
+    dtype$dtype: Dtype.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8812,7 +8812,7 @@ public static func l2Loss<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("L2Loss",
     t,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -8847,7 +8847,7 @@ public static func lRN<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("LRN",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     depth_radius: depthRadius,
     bias: bias,
     alpha: alpha,
@@ -8883,7 +8883,7 @@ public static func lRNGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
     inputGrads,
     inputImage,
     outputImage,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     depth_radius: depthRadius,
     bias: bias,
     alpha: alpha,
@@ -8964,7 +8964,7 @@ public static func lSTMBlockCell<T: BinaryFloatingPoint & AccelerableByTensorFlo
     wcf,
     wco,
     b,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     forget_bias: forgetBias,
     cell_clip: cellClip,
     use_peephole: usePeephole)
@@ -9038,7 +9038,7 @@ public static func lSTMBlockCellGrad<T: BinaryFloatingPoint & AccelerableByTenso
     co,
     csGrad,
     hGrad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     use_peephole: usePeephole)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
@@ -9113,7 +9113,7 @@ public static func leftShift<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("LeftShift",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9129,7 +9129,7 @@ public static func less<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("Less",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9145,7 +9145,7 @@ public static func lessEqual<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("LessEqual",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9156,7 +9156,7 @@ public static func lgamma<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Lgamma",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9188,8 +9188,8 @@ public static func linSpace<T: BinaryFloatingPoint & AccelerableByTensorFlow, Ti
     start,
     stop,
     num,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9232,8 +9232,8 @@ public static func listDiff<T: AccelerableByTensorFlow, OutIdx: BinaryInteger & 
   let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("ListDiff",
     x,
     y,
-    T$dtype: T.cDataType,
-    out_idx$dtype: OutIdx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_idx$dtype: OutIdx.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -9243,7 +9243,7 @@ public static func listInput<T: AccelerableByTensorFlow>(
 ) {
   return #tfop("ListInput",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -9262,7 +9262,7 @@ public static func log<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Log",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9275,7 +9275,7 @@ public static func log1p<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Log1p",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9303,7 +9303,7 @@ public static func logMatrixDeterminant<T: BinaryFloatingPoint & AccelerableByTe
 ) -> (sign: Tensor<T>, logAbsDeterminant: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("LogMatrixDeterminant",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -9322,7 +9322,7 @@ public static func logSoftmax<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("LogSoftmax",
     logits,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9615,7 +9615,7 @@ public static func matMul<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("MatMul",
     a,
     b,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     transpose_a: transposeA,
     transpose_b: transposeB)
   return Tensor(handle: ret)
@@ -9681,8 +9681,8 @@ public static func matrixBandPart<T: AccelerableByTensorFlow, Tindex: BinaryInte
     input,
     numLower,
     numUpper,
-    T$dtype: T.cDataType,
-    Tindex$dtype: Tindex.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindex$dtype: Tindex.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9701,7 +9701,7 @@ public static func matrixDeterminant<T: BinaryFloatingPoint & AccelerableByTenso
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixDeterminant",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9743,7 +9743,7 @@ public static func matrixDiag<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixDiag",
     diagonal,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9788,7 +9788,7 @@ public static func matrixDiagPart<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixDiagPart",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9799,7 +9799,7 @@ public static func matrixExponential<T: BinaryFloatingPoint & AccelerableByTenso
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixExponential",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9831,7 +9831,7 @@ public static func matrixInverse<T: BinaryFloatingPoint & AccelerableByTensorFlo
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixInverse",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     adjoint: adjoint)
   return Tensor(handle: ret)
 }
@@ -9867,7 +9867,7 @@ public static func matrixLogarithm<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MatrixLogarithm",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9899,7 +9899,7 @@ public static func matrixSetDiag<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("MatrixSetDiag",
     input,
     diagonal,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -9929,7 +9929,7 @@ public static func matrixSolve<T: BinaryFloatingPoint & AccelerableByTensorFlow>
   let ret: TensorHandle<T> = #tfop("MatrixSolve",
     matrix,
     rhs,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     adjoint: adjoint)
   return Tensor(handle: ret)
 }
@@ -9992,7 +9992,7 @@ public static func matrixSolveLs<T: BinaryFloatingPoint & AccelerableByTensorFlo
     matrix,
     rhs,
     l2Regularizer,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     fast: fast)
   return Tensor(handle: ret)
 }
@@ -10040,7 +10040,7 @@ public static func matrixTriangularSolve<T: BinaryFloatingPoint & AccelerableByT
   let ret: TensorHandle<T> = #tfop("MatrixTriangularSolve",
     matrix,
     rhs,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     lower: lower,
     adjoint: adjoint)
   return Tensor(handle: ret)
@@ -10070,8 +10070,8 @@ public static func max<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInteger
   let ret: TensorHandle<T> = #tfop("Max",
     input,
     reductionIndices,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -10102,7 +10102,7 @@ public static func maxPool<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10137,7 +10137,7 @@ public static func maxPool3D<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool3D",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10177,8 +10177,8 @@ public static func maxPool3DGrad<T: BinaryFloatingPoint & AccelerableByTensorFlo
     origInput,
     origOutput,
     grad,
-    T$dtype: T.cDataType,
-    TInput$dtype: Tinput.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    TInput$dtype: Tinput.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10220,7 +10220,7 @@ public static func maxPool3DGradGrad<T: Numeric & AccelerableByTensorFlow>(
     origInput,
     origOutput,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10261,7 +10261,7 @@ public static func maxPoolGrad<T: Numeric & AccelerableByTensorFlow>(
     origInput,
     origOutput,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10302,7 +10302,7 @@ public static func maxPoolGradGrad<T: Numeric & AccelerableByTensorFlow>(
     origInput,
     origOutput,
     grad,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName,
@@ -10345,7 +10345,7 @@ public static func maxPoolGradGradV2<T: Numeric & AccelerableByTensorFlow>(
     grad,
     ksize,
     strides,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     padding: padding.cName,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
@@ -10379,8 +10379,8 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger & Accelerabl
     input,
     grad,
     argmax,
-    Targmax$dtype: Targmax.cDataType,
-    T$dtype: T.cDataType,
+    Targmax$dtype: Targmax.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName)
@@ -10422,7 +10422,7 @@ public static func maxPoolGradV2<T: Numeric & AccelerableByTensorFlow>(
     grad,
     ksize,
     strides,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     padding: padding.cName,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
@@ -10456,8 +10456,8 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger & AccelerableByT
     input,
     grad,
     argmax,
-    Targmax$dtype: Targmax.cDataType,
-    T$dtype: T.cDataType,
+    Targmax$dtype: Targmax.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName)
@@ -10493,7 +10493,7 @@ public static func maxPoolV2<T: Numeric & AccelerableByTensorFlow>(
     input,
     ksize,
     strides,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     padding: padding.cName,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
@@ -10530,8 +10530,8 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & AccelerableByTenso
 ) -> (output: Tensor<T>, argmax: Tensor<Targmax>) {
   let ret: (TensorHandle<T>, TensorHandle<Targmax>) = #tfop("MaxPoolWithArgmax",
     input,
-    Targmax$dtype: Targmax.cDataType,
-    T$dtype: T.cDataType,
+    Targmax$dtype: Targmax.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName)
@@ -10550,7 +10550,7 @@ public static func maximum<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Maximum",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -10578,8 +10578,8 @@ public static func mean<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryIntege
   let ret: TensorHandle<T> = #tfop("Mean",
     input,
     reductionIndices,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -10603,7 +10603,7 @@ public static func merge<T: AccelerableByTensorFlow>(
 ) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
   let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("Merge",
     inputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -10671,8 +10671,8 @@ public static func min<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInteger
   let ret: TensorHandle<T> = #tfop("Min",
     input,
     reductionIndices,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -10689,7 +10689,7 @@ public static func minimum<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Minimum",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -10742,8 +10742,8 @@ public static func mirrorPad<T: AccelerableByTensorFlow, Tpaddings: BinaryIntege
   let ret: TensorHandle<T> = #tfop("MirrorPad",
     input,
     paddings,
-    T$dtype: T.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
     mode: mode.cName)
   return Tensor(handle: ret)
 }
@@ -10786,8 +10786,8 @@ public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryIn
   let ret: TensorHandle<T> = #tfop("MirrorPadGrad",
     input,
     paddings,
-    T$dtype: T.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
     mode: mode.cName)
   return Tensor(handle: ret)
 }
@@ -10816,7 +10816,7 @@ public static func mod<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Mod",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -10832,7 +10832,7 @@ public static func mul<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Mul",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -10860,8 +10860,8 @@ public static func multinomial<T: Numeric & AccelerableByTensorFlow, OutputDtype
   let ret: TensorHandle<OutputDtype> = #tfop("Multinomial",
     logits,
     numSamples,
-    T$dtype: T.cDataType,
-    output_dtype$dtype: OutputDtype.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    output_dtype$dtype: OutputDtype.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -10875,7 +10875,7 @@ public static func nInPolymorphicTwice<T: AccelerableByTensorFlow>(
   return #tfop("NInPolymorphicTwice",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -10886,8 +10886,8 @@ public static func nInTwoTypeVariables<S: AccelerableByTensorFlow, T: Accelerabl
   return #tfop("NInTwoTypeVariables",
     a,
     b,
-    S$dtype: S.cDataType,
-    T$dtype: T.cDataType)
+    S$dtype: S.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -10922,7 +10922,7 @@ public static func nPolymorphicIn<T: AccelerableByTensorFlow>(
 ) {
   return #tfop("NPolymorphicIn",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -10930,7 +10930,7 @@ public static func nPolymorphicOut<T: AccelerableByTensorFlow>(
   n: Int64
 ) -> [Tensor<T>] {
   let ret: [TensorHandle<T>] = #tfop("NPolymorphicOut",
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     N: n)
   return ret.map(Tensor.init)
 }
@@ -10940,7 +10940,7 @@ public static func nPolymorphicOutDefault<T: AccelerableByTensorFlow>(
   n: Int64 = 2
 ) -> [Tensor<T>] {
   let ret: [TensorHandle<T>] = #tfop("NPolymorphicOutDefault",
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     N: n)
   return ret.map(Tensor.init)
 }
@@ -10951,7 +10951,7 @@ public static func nPolymorphicRestrictIn<T: AccelerableByTensorFlow>(
 ) {
   return #tfop("NPolymorphicRestrictIn",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -10959,7 +10959,7 @@ public static func nPolymorphicRestrictOut<T: AccelerableByTensorFlow>(
   n: Int64
 ) -> [Tensor<T>] {
   let ret: [TensorHandle<T>] = #tfop("NPolymorphicRestrictOut",
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     N: n)
   return ret.map(Tensor.init)
 }
@@ -10973,7 +10973,7 @@ public static func neg<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Neg",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11019,7 +11019,7 @@ public static func nextIteration<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("NextIteration",
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11239,7 +11239,7 @@ public static func notEqual<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<Bool> = #tfop("NotEqual",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11271,7 +11271,7 @@ public static func nthElement<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("NthElement",
     input,
     n,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     reverse: reverse)
   return Tensor(handle: ret)
 }
@@ -11395,8 +11395,8 @@ public static func oneHot<T: AccelerableByTensorFlow, Ti: BinaryInteger & Accele
     depth,
     onValue,
     offValue,
-    T$dtype: T.cDataType,
-    TI$dtype: Ti.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    TI$dtype: Ti.tensorFlowDataType,
     axis: axis)
   return Tensor(handle: ret)
 }
@@ -11412,7 +11412,7 @@ public static func onesLike<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("OnesLike",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11589,7 +11589,7 @@ public static func orderedMapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
 public static func outT<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("OutT",
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11642,7 +11642,7 @@ public static func pack<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Pack",
     values,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     axis: axis)
   return Tensor(handle: ret)
 }
@@ -11680,8 +11680,8 @@ public static func pad<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger & Ac
   let ret: TensorHandle<T> = #tfop("Pad",
     input,
     paddings,
-    T$dtype: T.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11721,8 +11721,8 @@ public static func padV2<T: AccelerableByTensorFlow, Tpaddings: BinaryInteger & 
     input,
     paddings,
     constantValues,
-    T$dtype: T.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11797,7 +11797,7 @@ public static func parallelDynamicStitch<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("ParallelDynamicStitch",
     indices,
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11839,8 +11839,8 @@ public static func parameterizedTruncatedNormal<Dtype: BinaryFloatingPoint & Acc
     stdevs,
     minvals,
     maxvals,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -11862,7 +11862,7 @@ public static func polygamma<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Polygamma",
     a,
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11872,7 +11872,7 @@ public static func polymorphic<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Polymorphic",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11880,7 +11880,7 @@ public static func polymorphic<T: AccelerableByTensorFlow>(
 public static func polymorphicDefaultOut<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("PolymorphicDefaultOut",
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11888,7 +11888,7 @@ public static func polymorphicDefaultOut<T: AccelerableByTensorFlow>(
 public static func polymorphicOut<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("PolymorphicOut",
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11906,7 +11906,7 @@ public static func populationCount<T: BinaryInteger & AccelerableByTensorFlow>(
 ) -> Tensor<UInt8> {
   let ret: TensorHandle<UInt8> = #tfop("PopulationCount",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11928,7 +11928,7 @@ public static func pow<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Pow",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -11955,7 +11955,7 @@ public static func preventGradient<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("PreventGradient",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     message: message)
   return Tensor(handle: ret)
 }
@@ -11985,7 +11985,7 @@ public static func print<T: AccelerableByTensorFlow, U: AccelerableByTensorFlow>
   let ret: TensorHandle<T> = #tfop("Print",
     input,
     data,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     message: message,
     first_n: firstN,
     summarize: summarize)
@@ -12016,8 +12016,8 @@ public static func prod<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryIntege
   let ret: TensorHandle<T> = #tfop("Prod",
     input,
     reductionIndices,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -12091,7 +12091,7 @@ public static func qr<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> (q: Tensor<T>, r: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("Qr",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     full_matrices: fullMatrices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
@@ -12108,7 +12108,7 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint & AccelerableByT
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("QuantizeAndDequantize",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     signed_input: signedInput,
     num_bits: numBits,
     range_given: rangeGiven,
@@ -12197,7 +12197,7 @@ public static func quantizeAndDequantizeV2<T: BinaryFloatingPoint & AccelerableB
     input,
     inputMin,
     inputMax,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     signed_input: signedInput,
     num_bits: numBits,
     range_given: rangeGiven)
@@ -12222,7 +12222,7 @@ public static func quantizeAndDequantizeV3<T: BinaryFloatingPoint & AccelerableB
     inputMin,
     inputMax,
     numBits,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     signed_input: signedInput,
     range_given: rangeGiven)
   return Tensor(handle: ret)
@@ -12274,8 +12274,8 @@ public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, O
     input,
     inputMin,
     inputMax,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12400,7 +12400,7 @@ public static func quantizeV2<T: AccelerableByTensorFlow>(
     input,
     minRange,
     maxRange,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     mode: mode.cName,
     round_mode: roundMode.cName)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -12436,9 +12436,9 @@ public static func quantizedAdd<T1: AccelerableByTensorFlow, T2: AccelerableByTe
     maxX,
     minY,
     maxY,
-    T1$dtype: T1.cDataType,
-    T2$dtype: T2.cDataType,
-    Toutput$dtype: Toutput.cDataType)
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    Toutput$dtype: Toutput.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12472,7 +12472,7 @@ public static func quantizedAvgPool<T: AccelerableByTensorFlow>(
     input,
     minInput,
     maxInput,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName)
@@ -12548,8 +12548,8 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: Accelerable
     gamma,
     gammaMin,
     gammaMax,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
     variance_epsilon: varianceEpsilon,
     scale_after_normalization: scaleAfterNormalization)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -12585,9 +12585,9 @@ public static func quantizedBiasAdd<T1: AccelerableByTensorFlow, T2: Accelerable
     maxInput,
     minBias,
     maxBias,
-    T1$dtype: T1.cDataType,
-    T2$dtype: T2.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12619,7 +12619,7 @@ public static func quantizedConcat<T: AccelerableByTensorFlow>(
     values,
     inputMins,
     inputMaxes,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12669,9 +12669,9 @@ public static func quantizedConv2D<Tinput: AccelerableByTensorFlow, Tfilter: Acc
     maxInput,
     minFilter,
     maxFilter,
-    Tinput$dtype: Tinput.cDataType,
-    Tfilter$dtype: Tfilter.cDataType,
-    out_type$dtype: OutType.cDataType,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
     strides: strides,
     padding: padding.cName,
     dilations: dilations)
@@ -12713,7 +12713,7 @@ public static func quantizedInstanceNorm<T: AccelerableByTensorFlow>(
     x,
     xMin,
     xMax,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     output_range_given: outputRangeGiven,
     given_y_min: givenYMin,
     given_y_max: givenYMax,
@@ -12765,10 +12765,10 @@ public static func quantizedMatMul<T1: AccelerableByTensorFlow, T2: AccelerableB
     maxA,
     minB,
     maxB,
-    T1$dtype: T1.cDataType,
-    T2$dtype: T2.cDataType,
-    Toutput$dtype: Toutput.cDataType,
-    Tactivation$dtype: Tactivation.cDataType,
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    Toutput$dtype: Toutput.tensorFlowDataType,
+    Tactivation$dtype: Tactivation.tensorFlowDataType,
     transpose_a: transposeA,
     transpose_b: transposeB)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -12804,7 +12804,7 @@ public static func quantizedMaxPool<T: AccelerableByTensorFlow>(
     input,
     minInput,
     maxInput,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
     padding: padding.cName)
@@ -12841,9 +12841,9 @@ public static func quantizedMul<T1: AccelerableByTensorFlow, T2: AccelerableByTe
     maxX,
     minY,
     maxY,
-    T1$dtype: T1.cDataType,
-    T2$dtype: T2.cDataType,
-    Toutput$dtype: Toutput.cDataType)
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    Toutput$dtype: Toutput.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12867,8 +12867,8 @@ public static func quantizedRelu<Tinput: AccelerableByTensorFlow, OutType: Accel
     features,
     minFeatures,
     maxFeatures,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12892,8 +12892,8 @@ public static func quantizedRelu6<Tinput: AccelerableByTensorFlow, OutType: Acce
     features,
     minFeatures,
     maxFeatures,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12919,8 +12919,8 @@ public static func quantizedReluX<Tinput: AccelerableByTensorFlow, OutType: Acce
     maxValue,
     minFeatures,
     maxFeatures,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12948,8 +12948,8 @@ public static func quantizedReshape<T: AccelerableByTensorFlow, Tshape: BinaryIn
     shape,
     inputMin,
     inputMax,
-    T$dtype: T.cDataType,
-    Tshape$dtype: Tshape.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tshape$dtype: Tshape.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -12980,7 +12980,7 @@ public static func quantizedResizeBilinear<T: BinaryFloatingPoint & AccelerableB
     size,
     min,
     max,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
@@ -13004,7 +13004,7 @@ public static func rGBToHSV<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RGBToHSV",
     images,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13038,7 +13038,7 @@ public static func randomCrop<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("RandomCrop",
     image,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13075,8 +13075,8 @@ public static func randomGamma<S: BinaryInteger & AccelerableByTensorFlow, T: Bi
   let ret: TensorHandle<T> = #tfop("RandomGamma",
     shape,
     alpha,
-    S$dtype: S.cDataType,
-    T$dtype: T.cDataType,
+    S$dtype: S.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13091,7 +13091,7 @@ public static func randomGammaGrad<T: BinaryFloatingPoint & AccelerableByTensorF
   let ret: TensorHandle<T> = #tfop("RandomGammaGrad",
     alpha,
     sample,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13106,8 +13106,8 @@ public static func randomPoisson<S: BinaryInteger & AccelerableByTensorFlow, Dty
   let ret: TensorHandle<Dtype> = #tfop("RandomPoisson",
     shape,
     rate,
-    S$dtype: S.cDataType,
-    dtype$dtype: Dtype.cDataType,
+    S$dtype: S.tensorFlowDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13150,9 +13150,9 @@ public static func randomPoissonV2<S: BinaryInteger & AccelerableByTensorFlow, R
   let ret: TensorHandle<Dtype> = #tfop("RandomPoissonV2",
     shape,
     rate,
-    S$dtype: S.cDataType,
-    R$dtype: R.cDataType,
-    dtype$dtype: Dtype.cDataType,
+    S$dtype: S.tensorFlowDataType,
+    R$dtype: R.tensorFlowDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13188,7 +13188,7 @@ public static func randomShuffle<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RandomShuffle",
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13216,8 +13216,8 @@ public static func randomStandardNormal<Dtype: BinaryFloatingPoint & Accelerable
 ) -> Tensor<Dtype> {
   let ret: TensorHandle<Dtype> = #tfop("RandomStandardNormal",
     shape,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13246,8 +13246,8 @@ public static func randomUniform<Dtype: BinaryFloatingPoint & AccelerableByTenso
 ) -> Tensor<Dtype> {
   let ret: TensorHandle<Dtype> = #tfop("RandomUniform",
     shape,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13287,8 +13287,8 @@ public static func randomUniformInt<Tout: BinaryInteger & AccelerableByTensorFlo
     shape,
     minval,
     maxval,
-    Tout$dtype: Tout.cDataType,
-    T$dtype: T.cDataType,
+    Tout$dtype: Tout.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -13324,7 +13324,7 @@ public static func range<Tidx: Numeric & AccelerableByTensorFlow>(
     start,
     limit,
     delta,
-    Tidx$dtype: Tidx.cDataType)
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13349,7 +13349,7 @@ public static func rank<T: AccelerableByTensorFlow>(
 ) -> Tensor<Int32> {
   let ret: TensorHandle<Int32> = #tfop("Rank",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13372,8 +13372,8 @@ public static func real<T: AccelerableByTensorFlow, Tout: BinaryFloatingPoint & 
 ) -> Tensor<Tout> {
   let ret: TensorHandle<Tout> = #tfop("Real",
     input,
-    T$dtype: T.cDataType,
-    Tout$dtype: Tout.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13391,7 +13391,7 @@ public static func realDiv<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("RealDiv",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13404,7 +13404,7 @@ public static func reciprocal<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Reciprocal",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13420,7 +13420,7 @@ public static func reciprocalGrad<T: BinaryFloatingPoint & AccelerableByTensorFl
   let ret: TensorHandle<T> = #tfop("ReciprocalGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13448,7 +13448,7 @@ public static func refEnter<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RefEnter",
     data,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     frame_name: frameName,
     is_constant: isConstant,
     parallel_iterations: parallelIterations)
@@ -13468,7 +13468,7 @@ public static func refExit<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RefExit",
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13479,7 +13479,7 @@ public static func refIdentity<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RefIdentity",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13489,7 +13489,7 @@ public static func refIn<T: AccelerableByTensorFlow>(
 ) {
   return #tfop("RefIn",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -13542,7 +13542,7 @@ public static func refMerge<T: AccelerableByTensorFlow>(
 ) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
   let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("RefMerge",
     inputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -13557,7 +13557,7 @@ public static func refNextIteration<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RefNextIteration",
     data,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13565,7 +13565,7 @@ public static func refNextIteration<T: AccelerableByTensorFlow>(
 public static func refOut<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("RefOut",
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13598,7 +13598,7 @@ public static func refSelect<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("RefSelect",
     index,
     inputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13624,7 +13624,7 @@ public static func refSwitch<T: AccelerableByTensorFlow>(
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("RefSwitch",
     data,
     pred,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -13635,7 +13635,7 @@ public static func relu<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Relu",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13646,7 +13646,7 @@ public static func relu6<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Relu6",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13667,7 +13667,7 @@ public static func relu6Grad<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Relu6Grad",
     gradients,
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13687,7 +13687,7 @@ public static func reluGrad<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("ReluGrad",
     gradients,
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13743,7 +13743,7 @@ public static func requantizationRange<Tinput: AccelerableByTensorFlow>(
     input,
     inputMin,
     inputMax,
-    Tinput$dtype: Tinput.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -13783,8 +13783,8 @@ public static func requantize<Tinput: AccelerableByTensorFlow, OutType: Accelera
     inputMax,
     requestedOutputMin,
     requestedOutputMax,
-    Tinput$dtype: Tinput.cDataType,
-    out_type$dtype: OutType.cDataType)
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -13879,8 +13879,8 @@ public static func reshape<T: AccelerableByTensorFlow, Tshape: BinaryInteger & A
   let ret: TensorHandle<T> = #tfop("Reshape",
     tensor,
     shape,
-    T$dtype: T.cDataType,
-    Tshape$dtype: Tshape.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tshape$dtype: Tshape.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -13917,7 +13917,7 @@ public static func resizeArea<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Float> = #tfop("ResizeArea",
     images,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -13945,7 +13945,7 @@ public static func resizeBicubic<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Float> = #tfop("ResizeBicubic",
     images,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -13972,7 +13972,7 @@ public static func resizeBicubicGrad<T: BinaryFloatingPoint & AccelerableByTenso
   let ret: TensorHandle<T> = #tfop("ResizeBicubicGrad",
     grads,
     originalImage,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -14000,7 +14000,7 @@ public static func resizeBilinear<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<Float> = #tfop("ResizeBilinear",
     images,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -14027,7 +14027,7 @@ public static func resizeBilinearGrad<T: BinaryFloatingPoint & AccelerableByTens
   let ret: TensorHandle<T> = #tfop("ResizeBilinearGrad",
     grads,
     originalImage,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -14053,7 +14053,7 @@ public static func resizeNearestNeighbor<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("ResizeNearestNeighbor",
     images,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -14079,7 +14079,7 @@ public static func resizeNearestNeighborGrad<T: Numeric & AccelerableByTensorFlo
   let ret: TensorHandle<T> = #tfop("ResizeNearestNeighborGrad",
     grads,
     size,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     align_corners: alignCorners)
   return Tensor(handle: ret)
 }
@@ -14090,7 +14090,7 @@ public static func restrict<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Restrict",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14154,7 +14154,7 @@ public static func reverse<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Reverse",
     tensor,
     dims,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14235,8 +14235,8 @@ public static func reverseSequence<T: AccelerableByTensorFlow, Tlen: BinaryInteg
   let ret: TensorHandle<T> = #tfop("ReverseSequence",
     input,
     seqLengths,
-    T$dtype: T.cDataType,
-    Tlen$dtype: Tlen.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tlen$dtype: Tlen.tensorFlowDataType,
     seq_dim: seqDim,
     batch_dim: batchDim)
   return Tensor(handle: ret)
@@ -14305,8 +14305,8 @@ public static func reverseV2<Tidx: BinaryInteger & AccelerableByTensorFlow, T: A
   let ret: TensorHandle<T> = #tfop("ReverseV2",
     tensor,
     axis,
-    Tidx$dtype: Tidx.cDataType,
-    T$dtype: T.cDataType)
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14325,7 +14325,7 @@ public static func rightShift<T: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("RightShift",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14346,7 +14346,7 @@ public static func rint<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Rint",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14396,9 +14396,9 @@ public static func roll<T: AccelerableByTensorFlow, Tshift: BinaryInteger & Acce
     input,
     shift,
     axis,
-    T$dtype: T.cDataType,
-    Tshift$dtype: Tshift.cDataType,
-    Taxis$dtype: Taxis.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tshift$dtype: Tshift.tensorFlowDataType,
+    Taxis$dtype: Taxis.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14412,7 +14412,7 @@ public static func round<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Round",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14425,7 +14425,7 @@ public static func rsqrt<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Rsqrt",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14441,7 +14441,7 @@ public static func rsqrtGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("RsqrtGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -14533,7 +14533,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & AccelerableByTe
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<Float>) = #tfop("SampleDistortedBoundingBox",
     imageSize,
     boundingBoxes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2,
     min_object_covered: minObjectCovered,
@@ -14633,7 +14633,7 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & AccelerableBy
     imageSize,
     boundingBoxes,
     minObjectCovered,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2,
     aspect_ratio_range: aspectRatioRange,
@@ -14689,8 +14689,8 @@ public static func scatterAdd<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -14739,8 +14739,8 @@ public static func scatterDiv<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -14791,8 +14791,8 @@ public static func scatterMax<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -14843,8 +14843,8 @@ public static func scatterMin<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -14893,8 +14893,8 @@ public static func scatterMul<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -14997,8 +14997,8 @@ public static func scatterNd<T: AccelerableByTensorFlow, Tindices: BinaryInteger
     indices,
     updates,
     shape,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15060,8 +15060,8 @@ public static func scatterNdAdd<T: Numeric & AccelerableByTensorFlow, Tindices: 
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -15121,8 +15121,8 @@ public static func scatterNdNonAliasingAdd<T: Numeric & AccelerableByTensorFlow,
     input,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15184,8 +15184,8 @@ public static func scatterNdSub<T: Numeric & AccelerableByTensorFlow, Tindices: 
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -15252,8 +15252,8 @@ public static func scatterNdUpdate<T: AccelerableByTensorFlow, Tindices: BinaryI
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -15304,8 +15304,8 @@ public static func scatterSub<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -15361,8 +15361,8 @@ public static func scatterUpdate<T: AccelerableByTensorFlow, Tindices: BinaryInt
     ref,
     indices,
     updates,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -15515,8 +15515,8 @@ public static func segmentMax<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
   let ret: TensorHandle<T> = #tfop("SegmentMax",
     data,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15550,8 +15550,8 @@ public static func segmentMean<T: Numeric & AccelerableByTensorFlow, Tindices: B
   let ret: TensorHandle<T> = #tfop("SegmentMean",
     data,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15584,8 +15584,8 @@ public static func segmentMin<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
   let ret: TensorHandle<T> = #tfop("SegmentMin",
     data,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15618,8 +15618,8 @@ public static func segmentProd<T: Numeric & AccelerableByTensorFlow, Tindices: B
   let ret: TensorHandle<T> = #tfop("SegmentProd",
     data,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15652,8 +15652,8 @@ public static func segmentSum<T: Numeric & AccelerableByTensorFlow, Tindices: Bi
   let ret: TensorHandle<T> = #tfop("SegmentSum",
     data,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15715,7 +15715,7 @@ public static func select<T: AccelerableByTensorFlow>(
     condition,
     t,
     e,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15738,7 +15738,7 @@ public static func selfAdjointEig<T: BinaryFloatingPoint & AccelerableByTensorFl
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("SelfAdjointEig",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15771,7 +15771,7 @@ public static func selfAdjointEigV2<T: BinaryFloatingPoint & AccelerableByTensor
 ) -> (e: Tensor<T>, v: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SelfAdjointEigV2",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     compute_v: computeV)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
@@ -15791,7 +15791,7 @@ public static func selu<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Selu",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15811,7 +15811,7 @@ public static func seluGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("SeluGrad",
     gradients,
     outputs,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15842,8 +15842,8 @@ public static func serializeManySparse<T: AccelerableByTensorFlow, OutType: Acce
     sparseIndices,
     sparseValues,
     sparseShape,
-    T$dtype: T.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15866,8 +15866,8 @@ public static func serializeSparse<T: AccelerableByTensorFlow, OutType: Accelera
     sparseIndices,
     sparseValues,
     sparseShape,
-    T$dtype: T.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15899,7 +15899,7 @@ public static func setSize<T: BinaryInteger & AccelerableByTensorFlow>(
     setIndices,
     setValues,
     setShape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     validate_indices: validateIndices)
   return Tensor(handle: ret)
 }
@@ -15920,8 +15920,8 @@ public static func shape<T: AccelerableByTensorFlow, OutType: BinaryInteger & Ac
 ) -> Tensor<OutType> {
   let ret: TensorHandle<OutType> = #tfop("Shape",
     input,
-    T$dtype: T.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15934,8 +15934,8 @@ public static func shapeN<T: AccelerableByTensorFlow, OutType: BinaryInteger & A
 ) -> [Tensor<OutType>] {
   let ret: [TensorHandle<OutType>] = #tfop("ShapeN",
     input,
-    T$dtype: T.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return ret.map(Tensor.init)
 }
 
@@ -15948,7 +15948,7 @@ public static func sigmoid<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Sigmoid",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15964,7 +15964,7 @@ public static func sigmoidGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>
   let ret: TensorHandle<T> = #tfop("SigmoidGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -15979,7 +15979,7 @@ public static func sign<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Sign",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16008,7 +16008,7 @@ public static func sin<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Sin",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16019,7 +16019,7 @@ public static func sinh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Sinh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16040,8 +16040,8 @@ public static func size<T: AccelerableByTensorFlow, OutType: BinaryInteger & Acc
 ) -> Tensor<OutType> {
   let ret: TensorHandle<OutType> = #tfop("Size",
     input,
-    T$dtype: T.cDataType,
-    out_type$dtype: OutType.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16071,8 +16071,8 @@ public static func slice<T: AccelerableByTensorFlow, Index: BinaryInteger & Acce
     input,
     begin,
     size,
-    T$dtype: T.cDataType,
-    Index$dtype: Index.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16083,7 +16083,7 @@ public static func snapshot<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Snapshot",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16102,7 +16102,7 @@ public static func softmax<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Softmax",
     logits,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16127,7 +16127,7 @@ public static func softmaxCrossEntropyWithLogits<T: BinaryFloatingPoint & Accele
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
     features,
     labels,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -16138,7 +16138,7 @@ public static func softplus<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Softplus",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16157,7 +16157,7 @@ public static func softplusGrad<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("SoftplusGrad",
     gradients,
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16168,7 +16168,7 @@ public static func softsign<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Softsign",
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16187,7 +16187,7 @@ public static func softsignGrad<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("SoftsignGrad",
     gradients,
     features,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16297,8 +16297,8 @@ public static func spaceToBatch<T: AccelerableByTensorFlow, Tpaddings: BinaryInt
   let ret: TensorHandle<T> = #tfop("SpaceToBatch",
     input,
     paddings,
-    T$dtype: T.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
     block_size: blockSize)
   return Tensor(handle: ret)
 }
@@ -16436,9 +16436,9 @@ public static func spaceToBatchND<T: AccelerableByTensorFlow, TblockShape: Binar
     input,
     blockShape,
     paddings,
-    T$dtype: T.cDataType,
-    Tblock_shape$dtype: TblockShape.cDataType,
-    Tpaddings$dtype: Tpaddings.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tblock_shape$dtype: TblockShape.tensorFlowDataType,
+    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -16537,7 +16537,7 @@ public static func spaceToDepth<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("SpaceToDepth",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     block_size: blockSize,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
@@ -16586,8 +16586,8 @@ public static func sparseAdd<T: Numeric & AccelerableByTensorFlow, Treal: Numeri
     bValues,
     bShape,
     thresh,
-    T$dtype: T.cDataType,
-    Treal$dtype: Treal.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Treal$dtype: Treal.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -16623,7 +16623,7 @@ public static func sparseAddGrad<T: Numeric & AccelerableByTensorFlow>(
     aIndices,
     bIndices,
     sumIndices,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -16663,8 +16663,8 @@ public static func sparseApplyAdadelta<T: Numeric & AccelerableByTensorFlow, Tin
     epsilon,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -16703,8 +16703,8 @@ public static func sparseApplyAdagrad<T: Numeric & AccelerableByTensorFlow, Tind
     lr,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking,
     update_slots: updateSlots)
   return Tensor(handle: ret)
@@ -16750,8 +16750,8 @@ public static func sparseApplyAdagradDA<T: Numeric & AccelerableByTensorFlow, Ti
     l1,
     l2,
     globalStep,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -16816,8 +16816,8 @@ public static func sparseApplyCenteredRMSProp<T: Numeric & AccelerableByTensorFl
     epsilon,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -16870,8 +16870,8 @@ public static func sparseApplyFtrl<T: Numeric & AccelerableByTensorFlow, Tindice
     l1,
     l2,
     lrPower,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -16928,8 +16928,8 @@ public static func sparseApplyFtrlV2<T: Numeric & AccelerableByTensorFlow, Tindi
     l2,
     l2Shrinkage,
     lrPower,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -16978,8 +16978,8 @@ public static func sparseApplyMomentum<T: Numeric & AccelerableByTensorFlow, Tin
     grad,
     indices,
     momentum,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking,
     use_nesterov: useNesterov)
   return Tensor(handle: ret)
@@ -17025,8 +17025,8 @@ public static func sparseApplyProximalAdagrad<T: Numeric & AccelerableByTensorFl
     l2,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -17066,8 +17066,8 @@ public static func sparseApplyProximalGradientDescent<T: Numeric & AccelerableBy
     l2,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -17123,8 +17123,8 @@ public static func sparseApplyRMSProp<T: Numeric & AccelerableByTensorFlow, Tind
     epsilon,
     grad,
     indices,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     use_locking: useLocking)
   return Tensor(handle: ret)
 }
@@ -17196,7 +17196,7 @@ public static func sparseConcat<T: AccelerableByTensorFlow>(
     indices,
     values,
     shapes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     concat_dim: concatDim)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
@@ -17275,8 +17275,8 @@ public static func sparseCross<SparseTypes: BinaryInteger & AccelerableByTensorF
     values,
     shapes,
     denseInputs,
-    out_type$dtype: OutType.cDataType,
-    internal_type$dtype: InternalType.cDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    internal_type$dtype: InternalType.tensorFlowDataType,
     hashed_output: hashedOutput,
     num_buckets: numBuckets,
     hash_key: hashKey)
@@ -17314,7 +17314,7 @@ public static func sparseDenseCwiseAdd<T: Numeric & AccelerableByTensorFlow>(
     spValues,
     spShape,
     dense,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17343,7 +17343,7 @@ public static func sparseDenseCwiseDiv<T: Numeric & AccelerableByTensorFlow>(
     spValues,
     spShape,
     dense,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17376,7 +17376,7 @@ public static func sparseDenseCwiseMul<T: Numeric & AccelerableByTensorFlow>(
     spValues,
     spShape,
     dense,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17444,7 +17444,7 @@ public static func sparseFillEmptyRows<T: AccelerableByTensorFlow>(
     values,
     denseShape,
     defaultValue,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
@@ -17474,7 +17474,7 @@ public static func sparseFillEmptyRowsGrad<T: AccelerableByTensorFlow>(
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SparseFillEmptyRowsGrad",
     reverseIndexMap,
     gradValues,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -17501,8 +17501,8 @@ public static func sparseMatMul<Ta: BinaryFloatingPoint & AccelerableByTensorFlo
   let ret: TensorHandle<Float> = #tfop("SparseMatMul",
     a,
     b,
-    Ta$dtype: Ta.cDataType,
-    Tb$dtype: Tb.cDataType,
+    Ta$dtype: Ta.tensorFlowDataType,
+    Tb$dtype: Tb.tensorFlowDataType,
     transpose_a: transposeA,
     transpose_b: transposeB,
     a_is_sparse: aIsSparse,
@@ -17548,7 +17548,7 @@ public static func sparseReduceMax<T: Numeric & AccelerableByTensorFlow>(
     inputValues,
     inputShape,
     reductionAxes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -17589,7 +17589,7 @@ public static func sparseReduceMaxSparse<T: Numeric & AccelerableByTensorFlow>(
     inputValues,
     inputShape,
     reductionAxes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     keep_dims: keepDims)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
@@ -17632,7 +17632,7 @@ public static func sparseReduceSum<T: Numeric & AccelerableByTensorFlow>(
     inputValues,
     inputShape,
     reductionAxes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -17673,7 +17673,7 @@ public static func sparseReduceSumSparse<T: Numeric & AccelerableByTensorFlow>(
     inputValues,
     inputShape,
     reductionAxes,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     keep_dims: keepDims)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
@@ -17709,7 +17709,7 @@ public static func sparseReorder<T: AccelerableByTensorFlow>(
     inputIndices,
     inputValues,
     inputShape,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -17781,8 +17781,8 @@ public static func sparseSegmentMean<T: BinaryFloatingPoint & AccelerableByTenso
     data,
     indices,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17808,8 +17808,8 @@ public static func sparseSegmentMeanGrad<T: BinaryFloatingPoint & AccelerableByT
     indices,
     segmentIds,
     outputDim0,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17841,9 +17841,9 @@ public static func sparseSegmentMeanWithNumSegments<T: BinaryFloatingPoint & Acc
     indices,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17871,8 +17871,8 @@ public static func sparseSegmentSqrtN<T: BinaryFloatingPoint & AccelerableByTens
     data,
     indices,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17898,8 +17898,8 @@ public static func sparseSegmentSqrtNGrad<T: BinaryFloatingPoint & AccelerableBy
     indices,
     segmentIds,
     outputDim0,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17933,9 +17933,9 @@ public static func sparseSegmentSqrtNWithNumSegments<T: BinaryFloatingPoint & Ac
     indices,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -17987,8 +17987,8 @@ public static func sparseSegmentSum<T: Numeric & AccelerableByTensorFlow, Tidx: 
     data,
     indices,
     segmentIds,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18041,9 +18041,9 @@ public static func sparseSegmentSumWithNumSegments<T: Numeric & AccelerableByTen
     indices,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18093,7 +18093,7 @@ public static func sparseSlice<T: AccelerableByTensorFlow>(
     shape,
     start,
     size,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -18123,7 +18123,7 @@ public static func sparseSliceGrad<T: Numeric & AccelerableByTensorFlow>(
     inputIndices,
     inputStart,
     outputIndices,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18162,7 +18162,7 @@ public static func sparseSoftmax<T: BinaryFloatingPoint & AccelerableByTensorFlo
     spIndices,
     spValues,
     spShape,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18191,8 +18191,8 @@ public static func sparseSoftmaxCrossEntropyWithLogits<T: BinaryFloatingPoint & 
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SparseSoftmaxCrossEntropyWithLogits",
     features,
     labels,
-    T$dtype: T.cDataType,
-    Tlabels$dtype: Tlabels.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tlabels$dtype: Tlabels.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -18228,7 +18228,7 @@ public static func sparseSparseMaximum<T: Numeric & AccelerableByTensorFlow>(
     bIndices,
     bValues,
     bShape,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -18264,7 +18264,7 @@ public static func sparseSparseMinimum<T: Numeric & AccelerableByTensorFlow>(
     bIndices,
     bValues,
     bShape,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -18317,7 +18317,7 @@ public static func sparseSplit<T: AccelerableByTensorFlow>(
     indices,
     values,
     shape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     num_split: numSplit)
   return (ret.0.map(Tensor.init), ret.1.map(Tensor.init), ret.2.map(Tensor.init))
 }
@@ -18343,8 +18343,8 @@ public static func sparseTensorDenseAdd<T: Numeric & AccelerableByTensorFlow, Ti
     aValues,
     aShape,
     b,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18385,8 +18385,8 @@ public static func sparseTensorDenseMatMul<T: AccelerableByTensorFlow, Tindices:
     aValues,
     aShape,
     b,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     adjoint_a: adjointA,
     adjoint_b: adjointB)
   return Tensor(handle: ret)
@@ -18440,8 +18440,8 @@ public static func sparseToDense<T: AccelerableByTensorFlow, Tindices: BinaryInt
     outputShape,
     sparseValues,
     defaultValue,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
     validate_indices: validateIndices)
   return Tensor(handle: ret)
 }
@@ -18512,7 +18512,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & AccelerableByTe
     set2Indices,
     set2Values,
     set2Shape,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     set_operation: setOperation,
     validate_indices: validateIndices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -18540,7 +18540,7 @@ public static func split<T: AccelerableByTensorFlow>(
   let ret: [TensorHandle<T>] = #tfop("Split",
     splitDim,
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     num_split: numSplit)
   return ret.map(Tensor.init)
 }
@@ -18569,8 +18569,8 @@ public static func splitV<T: AccelerableByTensorFlow, Tlen: BinaryInteger & Acce
     value,
     sizeSplits,
     splitDim,
-    T$dtype: T.cDataType,
-    Tlen$dtype: Tlen.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tlen$dtype: Tlen.tensorFlowDataType,
     num_split: numSplit)
   return ret.map(Tensor.init)
 }
@@ -18584,7 +18584,7 @@ public static func sqrt<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Sqrt",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18600,7 +18600,7 @@ public static func sqrtGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("SqrtGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18613,7 +18613,7 @@ public static func square<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Square",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18629,7 +18629,7 @@ public static func squaredDifference<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("SquaredDifference",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18669,7 +18669,7 @@ public static func squeeze<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Squeeze",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     squeeze_dims: squeezeDims)
   return Tensor(handle: ret)
 }
@@ -18781,9 +18781,9 @@ public static func statelessMultinomial<T: Numeric & AccelerableByTensorFlow, Ts
     logits,
     numSamples,
     seed,
-    T$dtype: T.cDataType,
-    Tseed$dtype: Tseed.cDataType,
-    output_dtype$dtype: OutputDtype.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tseed$dtype: Tseed.tensorFlowDataType,
+    output_dtype$dtype: OutputDtype.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18808,9 +18808,9 @@ public static func statelessRandomNormal<Dtype: BinaryFloatingPoint & Accelerabl
   let ret: TensorHandle<Dtype> = #tfop("StatelessRandomNormal",
     shape,
     seed,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
-    Tseed$dtype: Tseed.cDataType)
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tseed$dtype: Tseed.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18836,9 +18836,9 @@ public static func statelessRandomUniform<Dtype: BinaryFloatingPoint & Accelerab
   let ret: TensorHandle<Dtype> = #tfop("StatelessRandomUniform",
     shape,
     seed,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
-    Tseed$dtype: Tseed.cDataType)
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tseed$dtype: Tseed.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18865,9 +18865,9 @@ public static func statelessTruncatedNormal<Dtype: BinaryFloatingPoint & Acceler
   let ret: TensorHandle<Dtype> = #tfop("StatelessTruncatedNormal",
     shape,
     seed,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
-    Tseed$dtype: Tseed.cDataType)
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tseed$dtype: Tseed.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -18898,7 +18898,7 @@ public static func stopGradient<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("StopGradient",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19046,8 +19046,8 @@ public static func stridedSlice<T: AccelerableByTensorFlow, Index: BinaryInteger
     begin,
     end,
     strides,
-    T$dtype: T.cDataType,
-    Index$dtype: Index.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType,
     begin_mask: beginMask,
     end_mask: endMask,
     ellipsis_mask: ellipsisMask,
@@ -19083,8 +19083,8 @@ public static func stridedSliceAssign<T: AccelerableByTensorFlow, Index: BinaryI
     end,
     strides,
     value,
-    T$dtype: T.cDataType,
-    Index$dtype: Index.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType,
     begin_mask: beginMask,
     end_mask: endMask,
     ellipsis_mask: ellipsisMask,
@@ -19122,8 +19122,8 @@ public static func stridedSliceGrad<T: AccelerableByTensorFlow, Index: BinaryInt
     end,
     strides,
     dy,
-    T$dtype: T.cDataType,
-    Index$dtype: Index.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType,
     begin_mask: beginMask,
     end_mask: endMask,
     ellipsis_mask: ellipsisMask,
@@ -19154,7 +19154,7 @@ public static func sub<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Sub",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19182,8 +19182,8 @@ public static func sum<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryInteger
   let ret: TensorHandle<T> = #tfop("Sum",
     input,
     reductionIndices,
-    T$dtype: T.cDataType,
-    Tidx$dtype: Tidx.cDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
     keep_dims: keepDims)
   return Tensor(handle: ret)
 }
@@ -19229,7 +19229,7 @@ public static func svd<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("Svd",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     compute_uv: computeUv,
     full_matrices: fullMatrices)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -19257,7 +19257,7 @@ public static func switch_<T: AccelerableByTensorFlow>(
   let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("Switch",
     data,
     pred,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -19335,7 +19335,7 @@ public static func takeManySparseFromTensorsMap<Dtype: AccelerableByTensorFlow>(
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("TakeManySparseFromTensorsMap",
     sparseHandles,
-    dtype$dtype: Dtype.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
     container: container,
     shared_name: sharedName)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -19348,7 +19348,7 @@ public static func tan<T: Numeric & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Tan",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19359,7 +19359,7 @@ public static func tanh<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Tanh",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19375,7 +19375,7 @@ public static func tanhGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("TanhGrad",
     y,
     dy,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19383,7 +19383,7 @@ public static func tanhGrad<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 public static func testAttr<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("TestAttr",
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19464,8 +19464,8 @@ public static func tile<T: AccelerableByTensorFlow, Tmultiples: BinaryInteger & 
   let ret: TensorHandle<T> = #tfop("Tile",
     input,
     multiples,
-    T$dtype: T.cDataType,
-    Tmultiples$dtype: Tmultiples.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tmultiples$dtype: Tmultiples.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19482,7 +19482,7 @@ public static func tileGrad<T: AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("TileGrad",
     input,
     multiples,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19533,7 +19533,7 @@ public static func topK<T: Numeric & AccelerableByTensorFlow>(
 ) -> (values: Tensor<T>, indices: Tensor<Int32>) {
   let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("TopK",
     input,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     k: k,
     sorted: sorted)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
@@ -19572,7 +19572,7 @@ public static func topKV2<T: Numeric & AccelerableByTensorFlow>(
   let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("TopKV2",
     input,
     k,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     sorted: sorted)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
@@ -19589,8 +19589,8 @@ public static func transpose<T: AccelerableByTensorFlow, Tperm: BinaryInteger & 
   let ret: TensorHandle<T> = #tfop("Transpose",
     x,
     perm,
-    T$dtype: T.cDataType,
-    Tperm$dtype: Tperm.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tperm$dtype: Tperm.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19611,7 +19611,7 @@ public static func truncateDiv<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("TruncateDiv",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19630,7 +19630,7 @@ public static func truncateMod<T: Numeric & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("TruncateMod",
     x,
     y,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19659,8 +19659,8 @@ public static func truncatedNormal<Dtype: BinaryFloatingPoint & AccelerableByTen
 ) -> Tensor<Dtype> {
   let ret: TensorHandle<Dtype> = #tfop("TruncatedNormal",
     shape,
-    dtype$dtype: Dtype.cDataType,
-    T$dtype: T.cDataType,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
@@ -19730,7 +19730,7 @@ public static func twoRefsIn<T: AccelerableByTensorFlow>(
   return #tfop("TwoRefsIn",
     a,
     b,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
 }
 
 @inlinable @inline(__always)
@@ -19765,7 +19765,7 @@ public static func unary<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Unary",
     a,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -19802,7 +19802,7 @@ public static func unbatch<T: AccelerableByTensorFlow>(
     batchedTensor,
     batchIndex,
     id,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     timeout_micros: timeoutMicros,
     container: container,
     shared_name: sharedName)
@@ -19839,7 +19839,7 @@ public static func unbatchGrad<T: AccelerableByTensorFlow>(
     batchIndex,
     grad,
     id,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     container: container,
     shared_name: sharedName)
   return Tensor(handle: ret)
@@ -19932,8 +19932,8 @@ public static func unique<T: AccelerableByTensorFlow, OutIdx: BinaryInteger & Ac
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
   let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("Unique",
     x,
-    T$dtype: T.cDataType,
-    out_idx$dtype: OutIdx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_idx$dtype: OutIdx.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -20000,9 +20000,9 @@ public static func uniqueV2<T: AccelerableByTensorFlow, Taxis: BinaryInteger & A
   let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("UniqueV2",
     x,
     axis,
-    T$dtype: T.cDataType,
-    Taxis$dtype: Taxis.cDataType,
-    out_idx$dtype: OutIdx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Taxis$dtype: Taxis.tensorFlowDataType,
+    out_idx$dtype: OutIdx.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -20038,8 +20038,8 @@ public static func uniqueWithCounts<T: AccelerableByTensorFlow, OutIdx: BinaryIn
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
   let ret: (TensorHandle<T>, TensorHandle<OutIdx>, TensorHandle<OutIdx>) = #tfop("UniqueWithCounts",
     x,
-    T$dtype: T.cDataType,
-    out_idx$dtype: OutIdx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    out_idx$dtype: OutIdx.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -20111,9 +20111,9 @@ public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryI
   let ret: (TensorHandle<T>, TensorHandle<OutIdx>, TensorHandle<OutIdx>) = #tfop("UniqueWithCountsV2",
     x,
     axis,
-    T$dtype: T.cDataType,
-    Taxis$dtype: Taxis.cDataType,
-    out_idx$dtype: OutIdx.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Taxis$dtype: Taxis.tensorFlowDataType,
+    out_idx$dtype: OutIdx.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -20146,7 +20146,7 @@ public static func unpack<T: AccelerableByTensorFlow>(
 ) -> [Tensor<T>] {
   let ret: [TensorHandle<T>] = #tfop("Unpack",
     value,
-    T$dtype: T.cDataType,
+    T$dtype: T.tensorFlowDataType,
     num: num,
     axis: axis)
   return ret.map(Tensor.init)
@@ -20176,7 +20176,7 @@ public static func unravelIndex<Tidx: BinaryInteger & AccelerableByTensorFlow>(
   let ret: TensorHandle<Tidx> = #tfop("UnravelIndex",
     indices,
     dims,
-    Tidx$dtype: Tidx.cDataType)
+    Tidx$dtype: Tidx.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20222,9 +20222,9 @@ public static func unsortedSegmentMax<T: Numeric & AccelerableByTensorFlow, Tind
     data,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20263,9 +20263,9 @@ public static func unsortedSegmentMin<T: Numeric & AccelerableByTensorFlow, Tind
     data,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20303,9 +20303,9 @@ public static func unsortedSegmentProd<T: Numeric & AccelerableByTensorFlow, Tin
     data,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20346,9 +20346,9 @@ public static func unsortedSegmentSum<T: Numeric & AccelerableByTensorFlow, Tind
     data,
     segmentIds,
     numSegments,
-    T$dtype: T.cDataType,
-    Tindices$dtype: Tindices.cDataType,
-    Tnumsegments$dtype: Tnumsegments.cDataType)
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20438,7 +20438,7 @@ public static func where_<T: AccelerableByTensorFlow>(
 ) -> Tensor<Int64> {
   let ret: TensorHandle<Int64> = #tfop("Where",
     input,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20453,7 +20453,7 @@ public static func zerosLike<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ZerosLike",
     x,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -20471,7 +20471,7 @@ public static func zeta<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   let ret: TensorHandle<T> = #tfop("Zeta",
     x,
     q,
-    T$dtype: T.cDataType)
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 

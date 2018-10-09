@@ -231,7 +231,7 @@ class Types(object):
     # Do not pass list(type) attr as these have to use an array of types.
     if self._is_list_attr:
       return None
-    return self.attr_def_name + '$dtype: ' + self.swift_name + '.cDataType'
+    return self.attr_def_name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
 
 
 def swift_float(f):

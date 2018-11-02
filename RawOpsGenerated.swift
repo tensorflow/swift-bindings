@@ -2025,71 +2025,6 @@ public static func b(
   return Tensor(handle: ret)
 }
 
-/// Batches all input tensors nondeterministically.
-///
-/// When many instances of this Op are being run concurrently with the same
-/// container/shared_name in the same device, some will output zero-shaped Tensors
-/// and others will output Tensors of size up to max_batch_size.
-///
-/// All Tensors in in_tensors are batched together (so, for example, labels and
-/// features should be batched with a single instance of this operation.
-///
-/// Each invocation of batch emits an `id` scalar which will be used to identify
-/// this particular invocation when doing unbatch or its gradient.
-///
-/// Each op which emits a non-empty batch will also emit a non-empty batch_index
-/// Tensor, which, is a [K, 3] matrix where each row contains the invocation's id,
-/// start, and length of elements of each set of Tensors present in batched_tensors.
-///
-/// Batched tensors are concatenated along the first dimension, and all tensors in
-/// in_tensors must have the first dimension of the same size.
-///
-/// in_tensors: The tensors to be batched.
-/// num_batch_threads: Number of scheduling threads for processing batches of work.
-///  Determines the number of batches processed in parallel.
-/// max_batch_size: Batch sizes will never be bigger than this.
-/// batch_timeout_micros: Maximum number of microseconds to wait before outputting
-///  an incomplete batch.
-/// allowed_batch_sizes: Optional list of allowed batch sizes. If left empty, does
-///  nothing. Otherwise, supplies a list of batch sizes, causing the op to pad
-///  batches up to one of those sizes. The entries must increase monotonically, and
-///  the final entry must equal max_batch_size.
-/// grad_timeout_micros: The timeout to use for the gradient. See Unbatch.
-/// batched_tensors: Either empty tensors or a batch of concatenated Tensors.
-/// batch_index: If out_tensors is non-empty, has information to invert it.
-/// container: Controls the scope of sharing of this batch.
-/// id: always contains a scalar with a unique ID for this invocation of Batch.
-/// shared_name: Concurrently running instances of batch in the same device with the
-///  same container and shared_name will batch their elements together. If left
-///  empty, the op name will be used as the shared name.
-/// T: the types of tensors to be batched.
-@inlinable @inline(__always)
-public static func batch<T: AccelerableByTensorFlow>(
-  inTensors: [Tensor<T>],
-  numBatchThreads: Int64,
-  maxBatchSize: Int64,
-  maxEnqueuedBatches: Int64 = 10,
-  batchTimeoutMicros: Int64,
-  allowedBatchSizes: [Int32],
-  gradTimeoutMicros: Int64,
-  container: String,
-  sharedName: String,
-  batchingQueue: String
-) -> (batchedTensors: [Tensor<T>], batchIndex: Tensor<Int64>, id: Tensor<Int64>) {
-  let ret: ([TensorHandle<T>], TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("Batch",
-    inTensors,
-    num_batch_threads: numBatchThreads,
-    max_batch_size: maxBatchSize,
-    max_enqueued_batches: maxEnqueuedBatches,
-    batch_timeout_micros: batchTimeoutMicros,
-    allowed_batch_sizes: allowedBatchSizes,
-    grad_timeout_micros: gradTimeoutMicros,
-    container: container,
-    shared_name: sharedName,
-    batching_queue: batchingQueue)
-  return (ret.0.map(Tensor.init), Tensor(handle: ret.1), Tensor(handle: ret.2))
-}
-
 @inlinable @inline(__always)
 public static func batchCholesky<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
   _ input: Tensor<T>
@@ -3066,56 +3001,6 @@ public static func blockLSTMGrad<T: BinaryFloatingPoint & AccelerableByTensorFlo
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6), Tensor(handle: ret.7))
 }
 
-/// Calculates gains for each feature and returns the best possible split information for the feature.
-///
-/// The split information is the best threshold (bucket id), gains and left/right node contributions per node for each feature.
-///
-/// It is possible that not all nodes can be split on each feature. Hence, the list of possible nodes can differ between the features. Therefore, we return `node_ids_list` for each feature, containing the list of nodes that this feature can be used to split.
-///
-/// In this manner, the output is the best split per features and per node, so that it needs to be combined later to produce the best split for each node (among all possible features).
-///
-/// The length of output lists are all of the same length, `num_features`.
-/// The output shapes are compatible in a way that the first dimension of all tensors of all lists are the same and equal to the number of possible split nodes for each feature.
-///
-/// - Parameters:
-///   - node_id_range: A Rank 1 tensor (shape=[2]) to specify the range [first, last) of node ids to process within `stats_summary_list`. The nodes are iterated between the two nodes specified by the tensor, as like `for node_id in range(node_id_range[0], node_id_range[1])` (Note that the last index node_id_range[1] is exclusive).
-///   - stats_summary_list: A list of Rank 3 tensor (#shape=[max_splits, bucket, 2]) for accumulated stats summary (gradient/hessian) per node per buckets for each feature. The first dimension of the tensor is the maximum number of splits, and thus not all elements of it will be used, but only the indexes specified by node_ids will be used.
-///   - l1: l1 regularization factor on leaf weights, per instance based.
-///   - l2: l2 regularization factor on leaf weights, per instance based.
-///   - tree_complexity: adjustment to the gain, per leaf based.
-///   - min_node_weight: mininum avg of hessians in a node before required for the node to be considered for splitting.
-///
-/// - Attrs:
-///   - max_splits: the number of nodes that can be split in the whole tree. Used as a dimension of output tensors.
-///   - num_features: inferred from the size of `stats_summary_list`; the number of total features.
-///
-/// - Outputs:
-///   - node_ids_list: An output list of Rank 1 tensors indicating possible split node ids for each feature. The length of the list is num_features, but each tensor has different size as each feature provides different possible nodes. See above for details like shapes and sizes.
-///   - gains_list: An output list of Rank 1 tensors indicating the best gains for each feature to split for certain nodes. See above for details like shapes and sizes.
-///   - thresholds_list: An output list of Rank 1 tensors indicating the bucket id to compare with (as a threshold) for split in each node. See above for details like shapes and sizes.
-///   - left_node_contribs_list: A list of Rank 2 tensors indicating the contribution of the left nodes when branching from parent nodes (given by the tensor element in the output node_ids_list) to the left direction by the given threshold for each feature. This value will be used to make the left node value by adding to the parent node value. Second dimension size is 1 for 1-dimensional logits, but would be larger for multi-class problems. See above for details like shapes and sizes.
-///   - right_node_contribs_list: A list of Rank 2 tensors, with the same shape/conditions as left_node_contribs_list, but just that the value is for the right node.
-@inlinable @inline(__always)
-public static func boostedTreesCalculateBestGainsPerFeature(
-  nodeIdRange: Tensor<Int32>,
-  statsSummaryList: [Tensor<Float>],
-  l1: Tensor<Float>,
-  l2: Tensor<Float>,
-  treeComplexity: Tensor<Float>,
-  minNodeWeight: Tensor<Float>,
-  maxSplits: Int64
-) -> (nodeIdsList: [Tensor<Int32>], gainsList: [Tensor<Float>], thresholdsList: [Tensor<Int32>], leftNodeContribsList: [Tensor<Float>], rightNodeContribsList: [Tensor<Float>]) {
-  let ret: ([TensorHandle<Int32>], [TensorHandle<Float>], [TensorHandle<Int32>], [TensorHandle<Float>], [TensorHandle<Float>]) = #tfop("BoostedTreesCalculateBestGainsPerFeature",
-    nodeIdRange,
-    statsSummaryList,
-    l1,
-    l2,
-    treeComplexity,
-    minNodeWeight,
-    max_splits: maxSplits)
-  return (ret.0.map(Tensor.init), ret.1.map(Tensor.init), ret.2.map(Tensor.init), ret.3.map(Tensor.init), ret.4.map(Tensor.init))
-}
-
 /// Makes the summary of accumulated stats for the batch.
 ///
 /// The summary stats contains gradients and hessians accumulated into the corresponding node and bucket for each example.
@@ -3252,52 +3137,6 @@ public static func bucketize<T: Numeric & AccelerableByTensorFlow>(
     T$dtype: T.tensorFlowDataType,
     boundaries: boundaries)
   return Tensor(handle: ret)
-}
-
-/// Performs beam search decoding on the logits given in input.
-///
-/// A note about the attribute merge_repeated: For the beam search decoder,
-/// this means that if consecutive entries in a beam are the same, only
-/// the first of these is emitted.  That is, when the top path is "A B B B B",
-/// "A B" is returned if merge_repeated = True but "A B B B B" is
-/// returned if merge_repeated = False.
-///
-/// - Parameters:
-///   - inputs: 3-D, shape: `(max_time x batch_size x num_classes)`, the logits.
-///   - sequence_length: A vector containing sequence lengths, size `(batch)`.
-///
-/// - Attrs:
-///   - beam_width: A scalar >= 0 (beam search beam width).
-///   - top_paths: A scalar >= 0, <= beam_width (controls output size).
-///   - merge_repeated: If true, merge repeated classes in output.
-///
-/// - Outputs:
-///   - decoded_indices: A list (length: top_paths) of indices matrices.  Matrix j,
-///     size `(total_decoded_outputs[j] x 2)`, has indices of a
-///     `SparseTensor<int64, 2>`.  The rows store: [batch, time].
-///   - decoded_values: A list (length: top_paths) of values vectors.  Vector j,
-///     size `(length total_decoded_outputs[j])`, has the values of a
-///     `SparseTensor<int64, 2>`.  The vector stores the decoded classes for beam j.
-///   - decoded_shape: A list (length: top_paths) of shape vector.  Vector j,
-///     size `(2)`, stores the shape of the decoded `SparseTensor[j]`.
-///     Its values are: `[batch_size, max_decoded_length[j]]`.
-///   - log_probability: A matrix, shaped: `(batch_size x top_paths)`.  The
-///     sequence log-probabilities.
-@inlinable @inline(__always)
-public static func cTCBeamSearchDecoder(
-  inputs: Tensor<Float>,
-  sequenceLength: Tensor<Int32>,
-  beamWidth: Int64,
-  topPaths: Int64,
-  mergeRepeated: Bool = true
-) -> (decodedIndices: [Tensor<Int64>], decodedValues: [Tensor<Int64>], decodedShape: [Tensor<Int64>], logProbability: Tensor<Float>) {
-  let ret: ([TensorHandle<Int64>], [TensorHandle<Int64>], [TensorHandle<Int64>], TensorHandle<Float>) = #tfop("CTCBeamSearchDecoder",
-    inputs,
-    sequenceLength,
-    beam_width: beamWidth,
-    top_paths: topPaths,
-    merge_repeated: mergeRepeated)
-  return (ret.0.map(Tensor.init), ret.1.map(Tensor.init), ret.2.map(Tensor.init), Tensor(handle: ret.3))
 }
 
 /// Performs greedy decoding on the logits given in inputs.
@@ -3627,17 +3466,6 @@ public static func complexAbs<T: AccelerableByTensorFlow, Tout: BinaryFloatingPo
   return Tensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func complexStruct<TC: AccelerableByTensorFlow>(
-  nA: Int64,
-  nB: Int64
-) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: [Tensor<TC>]) {
-  let ret: ([TensorHandle<Int32>], [TensorHandle<Int64>], [TensorHandle<TC>]) = #tfop("ComplexStruct",
-    n_a: nA,
-    n_b: nB)
-  return (ret.0.map(Tensor.init), ret.1.map(Tensor.init), ret.2.map(Tensor.init))
-}
-
 /// Computes the ids of the positions in sampled_candidates that match true_labels.
 ///
 /// When doing log-odds NCE, the result of this op should be passed through a
@@ -3700,36 +3528,6 @@ public static func concat<T: AccelerableByTensorFlow>(
     values,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// Computes offsets of concat inputs within its output.
-///
-/// For example:
-///
-/// ```
-/// # 'x' is [2, 2, 7]
-/// # 'y' is [2, 3, 7]
-/// # 'z' is [2, 5, 7]
-/// concat_offset(2, [x, y, z]) => [0, 0, 0], [0, 2, 0], [0, 5, 0]
-/// ```
-///
-/// This is typically used by gradient computations for a concat operation.
-///
-/// - Parameters:
-///   - concat_dim: The dimension along which to concatenate.
-///   - shape: The `N` int32 vectors representing shape of tensors being concatenated.
-///
-/// - Output offset: The `N` int32 vectors representing the starting offset
-///   of input tensors within the concatenated output.
-@inlinable @inline(__always)
-public static func concatOffset(
-  concatDim: Tensor<Int32>,
-  shape: [Tensor<Int32>]
-) -> [Tensor<Int32>] {
-  let ret: [TensorHandle<Int32>] = #tfop("ConcatOffset",
-    concatDim,
-    shape)
-  return ret.map(Tensor.init)
 }
 
 /// Concatenates tensors along one dimension.
@@ -4836,67 +4634,6 @@ public static func cudnnRNNParamsSize<T: BinaryFloatingPoint & AccelerableByTens
   return Tensor(handle: ret)
 }
 
-/// Retrieves CudnnRNN params in canonical form.
-///
-/// Retrieves a set of weights from the opaque params buffer that can be saved and
-/// restored in a way compatible with future runs.
-///
-/// Note that the params buffer may not be compatible across different GPUs. So any
-/// save and restoration should be converted to and from the canonical weights and
-/// biases.
-///
-/// num_layers: Specifies the number of layers in the RNN model.
-/// num_units: Specifies the size of the hidden state.
-/// input_size: Specifies the size of the input state.
-/// num_params: number of parameter sets for all layers.
-///     Each layer may contain multiple parameter sets, with each set consisting of
-///     a weight matrix and a bias vector.
-/// weights: the canonical form of weights that can be used for saving
-///     and restoration. They are more likely to be compatible across different
-///     generations.
-/// biases: the canonical form of biases that can be used for saving
-///     and restoration. They are more likely to be compatible across different
-///     generations.
-/// rnn_mode: Indicates the type of the RNN model.
-/// input_mode: Indicate whether there is a linear projection between the input and
-///     The actual computation before the first layer. 'skip_input' is only allowed
-///     when input_size == num_units; 'auto_select' implies 'skip_input' when
-///     input_size == num_units; otherwise, it implies 'linear_input'.
-/// direction: Indicates whether a bidirectional model will be used.
-///     dir = (direction == bidirectional) ? 2 : 1
-/// dropout: dropout probability. When set to 0., dropout is disabled.
-/// seed: the 1st part of a seed to initialize dropout.
-/// seed2: the 2nd part of a seed to initialize dropout.
-@inlinable @inline(__always)
-public static func cudnnRNNParamsToCanonical<T: BinaryFloatingPoint & AccelerableByTensorFlow>(
-  numLayers: Tensor<Int32>,
-  numUnits: Tensor<Int32>,
-  inputSize: Tensor<Int32>,
-  params: Tensor<T>,
-  numParams: Int64,
-  rnnMode: RnnMode = .lstm,
-  inputMode: InputMode = .linearInput,
-  direction: Direction = .unidirectional,
-  dropout: Double = 0,
-  seed: Int64 = 0,
-  seed2: Int64 = 0
-) -> (weights: [Tensor<T>], biases: [Tensor<T>]) {
-  let ret: ([TensorHandle<T>], [TensorHandle<T>]) = #tfop("CudnnRNNParamsToCanonical",
-    numLayers,
-    numUnits,
-    inputSize,
-    params,
-    T$dtype: T.tensorFlowDataType,
-    num_params: numParams,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return (ret.0.map(Tensor.init), ret.1.map(Tensor.init))
-}
-
 /// A RNN backed by cuDNN.
 ///
 /// Computes the RNN from the input and initial states, with respect to the params
@@ -5694,7 +5431,7 @@ public static func depthwiseConv2dNativeBackpropInput<T: BinaryFloatingPoint & A
 /// In 'MIN_COMBINED' mode, each value of the tensor will undergo the following:
 ///
 /// ```
-/// if T == qint8, in[i] += (range(T) + 1)/ 2.0
+/// if T == qint8: in[i] += (range(T) + 1)/ 2.0
 /// out[i] = min_range + (in[i]* (max_range - min_range) / range(T))
 /// ```
 /// here `range(T) = numeric_limits<T>::max() - numeric_limits<T>::min()`
@@ -6118,63 +5855,6 @@ public static func drawBoundingBoxes<T: BinaryFloatingPoint & AccelerableByTenso
   return Tensor(handle: ret)
 }
 
-/// Partitions `data` into `num_partitions` tensors using indices from `partitions`.
-///
-/// For each index tuple `js` of size `partitions.ndim`, the slice `data[js, ...]`
-/// becomes part of `outputs[partitions[js]]`.  The slices with `partitions[js] = i`
-/// are placed in `outputs[i]` in lexicographic order of `js`, and the first
-/// dimension of `outputs[i]` is the number of entries in `partitions` equal to `i`.
-/// In detail,
-///
-/// ```python
-///     outputs[i].shape = [sum(partitions == i)] + data.shape[partitions.ndim:]
-///
-///     outputs[i] = pack([data[js, ...] for js if partitions[js] == i])
-/// ```
-///
-/// `data.shape` must start with `partitions.shape`.
-///
-/// For example:
-///
-/// ```python
-///     # Scalar partitions.
-///     partitions = 1
-///     num_partitions = 2
-///     data = [10, 20]
-///     outputs[0] = []  # Empty with shape [0, 2]
-///     outputs[1] = [[10, 20]]
-///
-///     # Vector partitions.
-///     partitions = [0, 0, 1, 1, 0]
-///     num_partitions = 2
-///     data = [10, 20, 30, 40, 50]
-///     outputs[0] = [10, 20, 50]
-///     outputs[1] = [30, 40]
-/// ```
-///
-/// See `dynamic_stitch` for an example on how to merge partitions back.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/DynamicPartition.png" alt>
-/// </div>
-///
-/// - Parameter partitions: Any shape.  Indices in the range `[0, num_partitions)`.
-///
-/// - Attr num_partitions: The number of partitions to output.
-@inlinable @inline(__always)
-public static func dynamicPartition<T: AccelerableByTensorFlow>(
-  data: Tensor<T>,
-  partitions: Tensor<Int32>,
-  numPartitions: Int64
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("DynamicPartition",
-    data,
-    partitions,
-    T$dtype: T.tensorFlowDataType,
-    num_partitions: numPartitions)
-  return ret.map(Tensor.init)
-}
-
 /// Interleave the values from the `data` tensors into a single tensor.
 ///
 /// Builds a merged tensor such that
@@ -6249,21 +5929,6 @@ public static func dynamicStitch<T: AccelerableByTensorFlow>(
     data,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// Eagerly executes a python function to compute func(input)->output. The
-///
-/// semantics of the input, output, and attributes are the same as those for
-/// PyFunc.
-@inlinable @inline(__always)
-public static func eagerPyFunc<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  _ input: [Tensor<Tin>],
-  token: String
-) -> [Tensor<Tout>] {
-  let ret: [TensorHandle<Tout>] = #tfop("EagerPyFunc",
-    input,
-    token: token)
-  return ret.map(Tensor.init)
 }
 
 /// Computes the (possibly normalized) Levenshtein Edit Distance.
@@ -8330,32 +7995,6 @@ public static func identity<T: AccelerableByTensorFlow>(
   return Tensor(handle: ret)
 }
 
-/// Returns a list of tensors with the same shapes and contents as the input
-///
-/// tensors.
-///
-/// This op can be used to override the gradient for complicated functions. For
-/// example, suppose y = f(x) and we wish to apply a custom function g for backprop
-/// such that dx = g(dy). In Python,
-///
-/// ```python
-/// with tf.get_default_graph().gradient_override_map(
-///     {'IdentityN': 'OverrideGradientWithG'}):
-///   y, _ = identity_n([f(x), x])
-///
-/// @tf.RegisterGradient('OverrideGradientWithG')
-/// def ApplyG(op, dy, _):
-///   return [None, g(dy)]  # Do not backprop to f(x).
-/// ```
-@inlinable @inline(__always)
-public static func identityN<T: AccelerableByTensorFlow>(
-  _ input: [Tensor<T>]
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("IdentityN",
-    input)
-  return ret.map(Tensor.init)
-}
-
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
 ///
 /// The lower regularized incomplete Gamma function is defined as:
@@ -9246,13 +8885,6 @@ public static func listInput<T: AccelerableByTensorFlow>(
     T$dtype: T.tensorFlowDataType)
 }
 
-@inlinable @inline(__always)
-public static func listOutput<T: AccelerableByTensorFlow>(
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("ListOutput")
-  return ret.map(Tensor.init)
-}
-
 /// Computes natural logarithm of x element-wise.
 ///
 /// I.e., \\(y = \log_e x\\).
@@ -9474,29 +9106,6 @@ public static func mapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
   return Tensor(handle: ret)
 }
 
-/// Op peeks at the values at the specified key.  If the
-///
-/// underlying container does not contain this key
-/// this op will block until it does.
-@inlinable @inline(__always)
-public static func mapPeek<Dtypes: AccelerableByTensorFlow>(
-  key: Tensor<Int64>,
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("MapPeek",
-    key,
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
-}
-
 /// Op returns the number of elements in the underlying container.
 @inlinable @inline(__always)
 public static func mapSize<Dtypes: AccelerableByTensorFlow>(
@@ -9546,50 +9155,6 @@ public static func mapStage<Dtypes: AccelerableByTensorFlow, FakeDtypes: Acceler
     memory_limit: memoryLimit,
     container: container,
     shared_name: sharedName)
-}
-
-/// Op removes and returns the values associated with the key
-///
-/// from the underlying container.   If the underlying container
-/// does not contain this key, the op will block until it does.
-@inlinable @inline(__always)
-public static func mapUnstage<Dtypes: AccelerableByTensorFlow>(
-  key: Tensor<Int64>,
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("MapUnstage",
-    key,
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
-}
-
-/// Op removes and returns a random (key, value)
-///
-/// from the underlying container.   If the underlying container
-/// does not contain elements, the op will block until it does.
-@inlinable @inline(__always)
-public static func mapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> (key: Tensor<Int64>, values: [Tensor<Dtypes>]) {
-  let ret: (TensorHandle<Int64>, [TensorHandle<Dtypes>]) = #tfop("MapUnstageNoKey",
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return (Tensor(handle: ret.0), ret.1.map(Tensor.init))
 }
 
 /// Multiply the matrix "a" by the matrix "b".
@@ -10792,15 +10357,6 @@ public static func mirrorPadGrad<T: AccelerableByTensorFlow, Tpaddings: BinaryIn
   return Tensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func mixedStruct(
-  nA: Int64
-) -> (a: [Tensor<Int32>], b: Tensor<Float>) {
-  let ret: ([TensorHandle<Int32>], TensorHandle<Float>) = #tfop("MixedStruct",
-    n_a: nA)
-  return (ret.0.map(Tensor.init), Tensor(handle: ret.1))
-}
-
 /// Returns element-wise remainder of division. This emulates C semantics in that
 ///
 /// the result here is consistent with a truncating divide. E.g.
@@ -10899,24 +10455,6 @@ public static func nIntsIn(
 }
 
 @inlinable @inline(__always)
-public static func nIntsOut(
-  n: Int64
-) -> [Tensor<Int32>] {
-  let ret: [TensorHandle<Int32>] = #tfop("NIntsOut",
-    N: n)
-  return ret.map(Tensor.init)
-}
-
-@inlinable @inline(__always)
-public static func nIntsOutDefault(
-  n: Int64 = 3
-) -> [Tensor<Int32>] {
-  let ret: [TensorHandle<Int32>] = #tfop("NIntsOutDefault",
-    N: n)
-  return ret.map(Tensor.init)
-}
-
-@inlinable @inline(__always)
 public static func nPolymorphicIn<T: AccelerableByTensorFlow>(
   _ a: [Tensor<T>]
 ) {
@@ -10926,42 +10464,12 @@ public static func nPolymorphicIn<T: AccelerableByTensorFlow>(
 }
 
 @inlinable @inline(__always)
-public static func nPolymorphicOut<T: AccelerableByTensorFlow>(
-  n: Int64
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("NPolymorphicOut",
-    T$dtype: T.tensorFlowDataType,
-    N: n)
-  return ret.map(Tensor.init)
-}
-
-@inlinable @inline(__always)
-public static func nPolymorphicOutDefault<T: AccelerableByTensorFlow>(
-  n: Int64 = 2
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("NPolymorphicOutDefault",
-    T$dtype: T.tensorFlowDataType,
-    N: n)
-  return ret.map(Tensor.init)
-}
-
-@inlinable @inline(__always)
 public static func nPolymorphicRestrictIn<T: AccelerableByTensorFlow>(
   _ a: [Tensor<T>]
 ) {
   return #tfop("NPolymorphicRestrictIn",
     a,
     T$dtype: T.tensorFlowDataType)
-}
-
-@inlinable @inline(__always)
-public static func nPolymorphicRestrictOut<T: AccelerableByTensorFlow>(
-  n: Int64
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("NPolymorphicRestrictOut",
-    T$dtype: T.tensorFlowDataType,
-    N: n)
-  return ret.map(Tensor.init)
 }
 
 /// Computes numerical negative value element-wise.
@@ -11464,30 +10972,6 @@ public static func orderedMapIncompleteSize<Dtypes: AccelerableByTensorFlow>(
   return Tensor(handle: ret)
 }
 
-/// Op peeks at the values at the specified key.  If the
-///
-/// underlying container does not contain this key
-/// this op will block until it does.   This Op is optimized for
-/// performance.
-@inlinable @inline(__always)
-public static func orderedMapPeek<Dtypes: AccelerableByTensorFlow>(
-  key: Tensor<Int64>,
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("OrderedMapPeek",
-    key,
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
-}
-
 /// Op returns the number of elements in the underlying container.
 @inlinable @inline(__always)
 public static func orderedMapSize<Dtypes: AccelerableByTensorFlow>(
@@ -11541,70 +11025,12 @@ public static func orderedMapStage<Dtypes: AccelerableByTensorFlow, FakeDtypes: 
     shared_name: sharedName)
 }
 
-/// Op removes and returns the values associated with the key
-///
-/// from the underlying container.   If the underlying container
-/// does not contain this key, the op will block until it does.
-@inlinable @inline(__always)
-public static func orderedMapUnstage<Dtypes: AccelerableByTensorFlow>(
-  key: Tensor<Int64>,
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("OrderedMapUnstage",
-    key,
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
-}
-
-/// Op removes and returns the (key, value) element with the smallest
-///
-/// key from the underlying container.   If the underlying container
-/// does not contain elements, the op will block until it does.
-@inlinable @inline(__always)
-public static func orderedMapUnstageNoKey<Dtypes: AccelerableByTensorFlow>(
-  indices: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> (key: Tensor<Int64>, values: [Tensor<Dtypes>]) {
-  let ret: (TensorHandle<Int64>, [TensorHandle<Dtypes>]) = #tfop("OrderedMapUnstageNoKey",
-    indices,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return (Tensor(handle: ret.0), ret.1.map(Tensor.init))
-}
-
 @inlinable @inline(__always)
 public static func outT<T: AccelerableByTensorFlow>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("OutT",
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func outTypeList<T: AccelerableByTensorFlow>(
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("OutTypeList")
-  return ret.map(Tensor.init)
-}
-
-@inlinable @inline(__always)
-public static func outTypeListRestrict<T: AccelerableByTensorFlow>(
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("OutTypeListRestrict")
-  return ret.map(Tensor.init)
 }
 
 /// Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor.
@@ -12022,43 +11448,6 @@ public static func prod<T: Numeric & AccelerableByTensorFlow, Tidx: BinaryIntege
   return Tensor(handle: ret)
 }
 
-/// Invokes a python function to compute func(input)->output.
-///
-/// This operation is considered stateful. For a stateless version, see
-/// PyFuncStateless.
-///
-/// - Parameter input: List of Tensors that will provide input to the Op.
-///
-/// - Attrs:
-///   - token: A token representing a registered python function in this address space.
-///   - Tin: Data types of the inputs to the op.
-///   - Tout: Data types of the outputs from the op.
-///     The length of the list specifies the number of outputs.
-///
-/// - Output output: The outputs from the Op.
-@inlinable @inline(__always)
-public static func pyFunc<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  _ input: [Tensor<Tin>],
-  token: String
-) -> [Tensor<Tout>] {
-  let ret: [TensorHandle<Tout>] = #tfop("PyFunc",
-    input,
-    token: token)
-  return ret.map(Tensor.init)
-}
-
-/// A stateless version of PyFunc.
-@inlinable @inline(__always)
-public static func pyFuncStateless<Tin: AccelerableByTensorFlow, Tout: AccelerableByTensorFlow>(
-  _ input: [Tensor<Tin>],
-  token: String
-) -> [Tensor<Tout>] {
-  let ret: [TensorHandle<Tout>] = #tfop("PyFuncStateless",
-    input,
-    token: token)
-  return ret.map(Tensor.init)
-}
-
 /// Computes the QR decompositions of one or more matrices.
 ///
 /// Computes the QR decomposition of each inner matrix in `tensor` such that
@@ -12168,6 +11557,8 @@ public static func quantizeAndDequantize<T: BinaryFloatingPoint & AccelerableByT
 /// following to each value in the 'input' tensor.
 ///
 /// output = round(clamp(value, input_min, input_max) * scale_factor) / scale_factor.
+///
+/// The above round function uses half to even rounding.
 ///
 ///
 /// - Parameters:
@@ -12291,7 +11682,7 @@ public static func quantizeDownAndShrinkRange<Tinput: AccelerableByTensorFlow, O
 ///
 /// ```
 /// out[i] = (in[i] - min_range) * range(T) / (max_range - min_range)
-/// if T == qint8, out[i] -= (range(T) + 1) / 2.0
+/// if T == qint8: out[i] -= (range(T) + 1) / 2.0
 /// ```
 ///
 /// here `range(T) = numeric_limits<T>::max() - numeric_limits<T>::min()`
@@ -13689,33 +13080,6 @@ public static func reluGrad<T: Numeric & AccelerableByTensorFlow>(
     features,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// Execute a sub graph on a remote processor.
-///
-/// The graph specifications(such as graph itself, input tensors and output names)
-/// are stored as a serialized protocol buffer of RemoteFusedGraphExecuteInfo
-/// as serialized_remote_fused_graph_execute_info.
-/// The specifications will be passed to a dedicated registered
-/// remote fused graph executor.  The executor will send the graph specifications
-/// to a remote processor and execute that graph.  The execution results
-/// will be passed to consumer nodes as outputs of this node.
-///
-/// - Parameter inputs: Arbitrary number of tensors with arbitrary data types
-///
-/// - Attr serialized_remote_fused_graph_execute_info: Serialized protocol buffer
-///   of RemoteFusedGraphExecuteInfo which contains graph specifications.
-///
-/// - Output outputs: Arbitrary number of tensors with arbitrary data types
-@inlinable @inline(__always)
-public static func remoteFusedGraphExecute<Tinputs: AccelerableByTensorFlow, Toutputs: AccelerableByTensorFlow>(
-  inputs: [Tensor<Tinputs>],
-  serializedRemoteFusedGraphExecuteInfo: String
-) -> [Tensor<Toutputs>] {
-  let ret: [TensorHandle<Toutputs>] = #tfop("RemoteFusedGraphExecute",
-    inputs,
-    serialized_remote_fused_graph_execute_info: serializedRemoteFusedGraphExecuteInfo)
-  return ret.map(Tensor.init)
 }
 
 /// Given a quantized tensor described by (input, input_min, input_max), outputs a
@@ -15367,104 +14731,6 @@ public static func scatterUpdate<T: AccelerableByTensorFlow, Tindices: BinaryInt
   return Tensor(handle: ret)
 }
 
-/// Distributed version of Stochastic Dual Coordinate Ascent (SDCA) optimizer for
-///
-/// linear models with L1 + L2 regularization. As global optimization objective is
-/// strongly-convex, the optimizer optimizes the dual objective at each step. The
-/// optimizer applies each update one example at a time. Examples are sampled
-/// uniformly, and the optimizer is learning rate free and enjoys linear convergence
-/// rate.
-///
-/// [Proximal Stochastic Dual Coordinate Ascent](http://arxiv.org/pdf/1211.2717v1.pdf).<br>
-/// Shai Shalev-Shwartz, Tong Zhang. 2012
-///
-/// $$Loss Objective = \sum f_{i} (wx_{i}) + (l2 / 2) * |w|^2 + l1 * |w|$$
-///
-/// [Adding vs. Averaging in Distributed Primal-Dual Optimization](http://arxiv.org/abs/1502.03508).<br>
-/// Chenxin Ma, Virginia Smith, Martin Jaggi, Michael I. Jordan,
-/// Peter Richtarik, Martin Takac. 2015
-///
-/// [Stochastic Dual Coordinate Ascent with Adaptive Probabilities](https://arxiv.org/abs/1502.08053).<br>
-/// Dominik Csiba, Zheng Qu, Peter Richtarik. 2015
-///
-/// - Parameters:
-///   - sparse_example_indices: a list of vectors which contain example indices.
-///   - sparse_feature_indices: a list of vectors which contain feature indices.
-///   - sparse_feature_values: a list of vectors which contains feature value
-///     associated with each feature group.
-///   - dense_features: a list of matrices which contains the dense feature values.
-///   - example_weights: a vector which contains the weight associated with each
-///     example.
-///   - example_labels: a vector which contains the label/target associated with each
-///     example.
-///   - sparse_indices: a list of vectors where each value is the indices which has
-///     corresponding weights in sparse_weights. This field maybe omitted for the
-///     dense approach.
-///   - sparse_weights: a list of vectors where each value is the weight associated with
-///     a sparse feature group.
-///   - dense_weights: a list of vectors where the values are the weights associated
-///     with a dense feature group.
-///   - example_state_data: a list of vectors containing the example state data.
-///
-/// - Attrs:
-///   - loss_type: Type of the primal loss. Currently SdcaSolver supports logistic,
-///     squared and hinge losses.
-///   - adaptative: Whether to use Adaptive SDCA for the inner loop.
-///   - num_sparse_features: Number of sparse feature groups to train on.
-///   - num_sparse_features_with_values: Number of sparse feature groups with values
-///     associated with it, otherwise implicitly treats values as 1.0.
-///   - num_dense_features: Number of dense feature groups to train on.
-///   - l1: Symmetric l1 regularization strength.
-///   - l2: Symmetric l2 regularization strength.
-///   - num_loss_partitions: Number of partitions of the global loss function.
-///   - num_inner_iterations: Number of iterations per mini-batch.
-///
-/// - Outputs:
-///   - out_example_state_data: a list of vectors containing the updated example state
-///     data.
-///   - out_delta_sparse_weights: a list of vectors where each value is the delta
-///     weights associated with a sparse feature group.
-///   - out_delta_dense_weights: a list of vectors where the values are the delta
-///     weights associated with a dense feature group.
-@inlinable @inline(__always)
-public static func sdcaOptimizer(
-  sparseExampleIndices: [Tensor<Int64>],
-  sparseFeatureIndices: [Tensor<Int64>],
-  sparseFeatureValues: [Tensor<Float>],
-  denseFeatures: [Tensor<Float>],
-  exampleWeights: Tensor<Float>,
-  exampleLabels: Tensor<Float>,
-  sparseIndices: [Tensor<Int64>],
-  sparseWeights: [Tensor<Float>],
-  denseWeights: [Tensor<Float>],
-  exampleStateData: Tensor<Float>,
-  lossType: LossType,
-  adaptative: Bool = false,
-  l1: Double,
-  l2: Double,
-  numLossPartitions: Int64,
-  numInnerIterations: Int64
-) -> (outExampleStateData: Tensor<Float>, outDeltaSparseWeights: [Tensor<Float>], outDeltaDenseWeights: [Tensor<Float>]) {
-  let ret: (TensorHandle<Float>, [TensorHandle<Float>], [TensorHandle<Float>]) = #tfop("SdcaOptimizer",
-    sparseExampleIndices,
-    sparseFeatureIndices,
-    sparseFeatureValues,
-    denseFeatures,
-    exampleWeights,
-    exampleLabels,
-    sparseIndices,
-    sparseWeights,
-    denseWeights,
-    exampleStateData,
-    loss_type: lossType.cName,
-    adaptative: adaptative,
-    l1: l1,
-    l2: l2,
-    num_loss_partitions: numLossPartitions,
-    num_inner_iterations: numInnerIterations)
-  return (Tensor(handle: ret.0), ret.1.map(Tensor.init), ret.2.map(Tensor.init))
-}
-
 /// Applies L1 regularization shrink step on the parameters.
 ///
 /// - Parameter weights: a list of vectors where each value is the weight associated with a
@@ -15925,20 +15191,6 @@ public static func shape<T: AccelerableByTensorFlow, OutType: BinaryInteger & Ac
   return Tensor(handle: ret)
 }
 
-/// Returns shape of tensors.
-///
-/// This operation returns N 1-D integer tensors representing shape of `input[i]s`.
-@inlinable @inline(__always)
-public static func shapeN<T: AccelerableByTensorFlow, OutType: BinaryInteger & AccelerableByTensorFlow>(
-  _ input: [Tensor<T>]
-) -> [Tensor<OutType>] {
-  let ret: [TensorHandle<OutType>] = #tfop("ShapeN",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return ret.map(Tensor.init)
-}
-
 /// Computes sigmoid of `x` element-wise.
 ///
 /// Specifically, `y = 1 / (1 + exp(-x))`.
@@ -15990,15 +15242,6 @@ public static func simple(
   let ret: TensorHandle<Float> = #tfop("Simple",
     a)
   return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func simpleStruct(
-  nA: Int64
-) -> [Tensor<Int32>] {
-  let ret: [TensorHandle<Int32>] = #tfop("SimpleStruct",
-    n_a: nA)
-  return ret.map(Tensor.init)
 }
 
 /// Computes sin of x element-wise.
@@ -18268,60 +17511,6 @@ public static func sparseSparseMinimum<T: Numeric & AccelerableByTensorFlow>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
-/// Split a `SparseTensor` into `num_split` tensors along one dimension.
-///
-/// If the `shape[split_dim]` is not an integer multiple of `num_split`. Slices
-/// `[0 : shape[split_dim] % num_split]` gets one extra dimension.
-/// For example, if `split_dim = 1` and `num_split = 2` and the input is
-///
-///     input_tensor = shape = [2, 7]
-///     [    a   d e  ]
-///     [b c          ]
-///
-/// Graphically the output tensors are:
-///
-///     output_tensor[0] = shape = [2, 4]
-///     [    a  ]
-///     [b c    ]
-///
-///     output_tensor[1] = shape = [2, 3]
-///     [ d e  ]
-///     [      ]
-///
-/// - Parameters:
-///   - split_dim: 0-D.  The dimension along which to split.  Must be in the range
-///     `[0, rank(shape))`.
-///   - indices: 2-D tensor represents the indices of the sparse tensor.
-///   - values: 1-D tensor represents the values of the sparse tensor.
-///   - shape: 1-D. tensor represents the shape of the sparse tensor.
-///     output indices: A list of 1-D tensors represents the indices of the output
-///     sparse tensors.
-///
-/// - Attr num_split: The number of ways to split.
-///
-/// - Outputs:
-///   - output_values: A list of 1-D tensors represents the values of the output sparse
-///     tensors.
-///   - output_shape: A list of 1-D tensors represents the shape of the output sparse
-///     tensors.
-@inlinable @inline(__always)
-public static func sparseSplit<T: AccelerableByTensorFlow>(
-  splitDim: Tensor<Int64>,
-  indices: Tensor<Int64>,
-  _ values: Tensor<T>,
-  shape: Tensor<Int64>,
-  numSplit: Int64
-) -> (outputIndices: [Tensor<Int64>], outputValues: [Tensor<T>], outputShape: [Tensor<Int64>]) {
-  let ret: ([TensorHandle<Int64>], [TensorHandle<T>], [TensorHandle<Int64>]) = #tfop("SparseSplit",
-    splitDim,
-    indices,
-    values,
-    shape,
-    T$dtype: T.tensorFlowDataType,
-    num_split: numSplit)
-  return (ret.0.map(Tensor.init), ret.1.map(Tensor.init), ret.2.map(Tensor.init))
-}
-
 /// Adds up a `SparseTensor` and a dense `Tensor`, producing a dense `Tensor`.
 ///
 /// This Op does not require `a_indices` be sorted in standard lexicographic order.
@@ -18518,63 +17707,6 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & AccelerableByTe
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
-/// Splits a tensor into `num_split` tensors along one dimension.
-///
-/// - Parameters:
-///   - split_dim: 0-D.  The dimension along which to split.  Must be in the range
-///     `[-rank(value), rank(value))`.
-///   - value: The tensor to split.
-///
-/// - Attr num_split: The number of ways to split.  Must evenly divide
-///   `value.shape[split_dim]`.
-///
-/// - Output output: They are identically shaped tensors, whose shape matches that of `value`
-///   except along `axis`, where their sizes are
-///   `values.shape[split_dim] / num_split`.
-@inlinable @inline(__always)
-public static func split<T: AccelerableByTensorFlow>(
-  splitDim: Tensor<Int32>,
-  value: Tensor<T>,
-  numSplit: Int64
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("Split",
-    splitDim,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    num_split: numSplit)
-  return ret.map(Tensor.init)
-}
-
-/// Splits a tensor into `num_split` tensors along one dimension.
-///
-/// - Parameters:
-///   - value: The tensor to split.
-///   - size_splits: list containing the sizes of each output tensor along the split
-///     dimension. Must sum to the dimension of value along split_dim.
-///     Can contain one -1 indicating that dimension is to be inferred.
-///   - split_dim: 0-D.  The dimension along which to split.  Must be in the range
-///     `[-rank(value), rank(value))`.
-///
-/// - Output output: Tensors whose shape matches that of `value`
-///   except along `axis`, where their sizes are
-///   `size_splits[i]`.
-@inlinable @inline(__always)
-public static func splitV<T: AccelerableByTensorFlow, Tlen: BinaryInteger & AccelerableByTensorFlow>(
-  value: Tensor<T>,
-  sizeSplits: Tensor<Tlen>,
-  splitDim: Tensor<Int32>,
-  numSplit: Int64
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("SplitV",
-    value,
-    sizeSplits,
-    splitDim,
-    T$dtype: T.tensorFlowDataType,
-    Tlen$dtype: Tlen.tensorFlowDataType,
-    num_split: numSplit)
-  return ret.map(Tensor.init)
-}
-
 /// Computes square root of x element-wise.
 ///
 /// I.e., \\(y = \sqrt{x} = x^{1/2}\\).
@@ -18720,28 +17852,6 @@ public static func stageClear<Dtypes: AccelerableByTensorFlow>(
     memory_limit: memoryLimit,
     container: container,
     shared_name: sharedName)
-}
-
-/// Op peeks at the values at the specified index.  If the
-///
-/// underlying container does not contain sufficient elements
-/// this op will block until it does.   This Op is optimized for
-/// performance.
-@inlinable @inline(__always)
-public static func stagePeek<Dtypes: AccelerableByTensorFlow>(
-  index: Tensor<Int32>,
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("StagePeek",
-    index,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -20117,41 +19227,6 @@ public static func uniqueWithCountsV2<T: AccelerableByTensorFlow, Taxis: BinaryI
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
-/// Unpacks a given dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors.
-///
-/// Unpacks `num` tensors from `value` by chipping it along the `axis` dimension.
-/// For example, given a tensor of shape `(A, B, C, D)`;
-///
-/// If `axis == 0` then the i'th tensor in `output` is the slice `value[i, :, :, :]`
-///   and each tensor in `output` will have shape `(B, C, D)`. (Note that the
-///   dimension unpacked along is gone, unlike `split`).
-///
-/// If `axis == 1` then the i'th tensor in `output` is the slice `value[:, i, :, :]`
-///   and each tensor in `output` will have shape `(A, C, D)`.
-/// Etc.
-///
-/// This is the opposite of `pack`.
-///
-/// - Parameter value: 1-D or higher, with `axis` dimension size equal to `num`.
-///
-/// - Attr axis: Dimension along which to unpack.  Negative values wrap around, so the
-///   valid range is `[-R, R)`.
-///
-/// - Output output: The list of tensors unpacked from `value`.
-@inlinable @inline(__always)
-public static func unpack<T: AccelerableByTensorFlow>(
-  value: Tensor<T>,
-  num: Int64,
-  axis: Int64 = 0
-) -> [Tensor<T>] {
-  let ret: [TensorHandle<T>] = #tfop("Unpack",
-    value,
-    T$dtype: T.tensorFlowDataType,
-    num: num,
-    axis: axis)
-  return ret.map(Tensor.init)
-}
-
 /// Converts a flat index or array of flat indices into a tuple of
 ///
 /// coordinate arrays.
@@ -20350,25 +19425,6 @@ public static func unsortedSegmentSum<T: Numeric & AccelerableByTensorFlow, Tind
     Tindices$dtype: Tindices.tensorFlowDataType,
     Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// Op is similar to a lightweight Dequeue.
-///
-/// The basic functionality is similar to dequeue with many fewer
-/// capabilities and options.  This Op is optimized for performance.
-@inlinable @inline(__always)
-public static func unstage<Dtypes: AccelerableByTensorFlow>(
-  capacity: Int64 = 0,
-  memoryLimit: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> [Tensor<Dtypes>] {
-  let ret: [TensorHandle<Dtypes>] = #tfop("Unstage",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return ret.map(Tensor.init)
 }
 
 /// Returns locations of nonzero / true values in a tensor.

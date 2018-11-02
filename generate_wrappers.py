@@ -371,12 +371,8 @@ OutputArg = collections.namedtuple(
     'output_arg', ['swift_name', 'swift_type', 'swift_handle_type', 'is_list'])
 
 
-# Two cases based on if handle_var is TensorHandle or [TensorHandle]:
-# 1. Case TensorHandle: h -> Tensor(handle: h)
-# 2. Case [TensorHandle]: h -> h.map(Tensor.init)
-def convert_handle_to_tensor(handle_var, is_list):
-  if is_list:
-    return handle_var + '.map(Tensor.init)'
+# TensorHandle: h -> Tensor(handle: h)
+def convert_handle_to_tensor(handle_var):
   return 'Tensor(handle: ' + handle_var + ')'
 
 
@@ -406,6 +402,14 @@ def generate_code(op, api_def, enum_store):
                 swift_handle_type=arg_def_type_as_string(a, handle=True),
                 is_list=arg_def_type_is_list(a))
       for a in op.output_arg]
+
+  # Do not generate ops with output lists.
+  # TODO: We could support output lists by giving the outputs generic type that
+  # conforms to TensorGroup.
+  for output_arg in output_args:
+    if output_arg.is_list:
+      raise UnableToGenerateCodeError('output lists not supported')
+
   return_type = ''
   if len(output_args) == 1:
     return_type = ' -> ' + output_args[0].swift_type
@@ -466,12 +470,11 @@ def generate_code(op, api_def, enum_store):
     body += '\n  return '
     if len(output_args) > 1:
       returned_tuple = [
-          convert_handle_to_tensor('ret.' + str(ind), is_list=o.is_list)
+          convert_handle_to_tensor('ret.' + str(ind))
           for ind, o in enumerate(output_args)]
       body += '(' + ', '.join(returned_tuple) + ')'
     else:
-      body += convert_handle_to_tensor(
-          'ret', is_list=output_args[0].is_list)
+      body += convert_handle_to_tensor('ret')
   return (
       """{documentation}@inlinable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}

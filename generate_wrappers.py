@@ -65,11 +65,11 @@ _RENAMED_KEYWORDS = {
     'init': 'init_',
 }
 _TYPE_PROTOCOLS = [
-    (set([]), 'AccelerableByTensorFlow'),
+    (set([]), 'TensorFlowScalar'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
-          types_pb2.DT_UINT64]), 'UnsignedInteger & AccelerableByTensorFlow'),
+          types_pb2.DT_UINT64]), 'UnsignedInteger & TensorFlowScalar'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
@@ -77,11 +77,11 @@ _TYPE_PROTOCOLS = [
           types_pb2.DT_INT8,
           types_pb2.DT_INT16,
           types_pb2.DT_INT32,
-          types_pb2.DT_INT64]), 'BinaryInteger & AccelerableByTensorFlow'),
+          types_pb2.DT_INT64]), 'BinaryInteger & TensorFlowScalar'),
     (set([types_pb2.DT_FLOAT,
           types_pb2.DT_DOUBLE,
           types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'BinaryFloatingPoint & AccelerableByTensorFlow'),
+          types_pb2.DT_BFLOAT16]), 'BinaryFloatingPoint & TensorFlowScalar'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,
@@ -93,7 +93,7 @@ _TYPE_PROTOCOLS = [
           types_pb2.DT_FLOAT,
           types_pb2.DT_DOUBLE,
           types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'Numeric & AccelerableByTensorFlow'),
+          types_pb2.DT_BFLOAT16]), 'Numeric & TensorFlowScalar'),
 ]
 
 _SWIFTIFIED_TYPES = {
@@ -218,7 +218,7 @@ class Types(object):
     self.attr_def_name = attr_def.name
     allowed_types = set(attr_def.allowed_values.list.type)
     allowed_types &= set(_SWIFTIFIED_TYPES.keys())
-    self._protocol_name = 'AccelerableByTensorFlow'
+    self._protocol_name = 'TensorFlowScalar'
     for handled_types, protocol_name in _TYPE_PROTOCOLS:
       if allowed_types.issubset(handled_types):
         self._protocol_name = protocol_name

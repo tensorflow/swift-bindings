@@ -81,7 +81,7 @@ _TYPE_PROTOCOLS = [
     (set([types_pb2.DT_FLOAT,
           types_pb2.DT_DOUBLE,
           types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'BinaryFloatingPoint & TensorFlowScalar'),
+          types_pb2.DT_BFLOAT16]), 'FloatingPoint & TensorFlowScalar'),
     (set([types_pb2.DT_UINT8,
           types_pb2.DT_UINT16,
           types_pb2.DT_UINT32,

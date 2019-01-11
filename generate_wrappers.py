@@ -62,6 +62,7 @@ _RENAMED_KEYWORDS = {
     'var': 'var_',
     'where': 'where_',
     'switch': 'switch_',
+    'protocol': 'protocol_',
     'init': 'init_',
 }
 _TYPE_PROTOCOLS = [
@@ -281,6 +282,7 @@ class AttributeAsInput(object):
       default_value = swift_default_value(
           attr_def.default_value, use_enum=use_enum)
       if default_value is not None:
+        default_value = default_value.replace("\t", "\\t")
         self.swift_type_and_default_value += ' = ' + default_value
 
     self.swift_name = swiftified_name(attr_def.name)
@@ -379,7 +381,9 @@ OutputArg = collections.namedtuple(
 
 
 # TensorHandle: h -> Tensor(handle: h)
-def convert_handle_to_tensor(handle_var):
+def convert_handle_to_tensor(handle_var, return_handle_type):
+  if return_handle_type == "TensorHandle<String>":
+    return 'StringTensor(handle: ' + handle_var + ')'
   return 'Tensor(handle: ' + handle_var + ')'
 
 
@@ -467,21 +471,21 @@ def generate_code(op, api_def, enum_store):
     # if ret.0 is [TensorHandle<T>], then we construct ret.0.map(Tensor.init) to
     # convert it to [Tensor<T>]
     return_handle_type = ''
+    handle_types = [o.swift_handle_type for o in output_args]
     if len(output_args) > 1:
-      handle_types = [o.swift_handle_type for o in output_args]
       return_handle_type = '(' + ', '.join(handle_types) + ')'
     else:
-      return_handle_type = output_args[0].swift_handle_type
+      return_handle_type = handle_types[0]
     body = 'let ret: {return_handle_type} = #tfop({tfop_args})'.format(
         return_handle_type=return_handle_type, tfop_args=tfop_args)
     body += '\n  return '
     if len(output_args) > 1:
       returned_tuple = [
-          convert_handle_to_tensor('ret.' + str(ind))
+          convert_handle_to_tensor('ret.' + str(ind), handle_types[ind])
           for ind, o in enumerate(output_args)]
       body += '(' + ', '.join(returned_tuple) + ')'
     else:
-      body += convert_handle_to_tensor('ret')
+      body += convert_handle_to_tensor('ret', return_handle_type)
   return (
       """{documentation}@inlinable @inline(__always)
 public static func {function_name}{generics_type}({joined_inputs}

@@ -383,6 +383,90 @@ public static func abs<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Applies a gradient to a given accumulator.
+///
+/// Does not add if local_step is lesser than the accumulator's global_step.
+///
+/// - Parameters:
+///   - handle: The handle to a accumulator.
+///   - local_step: The local_step value at which the gradient was computed.
+///   - gradient: A tensor of the gradient to be accumulated.
+///
+/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
+///   of the accumulator.
+@inlinable @inline(__always)
+public static func accumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
+  handle: StringTensor,
+  localStep: Tensor<Int64>,
+  gradient: Tensor<Dtype>
+) {
+  return #tfop("AccumulatorApplyGradient",
+    handle,
+    localStep,
+    gradient,
+    dtype$dtype: Dtype.tensorFlowDataType)
+}
+
+/// Returns the number of gradients aggregated in the given accumulators.
+///
+/// - Parameter handle: The handle to an accumulator.
+///
+/// - Output num_accumulated: The number of gradients aggregated in the given accumulator.
+@inlinable @inline(__always)
+public static func accumulatorNumAccumulated(
+  handle: StringTensor
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("AccumulatorNumAccumulated",
+    handle)
+  return Tensor(handle: ret)
+}
+
+/// Updates the accumulator with a new value for global_step.
+///
+/// Logs warning if the accumulator's value is already higher than
+/// new_global_step.
+///
+/// - Parameters:
+///   - handle: The handle to an accumulator.
+///   - new_global_step: The new global_step value to set.
+@inlinable @inline(__always)
+public static func accumulatorSetGlobalStep(
+  handle: StringTensor,
+  newGlobalStep: Tensor<Int64>
+) {
+  return #tfop("AccumulatorSetGlobalStep",
+    handle,
+    newGlobalStep)
+}
+
+/// Extracts the average gradient in the given ConditionalAccumulator.
+///
+/// The op blocks until sufficient (i.e., more than num_required)
+/// gradients have been accumulated.  If the accumulator has already
+/// aggregated more than num_required gradients, it returns the average of
+/// the accumulated gradients.  Also automatically increments the recorded
+/// global_step in the accumulator by 1, and resets the aggregate to 0.
+///
+/// - Parameters:
+///   - handle: The handle to an accumulator.
+///   - num_required: Number of gradients required before we return an aggregate.
+///
+/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
+///   of the accumulator.
+///
+/// - Output average: The average of the accumulated gradients.
+@inlinable @inline(__always)
+public static func accumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
+  handle: StringTensor,
+  numRequired: Tensor<Int32>
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("AccumulatorTakeGradient",
+    handle,
+    numRequired,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Computes acos of x element-wise.
 @inlinable @inline(__always)
 public static func acos<T: Numeric & TensorFlowScalar>(
@@ -1534,6 +1618,41 @@ public static func argMin<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   return Tensor(handle: ret)
 }
 
+/// Converts each entry in the given tensor to strings.  Supports many numeric
+///
+/// types and boolean.
+///
+/// - Attrs:
+///   - precision: The post-decimal precision to use for floating point numbers.
+///     Only used if precision > -1.
+///   - scientific: Use scientific notation for floating point numbers.
+///   - shortest: Use shortest representation (either scientific or standard) for
+///     floating point numbers.
+///   - width: Pad pre-decimal numbers to this width.
+///     Applies to both floating point and integer numbers.
+///     Only used if width > -1.
+///   - fill: The value to pad if width > -1.  If empty, pads with spaces.
+///     Another typical value is '0'.  String cannot be longer than 1 character.
+@inlinable @inline(__always)
+public static func asString<T: TensorFlowScalar>(
+  _ input: Tensor<T>,
+  precision: Int64 = -1,
+  scientific: Bool = false,
+  shortest: Bool = false,
+  width: Int64 = -1,
+  fill: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("AsString",
+    input,
+    T$dtype: T.tensorFlowDataType,
+    precision: precision,
+    scientific: scientific,
+    shortest: shortest,
+    width: width,
+    fill: fill)
+  return Tensor(handle: ret)
+}
+
 /// Computes asin of x element-wise.
 @inlinable @inline(__always)
 public static func asin<T: Numeric & TensorFlowScalar>(
@@ -1870,6 +1989,81 @@ public static func audioSpectrogram(
   return Tensor(handle: ret)
 }
 
+/// Outputs a `Summary` protocol buffer with audio.
+///
+/// The summary has up to `max_outputs` summary values containing audio. The
+/// audio is built from `tensor` which must be 3-D with shape `[batch_size,
+/// frames, channels]` or 2-D with shape `[batch_size, frames]`. The values are
+/// assumed to be in the range of `[-1.0, 1.0]` with a sample rate of `sample_rate`.
+///
+/// The `tag` argument is a scalar `Tensor` of type `string`.  It is used to
+/// build the `tag` of the summary values:
+///
+/// *  If `max_outputs` is 1, the summary value tag is '*tag*/audio'.
+/// *  If `max_outputs` is greater than 1, the summary value tags are
+///    generated sequentially as '*tag*/audio/0', '*tag*/audio/1', etc.
+///
+/// - Parameters:
+///   - tag: Scalar. Used to build the `tag` attribute of the summary values.
+///   - tensor: 2-D of shape `[batch_size, frames]`.
+///
+/// - Attrs:
+///   - sample_rate: The sample rate of the signal in hertz.
+///   - max_outputs: Max number of batch elements to generate audio for.
+///
+/// - Output summary: Scalar. Serialized `Summary` protocol buffer.
+@inlinable @inline(__always)
+public static func audioSummary(
+  tag: StringTensor,
+  _ tensor: Tensor<Float>,
+  sampleRate: Double,
+  maxOutputs: Int64 = 3
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("AudioSummary",
+    tag,
+    tensor,
+    sample_rate: sampleRate,
+    max_outputs: maxOutputs)
+  return Tensor(handle: ret)
+}
+
+/// Outputs a `Summary` protocol buffer with audio.
+///
+/// The summary has up to `max_outputs` summary values containing audio. The
+/// audio is built from `tensor` which must be 3-D with shape `[batch_size,
+/// frames, channels]` or 2-D with shape `[batch_size, frames]`. The values are
+/// assumed to be in the range of `[-1.0, 1.0]` with a sample rate of `sample_rate`.
+///
+/// The `tag` argument is a scalar `Tensor` of type `string`.  It is used to
+/// build the `tag` of the summary values:
+///
+/// *  If `max_outputs` is 1, the summary value tag is '*tag*/audio'.
+/// *  If `max_outputs` is greater than 1, the summary value tags are
+///    generated sequentially as '*tag*/audio/0', '*tag*/audio/1', etc.
+///
+/// - Parameters:
+///   - tag: Scalar. Used to build the `tag` attribute of the summary values.
+///   - tensor: 2-D of shape `[batch_size, frames]`.
+///   - sample_rate: The sample rate of the signal in hertz.
+///
+/// - Attr max_outputs: Max number of batch elements to generate audio for.
+///
+/// - Output summary: Scalar. Serialized `Summary` protocol buffer.
+@inlinable @inline(__always)
+public static func audioSummaryV2(
+  tag: StringTensor,
+  _ tensor: Tensor<Float>,
+  sampleRate: Tensor<Float>,
+  maxOutputs: Int64 = 3
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("AudioSummaryV2",
+    tag,
+    tensor,
+    sampleRate,
+    max_outputs: maxOutputs)
+  return Tensor(handle: ret)
+}
+
 /// Performs average pooling on the input.
 ///
 /// Each entry in `output` is the mean of the corresponding size `ksize`
@@ -2022,6 +2216,89 @@ public static func avgPoolGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func b(
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("B")
+  return Tensor(handle: ret)
+}
+
+/// Closes the given barrier.
+///
+/// This operation signals that no more new elements will be inserted in the
+/// given barrier. Subsequent InsertMany that try to introduce a new key will fail.
+/// Subsequent InsertMany operations that just add missing components to already
+/// existing elements will continue to succeed. Subsequent TakeMany operations will
+/// continue to succeed if sufficient completed elements remain in the barrier.
+/// Subsequent TakeMany operations that would block will fail immediately.
+///
+/// - Parameter handle: The handle to a barrier.
+///
+/// - Attr cancel_pending_enqueues: If true, all pending enqueue requests that are
+///   blocked on the barrier's queue will be canceled. InsertMany will fail, even
+///   if no new key is introduced.
+@inlinable @inline(__always)
+public static func barrierClose(
+  handle: StringTensor,
+  cancelPendingEnqueues: Bool = false
+) {
+  return #tfop("BarrierClose",
+    handle,
+    cancel_pending_enqueues: cancelPendingEnqueues)
+}
+
+/// Computes the number of incomplete elements in the given barrier.
+///
+/// - Parameter handle: The handle to a barrier.
+///
+/// - Output size: The number of incomplete elements (i.e. those with some of their value
+///   components not set) in the barrier.
+@inlinable @inline(__always)
+public static func barrierIncompleteSize(
+  handle: StringTensor
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("BarrierIncompleteSize",
+    handle)
+  return Tensor(handle: ret)
+}
+
+/// For each key, assigns the respective value to the specified component.
+///
+/// If a key is not found in the barrier, this operation will create a new
+/// incomplete element. If a key is found in the barrier, and the element
+/// already has a value at component_index, this operation will fail with
+/// INVALID_ARGUMENT, and leave the barrier in an undefined state.
+///
+/// - Parameters:
+///   - handle: The handle to a barrier.
+///   - keys: A one-dimensional tensor of keys, with length n.
+///   - values: An any-dimensional tensor of values, which are associated with the
+///     respective keys. The 0th dimension must have length n.
+///
+/// - Attr component_index: The component of the barrier elements that is being assigned.
+@inlinable @inline(__always)
+public static func barrierInsertMany<T: TensorFlowScalar>(
+  handle: StringTensor,
+  keys: StringTensor,
+  _ values: Tensor<T>,
+  componentIndex: Int64
+) {
+  return #tfop("BarrierInsertMany",
+    handle,
+    keys,
+    values,
+    T$dtype: T.tensorFlowDataType,
+    component_index: componentIndex)
+}
+
+/// Computes the number of complete elements in the given barrier.
+///
+/// - Parameter handle: The handle to a barrier.
+///
+/// - Output size: The number of complete elements (i.e. those with all of their value
+///   components set) in the barrier.
+@inlinable @inline(__always)
+public static func barrierReadySize(
+  handle: StringTensor
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("BarrierReadySize",
+    handle)
   return Tensor(handle: ret)
 }
 
@@ -2689,6 +2966,46 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
     value,
     bias,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// A Reader that outputs rows from a BigQuery table as tensorflow Examples.
+///
+/// - Attrs:
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///   - project_id: GCP project ID.
+///   - dataset_id: BigQuery Dataset ID.
+///   - table_id: Table to read.
+///   - columns: List of columns to read. Leave empty to read all columns.
+///   - timestamp_millis: Table snapshot timestamp in millis since epoch. Relative
+///     (negative or zero) snapshot times are not allowed. For more details, see
+///     'Table Decorators' in BigQuery docs.
+///   - test_end_point: Do not use. For testing purposes only.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func bigQueryReader(
+  container: String,
+  sharedName: String,
+  projectId: String,
+  datasetId: String,
+  tableId: String,
+  columns: [String],
+  timestampMillis: Int64,
+  testEndPoint: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("BigQueryReader",
+    container: container,
+    shared_name: sharedName,
+    project_id: projectId,
+    dataset_id: datasetId,
+    table_id: tableId,
+    columns: columns,
+    timestamp_millis: timestampMillis,
+    test_end_point: testEndPoint)
   return Tensor(handle: ret)
 }
 
@@ -5011,6 +5328,343 @@ public static func debugNumericSummary<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Decode and Crop a JPEG-encoded image to a uint8 tensor.
+///
+/// The attr `channels` indicates the desired number of color channels for the
+/// decoded image.
+///
+/// Accepted values are:
+///
+/// *   0: Use the number of channels in the JPEG-encoded image.
+/// *   1: output a grayscale image.
+/// *   3: output an RGB image.
+///
+/// If needed, the JPEG-encoded image is transformed to match the requested number
+/// of color channels.
+///
+/// The attr `ratio` allows downscaling the image by an integer factor during
+/// decoding.  Allowed values are: 1, 2, 4, and 8.  This is much faster than
+/// downscaling the image later.
+///
+///
+/// It is equivalent to a combination of decode and crop, but much faster by only
+/// decoding partial jpeg image.
+///
+/// - Parameters:
+///   - contents: 0-D.  The JPEG-encoded image.
+///   - crop_window: 1-D.  The crop window: [crop_y, crop_x, crop_height, crop_width].
+///
+/// - Attrs:
+///   - channels: Number of color channels for the decoded image.
+///   - ratio: Downscaling ratio.
+///   - fancy_upscaling: If true use a slower but nicer upscaling of the
+///     chroma planes (yuv420/422 only).
+///   - try_recover_truncated: If true try to recover an image from truncated input.
+///   - acceptable_fraction: The minimum required fraction of lines before a truncated
+///     input is accepted.
+///   - dct_method: string specifying a hint about the algorithm used for
+///     decompression.  Defaults to "" which maps to a system-specific
+///     default.  Currently valid values are ["INTEGER_FAST",
+///     "INTEGER_ACCURATE"].  The hint may be ignored (e.g., the internal
+///     jpeg library changes to a version that does not have that specific
+///     option.)
+///
+/// - Output image: 3-D with shape `[height, width, channels]`..
+@inlinable @inline(__always)
+public static func decodeAndCropJpeg(
+  contents: StringTensor,
+  cropWindow: Tensor<Int32>,
+  channels: Int64 = 0,
+  ratio: Int64 = 1,
+  fancyUpscaling: Bool = true,
+  tryRecoverTruncated: Bool = false,
+  acceptableFraction: Double = 1,
+  dctMethod: String
+) -> Tensor<UInt8> {
+  let ret: TensorHandle<UInt8> = #tfop("DecodeAndCropJpeg",
+    contents,
+    cropWindow,
+    channels: channels,
+    ratio: ratio,
+    fancy_upscaling: fancyUpscaling,
+    try_recover_truncated: tryRecoverTruncated,
+    acceptable_fraction: acceptableFraction,
+    dct_method: dctMethod)
+  return Tensor(handle: ret)
+}
+
+/// Decode web-safe base64-encoded strings.
+///
+/// Input may or may not have padding at the end. See EncodeBase64 for padding.
+/// Web-safe means that input must use - and _ instead of + and /.
+///
+/// - Parameter input: Base64 strings to decode.
+///
+/// - Output output: Decoded strings.
+@inlinable @inline(__always)
+public static func decodeBase64(
+  _ input: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("DecodeBase64",
+    input)
+  return Tensor(handle: ret)
+}
+
+/// Decode the first frame of a BMP-encoded image to a uint8 tensor.
+///
+/// The attr `channels` indicates the desired number of color channels for the
+/// decoded image.
+///
+/// Accepted values are:
+///
+/// *   0: Use the number of channels in the BMP-encoded image.
+/// *   3: output an RGB image.
+/// *   4: output an RGBA image.
+///
+/// - Parameter contents: 0-D.  The BMP-encoded image.
+///
+/// - Output image: 3-D with shape `[height, width, channels]`. RGB order
+@inlinable @inline(__always)
+public static func decodeBmp(
+  contents: StringTensor,
+  channels: Int64 = 0
+) -> Tensor<UInt8> {
+  let ret: TensorHandle<UInt8> = #tfop("DecodeBmp",
+    contents,
+    channels: channels)
+  return Tensor(handle: ret)
+}
+
+/// Decompress strings.
+///
+/// This op decompresses each element of the `bytes` input `Tensor`, which
+/// is assumed to be compressed using the given `compression_type`.
+///
+/// The `output` is a string `Tensor` of the same shape as `bytes`,
+/// each element containing the decompressed data from the corresponding
+/// element in `bytes`.
+///
+/// - Parameter bytes: A Tensor of string which is compressed.
+///
+/// - Attr compression_type: A scalar containing either (i) the empty string (no
+///   compression), (ii) "ZLIB", or (iii) "GZIP".
+///
+/// - Output output: A Tensor with the same shape as input `bytes`, uncompressed
+///   from bytes.
+@inlinable @inline(__always)
+public static func decodeCompressed(
+  bytes: StringTensor,
+  compressionType: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("DecodeCompressed",
+    bytes,
+    compression_type: compressionType)
+  return Tensor(handle: ret)
+}
+
+/// Decode the first frame of a GIF-encoded image to a uint8 tensor.
+///
+/// GIF with frame or transparency compression are not supported
+/// convert animated GIF from compressed to uncompressed by:
+///
+///     convert $src.gif -coalesce $dst.gif
+///
+/// This op also supports decoding JPEGs and PNGs, though it is cleaner to use
+/// `tf.image.decode_image`.
+///
+/// - Parameter contents: 0-D.  The GIF-encoded image.
+///
+/// - Output image: 4-D with shape `[num_frames, height, width, 3]`. RGB order
+@inlinable @inline(__always)
+public static func decodeGif(
+  contents: StringTensor
+) -> Tensor<UInt8> {
+  let ret: TensorHandle<UInt8> = #tfop("DecodeGif",
+    contents)
+  return Tensor(handle: ret)
+}
+
+/// Convert JSON-encoded Example records to binary protocol buffer strings.
+///
+/// This op translates a tensor containing Example records, encoded using
+/// the [standard JSON
+/// mapping](https://developers.google.com/protocol-buffers/docs/proto3#json),
+/// into a tensor containing the same records encoded as binary protocol
+/// buffers. The resulting tensor can then be fed to any of the other
+/// Example-parsing ops.
+///
+/// - Parameter json_examples: Each string is a JSON object serialized according to the JSON
+///   mapping of the Example proto.
+///
+/// - Output binary_examples: Each string is a binary Example protocol buffer corresponding
+///   to the respective element of `json_examples`.
+@inlinable @inline(__always)
+public static func decodeJSONExample(
+  jsonExamples: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("DecodeJSONExample",
+    jsonExamples)
+  return Tensor(handle: ret)
+}
+
+/// Decode a JPEG-encoded image to a uint8 tensor.
+///
+/// The attr `channels` indicates the desired number of color channels for the
+/// decoded image.
+///
+/// Accepted values are:
+///
+/// *   0: Use the number of channels in the JPEG-encoded image.
+/// *   1: output a grayscale image.
+/// *   3: output an RGB image.
+///
+/// If needed, the JPEG-encoded image is transformed to match the requested number
+/// of color channels.
+///
+/// The attr `ratio` allows downscaling the image by an integer factor during
+/// decoding.  Allowed values are: 1, 2, 4, and 8.  This is much faster than
+/// downscaling the image later.
+///
+///
+/// This op also supports decoding PNGs and non-animated GIFs since the interface is
+/// the same, though it is cleaner to use `tf.image.decode_image`.
+///
+/// - Parameter contents: 0-D.  The JPEG-encoded image.
+///
+/// - Attrs:
+///   - channels: Number of color channels for the decoded image.
+///   - ratio: Downscaling ratio.
+///   - fancy_upscaling: If true use a slower but nicer upscaling of the
+///     chroma planes (yuv420/422 only).
+///   - try_recover_truncated: If true try to recover an image from truncated input.
+///   - acceptable_fraction: The minimum required fraction of lines before a truncated
+///     input is accepted.
+///   - dct_method: string specifying a hint about the algorithm used for
+///     decompression.  Defaults to "" which maps to a system-specific
+///     default.  Currently valid values are ["INTEGER_FAST",
+///     "INTEGER_ACCURATE"].  The hint may be ignored (e.g., the internal
+///     jpeg library changes to a version that does not have that specific
+///     option.)
+///
+/// - Output image: 3-D with shape `[height, width, channels]`..
+@inlinable @inline(__always)
+public static func decodeJpeg(
+  contents: StringTensor,
+  channels: Int64 = 0,
+  ratio: Int64 = 1,
+  fancyUpscaling: Bool = true,
+  tryRecoverTruncated: Bool = false,
+  acceptableFraction: Double = 1,
+  dctMethod: String
+) -> Tensor<UInt8> {
+  let ret: TensorHandle<UInt8> = #tfop("DecodeJpeg",
+    contents,
+    channels: channels,
+    ratio: ratio,
+    fancy_upscaling: fancyUpscaling,
+    try_recover_truncated: tryRecoverTruncated,
+    acceptable_fraction: acceptableFraction,
+    dct_method: dctMethod)
+  return Tensor(handle: ret)
+}
+
+/// Decode a PNG-encoded image to a uint8 or uint16 tensor.
+///
+/// The attr `channels` indicates the desired number of color channels for the
+/// decoded image.
+///
+/// Accepted values are:
+///
+/// *   0: Use the number of channels in the PNG-encoded image.
+/// *   1: output a grayscale image.
+/// *   3: output an RGB image.
+/// *   4: output an RGBA image.
+///
+/// If needed, the PNG-encoded image is transformed to match the requested number
+/// of color channels.
+///
+/// This op also supports decoding JPEGs and non-animated GIFs since the interface
+/// is the same, though it is cleaner to use `tf.image.decode_image`.
+///
+/// - Parameter contents: 0-D.  The PNG-encoded image.
+///
+/// - Attr channels: Number of color channels for the decoded image.
+///
+/// - Output image: 3-D with shape `[height, width, channels]`.
+@inlinable @inline(__always)
+public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
+  contents: StringTensor,
+  channels: Int64 = 0
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("DecodePng",
+    contents,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    channels: channels)
+  return Tensor(handle: ret)
+}
+
+/// Reinterpret the bytes of a string as a vector of numbers.
+///
+/// - Parameter bytes: All the elements must have the same length.
+///
+/// - Attr little_endian: Whether the input `bytes` are in little-endian order.
+///   Ignored for `out_type` values that are stored in a single byte like
+///   `uint8`.
+///
+/// - Output output: A Tensor with one more dimension than the input `bytes`.  The
+///   added dimension will have size equal to the length of the elements
+///   of `bytes` divided by the number of bytes to represent `out_type`.
+@inlinable @inline(__always)
+public static func decodeRaw<OutType: Numeric & TensorFlowScalar>(
+  bytes: StringTensor,
+  littleEndian: Bool = true
+) -> Tensor<OutType> {
+  let ret: TensorHandle<OutType> = #tfop("DecodeRaw",
+    bytes,
+    out_type$dtype: OutType.tensorFlowDataType,
+    little_endian: littleEndian)
+  return Tensor(handle: ret)
+}
+
+/// Decode a 16-bit PCM WAV file to a float tensor.
+///
+/// The -32768 to 32767 signed 16-bit values will be scaled to -1.0 to 1.0 in float.
+///
+/// When desired_channels is set, if the input contains fewer channels than this
+/// then the last channel will be duplicated to give the requested number, else if
+/// the input has more channels than requested then the additional channels will be
+/// ignored.
+///
+/// If desired_samples is set, then the audio will be cropped or padded with zeroes
+/// to the requested length.
+///
+/// The first output contains a Tensor with the content of the audio samples. The
+/// lowest dimension will be the number of channels, and the second will be the
+/// number of samples. For example, a ten-sample-long stereo WAV file should give an
+/// output shape of [10, 2].
+///
+/// - Parameter contents: The WAV-encoded audio, usually from a file.
+///
+/// - Attrs:
+///   - desired_channels: Number of sample channels wanted.
+///   - desired_samples: Length of audio requested.
+///
+/// - Outputs:
+///   - audio: 2-D with shape `[length, channels]`.
+///   - sample_rate: Scalar holding the sample rate found in the WAV header.
+@inlinable @inline(__always)
+public static func decodeWav(
+  contents: StringTensor,
+  desiredChannels: Int64 = -1,
+  desiredSamples: Int64 = -1
+) -> (audio: Tensor<Float>, sampleRate: Tensor<Int32>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("DecodeWav",
+    contents,
+    desired_channels: desiredChannels,
+    desired_samples: desiredSamples)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
 /// Makes a copy of `x`.
 ///
 /// - Parameter x: The source tensor of type `T`.
@@ -5025,6 +5679,17 @@ public static func deepCopy<T: TensorFlowScalar>(
     x,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Delete the tensor specified by its handle in the session.
+///
+/// - Parameter handle: The handle for a tensor stored in the session state.
+@inlinable @inline(__always)
+public static func deleteSessionTensor(
+  handle: StringTensor
+) {
+  return #tfop("DeleteSessionTensor",
+    handle)
 }
 
 /// Applies set operation along last dimension of 2 `Tensor` inputs.
@@ -5483,6 +6148,64 @@ public static func dequantize<T: TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     mode: mode.cName)
   return Tensor(handle: ret)
+}
+
+/// Deserialize and concatenate `SparseTensors` from a serialized minibatch.
+///
+/// The input `serialized_sparse` must be a string matrix of shape `[N x 3]` where
+/// `N` is the minibatch size and the rows correspond to packed outputs of
+/// `SerializeSparse`.  The ranks of the original `SparseTensor` objects
+/// must all match.  When the final `SparseTensor` is created, it has rank one
+/// higher than the ranks of the incoming `SparseTensor` objects
+/// (they have been concatenated along a new row dimension).
+///
+/// The output `SparseTensor` object's shape values for all dimensions but the
+/// first are the max across the input `SparseTensor` objects' shape values
+/// for the corresponding dimensions.  Its first shape value is `N`, the minibatch
+/// size.
+///
+/// The input `SparseTensor` objects' indices are assumed ordered in
+/// standard lexicographic order.  If this is not the case, after this
+/// step run `SparseReorder` to restore index ordering.
+///
+/// For example, if the serialized input is a `[2 x 3]` matrix representing two
+/// original `SparseTensor` objects:
+///
+///     index = [ 0]
+///             [10]
+///             [20]
+///     values = [1, 2, 3]
+///     shape = [50]
+///
+/// and
+///
+///     index = [ 2]
+///             [10]
+///     values = [4, 5]
+///     shape = [30]
+///
+/// then the final deserialized `SparseTensor` will be:
+///
+///     index = [0  0]
+///             [0 10]
+///             [0 20]
+///             [1  2]
+///             [1 10]
+///     values = [1, 2, 3, 4, 5]
+///     shape = [2 50]
+///
+/// - Parameter serialized_sparse: 2-D, The `N` serialized `SparseTensor` objects.
+///   Must have 3 columns.
+///
+/// - Attr dtype: The `dtype` of the serialized `SparseTensor` objects.
+@inlinable @inline(__always)
+public static func deserializeManySparse<Dtype: TensorFlowScalar>(
+  serializedSparse: StringTensor
+) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("DeserializeManySparse",
+    serializedSparse,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -6032,6 +6755,216 @@ public static func empty<Dtype: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Encode strings into web-safe base64 format.
+///
+/// Refer to the following article for more information on base64 format:
+/// en.wikipedia.org/wiki/Base64. Base64 strings may have padding with '=' at the
+/// end so that the encoded has length multiple of 4. See Padding section of the
+/// link above.
+///
+/// Web-safe means that the encoder uses - and _ instead of + and /.
+///
+/// - Parameter input: Strings to be encoded.
+///
+/// - Attr pad: Bool whether padding is applied at the ends.
+///
+/// - Output output: Input strings encoded in base64.
+@inlinable @inline(__always)
+public static func encodeBase64(
+  _ input: StringTensor,
+  pad: Bool = false
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodeBase64",
+    input,
+    pad: pad)
+  return Tensor(handle: ret)
+}
+
+/// JPEG-encode an image.
+///
+/// `image` is a 3-D uint8 Tensor of shape `[height, width, channels]`.
+///
+/// The attr `format` can be used to override the color format of the encoded
+/// output.  Values can be:
+///
+/// *   `''`: Use a default format based on the number of channels in the image.
+/// *   `grayscale`: Output a grayscale JPEG image.  The `channels` dimension
+///     of `image` must be 1.
+/// *   `rgb`: Output an RGB JPEG image. The `channels` dimension
+///     of `image` must be 3.
+///
+/// If `format` is not specified or is the empty string, a default format is picked
+/// in function of the number of channels in `image`:
+///
+/// *   1: Output a grayscale image.
+/// *   3: Output an RGB image.
+///
+/// - Parameter image: 3-D with shape `[height, width, channels]`.
+///
+/// - Attrs:
+///   - format: Per pixel image format.
+///   - quality: Quality of the compression from 0 to 100 (higher is better and slower).
+///   - progressive: If True, create a JPEG that loads progressively (coarse to fine).
+///   - optimize_size: If True, spend CPU/RAM to reduce size with no quality change.
+///   - chroma_downsampling: See http://en.wikipedia.org/wiki/Chroma_subsampling.
+///   - density_unit: Unit used to specify `x_density` and `y_density`:
+///     pixels per inch (`'in'`) or centimeter (`'cm'`).
+///   - x_density: Horizontal pixels per density unit.
+///   - y_density: Vertical pixels per density unit.
+///   - xmp_metadata: If not empty, embed this XMP metadata in the image header.
+///
+/// - Output contents: 0-D. JPEG-encoded image.
+@inlinable @inline(__always)
+public static func encodeJpeg(
+  image: Tensor<UInt8>,
+  format: Format,
+  quality: Int64 = 95,
+  progressive: Bool = false,
+  optimizeSize: Bool = false,
+  chromaDownsampling: Bool = true,
+  densityUnit: DensityUnit = .in_,
+  xDensity: Int64 = 300,
+  yDensity: Int64 = 300,
+  xmpMetadata: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodeJpeg",
+    image,
+    format: format.cName,
+    quality: quality,
+    progressive: progressive,
+    optimize_size: optimizeSize,
+    chroma_downsampling: chromaDownsampling,
+    density_unit: densityUnit.cName,
+    x_density: xDensity,
+    y_density: yDensity,
+    xmp_metadata: xmpMetadata)
+  return Tensor(handle: ret)
+}
+
+/// PNG-encode an image.
+///
+/// `image` is a 3-D uint8 or uint16 Tensor of shape `[height, width, channels]`
+/// where `channels` is:
+///
+/// *   1: for grayscale.
+/// *   2: for grayscale + alpha.
+/// *   3: for RGB.
+/// *   4: for RGBA.
+///
+/// The ZLIB compression level, `compression`, can be -1 for the PNG-encoder
+/// default or a value from 0 to 9.  9 is the highest compression level, generating
+/// the smallest output, but is slower.
+///
+/// - Parameter image: 3-D with shape `[height, width, channels]`.
+///
+/// - Attr compression: Compression level.
+///
+/// - Output contents: 0-D. PNG-encoded image.
+@inlinable @inline(__always)
+public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
+  image: Tensor<T>,
+  compression: Int64 = -1
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodePng",
+    image,
+    T$dtype: T.tensorFlowDataType,
+    compression: compression)
+  return Tensor(handle: ret)
+}
+
+/// The op serializes protobuf messages provided in the input tensors.
+///
+/// The types of the tensors in `values` must match the schema for the
+/// fields specified in `field_names`. All the tensors in `values` must
+/// have a common shape prefix, *batch_shape*.
+///
+/// The `sizes` tensor specifies repeat counts for each field.  The repeat
+/// count (last dimension) of a each tensor in `values` must be greater
+/// than or equal to corresponding repeat count in `sizes`.
+///
+/// A `message_type` name must be provided to give context for the field
+/// names. The actual message descriptor can be looked up either in the
+/// linked-in descriptor pool or a filename provided by the caller using
+/// the `descriptor_source` attribute.
+///
+/// The `descriptor_source` attribute selects a source of protocol
+/// descriptors to consult when looking up `message_type`. This may be a
+/// filename containing a serialized `FileDescriptorSet` message,
+/// or the special value `local://`, in which case only descriptors linked
+/// into the code will be searched; the filename can be on any filesystem
+/// accessible to TensorFlow.
+///
+/// You can build a `descriptor_source` file using the `--descriptor_set_out`
+/// and `--include_imports` options to the protocol compiler `protoc`.
+///
+/// The `local://` database only covers descriptors linked into the
+/// code via C++ libraries, not Python imports. You can link in a proto descriptor
+/// by creating a cc_library target with alwayslink=1.
+///
+/// There are a few special cases in the value mapping:
+///
+/// Submessage and group fields must be pre-serialized as TensorFlow strings.
+///
+/// TensorFlow lacks support for unsigned int64s, so they must be
+/// represented as `tf.int64` with the same twos-complement bit pattern
+/// (the obvious way).
+///
+/// Unsigned int32 values can be represented exactly with `tf.int64`, or
+/// with sign wrapping if the input is of type `tf.int32`.
+///
+/// - Parameters:
+///   - sizes: Tensor of int32 with shape `[batch_shape, len(field_names)]`.
+///   - values: List of tensors containing values for the corresponding field.
+///
+/// - Attrs:
+///   - field_names: List of strings containing proto field names.
+///   - message_type: Name of the proto message type to decode.
+///   - Tinput_types: The input types.
+///
+/// - Output bytes: Tensor of serialized protos with shape `batch_shape`.
+@inlinable @inline(__always)
+public static func encodeProto<TinputTypes: TensorFlowScalar>(
+  sizes: Tensor<Int32>,
+  _ values: [Tensor<TinputTypes>],
+  fieldNames: [String],
+  messageType: String,
+  descriptorSource: String = "local://"
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodeProto",
+    sizes,
+    values,
+    field_names: fieldNames,
+    message_type: messageType,
+    descriptor_source: descriptorSource)
+  return Tensor(handle: ret)
+}
+
+/// Encode audio data using the WAV file format.
+///
+/// This operation will generate a string suitable to be saved out to create a .wav
+/// audio file. It will be encoded in the 16-bit PCM format. It takes in float
+/// values in the range -1.0f to 1.0f, and any outside that value will be clamped to
+/// that range.
+///
+/// `audio` is a 2-D float Tensor of shape `[length, channels]`.
+/// `sample_rate` is a scalar Tensor holding the rate to use (e.g. 44100).
+///
+/// - Parameters:
+///   - audio: 2-D with shape `[length, channels]`.
+///   - sample_rate: Scalar containing the sample frequency.
+///
+/// - Output contents: 0-D. WAV-encoded file contents.
+@inlinable @inline(__always)
+public static func encodeWav(
+  audio: Tensor<Float>,
+  sampleRate: Tensor<Int32>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodeWav",
+    audio,
+    sampleRate)
+  return Tensor(handle: ret)
+}
+
 /// Creates or finds a child frame, and makes `data` available to the child frame.
 ///
 /// This op is used together with `Exit` to create loops in the graph.
@@ -6303,6 +7236,26 @@ public static func extractImagePatches<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Extract the shape information of a JPEG-encoded image.
+///
+/// This op only parses the image header, so it is much faster than DecodeJpeg.
+///
+/// - Parameter contents: 0-D. The JPEG-encoded image.
+///
+/// - Attr output_type: (Optional) The output type of the operation (int32 or int64).
+///   Defaults to int32.
+///
+/// - Output image_shape: 1-D. The image shape with format [height, width, channels].
+@inlinable @inline(__always)
+public static func extractJpegShape<OutputType: BinaryInteger & TensorFlowScalar>(
+  contents: StringTensor
+) -> Tensor<OutputType> {
+  let ret: TensorHandle<OutputType> = #tfop("ExtractJpegShape",
+    contents,
+    output_type$dtype: OutputType.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Fast Fourier transform.
 ///
 /// Computes the 1-dimensional discrete Fourier transform over the inner-most
@@ -6369,6 +7322,14 @@ public static func fFT3D<Tcomplex: TensorFlowScalar>(
   let ret: TensorHandle<Tcomplex> = #tfop("FFT3D",
     input,
     Tcomplex$dtype: Tcomplex.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Output a fact about factorials.
+@inlinable @inline(__always)
+public static func fact(
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("Fact")
   return Tensor(handle: ret)
 }
 
@@ -6610,6 +7571,39 @@ public static func fiveFloatOutputs(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
 
+/// A Reader that outputs fixed-length records from a file.
+///
+/// - Attrs:
+///   - header_bytes: Number of bytes in the header, defaults to 0.
+///   - record_bytes: Number of bytes in the record.
+///   - footer_bytes: Number of bytes in the footer, defaults to 0.
+///   - hop_bytes: Number of bytes to hop before each read. Default of 0 means using
+///     record_bytes.
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func fixedLengthRecordReader(
+  headerBytes: Int64 = 0,
+  recordBytes: Int64,
+  footerBytes: Int64 = 0,
+  hopBytes: Int64 = 0,
+  container: String,
+  sharedName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("FixedLengthRecordReader",
+    header_bytes: headerBytes,
+    record_bytes: recordBytes,
+    footer_bytes: footerBytes,
+    hop_bytes: hopBytes,
+    container: container,
+    shared_name: sharedName)
+  return Tensor(handle: ret)
+}
+
 /// Generates labels for candidate sampling with a learned unigram distribution.
 ///
 /// A unigram sampler could use a fixed unigram distribution read from a
@@ -6723,6 +7717,13 @@ public static func floatOutput(
   return Tensor(handle: ret)
 }
 
+@inlinable @inline(__always)
+public static func floatOutputStringOutput(
+) -> (a: Tensor<Float>, b: StringTensor) {
+  let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("FloatOutputStringOutput")
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
 /// Returns element-wise largest integer not greater than x.
 @inlinable @inline(__always)
 public static func floor<T: FloatingPoint & TensorFlowScalar>(
@@ -6776,6 +7777,32 @@ public static func foo1(
   c: Tensor<Int32>
 ) -> (d: Tensor<Float>, e: Tensor<Int32>) {
   let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo1",
+    a,
+    b,
+    c)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+@inlinable @inline(__always)
+public static func foo2(
+  _ a: Tensor<Float>,
+  _ b: StringTensor,
+  c: StringTensor
+) -> (d: Tensor<Float>, e: Tensor<Int32>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo2",
+    a,
+    b,
+    c)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+@inlinable @inline(__always)
+public static func foo3(
+  _ a: Tensor<Float>,
+  _ b: StringTensor,
+  c: Tensor<Float>
+) -> (d: Tensor<Float>, e: Tensor<Int32>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo3",
     a,
     b,
     c)
@@ -7760,6 +8787,148 @@ public static func gcsConfigureBlockCache(
 }
 
 @inlinable @inline(__always)
+public static func gcsConfigureCredentials(
+  json: StringTensor
+) {
+  return #tfop("GcsConfigureCredentials",
+    json)
+}
+
+/// Generates serialized partition messages suitable for batch reads.
+///
+/// This op should not be used directly by clients. Instead, the
+/// bigquery_reader_ops.py file defines a clean interface to the reader.
+///
+/// - Attrs:
+///   - project_id: GCP project ID.
+///   - dataset_id: BigQuery Dataset ID.
+///   - table_id: Table to read.
+///   - columns: List of columns to read. Leave empty to read all columns.
+///   - timestamp_millis: Table snapshot timestamp in millis since epoch. Relative
+///     (negative or zero) snapshot times are not allowed. For more details, see
+///     'Table Decorators' in BigQuery docs.
+///   - num_partitions: Number of partitions to split the table into.
+///   - test_end_point: Do not use. For testing purposes only.
+///
+/// - Output partitions: Serialized table partitions.
+@inlinable @inline(__always)
+public static func generateBigQueryReaderPartitions(
+  projectId: String,
+  datasetId: String,
+  tableId: String,
+  columns: [String],
+  timestampMillis: Int64,
+  numPartitions: Int64,
+  testEndPoint: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("GenerateBigQueryReaderPartitions",
+    project_id: projectId,
+    dataset_id: datasetId,
+    table_id: tableId,
+    columns: columns,
+    timestamp_millis: timestampMillis,
+    num_partitions: numPartitions,
+    test_end_point: testEndPoint)
+  return Tensor(handle: ret)
+}
+
+/// Given a path to new and old vocabulary files, returns a remapping Tensor of
+///
+/// length `num_new_vocab`, where `remapping[i]` contains the row number in the old
+/// vocabulary that corresponds to row `i` in the new vocabulary (starting at line
+/// `new_vocab_offset` and up to `num_new_vocab` entities), or `-1` if entry `i`
+/// in the new vocabulary is not in the old vocabulary.  The old vocabulary is
+/// constrained to the first `old_vocab_size` entries if `old_vocab_size` is not the
+/// default value of -1.
+///
+/// `num_vocab_offset` enables
+/// use in the partitioned variable case, and should generally be set through
+/// examining partitioning info.  The format of the files should be a text file,
+/// with each line containing a single entity within the vocabulary.
+///
+/// For example, with `new_vocab_file` a text file containing each of the following
+/// elements on a single line: `[f0, f1, f2, f3]`, old_vocab_file = [f1, f0, f3],
+/// `num_new_vocab = 3, new_vocab_offset = 1`, the returned remapping would be
+/// `[0, -1, 2]`.
+///
+/// The op also returns a count of how many entries in the new vocabulary
+/// were present in the old vocabulary, which is used to calculate the number of
+/// values to initialize in a weight matrix remapping
+///
+/// This functionality can be used to remap both row vocabularies (typically,
+/// features) and column vocabularies (typically, classes) from TensorFlow
+/// checkpoints.  Note that the partitioning logic relies on contiguous vocabularies
+/// corresponding to div-partitioned variables.  Moreover, the underlying remapping
+/// uses an IndexTable (as opposed to an inexact CuckooTable), so client code should
+/// use the corresponding index_table_from_file() as the FeatureColumn framework
+/// does (as opposed to tf.feature_to_id(), which uses a CuckooTable).
+///
+/// - Parameters:
+///   - new_vocab_file: Path to the new vocab file.
+///   - old_vocab_file: Path to the old vocab file.
+///
+/// - Attrs:
+///   - new_vocab_offset: How many entries into the new vocab file to start reading.
+///   - num_new_vocab: Number of entries in the new vocab file to remap.
+///   - old_vocab_size: Number of entries in the old vocab file to consider.  If -1,
+///     use the entire old vocabulary.
+///
+/// - Outputs:
+///   - remapping: A Tensor of length num_new_vocab where the element at index i
+///     is equal to the old ID that maps to the new ID i.  This element is -1 for any
+///     new ID that is not found in the old vocabulary.
+///   - num_present: Number of new vocab entries found in old vocab.
+@inlinable @inline(__always)
+public static func generateVocabRemapping(
+  newVocabFile: StringTensor,
+  oldVocabFile: StringTensor,
+  newVocabOffset: Int64,
+  numNewVocab: Int64,
+  oldVocabSize: Int64 = -1
+) -> (remapping: Tensor<Int64>, numPresent: Tensor<Int32>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Int32>) = #tfop("GenerateVocabRemapping",
+    newVocabFile,
+    oldVocabFile,
+    new_vocab_offset: newVocabOffset,
+    num_new_vocab: numNewVocab,
+    old_vocab_size: oldVocabSize)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Store the input tensor in the state of the current session.
+///
+/// - Parameter value: The tensor to be stored.
+///
+/// - Output handle: The handle for the tensor stored in the session state, represented
+///   as a string.
+@inlinable @inline(__always)
+public static func getSessionHandle<T: TensorFlowScalar>(
+  value: Tensor<T>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("GetSessionHandle",
+    value,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Get the value of the tensor specified by its handle.
+///
+/// - Parameter handle: The handle for a tensor stored in the session state.
+///
+/// - Attr dtype: The type of the output value.
+///
+/// - Output value: The tensor for the given handle.
+@inlinable @inline(__always)
+public static func getSessionTensor<Dtype: TensorFlowScalar>(
+  handle: StringTensor
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("GetSessionTensor",
+    handle,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
 public static func graphDefVersion(
 ) -> Tensor<Int32> {
   let ret: TensorHandle<Int32> = #tfop("GraphDefVersion")
@@ -7837,6 +9006,40 @@ public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Creates a non-initialized hash table.
+///
+/// This op creates a hash table, specifying the type of its keys and values.
+/// Before using the table you will have to initialize it.  After initialization the
+/// table will be immutable.
+///
+/// - Attrs:
+///   - container: If non-empty, this table is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this table is shared under the given name across
+///     multiple sessions.
+///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
+///     using the node name.
+///   - key_dtype: Type of the table keys.
+///   - value_dtype: Type of the table values.
+///
+/// - Output table_handle: Handle to a table.
+@inlinable @inline(__always)
+public static func hashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
+  container: String,
+  sharedName: String,
+  useNodeNameSharing: Bool = false,
+  typeKeyDtype: KeyDtype.Type,
+  typeValueDtype: ValueDtype.Type
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("HashTable",
+    key_dtype$dtype: KeyDtype.tensorFlowDataType,
+    value_dtype$dtype: ValueDtype.tensorFlowDataType,
+    container: container,
+    shared_name: sharedName,
+    use_node_name_sharing: useNodeNameSharing)
+  return Tensor(handle: ret)
+}
+
 /// Return histogram of values.
 ///
 /// Given the tensor `values`, this operation returns a rank 1 histogram counting
@@ -7875,6 +9078,31 @@ public static func histogramFixedWidth<T: Numeric & TensorFlowScalar, Dtype: Bin
     nbins,
     T$dtype: T.tensorFlowDataType,
     dtype$dtype: Dtype.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Outputs a `Summary` protocol buffer with a histogram.
+///
+/// The generated
+/// [`Summary`](https://www.tensorflow.org/code/tensorflow/core/framework/summary.proto)
+/// has one summary value containing a histogram for `values`.
+///
+/// This op reports an `InvalidArgument` error if any value is not finite.
+///
+/// - Parameters:
+///   - tag: Scalar.  Tag to use for the `Summary.Value`.
+///   - values: Any shape. Values to use to build the histogram.
+///
+/// - Output summary: Scalar. Serialized `Summary` protocol buffer.
+@inlinable @inline(__always)
+public static func histogramSummary<T: Numeric & TensorFlowScalar>(
+  tag: StringTensor,
+  _ values: Tensor<T>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("HistogramSummary",
+    tag,
+    values,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -7955,6 +9183,29 @@ public static func identity<T: TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Identity",
     input,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// A Reader that outputs the queued work as both the key and value.
+///
+/// To use, enqueue strings in a Queue.  ReaderRead will take the front
+/// work string and output (work, work).
+///
+/// - Attrs:
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func identityReader(
+  container: String,
+  sharedName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("IdentityReader",
+    container: container,
+    shared_name: sharedName)
   return Tensor(handle: ret)
 }
 
@@ -8119,6 +9370,67 @@ public static func inTopKV2<T: BinaryInteger & TensorFlowScalar>(
     k,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Table initializer that takes two tensors for keys and values respectively.
+///
+/// - Parameters:
+///   - table_handle: Handle to a table which will be initialized.
+///   - keys: Keys of type Tkey.
+///   - values: Values of type Tval.
+@inlinable @inline(__always)
+public static func initializeTable<Tkey: TensorFlowScalar, Tval: TensorFlowScalar>(
+  tableHandle: StringTensor,
+  keys: Tensor<Tkey>,
+  _ values: Tensor<Tval>
+) {
+  return #tfop("InitializeTable",
+    tableHandle,
+    keys,
+    values,
+    Tkey$dtype: Tkey.tensorFlowDataType,
+    Tval$dtype: Tval.tensorFlowDataType)
+}
+
+/// Initializes a table from a text file.
+///
+/// It inserts one key-value pair into the table for each line of the file.
+/// The key and value is extracted from the whole line content, elements from the
+/// split line based on `delimiter` or the line number (starting from zero).
+/// Where to extract the key and value from a line is specified by `key_index` and
+/// `value_index`.
+///
+/// - A value of -1 means use the line number(starting from zero), expects `int64`.
+/// - A value of -2 means use the whole line content, expects `string`.
+/// - A value >= 0 means use the index (starting at zero) of the split line based
+///   on `delimiter`.
+///
+/// - Parameters:
+///   - table_handle: Handle to a table which will be initialized.
+///   - filename: Filename of a vocabulary text file.
+///
+/// - Attrs:
+///   - key_index: Column index in a line to get the table `key` values from.
+///   - value_index: Column index that represents information of a line to get the table
+///     `value` values from.
+///   - vocab_size: Number of elements of the file, use -1 if unknown.
+///   - delimiter: Delimiter to separate fields in a line.
+@inlinable @inline(__always)
+public static func initializeTableFromTextFile(
+  tableHandle: StringTensor,
+  filename: StringTensor,
+  keyIndex: Int64,
+  valueIndex: Int64,
+  vocabSize: Int64 = -1,
+  delimiter: String = "	"
+) {
+  return #tfop("InitializeTableFromTextFile",
+    tableHandle,
+    filename,
+    key_index: keyIndex,
+    value_index: valueIndex,
+    vocab_size: vocabSize,
+    delimiter: delimiter)
 }
 
 ///     Adds v into specified rows of x.
@@ -8386,6 +9698,22 @@ public static func isVariableInitialized<Dtype: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+@inlinable @inline(__always)
+public static func kernelLabel(
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("KernelLabel")
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func kernelLabelRequired(
+  _ input: Tensor<Int32>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("KernelLabelRequired",
+    input)
+  return Tensor(handle: ret)
+}
+
 /// L2 Loss.
 ///
 /// Computes half the L2 norm of a tensor without the `sqrt`:
@@ -8402,6 +9730,26 @@ public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("L2Loss",
     t,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// A Reader that outputs the records from a LMDB file.
+///
+/// - Attrs:
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func lMDBReader(
+  container: String,
+  sharedName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("LMDBReader",
+    container: container,
+    shared_name: sharedName)
   return Tensor(handle: ret)
 }
 
@@ -8835,6 +10183,90 @@ public static func listInput<T: TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType)
 }
 
+/// Loads a 2-D (matrix) `Tensor` with name `old_tensor_name` from the checkpoint
+///
+/// at `ckpt_path` and potentially reorders its rows and columns using the
+/// specified remappings.
+///
+/// Most users should use one of the wrapper initializers (such as
+/// `tf.contrib.framework.load_and_remap_matrix_initializer`) instead of this
+/// function directly.
+///
+/// The remappings are 1-D tensors with the following properties:
+///
+/// * `row_remapping` must have exactly `num_rows` entries. Row `i` of the output
+///   matrix will be initialized from the row corresponding to index
+///   `row_remapping[i]` in the old `Tensor` from the checkpoint.
+/// * `col_remapping` must have either 0 entries (indicating that no column
+///   reordering is needed) or `num_cols` entries. If specified, column `j` of the
+///   output matrix will be initialized from the column corresponding to index
+///   `col_remapping[j]` in the old `Tensor` from the checkpoint.
+/// * A value of -1 in either of the remappings signifies a "missing" entry. In that
+///   case, values from the `initializing_values` tensor will be used to fill that
+///   missing row or column. If `row_remapping` has `r` missing entries and
+///   `col_remapping` has `c` missing entries, then the following condition must be
+///   true:
+///
+/// `(r * num_cols) + (c * num_rows) - (r * c) == len(initializing_values)`
+///
+/// The remapping tensors can be generated using the GenerateVocabRemapping op.
+///
+/// As an example, with row_remapping = [1, 0, -1], col_remapping = [0, 2, -1],
+/// initializing_values = [0.5, -0.5, 0.25, -0.25, 42], and w(i, j) representing
+/// the value from row i, column j of the old tensor in the checkpoint, the output
+/// matrix will look like the following:
+///
+/// [[w(1, 0),  w(1, 2),  0.5],
+///  [w(0, 0),  w(0, 2), -0.5],
+///  [0.25,    -0.25,      42]]
+///
+/// - Parameters:
+///   - ckpt_path: Path to the TensorFlow checkpoint (version 2, `TensorBundle`) from
+///     which the old matrix `Tensor` will be loaded.
+///   - old_tensor_name: Name of the 2-D `Tensor` to load from checkpoint.
+///   - row_remapping: An int `Tensor` of row remappings (generally created by
+///     `generate_vocab_remapping`).  Even if no row remapping is needed, this must
+///     still be an index-valued Tensor (e.g. [0, 1, 2, ...]), or a shifted
+///     index-valued `Tensor` (e.g. [8, 9, 10, ...], for partitioned `Variables`).
+///   - col_remapping: An int `Tensor` of column remappings (generally created by
+///     `generate_vocab_remapping`).  May be a size-0 `Tensor` if only row remapping
+///     is to be done (e.g. column ordering is the same).
+///   - initializing_values: A float `Tensor` containing  values to fill in for cells
+///     in the output matrix that are not loaded from the checkpoint. Length must be
+///     exactly the same as the number of missing / new cells.
+///
+/// - Attrs:
+///   - num_rows: Number of rows (length of the 1st dimension) in the output matrix.
+///   - num_cols: Number of columns (length of the 2nd dimension) in the output matrix.
+///   - max_rows_in_memory: The maximum number of rows to load from the checkpoint at
+///     once. If less than or equal to 0, the entire matrix will be loaded into
+///     memory. Setting this arg trades increased disk reads for lower memory usage.
+///
+/// - Output output_matrix: Output matrix containing existing values loaded from the
+///   checkpoint, and with any missing values filled in from initializing_values.
+@inlinable @inline(__always)
+public static func loadAndRemapMatrix(
+  ckptPath: StringTensor,
+  oldTensorName: StringTensor,
+  rowRemapping: Tensor<Int64>,
+  colRemapping: Tensor<Int64>,
+  initializingValues: Tensor<Float>,
+  numRows: Int64,
+  numCols: Int64,
+  maxRowsInMemory: Int64 = -1
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("LoadAndRemapMatrix",
+    ckptPath,
+    oldTensorName,
+    rowRemapping,
+    colRemapping,
+    initializingValues,
+    num_rows: numRows,
+    num_cols: numCols,
+    max_rows_in_memory: maxRowsInMemory)
+  return Tensor(handle: ret)
+}
+
 /// Computes natural logarithm of x element-wise.
 ///
 /// I.e., \\(y = \log_e x\\).
@@ -9006,6 +10438,113 @@ public static func logicalOr(
   return Tensor(handle: ret)
 }
 
+/// Outputs all keys and values in the table.
+///
+/// - Parameter table_handle: Handle to the table.
+///
+/// - Outputs:
+///   - keys: Vector of all keys present in the table.
+///   - values: Tensor of all values in the table. Indexed in parallel with `keys`.
+@inlinable @inline(__always)
+public static func lookupTableExport<Tkeys: TensorFlowScalar, Tvalues: TensorFlowScalar>(
+  tableHandle: StringTensor
+) -> (keys: Tensor<Tkeys>, values: Tensor<Tvalues>) {
+  let ret: (TensorHandle<Tkeys>, TensorHandle<Tvalues>) = #tfop("LookupTableExport",
+    tableHandle,
+    Tkeys$dtype: Tkeys.tensorFlowDataType,
+    Tvalues$dtype: Tvalues.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Looks up keys in a table, outputs the corresponding values.
+///
+/// The tensor `keys` must of the same type as the keys of the table.
+/// The output `values` is of the type of the table values.
+///
+/// The scalar `default_value` is the value output for keys not present in the
+/// table. It must also be of the same type as the table values.
+///
+/// - Parameters:
+///   - table_handle: Handle to the table.
+///   - keys: Any shape.  Keys to look up.
+///
+/// - Output values: Same shape as `keys`.  Values found in the table, or `default_values`
+///   for missing keys.
+@inlinable @inline(__always)
+public static func lookupTableFind<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
+  tableHandle: StringTensor,
+  keys: Tensor<Tin>,
+  defaultValue: Tensor<Tout>
+) -> Tensor<Tout> {
+  let ret: TensorHandle<Tout> = #tfop("LookupTableFind",
+    tableHandle,
+    keys,
+    defaultValue,
+    Tin$dtype: Tin.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Replaces the contents of the table with the specified keys and values.
+///
+/// The tensor `keys` must be of the same type as the keys of the table.
+/// The tensor `values` must be of the type of the table values.
+///
+/// - Parameters:
+///   - table_handle: Handle to the table.
+///   - keys: Any shape.  Keys to look up.
+///   - values: Values to associate with keys.
+@inlinable @inline(__always)
+public static func lookupTableImport<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
+  tableHandle: StringTensor,
+  keys: Tensor<Tin>,
+  _ values: Tensor<Tout>
+) {
+  return #tfop("LookupTableImport",
+    tableHandle,
+    keys,
+    values,
+    Tin$dtype: Tin.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
+}
+
+/// Updates the table to associates keys with values.
+///
+/// The tensor `keys` must be of the same type as the keys of the table.
+/// The tensor `values` must be of the type of the table values.
+///
+/// - Parameters:
+///   - table_handle: Handle to the table.
+///   - keys: Any shape.  Keys to look up.
+///   - values: Values to associate with keys.
+@inlinable @inline(__always)
+public static func lookupTableInsert<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
+  tableHandle: StringTensor,
+  keys: Tensor<Tin>,
+  _ values: Tensor<Tout>
+) {
+  return #tfop("LookupTableInsert",
+    tableHandle,
+    keys,
+    values,
+    Tin$dtype: Tin.tensorFlowDataType,
+    Tout$dtype: Tout.tensorFlowDataType)
+}
+
+/// Computes the number of elements in the given table.
+///
+/// - Parameter table_handle: Handle to the table.
+///
+/// - Output size: Scalar that contains number of elements in the table.
+@inlinable @inline(__always)
+public static func lookupTableSize(
+  tableHandle: StringTensor
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("LookupTableSize",
+    tableHandle)
+  return Tensor(handle: ret)
+}
+
 /// Forwards the input to the output.
 ///
 /// This operator represents the loop termination condition used by the
@@ -9133,6 +10672,24 @@ public static func matMul<T: Numeric & TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     transpose_a: transposeA,
     transpose_b: transposeB)
+  return Tensor(handle: ret)
+}
+
+/// Returns the set of files matching one or more glob patterns.
+///
+/// Note that this routine only supports wildcard characters in the
+/// basename portion of the pattern, not in the directory portion.
+/// Note also that the order of filenames returned can be non-deterministic.
+///
+/// - Parameter pattern: Shell wildcard pattern(s). Scalar or vector of type string.
+///
+/// - Output filenames: A vector of matching filenames.
+@inlinable @inline(__always)
+public static func matchingFiles(
+  pattern: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("MatchingFiles",
+    pattern)
   return Tensor(handle: ret)
 }
 
@@ -10122,6 +11679,58 @@ public static func merge<T: TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
+/// Merges summaries.
+///
+/// This op creates a
+/// [`Summary`](https://www.tensorflow.org/code/tensorflow/core/framework/summary.proto)
+/// protocol buffer that contains the union of all the values in the input
+/// summaries.
+///
+/// When the Op is run, it reports an `InvalidArgument` error if multiple values
+/// in the summaries to merge use the same tag.
+///
+/// - Parameter inputs: Can be of any shape.  Each must contain serialized `Summary` protocol
+///   buffers.
+///
+/// - Output summary: Scalar. Serialized `Summary` protocol buffer.
+@inlinable @inline(__always)
+public static func mergeSummary(
+  inputs: [StringTensor]
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("MergeSummary",
+    inputs)
+  return Tensor(handle: ret)
+}
+
+/// V2 format specific: merges the metadata files of sharded checkpoints.  The
+///
+/// result is one logical checkpoint, with one physical metadata file and renamed
+/// data files.
+///
+/// Intended for "grouping" multiple checkpoints in a sharded checkpoint setup.
+///
+/// If delete_old_dirs is true, attempts to delete recursively the dirname of each
+/// path in the input checkpoint_prefixes.  This is useful when those paths are non
+/// user-facing temporary locations.
+///
+/// - Parameters:
+///   - checkpoint_prefixes: prefixes of V2 checkpoints to merge.
+///   - destination_prefix: scalar.  The desired final prefix.  Allowed to be the same
+///     as one of the checkpoint_prefixes.
+///
+/// - Attr delete_old_dirs: see above.
+@inlinable @inline(__always)
+public static func mergeV2Checkpoints(
+  checkpointPrefixes: StringTensor,
+  destinationPrefix: StringTensor,
+  deleteOldDirs: Bool = true
+) {
+  return #tfop("MergeV2Checkpoints",
+    checkpointPrefixes,
+    destinationPrefix,
+    delete_old_dirs: deleteOldDirs)
+}
+
 /// Transforms a spectrogram into a form that's useful for speech recognition.
 ///
 /// Mel Frequency Cepstral Coefficients are a way of representing audio data that's
@@ -10373,6 +11982,40 @@ public static func multinomial<T: Numeric & TensorFlowScalar, OutputDtype: Binar
   return Tensor(handle: ret)
 }
 
+/// Creates an empty hash table.
+///
+/// This op creates a mutable hash table, specifying the type of its keys and
+/// values. Each value must be a scalar. Data can be inserted into the table using
+/// the insert operations. It does not support the initialization operation.
+///
+/// - Attrs:
+///   - container: If non-empty, this table is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this table is shared under the given name across
+///     multiple sessions.
+///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
+///     using the node name.
+///   - key_dtype: Type of the table keys.
+///   - value_dtype: Type of the table values.
+///
+/// - Output table_handle: Handle to a table.
+@inlinable @inline(__always)
+public static func mutableHashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
+  container: String,
+  sharedName: String,
+  useNodeNameSharing: Bool = false,
+  typeKeyDtype: KeyDtype.Type,
+  typeValueDtype: ValueDtype.Type
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("MutableHashTable",
+    key_dtype$dtype: KeyDtype.tensorFlowDataType,
+    value_dtype$dtype: ValueDtype.tensorFlowDataType,
+    container: container,
+    shared_name: sharedName,
+    use_node_name_sharing: useNodeNameSharing)
+  return Tensor(handle: ret)
+}
+
 @inlinable @inline(__always)
 public static func nInPolymorphicTwice<T: TensorFlowScalar>(
   _ a: [Tensor<T>],
@@ -10382,6 +12025,16 @@ public static func nInPolymorphicTwice<T: TensorFlowScalar>(
     a,
     b,
     T$dtype: T.tensorFlowDataType)
+}
+
+@inlinable @inline(__always)
+public static func nInTwice(
+  _ a: [Tensor<Int32>],
+  _ b: [StringTensor]
+) {
+  return #tfop("NInTwice",
+    a,
+    b)
 }
 
 @inlinable @inline(__always)
@@ -11170,6 +12823,24 @@ public static func parameterizedTruncatedNormal<Dtype: FloatingPoint & TensorFlo
     T$dtype: T.tensorFlowDataType,
     seed: seed,
     seed2: seed2)
+  return Tensor(handle: ret)
+}
+
+/// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
+///
+/// - Parameter serialized: A scalar string containing a serialized TensorProto proto.
+///
+/// - Attr out_type: The type of the serialized tensor.  The provided type must match the
+///   type of the serialized tensor and no implicit conversion will take place.
+///
+/// - Output output: A Tensor of type `out_type`.
+@inlinable @inline(__always)
+public static func parseTensor<OutType: TensorFlowScalar>(
+  serialized: StringTensor
+) -> Tensor<OutType> {
+  let ret: TensorHandle<OutType> = #tfop("ParseTensor",
+    serialized,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -12223,6 +13894,116 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
+/// Closes the given queue.
+///
+/// This operation signals that no more elements will be enqueued in the
+/// given queue. Subsequent Enqueue(Many) operations will fail.
+/// Subsequent Dequeue(Many) operations will continue to succeed if
+/// sufficient elements remain in the queue. Subsequent Dequeue(Many)
+/// operations that would block will fail immediately.
+///
+/// - Parameter handle: The handle to a queue.
+///
+/// - Attr cancel_pending_enqueues: If true, all pending enqueue requests that are
+///   blocked on the given queue will be canceled.
+@inlinable @inline(__always)
+public static func queueClose(
+  handle: StringTensor,
+  cancelPendingEnqueues: Bool = false
+) {
+  return #tfop("QueueClose",
+    handle,
+    cancel_pending_enqueues: cancelPendingEnqueues)
+}
+
+/// Enqueues a tuple of one or more tensors in the given queue.
+///
+/// The components input has k elements, which correspond to the components of
+/// tuples stored in the given queue.
+///
+/// N.B. If the queue is full, this operation will block until the given
+/// element has been enqueued (or 'timeout_ms' elapses, if specified).
+///
+/// - Parameters:
+///   - handle: The handle to a queue.
+///   - components: One or more tensors from which the enqueued tensors should be taken.
+///
+/// - Attr timeout_ms: If the queue is full, this operation will block for up to
+///   timeout_ms milliseconds.
+///   Note: This option is not supported yet.
+@inlinable @inline(__always)
+public static func queueEnqueue<Tcomponents: TensorFlowScalar>(
+  handle: StringTensor,
+  components: [Tensor<Tcomponents>],
+  timeoutMs: Int64 = -1
+) {
+  return #tfop("QueueEnqueue",
+    handle,
+    components,
+    timeout_ms: timeoutMs)
+}
+
+/// Enqueues zero or more tuples of one or more tensors in the given queue.
+///
+/// This operation slices each component tensor along the 0th dimension to
+/// make multiple queue elements. All of the tuple components must have the
+/// same size in the 0th dimension.
+///
+/// The components input has k elements, which correspond to the components of
+/// tuples stored in the given queue.
+///
+/// N.B. If the queue is full, this operation will block until the given
+/// elements have been enqueued (or 'timeout_ms' elapses, if specified).
+///
+/// - Parameters:
+///   - handle: The handle to a queue.
+///   - components: One or more tensors from which the enqueued tensors should
+///     be taken.
+///
+/// - Attr timeout_ms: If the queue is too full, this operation will block for up
+///   to timeout_ms milliseconds.
+///   Note: This option is not supported yet.
+@inlinable @inline(__always)
+public static func queueEnqueueMany<Tcomponents: TensorFlowScalar>(
+  handle: StringTensor,
+  components: [Tensor<Tcomponents>],
+  timeoutMs: Int64 = -1
+) {
+  return #tfop("QueueEnqueueMany",
+    handle,
+    components,
+    timeout_ms: timeoutMs)
+}
+
+/// Returns true if queue is closed.
+///
+/// This operation returns true if the queue is closed and false if the queue
+/// is open.
+///
+/// - Parameter handle: The handle to a queue.
+@inlinable @inline(__always)
+public static func queueIsClosed(
+  handle: StringTensor
+) -> Tensor<Bool> {
+  let ret: TensorHandle<Bool> = #tfop("QueueIsClosed",
+    handle)
+  return Tensor(handle: ret)
+}
+
+/// Computes the number of elements in the given queue.
+///
+/// - Parameter handle: The handle to a queue.
+///
+/// - Output size: The number of elements in the given queue.
+@inlinable @inline(__always)
+public static func queueSize(
+  handle: StringTensor
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("QueueSize",
+    handle)
+  return Tensor(handle: ret)
+}
+
 /// Converts one or more images from RGB to HSV.
 ///
 /// Outputs a tensor of the same shape as the `images` tensor, containing the HSV
@@ -12578,6 +14359,140 @@ public static func rank<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Reads and outputs the entire contents of the input filename.
+@inlinable @inline(__always)
+public static func readFile(
+  filename: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ReadFile",
+    filename)
+  return Tensor(handle: ret)
+}
+
+/// Returns the number of records this Reader has produced.
+///
+/// This is the same as the number of ReaderRead executions that have
+/// succeeded.
+///
+/// - Parameter reader_handle: Handle to a Reader.
+@inlinable @inline(__always)
+public static func readerNumRecordsProduced(
+  readerHandle: StringTensor
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("ReaderNumRecordsProduced",
+    readerHandle)
+  return Tensor(handle: ret)
+}
+
+/// Returns the number of work units this Reader has finished processing.
+///
+/// - Parameter reader_handle: Handle to a Reader.
+@inlinable @inline(__always)
+public static func readerNumWorkUnitsCompleted(
+  readerHandle: StringTensor
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("ReaderNumWorkUnitsCompleted",
+    readerHandle)
+  return Tensor(handle: ret)
+}
+
+/// Returns the next record (key, value pair) produced by a Reader.
+///
+/// Will dequeue from the input queue if necessary (e.g. when the
+/// Reader needs to start reading from a new file since it has finished
+/// with the previous file).
+///
+/// - Parameters:
+///   - reader_handle: Handle to a Reader.
+///   - queue_handle: Handle to a Queue, with string work items.
+///
+/// - Outputs:
+///   - key: A scalar.
+///   - value: A scalar.
+@inlinable @inline(__always)
+public static func readerRead(
+  readerHandle: StringTensor,
+  queueHandle: StringTensor
+) -> (key: StringTensor, value: StringTensor) {
+  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderRead",
+    readerHandle,
+    queueHandle)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Returns up to `num_records` (key, value) pairs produced by a Reader.
+///
+/// Will dequeue from the input queue if necessary (e.g. when the
+/// Reader needs to start reading from a new file since it has finished
+/// with the previous file).
+/// It may return less than `num_records` even before the last batch.
+///
+/// - Parameters:
+///   - reader_handle: Handle to a `Reader`.
+///   - queue_handle: Handle to a `Queue`, with string work items.
+///   - num_records: number of records to read from `Reader`.
+///
+/// - Outputs:
+///   - keys: A 1-D tensor.
+///   - values: A 1-D tensor.
+@inlinable @inline(__always)
+public static func readerReadUpTo(
+  readerHandle: StringTensor,
+  queueHandle: StringTensor,
+  numRecords: Tensor<Int64>
+) -> (keys: StringTensor, values: StringTensor) {
+  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderReadUpTo",
+    readerHandle,
+    queueHandle,
+    numRecords)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Restore a Reader to its initial clean state.
+///
+/// - Parameter reader_handle: Handle to a Reader.
+@inlinable @inline(__always)
+public static func readerReset(
+  readerHandle: StringTensor
+) {
+  return #tfop("ReaderReset",
+    readerHandle)
+}
+
+/// Restore a reader to a previously saved state.
+///
+/// Not all Readers support being restored, so this can produce an
+/// Unimplemented error.
+///
+/// - Parameters:
+///   - reader_handle: Handle to a Reader.
+///   - state: Result of a ReaderSerializeState of a Reader with type
+///     matching reader_handle.
+@inlinable @inline(__always)
+public static func readerRestoreState(
+  readerHandle: StringTensor,
+  state: StringTensor
+) {
+  return #tfop("ReaderRestoreState",
+    readerHandle,
+    state)
+}
+
+/// Produce a string tensor that encodes the state of a Reader.
+///
+/// Not all Readers support being serialized, so this can produce an
+/// Unimplemented error.
+///
+/// - Parameter reader_handle: Handle to a Reader.
+@inlinable @inline(__always)
+public static func readerSerializeState(
+  readerHandle: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ReaderSerializeState",
+    readerHandle)
+  return Tensor(handle: ret)
+}
+
 /// Returns the real part of a complex number.
 ///
 /// Given a tensor `input` of complex numbers, this operation returns a tensor of
@@ -12646,6 +14561,94 @@ public static func reciprocalGrad<T: FloatingPoint & TensorFlowScalar>(
     y,
     dy,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Emits randomized records.
+///
+/// - Attrs:
+///   - file_pattern: Glob pattern for the data files.
+///   - file_random_seed: Random seeds used to produce randomized records.
+///   - file_shuffle_shift_ratio: Shifts the list of files after the list is randomly
+///     shuffled.
+///   - file_buffer_size: The randomization shuffling buffer.
+///   - file_parallelism: How many sstables are opened and concurrently iterated over.
+///   - batch_size: The batch size.
+///   - compression_type: The type of compression for the file. Currently ZLIB and
+///     GZIP are supported. Defaults to none.
+///
+/// - Output records: A tensor of shape [batch_size].
+@inlinable @inline(__always)
+public static func recordInput(
+  filePattern: String,
+  fileRandomSeed: Int64 = 301,
+  fileShuffleShiftRatio: Double = 0,
+  fileBufferSize: Int64 = 10000,
+  fileParallelism: Int64 = 16,
+  batchSize: Int64 = 32,
+  compressionType: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("RecordInput",
+    file_pattern: filePattern,
+    file_random_seed: fileRandomSeed,
+    file_shuffle_shift_ratio: fileShuffleShiftRatio,
+    file_buffer_size: fileBufferSize,
+    file_parallelism: fileParallelism,
+    batch_size: batchSize,
+    compression_type: compressionType)
+  return Tensor(handle: ret)
+}
+
+/// Joins a string Tensor across the given dimensions.
+///
+/// Computes the string join across dimensions in the given string Tensor of shape
+/// `[\\(d_0, d_1, ..., d_{n-1}\\)]`.  Returns a new Tensor created by joining the input
+/// strings with the given separator (default: empty string).  Negative indices are
+/// counted backwards from the end, with `-1` being equivalent to `n - 1`.  If
+/// indices are not specified, joins across all dimensions beginning from `n - 1`
+/// through `0`.
+///
+/// For example:
+///
+/// ```python
+/// # tensor `a` is [["a", "b"], ["c", "d"]]
+/// tf.reduce_join(a, 0) ==> ["ac", "bd"]
+/// tf.reduce_join(a, 1) ==> ["ab", "cd"]
+/// tf.reduce_join(a, -2) = tf.reduce_join(a, 0) ==> ["ac", "bd"]
+/// tf.reduce_join(a, -1) = tf.reduce_join(a, 1) ==> ["ab", "cd"]
+/// tf.reduce_join(a, 0, keep_dims=True) ==> [["ac", "bd"]]
+/// tf.reduce_join(a, 1, keep_dims=True) ==> [["ab"], ["cd"]]
+/// tf.reduce_join(a, 0, separator=".") ==> ["a.c", "b.d"]
+/// tf.reduce_join(a, [0, 1]) ==> "acbd"
+/// tf.reduce_join(a, [1, 0]) ==> "abcd"
+/// tf.reduce_join(a, []) ==> [["a", "b"], ["c", "d"]]
+/// tf.reduce_join(a) = tf.reduce_join(a, [1, 0]) ==> "abcd"
+/// ```
+///
+/// - Parameters:
+///   - inputs: The input to be joined.  All reduced indices must have non-zero size.
+///   - reduction_indices: The dimensions to reduce over.  Dimensions are reduced in the
+///     order specified.  Omitting `reduction_indices` is equivalent to passing
+///     `[n-1, n-2, ..., 0]`.  Negative indices from `-n` to `-1` are supported.
+///
+/// - Attrs:
+///   - keep_dims: If `True`, retain reduced dimensions with length `1`.
+///   - separator: The separator to use when joining.
+///
+/// - Output output: Has shape equal to that of the input with reduced dimensions removed or
+///   set to `1` depending on `keep_dims`.
+@inlinable @inline(__always)
+public static func reduceJoin(
+  inputs: StringTensor,
+  reductionIndices: Tensor<Int32>,
+  keepDims: Bool = false,
+  separator: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ReduceJoin",
+    inputs,
+    reductionIndices,
+    keep_dims: keepDims,
+    separator: separator)
   return Tensor(handle: ret)
 }
 
@@ -12851,6 +14854,59 @@ public static func refSwitch<T: TensorFlowScalar>(
     pred,
     T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Check if the input matches the regex pattern.
+///
+/// The input is a string tensor of any shape. The pattern is a scalar
+/// string tensor which is applied to every element of the input tensor.
+/// The boolean values (True or False) of the output tensor indicate
+/// if the input matches the regex pattern provided.
+///
+/// The pattern follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
+///
+/// - Parameters:
+///   - input: A string tensor of the text to be processed.
+///   - pattern: A scalar string tensor containing the regular expression to match the input.
+///
+/// - Output output: A bool tensor with the same shape as `input`.
+@inlinable @inline(__always)
+public static func regexFullMatch(
+  _ input: StringTensor,
+  pattern: StringTensor
+) -> Tensor<Bool> {
+  let ret: TensorHandle<Bool> = #tfop("RegexFullMatch",
+    input,
+    pattern)
+  return Tensor(handle: ret)
+}
+
+/// Replaces the match of pattern in input with rewrite.
+///
+/// It follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
+///
+/// - Parameters:
+///   - input: The text to be processed.
+///   - pattern: The regular expression to match the input.
+///   - rewrite: The rewrite to be applied to the matched expresion.
+///
+/// - Attr replace_global: If True, the replacement is global, otherwise the replacement
+///   is done only on the first match.
+///
+/// - Output output: The text after applying pattern and rewrite.
+@inlinable @inline(__always)
+public static func regexReplace(
+  _ input: StringTensor,
+  pattern: StringTensor,
+  rewrite: StringTensor,
+  replaceGlobal: Bool = true
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("RegexReplace",
+    input,
+    pattern,
+    rewrite,
+    replace_global: replaceGlobal)
+  return Tensor(handle: ret)
 }
 
 /// Computes rectified linear: `max(features, 0)`.
@@ -13282,6 +15338,90 @@ public static func resizeNearestNeighborGrad<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Restores a tensor from checkpoint files.
+///
+/// Reads a tensor stored in one or several files. If there are several files (for
+/// instance because a tensor was saved as slices), `file_pattern` may contain
+/// wildcard symbols (`*` and `?`) in the filename portion only, not in the
+/// directory portion.
+///
+/// If a `file_pattern` matches several files, `preferred_shard` can be used to hint
+/// in which file the requested tensor is likely to be found. This op will first
+/// open the file at index `preferred_shard` in the list of matching files and try
+/// to restore tensors from that file.  Only if some tensors or tensor slices are
+/// not found in that first file, then the Op opens all the files. Setting
+/// `preferred_shard` to match the value passed as the `shard` input
+/// of a matching `Save` Op may speed up Restore.  This attribute only affects
+/// performance, not correctness.  The default value -1 means files are processed in
+/// order.
+///
+/// See also `RestoreSlice`.
+///
+/// - Parameters:
+///   - file_pattern: Must have a single element. The pattern of the files from
+///     which we read the tensor.
+///   - tensor_name: Must have a single element. The name of the tensor to be
+///     restored.
+///
+/// - Attrs:
+///   - dt: The type of the tensor to be restored.
+///   - preferred_shard: Index of file to open first if multiple files match
+///     `file_pattern`.
+///
+/// - Output tensor: The restored tensor.
+@inlinable @inline(__always)
+public static func restore<Dt: TensorFlowScalar>(
+  filePattern: StringTensor,
+  tensorName: StringTensor,
+  preferredShard: Int64 = -1
+) -> Tensor<Dt> {
+  let ret: TensorHandle<Dt> = #tfop("Restore",
+    filePattern,
+    tensorName,
+    dt$dtype: Dt.tensorFlowDataType,
+    preferred_shard: preferredShard)
+  return Tensor(handle: ret)
+}
+
+/// Restores a tensor from checkpoint files.
+///
+/// This is like `Restore` except that restored tensor can be listed as filling
+/// only a slice of a larger tensor.  `shape_and_slice` specifies the shape of the
+/// larger tensor and the slice that the restored tensor covers.
+///
+/// The `shape_and_slice` input has the same format as the
+/// elements of the `shapes_and_slices` input of the `SaveSlices` op.
+///
+/// - Parameters:
+///   - file_pattern: Must have a single element. The pattern of the files from
+///     which we read the tensor.
+///   - tensor_name: Must have a single element. The name of the tensor to be
+///     restored.
+///   - shape_and_slice: Scalar. The shapes and slice specifications to use when
+///     restoring a tensors.
+///
+/// - Attrs:
+///   - dt: The type of the tensor to be restored.
+///   - preferred_shard: Index of file to open first if multiple files match
+///     `file_pattern`. See the documentation for `Restore`.
+///
+/// - Output tensor: The restored tensor.
+@inlinable @inline(__always)
+public static func restoreSlice<Dt: TensorFlowScalar>(
+  filePattern: StringTensor,
+  tensorName: StringTensor,
+  shapeAndSlice: StringTensor,
+  preferredShard: Int64 = -1
+) -> Tensor<Dt> {
+  let ret: TensorHandle<Dt> = #tfop("RestoreSlice",
+    filePattern,
+    tensorName,
+    shapeAndSlice,
+    dt$dtype: Dt.tensorFlowDataType,
+    preferred_shard: preferredShard)
+  return Tensor(handle: ret)
+}
+
 @inlinable @inline(__always)
 public static func restrict<T: TensorFlowScalar>(
   _ a: Tensor<T>
@@ -13614,6 +15754,97 @@ public static func round<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Perform batches of RPC requests.
+///
+/// This op asynchronously performs either a single RPC request, or a batch
+/// of requests.  RPC requests are defined by three main parameters:
+///
+///   - `address` (the host+port or BNS address of the request)
+///   - `method` (the RPC method name for the request)
+///   - `request` (the serialized proto string, or vector of strings,
+///      of the RPC request argument).
+///
+/// For example, if you have an RPC service running on port localhost:2345,
+/// and its interface is configured with the following proto declaration:
+///
+/// ```
+/// service MyService {
+///   rpc MyMethod(MyRequestProto) returns (MyResponseProto) {
+///   }
+/// };
+/// ```
+///
+/// then call this op with arguments:
+///
+/// ```
+/// address = "localhost:2345"
+/// method = "MyService/MyMethod"
+/// ```
+///
+/// The `request` tensor is a string tensor representing serialized `MyRequestProto`
+/// strings; and the output string tensor `response` will have the same shape
+/// and contain (upon successful completion) corresponding serialized
+/// `MyResponseProto` strings.
+///
+/// For example, to send a single, empty, `MyRequestProto`, call
+/// this op with `request = ""`.  To send 5 **parallel** empty requests,
+/// call this op with `request = ["", "", "", "", ""]`.
+///
+/// More generally, one can create a batch of `MyRequestProto` serialized protos
+/// from regular batched tensors using the `encode_proto` op, and convert
+/// the response `MyResponseProto` serialized protos to batched tensors
+/// using the `decode_proto` op.
+///
+/// **NOTE** Working with serialized proto strings is faster than instantiating
+/// actual proto objects in memory, so no performance degradation is expected
+/// compared to writing custom kernels for this workflow.
+///
+/// If the connection fails or the remote worker returns an error
+/// status, the op reraises this exception locally.
+///
+/// See the `TryRpc` op if you prefer to handle RPC failures manually in the graph.
+///
+/// - Parameters:
+///   - address: `0-D` or `1-D`.  The address (i.e. host_name:port) of the RPC server.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `method` and `request`.
+///   - method: `0-D` or `1-D`.  The method address on the RPC server.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `address` and `request`.
+///   - request: `0-D` or `1-D`.  Serialized proto strings: the rpc request argument.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `address` and `method`.
+///
+/// - Attrs:
+///   - protocol: RPC protocol to use.  Empty string means use the default protocol.
+///     Options include 'grpc'.
+///   - fail_fast: `boolean`. If `true` (default), then failures to connect
+///     (i.e., the server does not immediately respond) cause an RPC failure.
+///   - timeout_in_ms: `int`. If `0` (default), then the kernel will run the RPC
+///     request and only time out if the RPC deadline passes or the session times out.
+///     If this value is greater than `0`, then the op will raise an exception if
+///     the RPC takes longer than `timeout_in_ms`.
+///
+/// - Output response: Same shape as `request`. Serialized proto strings: the rpc responses.
+@inlinable @inline(__always)
+public static func rpc(
+  address: StringTensor,
+  method: StringTensor,
+  request: StringTensor,
+  protocol: String,
+  failFast: Bool = true,
+  timeoutInMs: Int64 = 0
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("Rpc",
+    address,
+    method,
+    request,
+    protocol: protocol,
+    fail_fast: failFast,
+    timeout_in_ms: timeoutInMs)
+  return Tensor(handle: ret)
+}
+
 /// Computes reciprocal of square root of x element-wise.
 ///
 /// I.e., \\(y = 1 / \sqrt{x}\\).
@@ -13839,6 +16070,124 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
     max_attempts: maxAttempts,
     use_image_if_no_bounding_boxes: useImageIfNoBoundingBoxes)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Saves the input tensors to disk.
+///
+/// The size of `tensor_names` must match the number of tensors in `data`. `data[i]`
+/// is written to `filename` with name `tensor_names[i]`.
+///
+/// See also `SaveSlices`.
+///
+/// - Parameters:
+///   - filename: Must have a single element. The name of the file to which we write
+///     the tensor.
+///   - tensor_names: Shape `[N]`. The names of the tensors to be saved.
+///   - data: `N` tensors to save.
+@inlinable @inline(__always)
+public static func save<T: TensorFlowScalar>(
+  filename: StringTensor,
+  tensorNames: StringTensor,
+  data: [Tensor<T>]
+) {
+  return #tfop("Save",
+    filename,
+    tensorNames,
+    data)
+}
+
+/// Saves input tensors slices to disk.
+///
+/// This is like `Save` except that tensors can be listed in the saved file as being
+/// a slice of a larger tensor.  `shapes_and_slices` specifies the shape of the
+/// larger tensor and the slice that this tensor covers. `shapes_and_slices` must
+/// have as many elements as `tensor_names`.
+///
+/// Elements of the `shapes_and_slices` input must either be:
+///
+/// *  The empty string, in which case the corresponding tensor is
+///    saved normally.
+/// *  A string of the form `dim0 dim1 ... dimN-1 slice-spec` where the
+///    `dimI` are the dimensions of the larger tensor and `slice-spec`
+///    specifies what part is covered by the tensor to save.
+///
+/// `slice-spec` itself is a `:`-separated list: `slice0:slice1:...:sliceN-1`
+/// where each `sliceI` is either:
+///
+/// *  The string `-` meaning that the slice covers all indices of this dimension
+/// *  `start,length` where `start` and `length` are integers.  In that
+///    case the slice covers `length` indices starting at `start`.
+///
+/// See also `Save`.
+///
+/// - Parameters:
+///   - filename: Must have a single element. The name of the file to which we write the
+///     tensor.
+///   - tensor_names: Shape `[N]`. The names of the tensors to be saved.
+///   - shapes_and_slices: Shape `[N]`.  The shapes and slice specifications to use when
+///     saving the tensors.
+///   - data: `N` tensors to save.
+@inlinable @inline(__always)
+public static func saveSlices<T: TensorFlowScalar>(
+  filename: StringTensor,
+  tensorNames: StringTensor,
+  shapesAndSlices: StringTensor,
+  data: [Tensor<T>]
+) {
+  return #tfop("SaveSlices",
+    filename,
+    tensorNames,
+    shapesAndSlices,
+    data)
+}
+
+/// Saves tensors in V2 checkpoint format.
+///
+/// By default, saves the named tensors in full.  If the caller wishes to save
+/// specific slices of full tensors, "shape_and_slices" should be non-empty strings
+/// and correspondingly well-formed.
+///
+/// - Parameters:
+///   - prefix: Must have a single element. The prefix of the V2 checkpoint to which we
+///     write the tensors.
+///   - tensor_names: shape {N}. The names of the tensors to be saved.
+///   - shape_and_slices: shape {N}.  The slice specs of the tensors to be saved.
+///     Empty strings indicate that they are non-partitioned tensors.
+///   - tensors: `N` tensors to save.
+@inlinable @inline(__always)
+public static func saveV2<Dtypes: TensorFlowScalar>(
+  prefix: StringTensor,
+  tensorNames: StringTensor,
+  shapeAndSlices: StringTensor,
+  tensors: [Tensor<Dtypes>]
+) {
+  return #tfop("SaveV2",
+    prefix,
+    tensorNames,
+    shapeAndSlices,
+    tensors)
+}
+
+/// Outputs a `Summary` protocol buffer with scalar values.
+///
+/// The input `tags` and `values` must have the same shape.  The generated summary
+/// has a summary value for each tag-value pair in `tags` and `values`.
+///
+/// - Parameters:
+///   - tags: Tags for the summary.
+///   - values: Same shape as `tags.  Values for the summary.
+///
+/// - Output summary: Scalar.  Serialized `Summary` protocol buffer.
+@inlinable @inline(__always)
+public static func scalarSummary<T: Numeric & TensorFlowScalar>(
+  tags: StringTensor,
+  _ values: Tensor<T>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ScalarSummary",
+    tags,
+    values,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Adds sparse updates to a variable reference.
@@ -14569,6 +16918,21 @@ public static func scatterUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & 
   return Tensor(handle: ret)
 }
 
+/// Computes fingerprints of the input strings.
+///
+/// - Parameter input: vector of strings to compute fingerprints on.
+///
+/// - Output output: a (N,2) shaped matrix where N is the number of elements in the input
+///   vector. Each row contains the low and high parts of the fingerprint.
+@inlinable @inline(__always)
+public static func sdcaFprint(
+  _ input: StringTensor
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("SdcaFprint",
+    input)
+  return Tensor(handle: ret)
+}
+
 /// Applies L1 regularization shrink step on the parameters.
 ///
 /// - Parameter weights: a list of vectors where each value is the weight associated with a
@@ -14975,6 +17339,23 @@ public static func serializeSparse<T: TensorFlowScalar, OutType: TensorFlowScala
   return Tensor(handle: ret)
 }
 
+/// Transforms a Tensor into a serialized TensorProto proto.
+///
+/// - Parameter tensor: A Tensor of type `T`.
+///
+/// - Attr T: The type of the input tensor.
+///
+/// - Output serialized: A serialized TensorProto proto of the input tensor.
+@inlinable @inline(__always)
+public static func serializeTensor<T: TensorFlowScalar>(
+  _ tensor: Tensor<T>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("SerializeTensor",
+    tensor,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Number of unique elements along last dimension of input `set`.
 ///
 /// Input `set` is a `SparseTensor` represented by `set_indices`, `set_values`,
@@ -15026,6 +17407,34 @@ public static func shape<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlo
     input,
     T$dtype: T.tensorFlowDataType,
     out_type$dtype: OutType.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Generate a sharded filename. The filename is printf formatted as
+///
+///    %s-%05d-of-%05d, basename, shard, num_shards.
+@inlinable @inline(__always)
+public static func shardedFilename(
+  basename: StringTensor,
+  shard: Tensor<Int32>,
+  numShards: Tensor<Int32>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ShardedFilename",
+    basename,
+    shard,
+    numShards)
+  return Tensor(handle: ret)
+}
+
+/// Generate a glob pattern matching all sharded file names.
+@inlinable @inline(__always)
+public static func shardedFilespec(
+  basename: StringTensor,
+  numShards: Tensor<Int32>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ShardedFilespec",
+    basename,
+    numShards)
   return Tensor(handle: ret)
 }
 
@@ -15124,6 +17533,42 @@ public static func size<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlow
     T$dtype: T.tensorFlowDataType,
     out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Parses a text file and creates a batch of examples.
+///
+/// - Attrs:
+///   - filename: The corpus's text file name.
+///   - batch_size: The size of produced batch.
+///   - window_size: The number of words to predict to the left and right of the target.
+///   - min_count: The minimum number of word occurrences for it to be included in the
+///     vocabulary.
+///   - subsample: Threshold for word occurrence. Words that appear with higher
+///     frequency will be randomly down-sampled. Set to 0 to disable.
+///
+/// - Outputs:
+///   - vocab_word: A vector of words in the corpus.
+///   - vocab_freq: Frequencies of words. Sorted in the non-ascending order.
+///   - words_per_epoch: Number of words per epoch in the data file.
+///   - current_epoch: The current epoch number.
+///   - total_words_processed: The total number of words processed so far.
+///   - examples: A vector of word ids.
+///   - labels: A vector of word ids.
+@inlinable @inline(__always)
+public static func skipgram(
+  filename: String,
+  batchSize: Int64,
+  windowSize: Int64 = 5,
+  minCount: Int64 = 5,
+  subsample: Double = 0.001
+) -> (vocabWord: StringTensor, vocabFreq: Tensor<Int32>, wordsPerEpoch: Tensor<Int64>, currentEpoch: Tensor<Int32>, totalWordsProcessed: Tensor<Int64>, examples: Tensor<Int32>, labels: Tensor<Int32>) {
+  let ret: (TensorHandle<String>, TensorHandle<Int32>, TensorHandle<Int64>, TensorHandle<Int32>, TensorHandle<Int64>, TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("Skipgram",
+    filename: filename,
+    batch_size: batchSize,
+    window_size: windowSize,
+    min_count: minCount,
+    subsample: subsample)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
 }
 
 /// Return a slice from 'input'.
@@ -15622,6 +18067,77 @@ public static func spaceToDepth<T: TensorFlowScalar>(
     block_size: blockSize,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
+}
+
+/// Applies a sparse gradient to a given accumulator.
+///
+/// Does not add if local_step is smaller than the accumulator's
+/// global_step.
+///
+/// - Parameters:
+///   - handle: The handle to a accumulator.
+///   - local_step: The local_step value at which the sparse gradient was computed.
+///   - gradient_indices: Indices of the sparse gradient to be accumulated. Must be a
+///     vector.
+///   - gradient_values: Values are the non-zero slices of the gradient, and must have
+///     the same first dimension as indices, i.e., the nnz represented by indices and
+///     values must be consistent.
+///   - gradient_shape: Shape of the sparse gradient to be accumulated.
+///
+/// - Attrs:
+///   - dtype: The data type of accumulated gradients. Needs to correspond to the type
+///     of the accumulator.
+///   - has_known_shape: Boolean indicating whether gradient_shape is unknown, in which
+///     case the input is ignored during validation.
+@inlinable @inline(__always)
+public static func sparseAccumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
+  handle: StringTensor,
+  localStep: Tensor<Int64>,
+  gradientIndices: Tensor<Int64>,
+  gradientValues: Tensor<Dtype>,
+  gradientShape: Tensor<Int64>,
+  hasKnownShape: Bool
+) {
+  return #tfop("SparseAccumulatorApplyGradient",
+    handle,
+    localStep,
+    gradientIndices,
+    gradientValues,
+    gradientShape,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    has_known_shape: hasKnownShape)
+}
+
+/// Extracts the average sparse gradient in a SparseConditionalAccumulator.
+///
+/// The op will blocks until sufficient (i.e., more than num_required)
+/// gradients have been accumulated. If the accumulator has already
+/// aggregated more than num_required gradients, it will return its
+/// average of the accumulated gradients.  Also automatically increments
+/// the recorded global_step in the accumulator by 1, and resets the
+/// aggregate to 0.
+///
+/// - Parameters:
+///   - handle: The handle to a SparseConditionalAccumulator.
+///   - num_required: Number of gradients required before we return an aggregate.
+///
+/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
+///   of the accumulator.
+///
+/// - Outputs:
+///   - indices: Indices of the average of the accumulated sparse gradients.
+///   - values: Values of the average of the accumulated sparse gradients.
+///   - shape: Shape of the average of the accumulated sparse gradients.
+@inlinable @inline(__always)
+public static func sparseAccumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
+  handle: StringTensor,
+  numRequired: Tensor<Int32>
+) -> (indices: Tensor<Int64>, values: Tensor<Dtype>, shape: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("SparseAccumulatorTakeGradient",
+    handle,
+    numRequired,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 /// Adds two `SparseTensor` objects to produce another `SparseTensor`.
@@ -17614,6 +20130,53 @@ public static func squeeze<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Deprecated, use StackV2.
+@inlinable @inline(__always)
+public static func stack<ElemType: TensorFlowScalar>(
+  stackName: String,
+  typeElemType: ElemType.Type
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("Stack",
+    elem_type$dtype: ElemType.tensorFlowDataType,
+    stack_name: stackName)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated, use StackCloseV2.
+@inlinable @inline(__always)
+public static func stackClose(
+  handle: StringTensor
+) {
+  return #tfop("StackClose",
+    handle)
+}
+
+/// Deprecated, use StackPopV2.
+@inlinable @inline(__always)
+public static func stackPop<ElemType: TensorFlowScalar>(
+  handle: StringTensor
+) -> Tensor<ElemType> {
+  let ret: TensorHandle<ElemType> = #tfop("StackPop",
+    handle,
+    elem_type$dtype: ElemType.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated, use StackPushV2.
+@inlinable @inline(__always)
+public static func stackPush<T: TensorFlowScalar>(
+  handle: StringTensor,
+  elem: Tensor<T>,
+  swapMemory: Bool = false
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("StackPush",
+    handle,
+    elem,
+    T$dtype: T.tensorFlowDataType,
+    swap_memory: swapMemory)
+  return Tensor(handle: ret)
+}
+
 /// Stage values similar to a lightweight Enqueue.
 ///
 /// The basic functionality of this Op is similar to a queue with many
@@ -18050,6 +20613,26 @@ public static func stridedSliceGrad<T: TensorFlowScalar, Index: BinaryInteger & 
   return Tensor(handle: ret)
 }
 
+/// Joins the strings in the given list of string tensors into one tensor;
+///
+/// with the given separator (default is an empty separator).
+///
+/// - Parameter inputs: A list of string tensors.  The tensors must all have the same shape,
+///   or be scalars.  Scalars may be mixed in; these will be broadcast to the shape
+///   of non-scalar inputs.
+///
+/// - Attr separator: string, an optional join separator.
+@inlinable @inline(__always)
+public static func stringJoin(
+  inputs: [StringTensor],
+  separator: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("StringJoin",
+    inputs,
+    separator: separator)
+  return Tensor(handle: ret)
+}
+
 @inlinable @inline(__always)
 public static func stringListAttr(
   _ a: [String],
@@ -18058,6 +20641,168 @@ public static func stringListAttr(
   return #tfop("StringListAttr",
     a: a,
     b: b)
+}
+
+/// Split elements of `input` based on `delimiter` into a `SparseTensor`.
+///
+/// Let N be the size of source (typically N will be the batch size). Split each
+/// element of `input` based on `delimiter` and return a `SparseTensor`
+/// containing the splitted tokens. Empty tokens are ignored.
+///
+/// `delimiter` can be empty, or a string of split characters. If `delimiter` is an
+///  empty string, each element of `input` is split into individual single-byte
+///  character strings, including splitting of UTF-8 multibyte sequences. Otherwise
+///  every character of `delimiter` is a potential split point.
+///
+/// For example:
+///   N = 2, input[0] is 'hello world' and input[1] is 'a b c', then the output
+///   will be
+///
+///   indices = [0, 0;
+///              0, 1;
+///              1, 0;
+///              1, 1;
+///              1, 2]
+///   shape = [2, 3]
+///   values = ['hello', 'world', 'a', 'b', 'c']
+///
+/// - Parameters:
+///   - input: 1-D. Strings to split.
+///   - delimiter: 0-D. Delimiter characters (bytes), or empty string.
+///
+/// - Attr skip_empty: A `bool`. If `True`, skip the empty strings from the result.
+///
+/// - Outputs:
+///   - indices: A dense matrix of int64 representing the indices of the sparse tensor.
+///   - values: A vector of strings corresponding to the splited values.
+///   - shape: a length-2 vector of int64 representing the shape of the sparse
+///     tensor, where the first value is N and the second value is the maximum number
+///     of tokens in a single input entry.
+@inlinable @inline(__always)
+public static func stringSplit(
+  _ input: StringTensor,
+  delimiter: StringTensor,
+  skipEmpty: Bool = true
+) -> (indices: Tensor<Int64>, values: StringTensor, shape: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<String>, TensorHandle<Int64>) = #tfop("StringSplit",
+    input,
+    delimiter,
+    skip_empty: skipEmpty)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Strip leading and trailing whitespaces from the Tensor.
+///
+/// - Parameter input: A string `Tensor` of any shape.
+///
+/// - Output output: A string `Tensor` of the same shape as the input.
+@inlinable @inline(__always)
+public static func stringStrip(
+  _ input: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("StringStrip",
+    input)
+  return Tensor(handle: ret)
+}
+
+/// Converts each string in the input Tensor to its hash mod by a number of buckets.
+///
+/// The hash function is deterministic on the content of the string within the
+/// process.
+///
+/// Note that the hash function may change from time to time.
+/// This functionality will be deprecated and it's recommended to use
+/// `tf.string_to_hash_bucket_fast()` or `tf.string_to_hash_bucket_strong()`.
+///
+/// - Attr num_buckets: The number of buckets.
+///
+/// - Output output: A Tensor of the same shape as the input `string_tensor`.
+@inlinable @inline(__always)
+public static func stringToHashBucket(
+  stringTensor: StringTensor,
+  numBuckets: Int64
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("StringToHashBucket",
+    stringTensor,
+    num_buckets: numBuckets)
+  return Tensor(handle: ret)
+}
+
+/// Converts each string in the input Tensor to its hash mod by a number of buckets.
+///
+/// The hash function is deterministic on the content of the string within the
+/// process and will never change. However, it is not suitable for cryptography.
+/// This function may be used when CPU time is scarce and inputs are trusted or
+/// unimportant. There is a risk of adversaries constructing inputs that all hash
+/// to the same bucket. To prevent this problem, use a strong hash function with
+/// `tf.string_to_hash_bucket_strong`.
+///
+/// - Parameter input: The strings to assign a hash bucket.
+///
+/// - Attr num_buckets: The number of buckets.
+///
+/// - Output output: A Tensor of the same shape as the input `string_tensor`.
+@inlinable @inline(__always)
+public static func stringToHashBucketFast(
+  _ input: StringTensor,
+  numBuckets: Int64
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("StringToHashBucketFast",
+    input,
+    num_buckets: numBuckets)
+  return Tensor(handle: ret)
+}
+
+/// Converts each string in the input Tensor to its hash mod by a number of buckets.
+///
+/// The hash function is deterministic on the content of the string within the
+/// process. The hash function is a keyed hash function, where attribute `key`
+/// defines the key of the hash function. `key` is an array of 2 elements.
+///
+/// A strong hash is important when inputs may be malicious, e.g. URLs with
+/// additional components. Adversaries could try to make their inputs hash to the
+/// same bucket for a denial-of-service attack or to skew the results. A strong
+/// hash prevents this by making it difficult, if not infeasible, to compute inputs
+/// that hash to the same bucket. This comes at a cost of roughly 4x higher compute
+/// time than `tf.string_to_hash_bucket_fast`.
+///
+/// - Parameter input: The strings to assign a hash bucket.
+///
+/// - Attrs:
+///   - num_buckets: The number of buckets.
+///   - key: The key for the keyed hash function passed as a list of two uint64
+///     elements.
+///
+/// - Output output: A Tensor of the same shape as the input `string_tensor`.
+@inlinable @inline(__always)
+public static func stringToHashBucketStrong(
+  _ input: StringTensor,
+  numBuckets: Int64,
+  key: [Int32]
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("StringToHashBucketStrong",
+    input,
+    num_buckets: numBuckets,
+    key: key)
+  return Tensor(handle: ret)
+}
+
+/// Converts each string in the input Tensor to the specified numeric type.
+///
+/// (Note that int32 overflow results in an error while float overflow
+/// results in a rounded value.)
+///
+/// - Attr out_type: The numeric type to interpret each string in `string_tensor` as.
+///
+/// - Output output: A Tensor of the same shape as the input `string_tensor`.
+@inlinable @inline(__always)
+public static func stringToNumber<OutType: Numeric & TensorFlowScalar>(
+  stringTensor: StringTensor
+) -> Tensor<OutType> {
+  let ret: TensorHandle<OutType> = #tfop("StringToNumber",
+    stringTensor,
+    out_type$dtype: OutType.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Returns x - y element-wise.
@@ -18072,6 +20817,27 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Sub",
     x,
     y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+///
+/// - Parameters:
+///   - input: Tensor of strings
+///   - pos: Scalar defining the position of first character in each substring
+///   - len: Scalar defining the number of characters to include in each substring
+///
+/// - Output output: Tensor of substrings
+@inlinable @inline(__always)
+public static func substr<T: BinaryInteger & TensorFlowScalar>(
+  _ input: StringTensor,
+  pos: Tensor<T>,
+  len: Tensor<T>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("Substr",
+    input,
+    pos,
+    len,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
@@ -18177,6 +20943,28 @@ public static func switch_<T: TensorFlowScalar>(
     pred,
     T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// A Reader that outputs the records from a TensorFlow Records file.
+///
+/// - Attrs:
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func tFRecordReader(
+  container: String,
+  sharedName: String,
+  compressionType: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TFRecordReader",
+    container: container,
+    shared_name: sharedName,
+    compression_type: compressionType)
+  return Tensor(handle: ret)
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -18298,10 +21086,300 @@ public static func tanhGrad<T: FloatingPoint & TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
+public static func tensorArrayClose(
+  handle: StringTensor
+) {
+  return #tfop("TensorArrayClose",
+    handle)
+}
+
+/// Deprecated. Use TensorArrayCloseV3
+@inlinable @inline(__always)
+public static func tensorArrayCloseV2(
+  handle: StringTensor
+) {
+  return #tfop("TensorArrayCloseV2",
+    handle)
+}
+
+@inlinable @inline(__always)
+public static func tensorArrayGrad(
+  handle: StringTensor,
+  flowIn: Tensor<Float>,
+  source: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TensorArrayGrad",
+    handle,
+    flowIn,
+    source: source)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArrayGradV3
+@inlinable @inline(__always)
+public static func tensorArrayGradV2(
+  handle: StringTensor,
+  flowIn: Tensor<Float>,
+  source: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TensorArrayGradV2",
+    handle,
+    flowIn,
+    source: source)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArrayRead<Dtype: TensorFlowScalar>(
+  handle: StringTensor,
+  index: Tensor<Int32>,
+  flowIn: Tensor<Float>
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("TensorArrayRead",
+    handle,
+    index,
+    flowIn,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArrayReadV3
+@inlinable @inline(__always)
+public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
+  handle: StringTensor,
+  index: Tensor<Int32>,
+  flowIn: Tensor<Float>
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("TensorArrayReadV2",
+    handle,
+    index,
+    flowIn,
+    dtype$dtype: Dtype.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArrayScatter<T: TensorFlowScalar>(
+  handle: StringTensor,
+  indices: Tensor<Int32>,
+  value: Tensor<T>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArrayScatter",
+    handle,
+    indices,
+    value,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArrayScatterV3
+@inlinable @inline(__always)
+public static func tensorArrayScatterV2<T: TensorFlowScalar>(
+  handle: StringTensor,
+  indices: Tensor<Int32>,
+  value: Tensor<T>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArrayScatterV2",
+    handle,
+    indices,
+    value,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArraySize(
+  handle: StringTensor,
+  flowIn: Tensor<Float>
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("TensorArraySize",
+    handle,
+    flowIn)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArraySizeV3
+@inlinable @inline(__always)
+public static func tensorArraySizeV2(
+  handle: StringTensor,
+  flowIn: Tensor<Float>
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("TensorArraySizeV2",
+    handle,
+    flowIn)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArraySplit<T: TensorFlowScalar>(
+  handle: StringTensor,
+  value: Tensor<T>,
+  lengths: Tensor<Int64>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArraySplit",
+    handle,
+    value,
+    lengths,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArraySplitV3
+@inlinable @inline(__always)
+public static func tensorArraySplitV2<T: TensorFlowScalar>(
+  handle: StringTensor,
+  value: Tensor<T>,
+  lengths: Tensor<Int64>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArraySplitV2",
+    handle,
+    value,
+    lengths,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArrayUnpack<T: TensorFlowScalar>(
+  handle: StringTensor,
+  value: Tensor<T>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArrayUnpack",
+    handle,
+    value,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func tensorArrayWrite<T: TensorFlowScalar>(
+  handle: StringTensor,
+  index: Tensor<Int32>,
+  value: Tensor<T>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArrayWrite",
+    handle,
+    index,
+    value,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Deprecated. Use TensorArrayGradV3
+@inlinable @inline(__always)
+public static func tensorArrayWriteV2<T: TensorFlowScalar>(
+  handle: StringTensor,
+  index: Tensor<Int32>,
+  value: Tensor<T>,
+  flowIn: Tensor<Float>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TensorArrayWriteV2",
+    handle,
+    index,
+    value,
+    flowIn,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Outputs a `Summary` protocol buffer with a tensor.
+///
+/// This op is being phased out in favor of TensorSummaryV2, which lets callers pass
+/// a tag as well as a serialized SummaryMetadata proto string that contains
+/// plugin-specific data. We will keep this op to maintain backwards compatibility.
+///
+/// - Parameter tensor: A tensor to serialize.
+///
+/// - Attrs:
+///   - description: A json-encoded SummaryDescription proto.
+///   - labels: An unused list of strings.
+///   - display_name: An unused string.
+@inlinable @inline(__always)
+public static func tensorSummary<T: TensorFlowScalar>(
+  _ tensor: Tensor<T>,
+  description: String,
+  labels: [String],
+  displayName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TensorSummary",
+    tensor,
+    T$dtype: T.tensorFlowDataType,
+    description: description,
+    labels: labels,
+    display_name: displayName)
+  return Tensor(handle: ret)
+}
+
+/// Outputs a `Summary` protocol buffer with a tensor and per-plugin data.
+///
+/// - Parameters:
+///   - tag: A string attached to this summary. Used for organization in TensorBoard.
+///   - tensor: A tensor to serialize.
+///   - serialized_summary_metadata: A serialized SummaryMetadata proto. Contains plugin
+///     data.
+@inlinable @inline(__always)
+public static func tensorSummaryV2<T: TensorFlowScalar>(
+  tag: StringTensor,
+  _ tensor: Tensor<T>,
+  serializedSummaryMetadata: StringTensor
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TensorSummaryV2",
+    tag,
+    tensor,
+    serializedSummaryMetadata,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
 public static func testAttr<T: FloatingPoint & TensorFlowScalar>(
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("TestAttr",
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+@inlinable @inline(__always)
+public static func testStringOutput(
+  _ input: Tensor<Float>
+) -> (output1: Tensor<Float>, output2: StringTensor) {
+  let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("TestStringOutput",
+    input)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// A Reader that outputs the lines of a file delimited by '\n'.
+///
+/// - Attrs:
+///   - skip_header_lines: Number of lines to skip from the beginning of every file.
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func textLineReader(
+  skipHeaderLines: Int64 = 0,
+  container: String,
+  sharedName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TextLineReader",
+    skip_header_lines: skipHeaderLines,
+    container: container,
+    shared_name: sharedName)
   return Tensor(handle: ret)
 }
 
@@ -18582,6 +21660,103 @@ public static func truncatedNormal<Dtype: FloatingPoint & TensorFlowScalar, T: B
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
+}
+
+/// Perform batches of RPC requests.
+///
+/// This op asynchronously performs either a single RPC request, or a batch
+/// of requests.  RPC requests are defined by three main parameters:
+///
+///   - `address` (the host+port or BNS address of the request)
+///   - `method` (the method name for the request)
+///   - `request` (the serialized proto string, or vector of strings,
+///      of the RPC request argument).
+///
+/// For example, if you have an RPC service running on port localhost:2345,
+/// and its interface is configured with the following proto declaration:
+///
+/// ```
+/// service MyService {
+///   rpc MyMethod(MyRequestProto) returns (MyResponseProto) {
+///   }
+/// };
+/// ```
+///
+/// then call this op with arguments:
+///
+/// ```
+/// address = "localhost:2345"
+/// method = "MyService/MyMethod"
+/// ```
+///
+/// The `request` tensor is a string tensor representing serialized `MyRequestProto`
+/// strings; and the output string tensor `response` will have the same shape
+/// and contain (upon successful completion) corresponding serialized
+/// `MyResponseProto` strings.
+///
+/// For example, to send a single, empty, `MyRequestProto`, call
+/// this op with `request = ""`.  To send 5 **parallel** empty requests,
+/// call this op with `request = ["", "", "", "", ""]`.
+///
+/// More generally, one can create a batch of `MyRequestProto` serialized protos
+/// from regular batched tensors using the `encode_proto` op, and convert
+/// the response `MyResponseProto` serialized protos to batched tensors
+/// using the `decode_proto` op.
+///
+/// **NOTE** Working with serialized proto strings is faster than instantiating
+/// actual proto objects in memory, so no performance degradation is expected
+/// compared to writing custom kernels for this workflow.
+///
+/// Unlike the standard `Rpc` op, if the connection fails or the remote worker
+/// returns an error status, this op does **not** reraise the exception.
+/// Instead, the `status_code` and `status_message` entry for the corresponding RPC
+/// call is set with the error returned from the RPC call.  The `response` tensor
+/// will contain valid response values for those minibatch entries whose RPCs did
+/// not fail; the rest of the entries will have empty strings.
+///
+/// - Parameters:
+///   - address: `0-D` or `1-D`.  The address (i.e. host_name:port) of the RPC server.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `method` and `request`.
+///   - method: `0-D` or `1-D`.  The method address on the RPC server.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `address` and `request`.
+///   - request: `0-D` or `1-D`.  Serialized proto strings: the rpc request argument.
+///     If this tensor has more than 1 element, then multiple parallel rpc requests
+///     are sent.  This argument broadcasts with `address` and `method`.
+///
+/// - Attrs:
+///   - protocol: RPC protocol to use.  Empty string means use the default protocol.
+///     Options include 'grpc'.
+///   - fail_fast: `boolean`. If `true` (default), then failures to connect
+///     (i.e., the server does not immediately respond) cause an RPC failure.
+///   - timeout_in_ms: `int`. If `0` (default), then the kernel will run the RPC
+///     request and only time out if the RPC deadline passes or the session times out.
+///     If this value is greater than `0`, then the op will raise an exception if
+///     the RPC takes longer than `timeout_in_ms`.
+///
+/// - Outputs:
+///   - response: Same shape as `request`. Serialized proto strings: the rpc responses.
+///   - status_code: Same shape as `request`.  Values correspond to tensorflow Status enum codes.
+///   - status_message: Same shape as `request`.  Values correspond to Status messages
+///     returned from the RPC calls.
+@inlinable @inline(__always)
+public static func tryRpc(
+  address: StringTensor,
+  method: StringTensor,
+  request: StringTensor,
+  protocol: String,
+  failFast: Bool = true,
+  timeoutInMs: Int64 = 0
+) -> (response: StringTensor, statusCode: Tensor<Int32>, statusMessage: StringTensor) {
+  let ret: (TensorHandle<String>, TensorHandle<Int32>, TensorHandle<String>) = #tfop("TryRpc",
+    address,
+    method,
+    request,
+    protocol: protocol,
+    fail_fast: failFast,
+    timeout_in_ms: timeoutInMs)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 @inlinable @inline(__always)
@@ -19304,6 +22479,46 @@ public static func where_<T: TensorFlowScalar>(
     input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// A Reader that outputs the entire contents of a file as a value.
+///
+/// To use, enqueue filenames in a Queue.  The output of ReaderRead will
+/// be a filename (key) and the contents of that file (value).
+///
+/// - Attrs:
+///   - container: If non-empty, this reader is placed in the given container.
+///     Otherwise, a default container is used.
+///   - shared_name: If non-empty, this reader is named in the given bucket
+///     with this shared_name. Otherwise, the node name is used instead.
+///
+/// - Output reader_handle: The handle to reference the Reader.
+@inlinable @inline(__always)
+public static func wholeFileReader(
+  container: String,
+  sharedName: String
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("WholeFileReader",
+    container: container,
+    shared_name: sharedName)
+  return Tensor(handle: ret)
+}
+
+/// Writes contents to the file at input filename. Creates file and recursively
+///
+/// creates directory if not existing.
+///
+/// - Parameters:
+///   - filename: scalar. The name of the file to which we write the contents.
+///   - contents: scalar. The content to be written to the output file.
+@inlinable @inline(__always)
+public static func writeFile(
+  filename: StringTensor,
+  contents: StringTensor
+) {
+  return #tfop("WriteFile",
+    filename,
+    contents)
 }
 
 /// Returns a tensor of zeros with the same shape and type as x.

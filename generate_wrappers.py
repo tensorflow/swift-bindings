@@ -296,16 +296,23 @@ def attr_def_defines_a_type(attr_def):
 
 def arg_def_type_as_string(arg_def, handle=False):
   """Returns the tensor type for the provided input/output argument."""
+  tensor_type = None
   if arg_def.type_attr:
     base_type = swift_compatible(arg_def.type_attr, capitalize=True)
   elif arg_def.type_list_attr:
     base_type = swift_compatible(arg_def.type_list_attr, capitalize=True)
   elif arg_def.type in _SWIFTIFIED_TYPES:
     base_type = _SWIFTIFIED_TYPES[arg_def.type]
+  elif arg_def.type == types_pb2.DT_STRING:
+    if handle:
+      base_type = "String"
+    else:
+      tensor_type = "StringTensor"
   else:
     raise UnableToGenerateCodeError('unsupported type for ' + arg_def.name)
-  tensor_type = 'TensorHandle' if handle else 'Tensor'
-  tensor_type += '<' + base_type + '>'
+  if not tensor_type:
+    tensor_type = 'TensorHandle' if handle else 'Tensor'
+    tensor_type += '<' + base_type + '>'
   if arg_def.number_attr or arg_def.type_list_attr:
     return '[' + tensor_type + ']'
   return tensor_type

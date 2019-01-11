@@ -1650,7 +1650,7 @@ public static func asString<T: TensorFlowScalar>(
     shortest: shortest,
     width: width,
     fill: fill)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Computes asin of x element-wise.
@@ -2024,7 +2024,7 @@ public static func audioSummary(
     tensor,
     sample_rate: sampleRate,
     max_outputs: maxOutputs)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Outputs a `Summary` protocol buffer with audio.
@@ -2061,7 +2061,7 @@ public static func audioSummaryV2(
     tensor,
     sampleRate,
     max_outputs: maxOutputs)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Performs average pooling on the input.
@@ -3006,7 +3006,7 @@ public static func bigQueryReader(
     columns: columns,
     timestamp_millis: timestampMillis,
     test_end_point: testEndPoint)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -5407,7 +5407,7 @@ public static func decodeBase64(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("DecodeBase64",
     input)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Decode the first frame of a BMP-encoded image to a uint8 tensor.
@@ -5459,7 +5459,7 @@ public static func decodeCompressed(
   let ret: TensorHandle<String> = #tfop("DecodeCompressed",
     bytes,
     compression_type: compressionType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Decode the first frame of a GIF-encoded image to a uint8 tensor.
@@ -5504,7 +5504,7 @@ public static func decodeJSONExample(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("DecodeJSONExample",
     jsonExamples)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Decode a JPEG-encoded image to a uint8 tensor.
@@ -6777,7 +6777,7 @@ public static func encodeBase64(
   let ret: TensorHandle<String> = #tfop("EncodeBase64",
     input,
     pad: pad)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// JPEG-encode an image.
@@ -6838,7 +6838,7 @@ public static func encodeJpeg(
     x_density: xDensity,
     y_density: yDensity,
     xmp_metadata: xmpMetadata)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// PNG-encode an image.
@@ -6869,7 +6869,7 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
     image,
     T$dtype: T.tensorFlowDataType,
     compression: compression)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// The op serializes protobuf messages provided in the input tensors.
@@ -6936,7 +6936,7 @@ public static func encodeProto<TinputTypes: TensorFlowScalar>(
     field_names: fieldNames,
     message_type: messageType,
     descriptor_source: descriptorSource)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Encode audio data using the WAV file format.
@@ -6962,7 +6962,7 @@ public static func encodeWav(
   let ret: TensorHandle<String> = #tfop("EncodeWav",
     audio,
     sampleRate)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -7330,7 +7330,7 @@ public static func fFT3D<Tcomplex: TensorFlowScalar>(
 public static func fact(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("Fact")
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Fake-quantize the 'inputs' tensor, type float to 'outputs' tensor of same type.
@@ -7601,7 +7601,7 @@ public static func fixedLengthRecordReader(
     hop_bytes: hopBytes,
     container: container,
     shared_name: sharedName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -7721,7 +7721,7 @@ public static func floatOutput(
 public static func floatOutputStringOutput(
 ) -> (a: Tensor<Float>, b: StringTensor) {
   let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("FloatOutputStringOutput")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
 }
 
 /// Returns element-wise largest integer not greater than x.
@@ -8829,7 +8829,7 @@ public static func generateBigQueryReaderPartitions(
     timestamp_millis: timestampMillis,
     num_partitions: numPartitions,
     test_end_point: testEndPoint)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Given a path to new and old vocabulary files, returns a remapping Tensor of
@@ -8908,7 +8908,7 @@ public static func getSessionHandle<T: TensorFlowScalar>(
   let ret: TensorHandle<String> = #tfop("GetSessionHandle",
     value,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Get the value of the tensor specified by its handle.
@@ -9037,7 +9037,7 @@ public static func hashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowS
     container: container,
     shared_name: sharedName,
     use_node_name_sharing: useNodeNameSharing)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Return histogram of values.
@@ -9103,7 +9103,7 @@ public static func histogramSummary<T: Numeric & TensorFlowScalar>(
     tag,
     values,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Inverse fast Fourier transform.
@@ -9206,7 +9206,7 @@ public static func identityReader(
   let ret: TensorHandle<String> = #tfop("IdentityReader",
     container: container,
     shared_name: sharedName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -9422,7 +9422,7 @@ public static func initializeTableFromTextFile(
   keyIndex: Int64,
   valueIndex: Int64,
   vocabSize: Int64 = -1,
-  delimiter: String = "	"
+  delimiter: String = "\t"
 ) {
   return #tfop("InitializeTableFromTextFile",
     tableHandle,
@@ -9702,7 +9702,7 @@ public static func isVariableInitialized<Dtype: TensorFlowScalar>(
 public static func kernelLabel(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("KernelLabel")
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -9711,7 +9711,7 @@ public static func kernelLabelRequired(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("KernelLabelRequired",
     input)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// L2 Loss.
@@ -9750,7 +9750,7 @@ public static func lMDBReader(
   let ret: TensorHandle<String> = #tfop("LMDBReader",
     container: container,
     shared_name: sharedName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Local Response Normalization.
@@ -10690,7 +10690,7 @@ public static func matchingFiles(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("MatchingFiles",
     pattern)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Copy a tensor setting everything outside a central band in each innermost matrix
@@ -11699,7 +11699,7 @@ public static func mergeSummary(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("MergeSummary",
     inputs)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// V2 format specific: merges the metadata files of sharded checkpoints.  The
@@ -12013,7 +12013,7 @@ public static func mutableHashTable<KeyDtype: TensorFlowScalar, ValueDtype: Tens
     container: container,
     shared_name: sharedName,
     use_node_name_sharing: useNodeNameSharing)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -14366,7 +14366,7 @@ public static func readFile(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("ReadFile",
     filename)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Returns the number of records this Reader has produced.
@@ -14417,7 +14417,7 @@ public static func readerRead(
   let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderRead",
     readerHandle,
     queueHandle)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
 }
 
 /// Returns up to `num_records` (key, value) pairs produced by a Reader.
@@ -14445,7 +14445,7 @@ public static func readerReadUpTo(
     readerHandle,
     queueHandle,
     numRecords)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
 }
 
 /// Restore a Reader to its initial clean state.
@@ -14490,7 +14490,7 @@ public static func readerSerializeState(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("ReaderSerializeState",
     readerHandle)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Returns the real part of a complex number.
@@ -14596,7 +14596,7 @@ public static func recordInput(
     file_parallelism: fileParallelism,
     batch_size: batchSize,
     compression_type: compressionType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Joins a string Tensor across the given dimensions.
@@ -14649,7 +14649,7 @@ public static func reduceJoin(
     reductionIndices,
     keep_dims: keepDims,
     separator: separator)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -14906,7 +14906,7 @@ public static func regexReplace(
     pattern,
     rewrite,
     replace_global: replaceGlobal)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Computes rectified linear: `max(features, 0)`.
@@ -15831,7 +15831,7 @@ public static func rpc(
   address: StringTensor,
   method: StringTensor,
   request: StringTensor,
-  protocol: String,
+  protocol_: String,
   failFast: Bool = true,
   timeoutInMs: Int64 = 0
 ) -> StringTensor {
@@ -15839,10 +15839,10 @@ public static func rpc(
     address,
     method,
     request,
-    protocol: protocol,
+    protocol: protocol_,
     fail_fast: failFast,
     timeout_in_ms: timeoutInMs)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Computes reciprocal of square root of x element-wise.
@@ -16187,7 +16187,7 @@ public static func scalarSummary<T: Numeric & TensorFlowScalar>(
     tags,
     values,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Adds sparse updates to a variable reference.
@@ -17353,7 +17353,7 @@ public static func serializeTensor<T: TensorFlowScalar>(
   let ret: TensorHandle<String> = #tfop("SerializeTensor",
     tensor,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Number of unique elements along last dimension of input `set`.
@@ -17423,7 +17423,7 @@ public static func shardedFilename(
     basename,
     shard,
     numShards)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Generate a glob pattern matching all sharded file names.
@@ -17435,7 +17435,7 @@ public static func shardedFilespec(
   let ret: TensorHandle<String> = #tfop("ShardedFilespec",
     basename,
     numShards)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Computes sigmoid of `x` element-wise.
@@ -17568,7 +17568,7 @@ public static func skipgram(
     window_size: windowSize,
     min_count: minCount,
     subsample: subsample)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
+  return (StringTensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
 }
 
 /// Return a slice from 'input'.
@@ -20139,7 +20139,7 @@ public static func stack<ElemType: TensorFlowScalar>(
   let ret: TensorHandle<String> = #tfop("Stack",
     elem_type$dtype: ElemType.tensorFlowDataType,
     stack_name: stackName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Deprecated, use StackCloseV2.
@@ -20630,7 +20630,7 @@ public static func stringJoin(
   let ret: TensorHandle<String> = #tfop("StringJoin",
     inputs,
     separator: separator)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -20688,7 +20688,7 @@ public static func stringSplit(
     input,
     delimiter,
     skip_empty: skipEmpty)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 /// Strip leading and trailing whitespaces from the Tensor.
@@ -20702,7 +20702,7 @@ public static func stringStrip(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("StringStrip",
     input)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -20839,7 +20839,7 @@ public static func substr<T: BinaryInteger & TensorFlowScalar>(
     pos,
     len,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Computes the sum of elements across dimensions of a tensor.
@@ -20964,7 +20964,7 @@ public static func tFRecordReader(
     container: container,
     shared_name: sharedName,
     compression_type: compressionType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -21112,7 +21112,7 @@ public static func tensorArrayGrad(
     handle,
     flowIn,
     source: source)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -21126,7 +21126,7 @@ public static func tensorArrayGradV2(
     handle,
     flowIn,
     source: source)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -21319,7 +21319,7 @@ public static func tensorSummary<T: TensorFlowScalar>(
     description: description,
     labels: labels,
     display_name: displayName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor and per-plugin data.
@@ -21340,7 +21340,7 @@ public static func tensorSummaryV2<T: TensorFlowScalar>(
     tensor,
     serializedSummaryMetadata,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -21357,7 +21357,7 @@ public static func testStringOutput(
 ) -> (output1: Tensor<Float>, output2: StringTensor) {
   let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("TestStringOutput",
     input)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
 }
 
 /// A Reader that outputs the lines of a file delimited by '\n'.
@@ -21380,7 +21380,7 @@ public static func textLineReader(
     skip_header_lines: skipHeaderLines,
     container: container,
     shared_name: sharedName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -21745,7 +21745,7 @@ public static func tryRpc(
   address: StringTensor,
   method: StringTensor,
   request: StringTensor,
-  protocol: String,
+  protocol_: String,
   failFast: Bool = true,
   timeoutInMs: Int64 = 0
 ) -> (response: StringTensor, statusCode: Tensor<Int32>, statusMessage: StringTensor) {
@@ -21753,10 +21753,10 @@ public static func tryRpc(
     address,
     method,
     request,
-    protocol: protocol,
+    protocol: protocol_,
     fail_fast: failFast,
     timeout_in_ms: timeoutInMs)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  return (StringTensor(handle: ret.0), Tensor(handle: ret.1), StringTensor(handle: ret.2))
 }
 
 @inlinable @inline(__always)
@@ -22501,7 +22501,7 @@ public static func wholeFileReader(
   let ret: TensorHandle<String> = #tfop("WholeFileReader",
     container: container,
     shared_name: sharedName)
-  return Tensor(handle: ret)
+  return StringTensor(handle: ret)
 }
 
 /// Writes contents to the file at input filename. Creates file and recursively

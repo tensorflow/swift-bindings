@@ -179,7 +179,10 @@ class EnumStore(object):
     entries = list(self._entries.iteritems())
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
       codes.append(
-          '@_frozen\n' +
+          # FIXME: Readd `@_frozen` after SR-9739 is resolved.
+          # https://bugs.swift.org/browse/SR-9739
+          # '@_frozen\n' +
+          '// @_frozen // SR-9739\n' +
           'public enum {} {{\n'.format(type_name) +
           '\n'.join(['  case {}'.format(
               swiftified_name_for_enums(a)) for a in allowed_values]) +

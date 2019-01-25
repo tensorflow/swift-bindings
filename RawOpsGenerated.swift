@@ -19,7 +19,7 @@ public enum Raw {
 static let generatedTensorFlowVersion = "1.9.0"
 static let generatedTensorFlowGitVersion = "v1.9.0-0-g25c197e023"
 
-@_frozen
+// @_frozen // SR-9739
 public enum A {
   case apples
   case oranges
@@ -36,7 +36,7 @@ public enum A {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum DataFormat {
   case nchw
   case nhwc
@@ -53,7 +53,7 @@ public enum DataFormat {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum DataFormat1 {
   case ncdhw
   case ndhwc
@@ -70,7 +70,7 @@ public enum DataFormat1 {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum DataFormat3 {
   case nchw
   case nchwVectC
@@ -89,7 +89,7 @@ public enum DataFormat3 {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum DensityUnit {
   case cm
   case in_
@@ -106,7 +106,7 @@ public enum DensityUnit {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Direction {
   case bidirectional
   case unidirectional
@@ -123,7 +123,7 @@ public enum Direction {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum FinalOp {
   case div
   case id
@@ -140,7 +140,7 @@ public enum FinalOp {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Format {
   case empty
   case grayscale
@@ -159,7 +159,7 @@ public enum Format {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum InputMode {
   case autoSelect
   case linearInput
@@ -178,7 +178,7 @@ public enum InputMode {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum LossType {
   case hingeLoss
   case logisticLoss
@@ -199,7 +199,7 @@ public enum LossType {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum MergeOp {
   case add
   case max
@@ -220,7 +220,7 @@ public enum MergeOp {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Method {
   case bilinear
   case nearest
@@ -237,7 +237,7 @@ public enum Method {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Method2 {
   case bilinear
 
@@ -252,7 +252,7 @@ public enum Method2 {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Mode {
   case minCombined
   case minFirst
@@ -271,7 +271,7 @@ public enum Mode {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Mode4 {
   case reflect
   case symmetric
@@ -288,7 +288,7 @@ public enum Mode4 {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum Padding {
   case same
   case valid
@@ -305,7 +305,7 @@ public enum Padding {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum RnnMode {
   case gru
   case lstm
@@ -326,7 +326,7 @@ public enum RnnMode {
   }
 }
 
-@_frozen
+// @_frozen // SR-9739
 public enum RoundMode {
   case halfAwayFromZero
   case halfToEven

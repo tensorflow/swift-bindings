@@ -16,8 +16,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.9.0"
-static let generatedTensorFlowGitVersion = "v1.9.0-0-g25c197e023"
+static let generatedTensorFlowVersion = "1.12.0"
+static let generatedTensorFlowGitVersion = "v1.12.0-rc2-3-ga6d8ffae09"
 
 // @_frozen // SR-9739
 public enum A {
@@ -182,6 +182,7 @@ public enum InputMode {
 public enum LossType {
   case hingeLoss
   case logisticLoss
+  case poissonLoss
   case smoothHingeLoss
   case squaredLoss
 
@@ -192,6 +193,7 @@ public enum LossType {
       switch self {
       case .hingeLoss: return "hinge_loss"
       case .logisticLoss: return "logistic_loss"
+      case .poissonLoss: return "poisson_loss"
       case .smoothHingeLoss: return "smooth_hinge_loss"
       case .squaredLoss: return "squared_loss"
       }
@@ -289,6 +291,29 @@ public enum Mode4 {
 }
 
 // @_frozen // SR-9739
+public enum OutputStream {
+  case log(error)
+  case log(info)
+  case log(warning)
+  case stderr
+  case stdout
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .log(error): return "log(error)"
+      case .log(info): return "log(info)"
+      case .log(warning): return "log(warning)"
+      case .stderr: return "stderr"
+      case .stdout: return "stdout"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
 public enum Padding {
   case same
   case valid
@@ -338,6 +363,23 @@ public enum RoundMode {
       switch self {
       case .halfAwayFromZero: return "HALF_AWAY_FROM_ZERO"
       case .halfToEven: return "HALF_TO_EVEN"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum Unit {
+  case byte
+  case utf8Char
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .byte: return "BYTE"
+      case .utf8Char: return "UTF8_CHAR"
       }
     }
   }
@@ -2855,6 +2897,38 @@ public static func batchToSpaceND<T: TensorFlowScalar, TblockShape: BinaryIntege
   return Tensor(handle: ret)
 }
 
+/// Computes the Bessel i0e function of `x` element-wise.
+///
+/// Exponentially scaled modified Bessel function of order 0 defined as
+/// `bessel_i0e(x) = exp(-abs(x)) bessel_i0(x)`.
+///
+/// This function is faster and numerically stabler than `bessel_i0(x)`.
+@inlinable @inline(__always)
+public static func besselI0e<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("BesselI0e",
+    x,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Computes the Bessel i1e function of `x` element-wise.
+///
+/// Exponentially scaled modified Bessel function of order 0 defined as
+/// `bessel_i1e(x) = exp(-abs(x)) bessel_i1(x)`.
+///
+/// This function is faster and numerically stabler than `bessel_i1(x)`.
+@inlinable @inline(__always)
+public static func besselI1e<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("BesselI1e",
+    x,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Compute the regularized incomplete beta integral \\(I_x(a, b)\\).
 ///
 /// The regularized incomplete beta integral is defined as:
@@ -3515,12 +3589,14 @@ public static func cTCLoss(
 /// Cast x of type SrcT to y of DstT.
 @inlinable @inline(__always)
 public static func cast<Srct: TensorFlowScalar, Dstt: TensorFlowScalar>(
-  _ x: Tensor<Srct>
+  _ x: Tensor<Srct>,
+  truncate: Bool = false
 ) -> Tensor<Dstt> {
   let ret: TensorHandle<Dstt> = #tfop("Cast",
     x,
     SrcT$dtype: Srct.tensorFlowDataType,
-    DstT$dtype: Dstt.tensorFlowDataType)
+    DstT$dtype: Dstt.tensorFlowDataType,
+    Truncate: truncate)
   return Tensor(handle: ret)
 }
 
@@ -3897,29 +3973,6 @@ public static func controlTrigger(
   return #tfop("ControlTrigger")
 }
 
-/// Computes a 2-D convolution given 4-D `input` and `filter` tensors.
-///
-/// Given an input tensor of shape `[batch, in_height, in_width, in_channels]`
-/// and a filter / kernel tensor of shape
-/// `[filter_height, filter_width, in_channels, out_channels]`, this op
-/// performs the following:
-///
-/// 1. Flattens the filter to a 2-D matrix with shape
-///    `[filter_height * filter_width * in_channels, output_channels]`.
-/// 2. Extracts image patches from the input tensor to form a *virtual*
-///    tensor of shape `[batch, out_height, out_width,
-///    filter_height * filter_width * in_channels]`.
-/// 3. For each patch, right-multiplies the filter matrix and the image patch
-///    vector.
-///
-/// In detail, with the default NHWC format,
-///
-///     output[b, i, j, k] =
-///         sum_{di, dj, q} input[b, strides[1] * i + di, strides[2] * j + dj, q] *
-///                         filter[di, dj, q, k]
-///
-/// Must have `strides[0] = strides[3] = 1`.  For the most common case of the same
-/// horizontal and vertices strides, `strides = [1, stride, stride, 1]`.
 ///
 /// - Parameters:
 ///   - input: A 4-D tensor. The dimension order is interpreted according to the value
@@ -3932,16 +3985,6 @@ public static func controlTrigger(
 ///     dimension of `input`. The dimension order is determined by the value of
 ///     `data_format`, see below for details.
 ///   - padding: The type of padding algorithm to use.
-///   - data_format: Specify the data format of the input and output data. With the
-///     default format "NHWC", the data is stored in the order of:
-///         [batch, height, width, channels].
-///     Alternatively, the format could be "NCHW", the data storage order of:
-///         [batch, channels, height, width].
-///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
-///     `input`. If set to k > 1, there will be k-1 skipped cells between each
-///     filter element on that dimension. The dimension order is determined by the
-///     value of `data_format`, see above for details. Dilations in the batch and
-///     depth dimensions must be 1.
 ///
 /// - Output output: A 4-D tensor. The dimension order is determined by the value of
 ///   `data_format`, see below for details.
@@ -3967,7 +4010,6 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Computes the gradients of convolution with respect to the filter.
 ///
 /// - Parameters:
 ///   - input: 4-D with shape `[batch, in_height, in_width, in_channels]`.
@@ -3982,16 +4024,6 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
 ///     of the convolution. Must be in the same order as the dimension specified with
 ///     format.
 ///   - padding: The type of padding algorithm to use.
-///   - data_format: Specify the data format of the input and output data. With the
-///     default format "NHWC", the data is stored in the order of:
-///         [batch, in_height, in_width, in_channels].
-///     Alternatively, the format could be "NCHW", the data storage order of:
-///         [batch, in_channels, in_height, in_width].
-///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
-///     `input`. If set to k > 1, there will be k-1 skipped cells between each filter
-///     element on that dimension. The dimension order is determined by the value of
-///     `data_format`, see above for details. Dilations in the batch and depth
-///     dimensions must be 1.
 ///
 /// - Output output: 4-D with shape
 ///   `[filter_height, filter_width, in_channels, out_channels]`.  Gradient w.r.t.
@@ -4020,7 +4052,6 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Computes the gradients of convolution with respect to the input.
 ///
 /// - Parameters:
 ///   - input_sizes: An integer vector representing the shape of `input`,
@@ -4035,16 +4066,6 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
 ///     of the convolution. Must be in the same order as the dimension specified with
 ///     format.
 ///   - padding: The type of padding algorithm to use.
-///   - data_format: Specify the data format of the input and output data. With the
-///     default format "NHWC", the data is stored in the order of:
-///         [batch, in_height, in_width, in_channels].
-///     Alternatively, the format could be "NCHW", the data storage order of:
-///         [batch, in_channels, in_height, in_width].
-///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
-///     `input`. If set to k > 1, there will be k-1 skipped cells between each filter
-///     element on that dimension. The dimension order is determined by the value of
-///     `data_format`, see above for details. Dilations in the batch and depth
-///     dimensions must be 1.
 ///
 /// - Output output: 4-D with shape `[batch, in_height, in_width, in_channels]`.  Gradient
 ///   w.r.t. the input of the convolution.
@@ -6513,6 +6534,23 @@ public static func div<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Returns 0 if the denominator is zero.
+///
+///
+/// *NOTE*: `DivNoNan` supports broadcasting. More about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+@inlinable @inline(__always)
+public static func divNoNan<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("DivNoNan",
+    x,
+    y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Draw bounding boxes on a batch of images.
 ///
 /// Outputs a copy of `images` but draws on top of the pixels zero or more bounding
@@ -7128,29 +7166,6 @@ public static func expm1<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Extracts a glimpse from the input tensor.
-///
-/// Returns a set of windows called glimpses extracted at location
-/// `offsets` from the input tensor. If the windows only partially
-/// overlaps the inputs, the non overlapping areas will be filled with
-/// random noise.
-///
-/// The result is a 4-D tensor of shape `[batch_size, glimpse_height,
-/// glimpse_width, channels]`. The channels and batch dimensions are the
-/// same as that of the input tensor. The height and width of the output
-/// windows are specified in the `size` parameter.
-///
-/// The argument `normalized` and `centered` controls how the windows are built:
-///
-/// * If the coordinates are normalized but not centered, 0.0 and 1.0
-///   correspond to the minimum and maximum of each height and width
-///   dimension.
-/// * If the coordinates are both normalized and centered, they range from
-///   -1.0 to 1.0. The coordinates (-1.0, -1.0) correspond to the upper
-///   left corner, the lower right corner is located at (1.0, 1.0) and the
-///   center is at (0, 0).
-/// * If the coordinates are not normalized they are interpreted as
-///   numbers of pixels.
 ///
 /// - Parameters:
 ///   - input: A 4-D float tensor of shape `[batch_size, height, width, channels]`.
@@ -7253,6 +7268,44 @@ public static func extractJpegShape<OutputType: BinaryInteger & TensorFlowScalar
   let ret: TensorHandle<OutputType> = #tfop("ExtractJpegShape",
     contents,
     output_type$dtype: OutputType.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Extract `patches` from `input` and put them in the "depth" output dimension. 3D extension of `extract_image_patches`.
+///
+/// - Parameter input: 5-D Tensor with shape `[batch, in_planes, in_rows, in_cols, depth]`.
+///
+/// - Attrs:
+///   - ksizes: The size of the sliding window for each dimension of `input`.
+///   - strides: 1-D of length 5. How far the centers of two consecutive patches are in
+///     `input`. Must be: `[1, stride_planes, stride_rows, stride_cols, 1]`.
+///   - padding: The type of padding algorithm to use.
+///
+///     We specify the size-related attributes as:
+///
+///     ```python
+///           ksizes = [1, ksize_planes, ksize_rows, ksize_cols, 1]
+///           strides = [1, stride_planes, strides_rows, strides_cols, 1]
+///     ```
+///
+/// - Output patches: 5-D Tensor with shape `[batch, out_planes, out_rows, out_cols,
+///   ksize_planes * ksize_rows * ksize_cols * depth]` containing patches
+///   with size `ksize_planes x ksize_rows x ksize_cols x depth` vectorized
+///   in the "depth" dimension. Note `out_planes`, `out_rows` and `out_cols`
+///   are the dimensions of the output patches.
+@inlinable @inline(__always)
+public static func extractVolumePatches<T: Numeric & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  ksizes: [Int32],
+  strides: [Int32],
+  padding: Padding
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("ExtractVolumePatches",
+    input,
+    T$dtype: T.tensorFlowDataType,
+    ksizes: ksizes,
+    strides: strides,
+    padding: padding.cName)
   return Tensor(handle: ret)
 }
 
@@ -8087,7 +8140,7 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   mean: Tensor<T>,
   variance: Tensor<T>,
   epsilon: Double = 0.0001,
-  dataFormat: String = "NHWC",
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<T>, batchVariance: Tensor<T>, reserveSpace1: Tensor<T>, reserveSpace2: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNorm",
@@ -8098,7 +8151,7 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
     variance,
     T$dtype: T.tensorFlowDataType,
     epsilon: epsilon,
-    data_format: dataFormat,
+    data_format: dataFormat.cName,
     is_training: isTraining)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
@@ -8145,7 +8198,7 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   reserveSpace1: Tensor<T>,
   reserveSpace2: Tensor<T>,
   epsilon: Double = 0.0001,
-  dataFormat: String = "NHWC",
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<T>, offsetBackprop: Tensor<T>, reserveSpace3: Tensor<T>, reserveSpace4: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNormGrad",
@@ -8156,7 +8209,7 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
     reserveSpace2,
     T$dtype: T.tensorFlowDataType,
     epsilon: epsilon,
-    data_format: dataFormat,
+    data_format: dataFormat.cName,
     is_training: isTraining)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
@@ -8204,7 +8257,7 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   reserveSpace1: Tensor<U>,
   reserveSpace2: Tensor<U>,
   epsilon: Double = 0.0001,
-  dataFormat: String = "NHWC",
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<U>, offsetBackprop: Tensor<U>, reserveSpace3: Tensor<U>, reserveSpace4: Tensor<U>) {
   let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormGradV2",
@@ -8216,7 +8269,7 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
     T$dtype: T.tensorFlowDataType,
     U$dtype: U.tensorFlowDataType,
     epsilon: epsilon,
-    data_format: dataFormat,
+    data_format: dataFormat.cName,
     is_training: isTraining)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
@@ -8261,7 +8314,7 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   mean: Tensor<U>,
   variance: Tensor<U>,
   epsilon: Double = 0.0001,
-  dataFormat: String = "NHWC",
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<U>, batchVariance: Tensor<U>, reserveSpace1: Tensor<U>, reserveSpace2: Tensor<U>) {
   let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormV2",
@@ -8273,7 +8326,7 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
     T$dtype: T.tensorFlowDataType,
     U$dtype: U.tensorFlowDataType,
     epsilon: epsilon,
-    data_format: dataFormat,
+    data_format: dataFormat.cName,
     is_training: isTraining)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
@@ -8774,6 +8827,11 @@ public static func gatherV2<Tparams: TensorFlowScalar, Tindices: BinaryInteger &
   return Tensor(handle: ret)
 }
 
+/// Re-configures the GCS block cache with the new configuration values.
+///
+/// If the values are the same as already configured values, this op is a no-op. If
+/// they are different, the current contents of the block cache is dropped, and a
+/// new block cache is created fresh.
 @inlinable @inline(__always)
 public static func gcsConfigureBlockCache(
   maxCacheSize: Tensor<UInt64>,
@@ -8786,6 +8844,35 @@ public static func gcsConfigureBlockCache(
     maxStaleness)
 }
 
+/// Configures the credentials used by the GCS client of the local TF runtime.
+///
+/// The json input can be of the format:
+///
+/// 1. Refresh Token:
+/// {
+///   "client_id": "<redacted>",
+///   "client_secret": "<redacted>",
+///   "refresh_token: "<redacted>",
+///   "type": "authorized_user",
+/// }
+///
+/// 2. Service Account:
+/// {
+///   "type": "service_account",
+///   "project_id": "<redacted>",
+///   "private_key_id": "<redacted>",
+///   "private_key": "------BEGIN PRIVATE KEY-----\n<REDACTED>\n-----END PRIVATE KEY------\n",
+///   "client_email": "<REDACTED>@<REDACTED>.iam.gserviceaccount.com",
+///   "client_id": "<REDACTED>",
+///   # Some additional fields elided
+/// }
+///
+/// Note the credentials established through this method are shared across all
+/// sessions run on this runtime.
+///
+/// Note be sure to feed the inputs to this op to ensure the credentials are not
+/// stored in a constant op within the graph that might accidentally be checkpointed
+/// or in other ways be persisted or exfiltrated.
 @inlinable @inline(__always)
 public static func gcsConfigureCredentials(
   json: StringTensor
@@ -9230,6 +9317,19 @@ public static func igamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Igamma",
+    a,
+    x,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Computes the gradient of `igamma(a, x)` wrt `a`.
+@inlinable @inline(__always)
+public static func igammaGradA<T: FloatingPoint & TensorFlowScalar>(
+  _ a: Tensor<T>,
+  _ x: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("IgammaGradA",
     a,
     x,
     T$dtype: T.tensorFlowDataType)
@@ -10562,6 +10662,47 @@ public static func loopCond(
   return Tensor(handle: ret)
 }
 
+/// Applies lower_bound(sorted_search_values, values) along each row.
+///
+/// Each set of rows with the same index in (sorted_inputs, values) is treated
+/// independently.  The resulting row is the equivalent of calling
+/// `np.searchsorted(sorted_inputs, values, side='left')`.
+///
+/// The result is not a global index to the entire 
+/// `Tensor`, but rather just the index in the last dimension.
+///
+/// A 2-D example:
+///   sorted_sequence = [[0, 3, 9, 9, 10],
+///                      [1, 2, 3, 4, 5]]
+///   values = [[2, 4, 9],
+///             [0, 2, 6]]
+///
+///   result = LowerBound(sorted_sequence, values)
+///
+///   result == [[1, 2, 2],
+///              [0, 1, 5]]
+///
+/// - Parameters:
+///   - sorted_inputs: 2-D Tensor where each row is ordered.
+///   - values: 2-D Tensor with the same numbers of rows as `sorted_search_values`. Contains
+///     the values that will be searched for in `sorted_search_values`.
+///
+/// - Output output: A `Tensor` with the same shape as `values`.  It contains the first scalar index
+///   into the last dimension where values can be inserted without changing the
+///   ordered property.
+@inlinable @inline(__always)
+public static func lowerBound<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlowScalar>(
+  sortedInputs: Tensor<T>,
+  _ values: Tensor<T>
+) -> Tensor<OutType> {
+  let ret: TensorHandle<OutType> = #tfop("LowerBound",
+    sortedInputs,
+    values,
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Op removes all elements in the underlying container.
 @inlinable @inline(__always)
 public static func mapClear<Dtypes: TensorFlowScalar>(
@@ -11279,7 +11420,7 @@ public static func maxPool3DGrad<T: FloatingPoint & TensorFlowScalar, Tinput: Fl
 ///
 /// - Output output: Gradients of gradients w.r.t. the input to `max_pool`.
 @inlinable @inline(__always)
-public static func maxPool3DGradGrad<T: FloatingPoint & TensorFlowScalar>(
+public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   origInput: Tensor<T>,
   origOutput: Tensor<T>,
   grad: Tensor<T>,
@@ -12220,9 +12361,9 @@ public static func nonMaxSuppression(
 /// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
 ///   indices from the boxes tensor, where `M <= max_output_size`.
 @inlinable @inline(__always)
-public static func nonMaxSuppressionV2(
-  boxes: Tensor<Float>,
-  scores: Tensor<Float>,
+public static func nonMaxSuppressionV2<T: FloatingPoint & TensorFlowScalar>(
+  boxes: Tensor<T>,
+  scores: Tensor<T>,
   maxOutputSize: Tensor<Int32>,
   iouThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
@@ -12230,7 +12371,8 @@ public static func nonMaxSuppressionV2(
     boxes,
     scores,
     maxOutputSize,
-    iouThreshold)
+    iouThreshold,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -12268,9 +12410,9 @@ public static func nonMaxSuppressionV2(
 /// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
 ///   indices from the boxes tensor, where `M <= max_output_size`.
 @inlinable @inline(__always)
-public static func nonMaxSuppressionV3(
-  boxes: Tensor<Float>,
-  scores: Tensor<Float>,
+public static func nonMaxSuppressionV3<T: FloatingPoint & TensorFlowScalar>(
+  boxes: Tensor<T>,
+  scores: Tensor<T>,
   maxOutputSize: Tensor<Int32>,
   iouThreshold: Tensor<Float>,
   scoreThreshold: Tensor<Float>
@@ -12280,6 +12422,114 @@ public static func nonMaxSuppressionV3(
     scores,
     maxOutputSize,
     iouThreshold,
+    scoreThreshold,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Greedily selects a subset of bounding boxes in descending order of score,
+///
+/// pruning away boxes that have high intersection-over-union (IOU) overlap
+/// with previously selected boxes.  Bounding boxes with score less than
+/// `score_threshold` are removed.  Bounding boxes are supplied as
+/// [y1, x1, y2, x2], where (y1, x1) and (y2, x2) are the coordinates of any
+/// diagonal pair of box corners and the coordinates can be provided as normalized
+/// (i.e., lying in the interval [0, 1]) or absolute.  Note that this algorithm
+/// is agnostic to where the origin is in the coordinate system and more
+/// generally is invariant to orthogonal transformations and translations
+/// of the coordinate system; thus translating or reflections of the coordinate
+/// system result in the same boxes being selected by the algorithm.
+/// The output of this operation is a set of integers indexing into the input
+/// collection of bounding boxes representing the selected boxes.  The bounding
+/// box coordinates corresponding to the selected indices can then be obtained
+/// using the `tf.gather operation`.  For example:
+///   selected_indices = tf.image.non_max_suppression_v2(
+///       boxes, scores, max_output_size, iou_threshold, score_threshold)
+///   selected_boxes = tf.gather(boxes, selected_indices)
+///
+/// - Parameters:
+///   - boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
+///   - scores: A 1-D float tensor of shape `[num_boxes]` representing a single
+///     score corresponding to each box (each row of boxes).
+///   - max_output_size: A scalar integer tensor representing the maximum number of
+///     boxes to be selected by non max suppression.
+///   - iou_threshold: A 0-D float tensor representing the threshold for deciding whether
+///     boxes overlap too much with respect to IOU.
+///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
+///     boxes based on score.
+///
+/// - Attr pad_to_max_output_size: If true, the output `selected_indices` is padded to be of length
+///   `max_output_size`. Defaults to false.
+///
+/// - Outputs:
+///   - selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
+///     indices from the boxes tensor, where `M <= max_output_size`.
+///   - valid_outputs: A 0-D integer tensor representing the number of valid elements in
+///     `selected_indices`, with the valid elements appearing first.
+@inlinable @inline(__always)
+public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
+  boxes: Tensor<T>,
+  scores: Tensor<T>,
+  maxOutputSize: Tensor<Int32>,
+  iouThreshold: Tensor<Float>,
+  scoreThreshold: Tensor<Float>,
+  padToMaxOutputSize: Bool = false
+) -> (selectedIndices: Tensor<Int32>, validOutputs: Tensor<Int32>) {
+  let ret: (TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("NonMaxSuppressionV4",
+    boxes,
+    scores,
+    maxOutputSize,
+    iouThreshold,
+    scoreThreshold,
+    T$dtype: T.tensorFlowDataType,
+    pad_to_max_output_size: padToMaxOutputSize)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Greedily selects a subset of bounding boxes in descending order of score,
+///
+/// pruning away boxes that have high overlaps
+/// with previously selected boxes.  Bounding boxes with score less than
+/// `score_threshold` are removed. N-by-n overlap values are supplied as square matrix,
+/// which allows for defining a custom overlap criterium (eg. intersection over union,
+/// intersection over area, etc.).
+///
+/// The output of this operation is a set of integers indexing into the input
+/// collection of bounding boxes representing the selected boxes.  The bounding
+/// box coordinates corresponding to the selected indices can then be obtained
+/// using the `tf.gather operation`.  For example:
+///
+///   selected_indices = tf.image.non_max_suppression_with_overlaps(
+///       overlaps, scores, max_output_size, overlap_threshold, score_threshold)
+///   selected_boxes = tf.gather(boxes, selected_indices)
+///
+/// - Parameters:
+///   - overlaps: A 2-D float tensor of shape `[num_boxes, num_boxes]` representing
+///     the n-by-n box overlap values.
+///   - scores: A 1-D float tensor of shape `[num_boxes]` representing a single
+///     score corresponding to each box (each row of boxes).
+///   - max_output_size: A scalar integer tensor representing the maximum number of
+///     boxes to be selected by non max suppression.
+///   - overlap_threshold: A 0-D float tensor representing the threshold for deciding whether
+///     boxes overlap too.
+///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
+///     boxes based on score.
+///
+/// - Output selected_indices: A 1-D integer tensor of shape `[M]` representing the selected
+///   indices from the boxes tensor, where `M <= max_output_size`.
+@inlinable @inline(__always)
+public static func nonMaxSuppressionWithOverlaps(
+  overlaps: Tensor<Float>,
+  scores: Tensor<Float>,
+  maxOutputSize: Tensor<Int32>,
+  overlapThreshold: Tensor<Float>,
+  scoreThreshold: Tensor<Float>
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionWithOverlaps",
+    overlaps,
+    scores,
+    maxOutputSize,
+    overlapThreshold,
     scoreThreshold)
   return Tensor(handle: ret)
 }
@@ -12988,6 +13238,23 @@ public static func print<T: TensorFlowScalar, U: TensorFlowScalar>(
     first_n: firstN,
     summarize: summarize)
   return Tensor(handle: ret)
+}
+
+/// Prints a string scalar.
+///
+/// Prints a string scalar to the desired output_stream.
+///
+/// - Parameter input: The string scalar to print.
+///
+/// - Attr output_stream: A string specifying the output stream or logging level to print to.
+@inlinable @inline(__always)
+public static func printV2(
+  _ input: StringTensor,
+  outputStream: OutputStream = .stderr
+) {
+  return #tfop("PrintV2",
+    input,
+    output_stream: outputStream.cName)
 }
 
 /// Computes the product of elements across dimensions of a tensor.
@@ -14101,6 +14368,19 @@ public static func randomGamma<S: BinaryInteger & TensorFlowScalar, T: FloatingP
   return Tensor(handle: ret)
 }
 
+/// Computes the derivative of a Gamma random sample w.r.t. `alpha`.
+@inlinable @inline(__always)
+public static func randomGammaGrad<T: FloatingPoint & TensorFlowScalar>(
+  alpha: Tensor<T>,
+  sample: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("RandomGammaGrad",
+    alpha,
+    sample,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Use RandomPoissonV2 instead.
 @inlinable @inline(__always)
 public static func randomPoisson<S: BinaryInteger & TensorFlowScalar, Dtype: FloatingPoint & TensorFlowScalar>(
@@ -14888,7 +15168,7 @@ public static func regexFullMatch(
 /// - Parameters:
 ///   - input: The text to be processed.
 ///   - pattern: The regular expression to match the input.
-///   - rewrite: The rewrite to be applied to the matched expresion.
+///   - rewrite: The rewrite to be applied to the matched expression.
 ///
 /// - Attr replace_global: If True, the replacement is global, otherwise the replacement
 ///   is done only on the first match.
@@ -16553,14 +16833,12 @@ public static func scatterNd<T: TensorFlowScalar, Tindices: BinaryInteger & Tens
   return Tensor(handle: ret)
 }
 
-/// Applies sparse addition between `updates` and individual values or slices
-///
-/// within a given variable according to `indices`.
+/// Applies sparse addition to individual values or slices in a Variable.
 ///
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `\\([d_0, ..., d_{Q-2}, K]\\)` where `0 < K <= P`.
+/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
@@ -16568,17 +16846,21 @@ public static func scatterNd<T: TensorFlowScalar, Tindices: BinaryInteger & Tens
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
+/// ```
+/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]]
+/// ```
 ///
-/// For example, say we want to add 4 scattered elements to a rank-1 tensor to 8
-/// elements. In Python, that addition would look like this:
+/// For example, say we want to add 4 scattered elements to a rank-1 tensor to
+/// 8 elements. In Python, that addition would look like this:
 ///
-///     ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
-///     indices = tf.constant([[4], [3], [1], [7]])
-///     updates = tf.constant([9, 10, 11, 12])
-///     add = tf.scatter_nd_add(ref, indices, updates)
-///     with tf.Session() as sess:
-///       print sess.run(add)
+/// ```python
+/// ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
+/// indices = tf.constant([[4], [3], [1], [7]])
+/// updates = tf.constant([9, 10, 11, 12])
+/// add = tf.scatter_nd_add(ref, indices, updates)
+/// with tf.Session() as sess:
+///   print sess.run(add)
+/// ```
 ///
 /// The resulting update to ref would look like this:
 ///
@@ -16663,7 +16945,7 @@ public static func scatterNdAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryI
 /// - Output output: A `Tensor` with the same shape as `input`, containing values of `input`
 ///   updated with `updates`.
 @inlinable @inline(__always)
-public static func scatterNdNonAliasingAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+public static func scatterNdNonAliasingAdd<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>,
   indices: Tensor<Tindices>,
   updates: Tensor<T>
@@ -16677,14 +16959,14 @@ public static func scatterNdNonAliasingAdd<T: Numeric & TensorFlowScalar, Tindic
   return Tensor(handle: ret)
 }
 
-/// Applies sparse subtraction between `updates` and individual values or slices
+/// Applies sparse subtraction to individual values or slices in a Variable.
 ///
 /// within a given variable according to `indices`.
 ///
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
 ///
 /// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape \\([d_0, ..., d_{Q-2}, K]\\) where `0 < K <= P`.
+/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
 ///
 /// The innermost dimension of `indices` (with length `K`) corresponds to
 /// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
@@ -16692,17 +16974,21 @@ public static func scatterNdNonAliasingAdd<T: Numeric & TensorFlowScalar, Tindic
 ///
 /// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
 ///
-/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
+/// ```
+/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]]
+/// ```
 ///
 /// For example, say we want to subtract 4 scattered elements from a rank-1 tensor
 /// with 8 elements. In Python, that subtraction would look like this:
 ///
-///     ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
-///     indices = tf.constant([[4], [3], [1], [7]])
-///     updates = tf.constant([9, 10, 11, 12])
-///     sub = tf.scatter_nd_sub(ref, indices, updates)
-///     with tf.Session() as sess:
-///       print sess.run(sub)
+/// ```python
+/// ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
+/// indices = tf.constant([[4], [3], [1], [7]])
+/// updates = tf.constant([9, 10, 11, 12])
+/// sub = tf.scatter_nd_sub(ref, indices, updates)
+/// with tf.Session() as sess:
+///   print sess.run(sub)
+/// ```
 ///
 /// The resulting update to ref would look like this:
 ///
@@ -16957,7 +17243,7 @@ public static func sdcaShrinkL1(
 /// Computes the maximum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -16969,6 +17255,16 @@ public static func sdcaShrinkL1(
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/SegmentMax.png" alt>
 /// </div>
+///
+/// For example:
+///
+/// ```
+/// c = tf.constant([[1,2,3,4], [4, 3, 2, 1], [5,6,7,8]])
+/// tf.segment_max(c, tf.constant([0, 0, 1]))
+/// # ==> [[4, 3, 3, 4],
+/// #      [5, 6, 7, 8]]
+/// ```
+///
 ///
 /// - Parameter segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 ///   first dimension.  Values should be sorted and can be repeated.
@@ -16991,7 +17287,7 @@ public static func segmentMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
 /// Computes the mean along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -17004,6 +17300,16 @@ public static func segmentMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/SegmentMean.png" alt>
 /// </div>
+///
+/// For example:
+///
+/// ```
+/// c = tf.constant([[1.0,2,3,4], [4, 3, 2, 1], [5,6,7,8]])
+/// tf.segment_mean(c, tf.constant([0, 0, 1]))
+/// # ==> [[2.5, 2.5, 2.5, 2.5],
+/// #      [5, 6, 7, 8]]
+/// ```
+///
 ///
 /// - Parameter segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 ///   first dimension.  Values should be sorted and can be repeated.
@@ -17026,7 +17332,7 @@ public static func segmentMean<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
 /// Computes the minimum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -17038,6 +17344,15 @@ public static func segmentMean<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/SegmentMin.png" alt>
 /// </div>
+///
+/// For example:
+///
+/// ```
+/// c = tf.constant([[1,2,3,4], [4, 3, 2, 1], [5,6,7,8]])
+/// tf.segment_min(c, tf.constant([0, 0, 1]))
+/// # ==> [[1, 2, 2, 1],
+/// #      [5, 6, 7, 8]]
+/// ```
 ///
 /// - Parameter segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 ///   first dimension.  Values should be sorted and can be repeated.
@@ -17060,7 +17375,7 @@ public static func segmentMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
 /// Computes the product along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -17072,6 +17387,16 @@ public static func segmentMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/SegmentProd.png" alt>
 /// </div>
+///
+/// For example:
+///
+/// ```
+/// c = tf.constant([[1,2,3,4], [4, 3, 2, 1], [5,6,7,8]])
+/// tf.segment_prod(c, tf.constant([0, 0, 1]))
+/// # ==> [[4, 6, 6, 4],
+/// #      [5, 6, 7, 8]]
+/// ```
+///
 ///
 /// - Parameter segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 ///   first dimension.  Values should be sorted and can be repeated.
@@ -17094,7 +17419,7 @@ public static func segmentProd<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
 /// Computes the sum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -17106,6 +17431,16 @@ public static func segmentProd<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/SegmentSum.png" alt>
 /// </div>
+///
+/// For example:
+///
+/// ```
+/// c = tf.constant([[1,2,3,4], [4, 3, 2, 1], [5,6,7,8]])
+/// tf.segment_sum(c, tf.constant([0, 0, 1]))
+/// # ==> [[5, 5, 5, 5],
+/// #      [5, 6, 7, 8]]
+/// ```
+///
 ///
 /// - Parameter segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 ///   first dimension.  Values should be sorted and can be repeated.
@@ -17659,7 +17994,7 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
 
 /// Computes softplus: `log(exp(features) + 1)`.
 @inlinable @inline(__always)
-public static func softplus<T: Numeric & TensorFlowScalar>(
+public static func softplus<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Softplus",
@@ -17676,7 +18011,7 @@ public static func softplus<T: Numeric & TensorFlowScalar>(
 ///
 /// - Output backprops: The gradients: `gradients / (1 + exp(-features))`.
 @inlinable @inline(__always)
-public static func softplusGrad<T: Numeric & TensorFlowScalar>(
+public static func softplusGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
@@ -17689,7 +18024,7 @@ public static func softplusGrad<T: Numeric & TensorFlowScalar>(
 
 /// Computes softsign: `features / (abs(features) + 1)`.
 @inlinable @inline(__always)
-public static func softsign<T: Numeric & TensorFlowScalar>(
+public static func softsign<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Softsign",
@@ -17706,7 +18041,7 @@ public static func softsign<T: Numeric & TensorFlowScalar>(
 ///
 /// - Output backprops: The gradients: `gradients / (1 + abs(features)) ** 2`.
 @inlinable @inline(__always)
-public static func softsignGrad<T: Numeric & TensorFlowScalar>(
+public static func softsignGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
@@ -19355,9 +19690,7 @@ public static func sparseReshape(
 
 /// Computes the mean along sparse segments of a tensor.
 ///
-/// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
-/// for an explanation of segments.
+/// See `tf.sparse.segment_sum` for usage examples.
 ///
 /// Like `SegmentMean`, but `segment_ids` can have rank less than `data`'s first
 /// dimension, selecting a subset of dimension 0, specified by `indices`.
@@ -19416,7 +19749,7 @@ public static func sparseSegmentMeanGrad<T: FloatingPoint & TensorFlowScalar, Ti
 /// misisng, the `output` tensor at that position will be zeroed.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// - Parameters:
@@ -19448,9 +19781,8 @@ public static func sparseSegmentMeanWithNumSegments<T: FloatingPoint & TensorFlo
 ///
 /// N is the size of the segment being reduced.
 ///
-/// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
-/// for an explanation of segments.
+/// See `tf.sparse.segment_sum` for usage examples.
+///
 ///
 /// - Parameters:
 ///   - indices: A 1-D tensor. Has same rank as `segment_ids`.
@@ -19508,7 +19840,7 @@ public static func sparseSegmentSqrtNGrad<T: FloatingPoint & TensorFlowScalar, T
 /// misisng, the `output` tensor at that position will be zeroed.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// - Parameters:
@@ -19539,7 +19871,7 @@ public static func sparseSegmentSqrtNWithNumSegments<T: FloatingPoint & TensorFl
 /// Computes the sum along sparse segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Like `SegmentSum`, but `segment_ids` can have rank less than `data`'s first
@@ -19595,7 +19927,7 @@ public static func sparseSegmentSum<T: Numeric & TensorFlowScalar, Tidx: BinaryI
 /// misisng, the `output` tensor at that position will be zeroed.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/sparse#Segmentation)
 /// for an explanation of segments.
 ///
 /// For example:
@@ -19692,6 +20024,36 @@ public static func sparseSlice<T: TensorFlowScalar>(
     size,
     T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// The gradient operator for the SparseSlice op.
+///
+/// This op takes in the upstream gradient w.r.t. non-empty values of
+/// the sliced `SparseTensor`, and outputs the gradients w.r.t.
+/// the non-empty values of input `SparseTensor`.
+///
+/// - Parameters:
+///   - backprop_val_grad: 1-D. The gradient with respect to
+///     the non-empty values of the sliced `SparseTensor`.
+///   - input_indices: 2-D.  The `indices` of the input `SparseTensor`.
+///   - input_start: 1-D. tensor represents the start of the slice.
+///   - output_indices: 2-D.  The `indices` of the sliced `SparseTensor`.
+///
+/// - Output val_grad: 1-D. The gradient with respect to the non-empty values of input `SparseTensor`.
+@inlinable @inline(__always)
+public static func sparseSliceGrad<T: Numeric & TensorFlowScalar>(
+  backpropValGrad: Tensor<T>,
+  inputIndices: Tensor<Int64>,
+  inputStart: Tensor<Int64>,
+  outputIndices: Tensor<Int64>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("SparseSliceGrad",
+    backpropValGrad,
+    inputIndices,
+    inputStart,
+    outputIndices,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Applies softmax to a batched N-D `SparseTensor`.
@@ -20352,6 +20714,59 @@ public static func statelessTruncatedNormal<Dtype: FloatingPoint & TensorFlowSca
   return Tensor(handle: ret)
 }
 
+/// Check if the input matches the regex pattern.
+///
+/// The input is a string tensor of any shape. The pattern is the
+/// regular expression to be matched with every element of the input tensor.
+/// The boolean values (True or False) of the output tensor indicate
+/// if the input matches the regex pattern provided.
+///
+/// The pattern follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
+///
+/// - Parameter input: A string tensor of the text to be processed.
+///
+/// - Attr pattern: The regular expression to match the input.
+///
+/// - Output output: A bool tensor with the same shape as `input`.
+@inlinable @inline(__always)
+public static func staticRegexFullMatch(
+  _ input: StringTensor,
+  pattern: String
+) -> Tensor<Bool> {
+  let ret: TensorHandle<Bool> = #tfop("StaticRegexFullMatch",
+    input,
+    pattern: pattern)
+  return Tensor(handle: ret)
+}
+
+/// Replaces the match of pattern in input with rewrite.
+///
+/// It follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
+///
+/// - Parameter input: The text to be processed.
+///
+/// - Attrs:
+///   - pattern: The regular expression to match the input.
+///   - rewrite: The rewrite to be applied to the matched expression.
+///   - replace_global: If True, the replacement is global, otherwise the replacement
+///     is done only on the first match.
+///
+/// - Output output: The text after applying pattern and rewrite.
+@inlinable @inline(__always)
+public static func staticRegexReplace(
+  _ input: StringTensor,
+  pattern: String,
+  rewrite: String,
+  replaceGlobal: Bool = true
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("StaticRegexReplace",
+    input,
+    pattern: pattern,
+    rewrite: rewrite,
+    replace_global: replaceGlobal)
+  return StringTensor(handle: ret)
+}
+
 /// Stops gradient computation.
 ///
 /// When executed in a graph, this op outputs its input tensor as-is.
@@ -20541,7 +20956,7 @@ public static func stridedSlice<T: TensorFlowScalar, Index: BinaryInteger & Tens
 ///
 /// The values of `value` are assigned to the positions in the variable
 /// `ref` that are selected by the slice parameters. The slice parameters
-/// `begin, `end`, `strides`, etc. work exactly as in `StridedSlice`.
+/// `begin`, `end`, `strides`, etc. work exactly as in `StridedSlice`.
 ///
 /// NOTE this op currently does not support broadcasting and so `value`'s
 /// shape must be exactly the shape produced by the slice of `ref`.
@@ -20613,6 +21028,33 @@ public static func stridedSliceGrad<T: TensorFlowScalar, Index: BinaryInteger & 
   return Tensor(handle: ret)
 }
 
+/// Formats a string template using a list of tensors.
+///
+/// Formats a string template using a list of tensors, pretty-printing tensor summaries.
+///
+/// - Parameter inputs: The list of tensors to format into the placeholder string.
+///
+/// - Attrs:
+///   - template: A string, the template to format tensor summaries into.
+///   - placeholder: A string, at each placeholder in the template a subsequent tensor summary will be inserted.
+///   - summarize: When formatting the tensor summaries print the first and last summarize entries of each tensor dimension.
+///
+/// - Output output: = The resulting string scalar.
+@inlinable @inline(__always)
+public static func stringFormat<T: TensorFlowScalar>(
+  inputs: [Tensor<T>],
+  template: String = "%s",
+  placeholder: String = "%s",
+  summarize: Int64 = 3
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("StringFormat",
+    inputs,
+    template: template,
+    placeholder: placeholder,
+    summarize: summarize)
+  return StringTensor(handle: ret)
+}
+
 /// Joins the strings in the given list of string tensors into one tensor;
 ///
 /// with the given separator (default is an empty separator).
@@ -20631,6 +21073,31 @@ public static func stringJoin(
     inputs,
     separator: separator)
   return StringTensor(handle: ret)
+}
+
+/// String lengths of `input`.
+///
+/// Computes the length of each string given in the input tensor.
+///
+/// - Parameter input: The string for which to compute the length.
+///
+/// - Attr unit: The unit that is counted to compute string length.  One of: `"BYTE"` (for
+///   the number of bytes in each string) or `"UTF8_CHAR"` (for the number of UTF-8
+///   encoded Unicode code points in each string).  Results are undefined
+///   if `unit=UTF8_CHAR` and the `input` strings do not contain structurally
+///   valid UTF-8.
+///
+/// - Output output: Integer tensor that has the same shape as `input`. The output contains the
+///   element-wise string lengths of `input`.
+@inlinable @inline(__always)
+public static func stringLength(
+  _ input: StringTensor,
+  unit: Unit = .byte
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("StringLength",
+    input,
+    unit: unit.cName)
+  return Tensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -20688,6 +21155,51 @@ public static func stringSplit(
     input,
     delimiter,
     skip_empty: skipEmpty)
+  return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Split elements of `source` based on `sep` into a `SparseTensor`.
+///
+/// Let N be the size of source (typically N will be the batch size). Split each
+/// element of `source` based on `sep` and return a `SparseTensor`
+/// containing the split tokens. Empty tokens are ignored.
+///
+/// For example, N = 2, source[0] is 'hello world' and source[1] is 'a b c',
+/// then the output will be
+/// ```
+/// st.indices = [0, 0;
+///               0, 1;
+///               1, 0;
+///               1, 1;
+///               1, 2]
+/// st.shape = [2, 3]
+/// st.values = ['hello', 'world', 'a', 'b', 'c']
+/// ```
+///
+/// If `sep` is given, consecutive delimiters are not grouped together and are
+/// deemed to delimit empty strings. For example, source of `"1<>2<><>3"` and
+/// sep of `"<>"` returns `["1", "2", "", "3"]`. If `sep` is None or an empty
+/// string, consecutive whitespace are regarded as a single separator, and the
+/// result will contain no empty strings at the startor end if the string has
+/// leading or trailing whitespace.
+///
+/// Note that the above mentioned behavior matches python's str.split.
+///
+/// - Parameters:
+///   - input: `1-D` string `Tensor`, the strings to split.
+///   - sep: `0-D` string `Tensor`, the delimiter character.
+///
+/// - Attr maxsplit: An `int`. If `maxsplit > 0`, limit of the split of the result.
+@inlinable @inline(__always)
+public static func stringSplitV2(
+  _ input: StringTensor,
+  sep: StringTensor,
+  maxsplit: Int64 = -1
+) -> (indices: Tensor<Int64>, values: StringTensor, shape: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<String>, TensorHandle<Int64>) = #tfop("StringSplitV2",
+    input,
+    sep,
+    maxsplit: maxsplit)
   return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -21938,6 +22450,26 @@ public static func unbatchGrad<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Determine the script codes of a given tensor of Unicode integer code points.
+///
+/// This operation converts Unicode code points to script codes corresponding to
+/// each code point. Script codes correspond to International Components for
+/// Unicode (ICU) UScriptCode values. See http://icu-project.org/apiref/icu4c/uscript_8h.html.
+/// Returns -1 (USCRIPT_INVALID_CODE) for invalid codepoints. Output shape will
+/// match input shape.
+///
+/// - Parameter input: A Tensor of int32 Unicode code points.
+///
+/// - Output output: A Tensor of int32 script codes corresponding to each input code point.
+@inlinable @inline(__always)
+public static func unicodeScript(
+  _ input: Tensor<Int32>
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("UnicodeScript",
+    input)
+  return Tensor(handle: ret)
+}
+
 /// Generates labels for candidate sampling with a uniform distribution.
 ///
 /// See explanations of candidate sampling and the data formats at
@@ -22241,7 +22773,7 @@ public static func unravelIndex<Tidx: BinaryInteger & TensorFlowScalar>(
 /// Computes the maximum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// This operator is similar to the unsorted segment sum operator found
@@ -22262,12 +22794,19 @@ public static func unravelIndex<Tidx: BinaryInteger & TensorFlowScalar>(
 /// <img style="width:100%" src="https://www.tensorflow.org/images/UnsortedSegmentMax.png" alt>
 /// </div>
 ///
-/// - Parameter segment_ids: A tensor whose shape is a prefix of `data.shape`.END
-///     }
-///     out_arg {
-///       name: "output"
-///       description: <<END
-///   Has same shape as data, except for the first `segment_ids.rank`
+/// For example:
+///
+/// ``` python
+/// c = tf.constant([[1,2,3,4], [5,6,7,8], [4,3,2,1]])
+/// tf.unsorted_segment_max(c, tf.constant([0, 1, 0]), num_segments=2)
+/// # ==> [[ 4,  3, 3, 4],
+/// #       [5,  6, 7, 8]]
+/// ```
+///
+///
+/// - Parameter segment_ids: A tensor whose shape is a prefix of `data.shape`.
+///
+/// - Output output: Has same shape as data, except for the first `segment_ids.rank`
 ///   dimensions, which are replaced with a single dimension which has size
 ///   `num_segments`.
 @inlinable @inline(__always)
@@ -22289,7 +22828,7 @@ public static func unsortedSegmentMax<T: Numeric & TensorFlowScalar, Tindices: B
 /// Computes the minimum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// This operator is similar to the unsorted segment sum operator found
@@ -22302,6 +22841,15 @@ public static func unsortedSegmentMax<T: Numeric & TensorFlowScalar, Tindices: B
 /// If the minimum is empty for a given segment ID `i`, it outputs the largest
 /// possible value for the specific numeric type,
 /// `output[i] = numeric_limits<T>::max()`.
+///
+/// For example:
+///
+/// ``` python
+/// c = tf.constant([[1,2,3,4], [5,6,7,8], [4,3,2,1]])
+/// tf.unsorted_segment_min(c, tf.constant([0, 1, 0]), num_segments=2)
+/// # ==> [[ 1,  2, 2, 1],
+/// #       [5,  6, 7, 8]]
+/// ```
 ///
 /// If the given segment ID `i` is negative, then the corresponding value is
 /// dropped, and will not be included in the result.
@@ -22330,7 +22878,7 @@ public static func unsortedSegmentMin<T: Numeric & TensorFlowScalar, Tindices: B
 /// Computes the product along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// This operator is similar to the unsorted segment sum operator found
@@ -22340,6 +22888,15 @@ public static func unsortedSegmentMin<T: Numeric & TensorFlowScalar, Tindices: B
 ///
 /// \\(output_i = \prod_{j...} data[j...]\\) where the product is over tuples
 /// `j...` such that `segment_ids[j...] == i`.
+///
+/// For example:
+///
+/// ``` python
+/// c = tf.constant([[1,2,3,4], [5,6,7,8], [4,3,2,1]])
+/// tf.unsorted_segment_prod(c, tf.constant([0, 1, 0]), num_segments=2)
+/// # ==> [[ 4,  6, 6, 4],
+/// #       [5,  6, 7, 8]]
+/// ```
 ///
 /// If there is no entry for a given segment ID `i`, it outputs 1.
 ///
@@ -22370,7 +22927,7 @@ public static func unsortedSegmentProd<T: Numeric & TensorFlowScalar, Tindices: 
 /// Computes the sum along segments of a tensor.
 ///
 /// Read
-/// [the section on segmentation](https://tensorflow.org/api_guides/python/math_ops#Segmentation)
+/// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
 /// Computes a tensor such that
@@ -22388,6 +22945,14 @@ public static func unsortedSegmentProd<T: Numeric & TensorFlowScalar, Tindices: 
 /// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
 /// <img style="width:100%" src="https://www.tensorflow.org/images/UnsortedSegmentSum.png" alt>
 /// </div>
+///
+/// ``` python
+/// c = tf.constant([[1,2,3,4], [5,6,7,8], [4,3,2,1]])
+/// tf.unsorted_segment_sum(c, tf.constant([0, 1, 0]), num_segments=2)
+/// # ==> [[ 5,  5, 5, 5],
+/// #       [5,  6, 7, 8]]
+/// ```
+///
 ///
 /// - Parameter segment_ids: A tensor whose shape is a prefix of `data.shape`.
 ///
@@ -22407,6 +22972,47 @@ public static func unsortedSegmentSum<T: Numeric & TensorFlowScalar, Tindices: B
     T$dtype: T.tensorFlowDataType,
     Tindices$dtype: Tindices.tensorFlowDataType,
     Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Applies upper_bound(sorted_search_values, values) along each row.
+///
+/// Each set of rows with the same index in (sorted_inputs, values) is treated
+/// independently.  The resulting row is the equivalent of calling
+/// `np.searchsorted(sorted_inputs, values, side='right')`.
+///
+/// The result is not a global index to the entire 
+/// `Tensor`, but rather just the index in the last dimension.
+///
+/// A 2-D example:
+///   sorted_sequence = [[0, 3, 9, 9, 10],
+///                      [1, 2, 3, 4, 5]]
+///   values = [[2, 4, 9],
+///             [0, 2, 6]]
+///
+///   result = UpperBound(sorted_sequence, values)
+///
+///   result == [[1, 2, 4],
+///              [0, 2, 5]]
+///
+/// - Parameters:
+///   - sorted_inputs: 2-D Tensor where each row is ordered.
+///   - values: 2-D Tensor with the same numbers of rows as `sorted_search_values`. Contains
+///     the values that will be searched for in `sorted_search_values`.
+///
+/// - Output output: A `Tensor` with the same shape as `values`.  It contains the last scalar index
+///   into the last dimension where values can be inserted without changing the
+///   ordered property.
+@inlinable @inline(__always)
+public static func upperBound<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlowScalar>(
+  sortedInputs: Tensor<T>,
+  _ values: Tensor<T>
+) -> Tensor<OutType> {
+  let ret: TensorHandle<OutType> = #tfop("UpperBound",
+    sortedInputs,
+    values,
+    T$dtype: T.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -22519,6 +23125,32 @@ public static func writeFile(
   return #tfop("WriteFile",
     filename,
     contents)
+}
+
+/// Returns 0 if x == 0, and x / y otherwise, elementwise.
+@inlinable @inline(__always)
+public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("Xdivy",
+    x,
+    y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Returns 0 if x == 0, and x * log(y) otherwise, elementwise.
+@inlinable @inline(__always)
+public static func xlogy<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("Xlogy",
+    x,
+    y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Returns a tensor of zeros with the same shape and type as x.

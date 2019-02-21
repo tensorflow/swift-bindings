@@ -17,7 +17,7 @@
 public enum Raw {
 
 static let generatedTensorFlowVersion = "1.12.0"
-static let generatedTensorFlowGitVersion = "v1.12.0-rc2-3-ga6d8ffae09"
+static let generatedTensorFlowGitVersion = "v1.12.0-0-ga6d8ffae09"
 
 // @_frozen // SR-9739
 public enum A {
@@ -15252,11 +15252,12 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Given a quantized tensor described by (input, input_min, input_max), outputs a
+/// Computes a range that covers the actual values present in a quantized tensor.
 ///
-/// range that covers the actual values present in that tensor.  This op is
-/// typically used to produce the requested_output_min and requested_output_max for
-/// Requantize.
+/// Given a quantized tensor described by `(input, input_min, input_max)`, outputs a
+/// range that covers the actual values present in that tensor. This op is typically
+/// used to produce the `requested_output_min` and `requested_output_max` for
+/// `Requantize`.
 ///
 /// - Parameters:
 ///   - input_min: The float value that the minimum quantized input value represents.
@@ -15281,13 +15282,14 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
-/// Convert the quantized 'input' tensor into a lower-precision 'output', using the
+/// Converts the quantized `input` tensor into a lower-precision `output`.
 ///
-/// output range specified with 'requested_output_min' and 'requested_output_max'.
+/// Converts the quantized `input` tensor into a lower-precision `output`, using the
+/// output range specified with `requested_output_min` and `requested_output_max`.
 ///
-/// [input_min, input_max] are scalar floats that specify the range for the float
-/// interpretation of the 'input' data. For example, if input_min is -1.0f and
-/// input_max is 1.0f, and we are dealing with quint16 quantized data, then a 0
+/// `[input_min, input_max]` are scalar floats that specify the range for the float
+/// interpretation of the `input` data. For example, if `input_min` is -1.0f and
+/// `input_max` is 1.0f, and we are dealing with `quint16` quantized data, then a 0
 /// value in the 16-bit data should be interpreted as -1.0f, and a 65535 means 1.0f.
 ///
 /// - Parameters:
@@ -23136,6 +23138,282 @@ public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Xdivy",
     x,
     y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Helper operator for performing XLA-style broadcasts
+///
+/// Broadcasts `lhs` and `rhs` to the same rank, by adding size 1 dimensions to
+/// whichever of `lhs` and `rhs` has the lower rank, using XLA's broadcasting rules
+/// for binary operators.
+///
+/// - Parameters:
+///   - lhs: the LHS input tensor
+///   - rhs: the RHS input tensor
+///   - broadcast_dims: an XLA-style broadcast dimension specification
+///
+/// - Outputs:
+///   - lhs_output: the broadcasted LHS tensor
+///   - rhs_output: the broadcasted RHS tensor
+@inlinable @inline(__always)
+public static func xlaBroadcastHelper<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  lhs: Tensor<T>,
+  rhs: Tensor<T>,
+  broadcastDims: Tensor<Tindices>
+) -> (lhsOutput: Tensor<T>, rhsOutput: Tensor<T>) {
+  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("XlaBroadcastHelper",
+    lhs,
+    rhs,
+    broadcastDims,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Operator that connects the output of an XLA computation to other consumer graph nodes.
+@inlinable @inline(__always)
+public static func xlaClusterOutput<T: TensorFlowScalar>(
+  _ input: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaClusterOutput",
+    input,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Wraps the XLA ConvGeneralDilated operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#conv_convolution
+/// .
+///
+/// - Parameters:
+///   - lhs: the input tensor
+///   - rhs: the kernel tensor
+///   - window_strides: the inter-window strides
+///   - padding: the padding to apply at the start and end of each input dimensions
+///   - lhs_dilation: dilation to apply between input elements
+///   - rhs_dilation: dilation to apply between kernel elements
+///   - feature_group_count: number of feature groups for grouped convolution.
+///
+/// - Attrs:
+///   - dimension_numbers: a serialized xla::ConvolutionDimensionNumbers proto.
+///   - precision_config: a serialized xla::PrecisionConfig proto.
+@inlinable @inline(__always)
+public static func xlaConv<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  lhs: Tensor<T>,
+  rhs: Tensor<T>,
+  windowStrides: Tensor<Tindices>,
+  padding: Tensor<Tindices>,
+  lhsDilation: Tensor<Tindices>,
+  rhsDilation: Tensor<Tindices>,
+  featureGroupCount: Tensor<Tindices>,
+  dimensionNumbers: String,
+  precisionConfig: String
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaConv",
+    lhs,
+    rhs,
+    windowStrides,
+    padding,
+    lhsDilation,
+    rhsDilation,
+    featureGroupCount,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType,
+    dimension_numbers: dimensionNumbers,
+    precision_config: precisionConfig)
+  return Tensor(handle: ret)
+}
+
+/// Wraps the XLA ConvGeneralDilated operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#dotgeneral
+/// .
+///
+/// - Parameters:
+///   - lhs: the LHS tensor
+///   - rhs: the RHS tensor
+///
+/// - Attrs:
+///   - dimension_numbers: a serialized xla::DotDimensionNumbers proto.
+///   - precision_config: a serialized xla::PrecisionConfig proto.
+@inlinable @inline(__always)
+public static func xlaDot<T: Numeric & TensorFlowScalar>(
+  lhs: Tensor<T>,
+  rhs: Tensor<T>,
+  dimensionNumbers: String,
+  precisionConfig: String
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaDot",
+    lhs,
+    rhs,
+    T$dtype: T.tensorFlowDataType,
+    dimension_numbers: dimensionNumbers,
+    precision_config: precisionConfig)
+  return Tensor(handle: ret)
+}
+
+/// Wraps the XLA DynamicSlice operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#dynamicslice
+/// .
+///
+/// DynamicSlice extracts a sub-array from the input array at dynamic
+/// start_indices. The size of the slice in each dimension is passed in
+/// size_indices, which specify the end point of exclusive slice intervals in each
+/// dimension -- [start, start + size). The shape of start_indices must have rank 1,
+/// with dimension size equal to the rank of operand.
+///
+/// - Parameters:
+///   - input: A `Tensor` of type T.
+///   - start_indices: List of N integers containing the slice size for each
+///     dimension. Each value must be strictly greater than zero, and start + size
+///     must be less than or equal to the size of the dimension to avoid
+///     implementation defined behavior.
+@inlinable @inline(__always)
+public static func xlaDynamicSlice<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  startIndices: Tensor<Tindices>,
+  sizeIndices: Tensor<Tindices>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaDynamicSlice",
+    input,
+    startIndices,
+    sizeIndices,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Wraps the XLA DynamicUpdateSlice operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#dynamicupdateslice
+/// .
+///
+/// XlaDynamicUpdateSlice generates a result which is the value of the `input`
+/// operand, with a slice update overwritten at `indices`. The shape of `update`
+/// determines the shape of the sub-array of the result which is updated. The shape
+/// of indices must be rank == 1, with dimension size equal to the rank of `input`.
+///
+/// Handling of out-of-bounds slice indices is implementation-defined.
+///
+/// - Parameters:
+///   - input: A `Tensor` of type T.
+///   - update: A `Tensor` of type T. Same rank as `input`.
+///   - indices: A vector of indices into `input`. Must have length equal to the rank of
+///     `input`.
+///
+/// - Output output: A `Tensor` of type T.
+@inlinable @inline(__always)
+public static func xlaDynamicUpdateSlice<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  update: Tensor<T>,
+  indices: Tensor<Tindices>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaDynamicUpdateSlice",
+    input,
+    update,
+    indices,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Wraps the XLA Sort operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#sort
+/// .
+///
+/// Sorts a tensor. Currently only sorts in ascending order are supported.
+///
+/// - Parameters:
+///   - keys: A `Tensor` of type K.
+///   - values: A `Tensor` of type V.
+///
+/// - Outputs:
+///   - sorted_keys: A `Tensor` of type K.
+///   - sorted_values: A `Tensor` of type V.
+@inlinable @inline(__always)
+public static func xlaKeyValueSort<K: Numeric & TensorFlowScalar, V: TensorFlowScalar>(
+  keys: Tensor<K>,
+  _ values: Tensor<V>
+) -> (sortedKeys: Tensor<K>, sortedValues: Tensor<V>) {
+  let ret: (TensorHandle<K>, TensorHandle<V>) = #tfop("XlaKeyValueSort",
+    keys,
+    values,
+    K$dtype: K.tensorFlowDataType,
+    V$dtype: V.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Wraps the XLA Pad operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#pad
+/// .
+///
+/// - Parameters:
+///   - input: A `Tensor` of type T.
+///   - padding_value: A scalar `Tensor` of type T.
+///   - padding_low: the padding to apply at the start of each input dimensions
+///   - padding_high: the padding to apply at the end of each input dimension.
+///   - padding_interior: the padding to apply between each input element.
+///
+/// - Output output: A `Tensor` of type T.
+@inlinable @inline(__always)
+public static func xlaPad<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  paddingValue: Tensor<T>,
+  paddingLow: Tensor<Tindices>,
+  paddingHigh: Tensor<Tindices>,
+  paddingInterior: Tensor<Tindices>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaPad",
+    input,
+    paddingValue,
+    paddingLow,
+    paddingHigh,
+    paddingInterior,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Sends the named tensor to another XLA computation. Wraps the XLA Send operator
+///
+/// documented at
+///  https://www.tensorflow.org/performance/xla/operation_semantics#send .
+///
+/// - Parameter tensor: The tensor to send.
+///
+/// - Attr tensor_name: A string key that identifies the channel.
+@inlinable @inline(__always)
+public static func xlaSend<T: TensorFlowScalar>(
+  _ tensor: Tensor<T>,
+  tensorName: String
+) {
+  return #tfop("XlaSend",
+    tensor,
+    T$dtype: T.tensorFlowDataType,
+    tensor_name: tensorName)
+}
+
+/// Wraps the XLA Sort operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#sort
+/// .
+///
+/// Sorts a tensor. Currently only sorts in ascending order are supported.
+///
+/// - Parameter input: A `Tensor` of type T.
+///
+/// - Output output: A `Tensor` of type T.
+@inlinable @inline(__always)
+public static func xlaSort<T: TensorFlowScalar>(
+  _ input: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("XlaSort",
+    input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }

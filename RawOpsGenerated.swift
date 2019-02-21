@@ -292,9 +292,9 @@ public enum Mode4 {
 
 // @_frozen // SR-9739
 public enum OutputStream {
-  case log(error)
-  case log(info)
-  case log(warning)
+  case logError
+  case logInfo
+  case logWarning
   case stderr
   case stdout
 
@@ -303,9 +303,9 @@ public enum OutputStream {
     @inline(__always)
     get {
       switch self {
-      case .log(error): return "log(error)"
-      case .log(info): return "log(info)"
-      case .log(warning): return "log(warning)"
+      case .logError: return "log(error)"
+      case .logInfo: return "log(info)"
+      case .logWarning: return "log(warning)"
       case .stderr: return "stderr"
       case .stdout: return "stdout"
       }

@@ -145,12 +145,12 @@ def swift_compatible(s, capitalize=False):
   if capitalize:
     s = s.capitalize()
   without_underscores = []
-  prev_char_was_underscore = False
+  capitalize_next_char = False
   for c in s:
-    if c == '_':
-      prev_char_was_underscore = True
-    elif prev_char_was_underscore:
-      prev_char_was_underscore = False
+    if c == '_' or c == '(' or c == ')':
+      capitalize_next_char = True
+    elif capitalize_next_char:
+      capitalize_next_char = False
       without_underscores.append(c.upper())
     else:
       without_underscores.append(c)

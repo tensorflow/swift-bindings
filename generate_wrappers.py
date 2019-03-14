@@ -237,6 +237,12 @@ class Types(object):
       return None
     return self.attr_def_name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
 
+  def op_set_arg(self):
+    # Do not pass list(type) attr as these have to use an array of types.
+    if self._is_list_attr:
+      return ""
+    return "  TFE_OpSetAttrType(op, \"" + self.attr_def_name + "\", " + self.swift_name + ".tensorFlowDataType._cDataType)\n"
+
 
 def swift_float(f):
   if f == float('inf'): return 'Double.infinity'
@@ -293,6 +299,38 @@ class AttributeAsInput(object):
     self.swift_value = (
         self.swift_name if not use_enum
         else self.swift_name + '.cName')
+
+    self.attr_type = attr_def.type
+
+  def op_set_arg(self):
+    if self.attr_type == 'bool':
+      # TODO: These all should be nicer wrapper APIs...
+      setter_fn = "TFE_OpSetAttrBool"
+      value = "(" + self.swift_value + ") ?     1 : 0"
+    elif self.attr_type == 'int':
+      setter_fn = "TFE_OpSetAttrInt"
+      value = self.swift_value
+    elif self.attr_type == 'float':
+      setter_fn = "TFE_OpSetAttrFloat"
+      value = 'Float(' + self.swift_value + ')'
+    elif self.attr_type == 'string':
+      setter_fn = "TFE_OpSetAttrString"
+      value = self.swift_value + ", " + self.swift_value + ".count"
+    elif self.attr_type == 'list(float)':
+      setter_fn = "_TFCOpSetAttrDoubleArray"
+      value = self.swift_value
+    elif self.attr_type == 'list(string)':
+      setter_fn = "_TFCOpSetAttrStringArray"
+      value = self.swift_value
+    elif self.attr_type == 'list(bool)':
+      setter_fn = "_TFCOpSetAttrBoolArray"
+      value = self.swift_value
+    elif self.attr_type == 'list(int)':
+      setter_fn = "_TFCOpSetAttrInt32Array"
+      value = self.swift_value
+    else:
+      raise UnableToGenerateCodeError('unsupported type for ' + self.attr_type)
+    return "  " + setter_fn + "(op, \"" + self.tfop_name + "\", " + value + ")\n"
 
 
 def attr_def_defines_a_type(attr_def):
@@ -501,6 +539,95 @@ public static func {function_name}{generics_type}({joined_inputs}
              return_type=return_type,
              body=body))
 
+def generate_code_fresh(op, api_def, enum_store):
+  """Generates some swift code for a given op."""
+  types = [Types(a) for a in op.attr if attr_def_defines_a_type(a)]
+  generics_type = ''
+  if types:
+    generics_type = '<' + ', '.join([t.generics() for t in types]) + '>'
+
+  input_names_and_types = [
+      (swiftified_name(a.name), arg_def_type_as_string(a))
+      for a in op.input_arg]
+
+  # Do not generate an input parameter for numberAttr as these are inferred from
+  # some array length.
+  excluded_attributes = set([a.number_attr for a in op.input_arg])
+  attributes_as_input = [
+      AttributeAsInput(a, enum_store)
+      for a in op.attr
+      if not attr_def_defines_a_type(a) and a.name not in excluded_attributes
+  ]
+
+  output_args = [
+      OutputArg(swift_name=swiftified_name(a.name),
+                swift_type=arg_def_type_as_string(a),
+                swift_handle_type=arg_def_type_as_string(a, handle=True),
+                is_list=arg_def_type_is_list(a))
+      for a in op.output_arg]
+
+  # Do not generate ops with output lists.
+  # TODO: We could support output lists by giving the outputs generic type that
+  # conforms to TensorGroup.
+  for output_arg in output_args:
+    if output_arg.is_list:
+      raise UnableToGenerateCodeError('output lists not supported')
+
+  return_type = ''
+  if len(output_args) == 1:
+    return_type = ' -> ' + output_args[0].swift_type
+  elif len(output_args) > 1:
+    named_types = [o.swift_name + ': ' + o.swift_type for o in output_args]
+    return_type = ' -> (' + ', '.join(named_types) + ')'
+
+  attr_names_and_types = [
+      (a.swift_name, a.swift_type_and_default_value)
+      for a in attributes_as_input
+  ]
+  all_args = list(op.input_arg) + list(op.output_arg)
+  arg_types = set(
+      [a.type_attr for a in all_args] +
+      [a.type_list_attr for a in all_args])
+  missing_types = [
+      ('type' + t.swift_name, t.swift_name + '.Type')
+      for t in types if t.attr_def_name not in arg_types]
+  all_inputs = [
+      '\n  ' + maybe_named(name) + ': ' + type_and_default_value
+      for name, type_and_default_value in (
+          input_names_and_types +
+          attr_names_and_types +
+          missing_types)]
+
+  body = """
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "%s", s)
+  defer { TFE_DeleteOp(op) }
+""" % op.name
+
+  for a in op.input_arg:
+    name = swiftified_name(a.name)
+    if a.number_attr:
+      body += "  let " + name + "Count = _TFCOpAddInputFromTensorGroup(op, " + name + ", s)\n"
+      # TODO: This should become an assert if a.number_attr is duplicated.
+      body += "  TFE_OpSetAttrInt(op, \"" + a.number_attr + "\", Int64(" + name + "Count))\n"
+    else:
+      body += "  let _ = _TFCOpAddInputFromTensorGroup(op, " + name + ", s)\n"
+  for t in types:
+    body += t.op_set_arg()
+  for attr in attributes_as_input:
+    body += attr.op_set_arg()
+  body += "  return TensorGroupExecuteOp(op, s)\n"
+
+  return (
+      """{documentation}@inlinable @inline(__always)
+public static func {function_name}{generics_type}({joined_inputs}
+){return_type} {{{body}}}""".format(documentation=documentation(api_def),
+             function_name=swiftified_name(op.name),
+             generics_type=generics_type,
+             joined_inputs=','.join(all_inputs),
+             return_type=return_type,
+             body=body))
 
 def main(argv):
   del argv  # Unused.
@@ -529,7 +656,9 @@ def main(argv):
       if op_name[0] == '_': continue
       op = api_def_map.get_op_def(op_name)
       api_def = api_def_map.get_api_def(bytes(op_name))
-      op_codes.append(generate_code(op, api_def, enum_store))
+      # To go back to #tfop:
+      # op_codes.append(generate_code(op, api_def, enum_store))
+      op_codes.append(generate_code_fresh(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))
   print('Generated code for %d/%d ops.' % (len(op_codes), len(op_names)))
@@ -542,13 +671,14 @@ def main(argv):
   swift_code = (
       _WARNING +
       _HEADER +
+      'import CTensorFlow\n\n' +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +
       '\n\n'.join(enum_store.enum_codes()) +
       '\n\n' +
       '\n\n'.join(op_codes) +
-      '\n\n}')
+      '\n\n}\n')
   with tf.gfile.Open(FLAGS.output_path, 'w') as fobj:
     fobj.write(swift_code)
 

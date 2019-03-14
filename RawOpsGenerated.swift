@@ -13,6 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import CTensorFlow
+
 
 public enum Raw {
 
@@ -388,8 +390,11 @@ public enum Unit {
 @inlinable @inline(__always)
 public static func a(
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("A")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "A", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Raise a exception to abort the process when called.
@@ -405,9 +410,13 @@ public static func abort(
   errorMsg: String,
   exitWithoutError: Bool = false
 ) {
-  return #tfop("Abort",
-    error_msg: errorMsg,
-    exit_without_error: exitWithoutError)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Abort", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "error_msg", errorMsg, errorMsg.count)
+  TFE_OpSetAttrBool(op, "exit_without_error", (exitWithoutError) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the absolute value of a tensor.
@@ -419,10 +428,13 @@ public static func abort(
 public static func abs<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Abs",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Abs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies a gradient to a given accumulator.
@@ -442,11 +454,15 @@ public static func accumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
   localStep: Tensor<Int64>,
   gradient: Tensor<Dtype>
 ) {
-  return #tfop("AccumulatorApplyGradient",
-    handle,
-    localStep,
-    gradient,
-    dtype$dtype: Dtype.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AccumulatorApplyGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, localStep, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradient, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the number of gradients aggregated in the given accumulators.
@@ -458,9 +474,12 @@ public static func accumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
 public static func accumulatorNumAccumulated(
   handle: StringTensor
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("AccumulatorNumAccumulated",
-    handle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AccumulatorNumAccumulated", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Updates the accumulator with a new value for global_step.
@@ -476,9 +495,13 @@ public static func accumulatorSetGlobalStep(
   handle: StringTensor,
   newGlobalStep: Tensor<Int64>
 ) {
-  return #tfop("AccumulatorSetGlobalStep",
-    handle,
-    newGlobalStep)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AccumulatorSetGlobalStep", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, newGlobalStep, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extracts the average gradient in the given ConditionalAccumulator.
@@ -502,11 +525,14 @@ public static func accumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
   handle: StringTensor,
   numRequired: Tensor<Int32>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("AccumulatorTakeGradient",
-    handle,
-    numRequired,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AccumulatorTakeGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numRequired, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes acos of x element-wise.
@@ -514,10 +540,13 @@ public static func accumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
 public static func acos<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Acos",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Acos", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes inverse hyperbolic cosine of x element-wise.
@@ -525,10 +554,13 @@ public static func acos<T: Numeric & TensorFlowScalar>(
 public static func acosh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Acosh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Acosh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x + y element-wise.
@@ -540,11 +572,14 @@ public static func add<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Add",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Add", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Add an `N`-minibatch `SparseTensor` to a `SparseTensorsMap`, return `N` handles.
@@ -594,14 +629,17 @@ public static func addManySparseToTensorsMap<T: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("AddManySparseToTensorsMap",
-    sparseIndices,
-    sparseValues,
-    sparseShape,
-    T$dtype: T.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AddManySparseToTensorsMap", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Add all input tensors element wise.
@@ -611,10 +649,14 @@ public static func addManySparseToTensorsMap<T: TensorFlowScalar>(
 public static func addN<T: Numeric & TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AddN",
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AddN", s)
+  defer { TFE_DeleteOp(op) }
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Add a `SparseTensor` to a `SparseTensorsMap` return its handle.
@@ -654,14 +696,17 @@ public static func addSparseToTensorsMap<T: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("AddSparseToTensorsMap",
-    sparseIndices,
-    sparseValues,
-    sparseShape,
-    T$dtype: T.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AddSparseToTensorsMap", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x + y element-wise.
@@ -673,11 +718,14 @@ public static func addV2<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AddV2",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AddV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Disallowed in GraphDef version >= 2.
@@ -688,13 +736,16 @@ public static func adjustContrast<T: Numeric & TensorFlowScalar>(
   minValue: Tensor<Float>,
   maxValue: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustContrast",
-    images,
-    contrastFactor,
-    minValue,
-    maxValue,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AdjustContrast", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, contrastFactor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minValue, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxValue, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adjust the contrast of one or more images.
@@ -719,10 +770,13 @@ public static func adjustContrastv2(
   images: Tensor<Float>,
   contrastFactor: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustContrastv2",
-    images,
-    contrastFactor)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AdjustContrastv2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, contrastFactor, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adjust the hue of one or more images.
@@ -744,10 +798,13 @@ public static func adjustHue(
   images: Tensor<Float>,
   delta: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustHue",
-    images,
-    delta)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AdjustHue", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adjust the saturation of one or more images.
@@ -769,10 +826,13 @@ public static func adjustSaturation(
   images: Tensor<Float>,
   scale: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustSaturation",
-    images,
-    scale)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AdjustSaturation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the "logical and" of elements across dimensions of a tensor.
@@ -796,12 +856,15 @@ public static func all<Tidx: BinaryInteger & TensorFlowScalar>(
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("All",
-    input,
-    reductionIndices,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "All", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -849,14 +912,17 @@ public static func allCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("AllCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AllCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the argument of a complex number.
@@ -882,11 +948,14 @@ public static func allCandidateSampler(
 public static func angle<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("Angle",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Angle", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the "logical or" of elements across dimensions of a tensor.
@@ -910,12 +979,15 @@ public static func any<Tidx: BinaryInteger & TensorFlowScalar>(
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("Any",
-    input,
-    reductionIndices,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Any", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the AdaMax algorithm.
@@ -953,19 +1025,22 @@ public static func applyAdaMax<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdaMax",
-    var_,
-    m,
-    v,
-    beta1Power,
-    lr,
-    beta1,
-    beta2,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAdaMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta1Power, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the adadelta scheme.
@@ -999,17 +1074,20 @@ public static func applyAdadelta<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdadelta",
-    var_,
-    accum,
-    accumUpdate,
-    lr,
-    rho,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAdadelta", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accumUpdate, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the adagrad scheme.
@@ -1037,15 +1115,18 @@ public static func applyAdagrad<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false,
   updateSlots: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdagrad",
-    var_,
-    accum,
-    lr,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    update_slots: updateSlots)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAdagrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "update_slots", (updateSlots) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the proximal adagrad scheme.
@@ -1076,18 +1157,21 @@ public static func applyAdagradDA<T: Numeric & TensorFlowScalar>(
   globalStep: Tensor<Int64>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdagradDA",
-    var_,
-    gradientAccumulator,
-    gradientSquaredAccumulator,
-    grad,
-    lr,
-    l1,
-    l2,
-    globalStep,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAdagradDA", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientAccumulator, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientSquaredAccumulator, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, globalStep, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the Adam algorithm.
@@ -1131,21 +1215,24 @@ public static func applyAdam<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false,
   useNesterov: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdam",
-    var_,
-    m,
-    v,
-    beta1Power,
-    beta2Power,
-    lr,
-    beta1,
-    beta2,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAdam", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta1Power, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta2Power, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "use_nesterov", (useNesterov) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the AddSign update.
@@ -1179,17 +1266,20 @@ public static func applyAddSign<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAddSign",
-    var_,
-    m,
-    lr,
-    alpha,
-    signDecay,
-    beta,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyAddSign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, signDecay, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the centered RMSProp algorithm.
@@ -1241,19 +1331,22 @@ public static func applyCenteredRMSProp<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyCenteredRMSProp",
-    var_,
-    mg,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyCenteredRMSProp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mg, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ms, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mom, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the Ftrl-proximal scheme.
@@ -1291,18 +1384,21 @@ public static func applyFtrl<T: Numeric & TensorFlowScalar>(
   lrPower: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyFtrl",
-    var_,
-    accum,
-    linear,
-    grad,
-    lr,
-    l1,
-    l2,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyFtrl", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, linear, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lrPower, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the Ftrl-proximal scheme.
@@ -1343,19 +1439,22 @@ public static func applyFtrlV2<T: Numeric & TensorFlowScalar>(
   lrPower: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyFtrlV2",
-    var_,
-    accum,
-    linear,
-    grad,
-    lr,
-    l1,
-    l2,
-    l2Shrinkage,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyFtrlV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, linear, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2Shrinkage, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lrPower, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' by subtracting 'alpha' * 'delta' from it.
@@ -1376,13 +1475,16 @@ public static func applyGradientDescent<T: Numeric & TensorFlowScalar>(
   delta: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyGradientDescent",
-    var_,
-    alpha,
-    delta,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyGradientDescent", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the momentum scheme. Set use_nesterov = True if you
@@ -1418,16 +1520,19 @@ public static func applyMomentum<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false,
   useNesterov: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyMomentum",
-    var_,
-    accum,
-    lr,
-    grad,
-    momentum,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyMomentum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "use_nesterov", (useNesterov) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the AddSign update.
@@ -1461,17 +1566,20 @@ public static func applyPowerSign<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyPowerSign",
-    var_,
-    m,
-    lr,
-    logbase,
-    signDecay,
-    beta,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyPowerSign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, logbase, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, signDecay, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' and '*accum' according to FOBOS with Adagrad learning rate.
@@ -1502,16 +1610,19 @@ public static func applyProximalAdagrad<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyProximalAdagrad",
-    var_,
-    accum,
-    lr,
-    l1,
-    l2,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyProximalAdagrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' as FOBOS algorithm with fixed learning rate.
@@ -1539,15 +1650,18 @@ public static func applyProximalGradientDescent<T: Numeric & TensorFlowScalar>(
   delta: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyProximalGradientDescent",
-    var_,
-    alpha,
-    l1,
-    l2,
-    delta,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyProximalGradientDescent", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the RMSProp algorithm.
@@ -1589,18 +1703,21 @@ public static func applyRMSProp<T: Numeric & TensorFlowScalar>(
   grad: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyRMSProp",
-    var_,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApplyRMSProp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ms, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mom, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of abs(x-y) < tolerance element-wise.
@@ -1610,12 +1727,15 @@ public static func approximateEqual<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>,
   tolerance: Double = 1e-05
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("ApproximateEqual",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType,
-    tolerance: tolerance)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ApproximateEqual", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "tolerance", Float(tolerance))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the index with the largest value across dimensions of a tensor.
@@ -1630,13 +1750,16 @@ public static func argMax<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   _ input: Tensor<T>,
   dimension: Tensor<Tidx>
 ) -> Tensor<OutputType> {
-  let ret: TensorHandle<OutputType> = #tfop("ArgMax",
-    input,
-    dimension,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    output_type$dtype: OutputType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ArgMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dimension, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the index with the smallest value across dimensions of a tensor.
@@ -1651,13 +1774,16 @@ public static func argMin<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   _ input: Tensor<T>,
   dimension: Tensor<Tidx>
 ) -> Tensor<OutputType> {
-  let ret: TensorHandle<OutputType> = #tfop("ArgMin",
-    input,
-    dimension,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    output_type$dtype: OutputType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ArgMin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dimension, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts each entry in the given tensor to strings.  Supports many numeric
@@ -1684,15 +1810,18 @@ public static func asString<T: TensorFlowScalar>(
   width: Int64 = -1,
   fill: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("AsString",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    precision: precision,
-    scientific: scientific,
-    shortest: shortest,
-    width: width,
-    fill: fill)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AsString", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "precision", precision)
+  TFE_OpSetAttrBool(op, "scientific", (scientific) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "shortest", (shortest) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "width", width)
+  TFE_OpSetAttrString(op, "fill", fill, fill.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes asin of x element-wise.
@@ -1700,10 +1829,13 @@ public static func asString<T: TensorFlowScalar>(
 public static func asin<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Asin",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Asin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes inverse hyperbolic sine of x element-wise.
@@ -1711,10 +1843,13 @@ public static func asin<T: Numeric & TensorFlowScalar>(
 public static func asinh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Asinh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Asinh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Asserts that the given condition is true.
@@ -1733,10 +1868,14 @@ public static func assert<T: TensorFlowScalar>(
   data: [Tensor<T>],
   summarize: Int64 = 3
 ) {
-  return #tfop("Assert",
-    condition,
-    data,
-    summarize: summarize)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Assert", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, condition, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrInt(op, "summarize", summarize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update 'ref' by assigning 'value' to it.
@@ -1764,13 +1903,16 @@ public static func assign<T: TensorFlowScalar>(
   validateShape: Bool = true,
   useLocking: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Assign",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    validate_shape: validateShape,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Assign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "validate_shape", (validateShape) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update 'ref' by adding 'value' to it.
@@ -1793,12 +1935,15 @@ public static func assignAdd<T: Numeric & TensorFlowScalar>(
   value: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AssignAdd",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AssignAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update 'ref' by subtracting 'value' from it.
@@ -1821,12 +1966,15 @@ public static func assignSub<T: Numeric & TensorFlowScalar>(
   value: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AssignSub",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AssignSub", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes atan of x element-wise.
@@ -1834,10 +1982,13 @@ public static func assignSub<T: Numeric & TensorFlowScalar>(
 public static func atan<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Atan",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Atan", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes arctangent of `y/x` element-wise, respecting signs of the arguments.
@@ -1852,11 +2003,14 @@ public static func atan2<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Atan2",
-    y,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Atan2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes inverse hyperbolic tangent of x element-wise.
@@ -1864,90 +2018,133 @@ public static func atan2<T: FloatingPoint & TensorFlowScalar>(
 public static func atanh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Atanh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Atanh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attr(
   _ a: Int64
 ) {
-  return #tfop("Attr",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Attr", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrBool(
   _ a: Bool
 ) {
-  return #tfop("AttrBool",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrBool", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrBool(op, "a", (a) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrBoolList(
   _ a: [Bool]
 ) {
-  return #tfop("AttrBoolList",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrBoolList", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrBoolArray(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrDefault(
   _ a: String = "banana"
 ) {
-  return #tfop("AttrDefault",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrDefault", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "a", a, a.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrEmptyListDefault(
   _ a: [Double]
 ) {
-  return #tfop("AttrEmptyListDefault",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrEmptyListDefault", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrDoubleArray(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrEnum(
   _ a: A
 ) {
-  return #tfop("AttrEnum",
-    a: a.cName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrEnum", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "a", a.cName, a.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrEnumList(
   _ a: [String]
 ) {
-  return #tfop("AttrEnumList",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrEnumList", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrStringArray(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrFloat(
   _ a: Double
 ) {
-  return #tfop("AttrFloat",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrFloat", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrFloat(op, "a", Float(a))
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrListDefault(
   _ a: [Int32] = [5, 15]
 ) {
-  return #tfop("AttrListDefault",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrListDefault", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrInt32Array(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrListMin(
   _ a: [Int32]
 ) {
-  return #tfop("AttrListMin",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrListMin", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrInt32Array(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -1955,27 +2152,41 @@ public static func attrListTypeDefault<T: TensorFlowScalar>(
   _ a: [Tensor<T>],
   _ b: [Tensor<T>]
 ) {
-  return #tfop("AttrListTypeDefault",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrListTypeDefault", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  let bCount = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrInt(op, "N", Int64(bCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrMin(
   _ a: Int64
 ) {
-  return #tfop("AttrMin",
-    a: a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrMin", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "a", a)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func attrTypeDefault<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) {
-  return #tfop("AttrTypeDefault",
-    a,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AttrTypeDefault", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Produces a visualization of audio data over time.
@@ -2023,12 +2234,15 @@ public static func audioSpectrogram(
   stride: Int64,
   magnitudeSquared: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AudioSpectrogram",
-    input,
-    window_size: windowSize,
-    stride: stride,
-    magnitude_squared: magnitudeSquared)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AudioSpectrogram", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrInt(op, "window_size", windowSize)
+  TFE_OpSetAttrInt(op, "stride", stride)
+  TFE_OpSetAttrBool(op, "magnitude_squared", (magnitudeSquared) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with audio.
@@ -2061,12 +2275,15 @@ public static func audioSummary(
   sampleRate: Double,
   maxOutputs: Int64 = 3
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("AudioSummary",
-    tag,
-    tensor,
-    sample_rate: sampleRate,
-    max_outputs: maxOutputs)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AudioSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  TFE_OpSetAttrFloat(op, "sample_rate", Float(sampleRate))
+  TFE_OpSetAttrInt(op, "max_outputs", maxOutputs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with audio.
@@ -2098,12 +2315,15 @@ public static func audioSummaryV2(
   sampleRate: Tensor<Float>,
   maxOutputs: Int64 = 3
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("AudioSummaryV2",
-    tag,
-    tensor,
-    sampleRate,
-    max_outputs: maxOutputs)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AudioSummaryV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sampleRate, s)
+  TFE_OpSetAttrInt(op, "max_outputs", maxOutputs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs average pooling on the input.
@@ -2132,14 +2352,17 @@ public static func avgPool<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AvgPool",
-    value,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AvgPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs 3D average pooling on the input.
@@ -2167,14 +2390,17 @@ public static func avgPool3D<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AvgPool3D",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AvgPool3D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of average pooling function.
@@ -2205,15 +2431,18 @@ public static func avgPool3DGrad<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AvgPool3DGrad",
-    origInputShape,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AvgPool3DGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of the average pooling function.
@@ -2243,22 +2472,28 @@ public static func avgPoolGrad<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AvgPoolGrad",
-    origInputShape,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "AvgPoolGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func b(
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("B")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "B", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Closes the given barrier.
@@ -2280,9 +2515,13 @@ public static func barrierClose(
   handle: StringTensor,
   cancelPendingEnqueues: Bool = false
 ) {
-  return #tfop("BarrierClose",
-    handle,
-    cancel_pending_enqueues: cancelPendingEnqueues)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BarrierClose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  TFE_OpSetAttrBool(op, "cancel_pending_enqueues", (cancelPendingEnqueues) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the number of incomplete elements in the given barrier.
@@ -2295,9 +2534,12 @@ public static func barrierClose(
 public static func barrierIncompleteSize(
   handle: StringTensor
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("BarrierIncompleteSize",
-    handle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BarrierIncompleteSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// For each key, assigns the respective value to the specified component.
@@ -2321,12 +2563,16 @@ public static func barrierInsertMany<T: TensorFlowScalar>(
   _ values: Tensor<T>,
   componentIndex: Int64
 ) {
-  return #tfop("BarrierInsertMany",
-    handle,
-    keys,
-    values,
-    T$dtype: T.tensorFlowDataType,
-    component_index: componentIndex)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BarrierInsertMany", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "component_index", componentIndex)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the number of complete elements in the given barrier.
@@ -2339,19 +2585,25 @@ public static func barrierInsertMany<T: TensorFlowScalar>(
 public static func barrierReadySize(
   handle: StringTensor
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("BarrierReadySize",
-    handle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BarrierReadySize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func batchCholesky<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchCholesky",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchCholesky", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2359,11 +2611,14 @@ public static func batchCholeskyGrad<T: FloatingPoint & TensorFlowScalar>(
   l: Tensor<T>,
   grad: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchCholeskyGrad",
-    l,
-    grad,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchCholeskyGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, l, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Multiplies slices of two tensors in batches.
@@ -2403,13 +2658,16 @@ public static func batchMatMul<T: Numeric & TensorFlowScalar>(
   adjX: Bool = false,
   adjY: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatMul",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType,
-    adj_x: adjX,
-    adj_y: adjY)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adj_x", (adjX) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "adj_y", (adjY) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2418,42 +2676,54 @@ public static func batchMatrixBandPart<T: TensorFlowScalar>(
   numLower: Tensor<Int64>,
   numUpper: Tensor<Int64>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixBandPart",
-    input,
-    numLower,
-    numUpper,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixBandPart", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numLower, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numUpper, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func batchMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixDeterminant",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixDeterminant", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func batchMatrixDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixDiag",
-    diagonal,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixDiag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func batchMatrixDiagPart<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixDiagPart",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixDiagPart", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2461,11 +2731,14 @@ public static func batchMatrixInverse<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixInverse",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixInverse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2473,11 +2746,14 @@ public static func batchMatrixSetDiag<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   diagonal: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixSetDiag",
-    input,
-    diagonal,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixSetDiag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2486,12 +2762,15 @@ public static func batchMatrixSolve<T: FloatingPoint & TensorFlowScalar>(
   rhs: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixSolve",
-    matrix,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixSolve", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2501,13 +2780,16 @@ public static func batchMatrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   l2Regularizer: Tensor<Double>,
   fast: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixSolveLs",
-    matrix,
-    rhs,
-    l2Regularizer,
-    T$dtype: T.tensorFlowDataType,
-    fast: fast)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixSolveLs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2Regularizer, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "fast", (fast) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2517,13 +2799,16 @@ public static func batchMatrixTriangularSolve<T: FloatingPoint & TensorFlowScala
   lower: Bool = true,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchMatrixTriangularSolve",
-    matrix,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    lower: lower,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchMatrixTriangularSolve", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "lower", (lower) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Batch normalization.
@@ -2558,16 +2843,19 @@ public static func batchNormWithGlobalNormalization<T: Numeric & TensorFlowScala
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchNormWithGlobalNormalization",
-    t,
-    m,
-    v,
-    beta,
-    gamma,
-    T$dtype: T.tensorFlowDataType,
-    variance_epsilon: varianceEpsilon,
-    scale_after_normalization: scaleAfterNormalization)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchNormWithGlobalNormalization", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gamma, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
+  TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradients for batch normalization.
@@ -2608,26 +2896,32 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & TensorFlowS
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
 ) -> (dx: Tensor<T>, dm: Tensor<T>, dv: Tensor<T>, db: Tensor<T>, dg: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("BatchNormWithGlobalNormalizationGrad",
-    t,
-    m,
-    v,
-    gamma,
-    backprop,
-    T$dtype: T.tensorFlowDataType,
-    variance_epsilon: varianceEpsilon,
-    scale_after_normalization: scaleAfterNormalization)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchNormWithGlobalNormalizationGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gamma, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, backprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
+  TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func batchSelfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchSelfAdjointEig",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchSelfAdjointEig", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2635,11 +2929,14 @@ public static func batchSelfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   computeV: Bool = true
 ) -> (e: Tensor<T>, v: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("BatchSelfAdjointEigV2",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    compute_v: computeV)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchSelfAdjointEigV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "compute_v", (computeV) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -2648,12 +2945,15 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
   computeUv: Bool = true,
   fullMatrices: Bool = false
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("BatchSvd",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    compute_uv: computeUv,
-    full_matrices: fullMatrices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchSvd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "compute_uv", (computeUv) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// BatchToSpace for 4-D tensors of type T.
@@ -2750,13 +3050,16 @@ public static func batchToSpace<T: TensorFlowScalar, Tidx: BinaryInteger & Tenso
   crops: Tensor<Tidx>,
   blockSize: Int64
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchToSpace",
-    input,
-    crops,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    block_size: blockSize)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchToSpace", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, crops, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "block_size", blockSize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// BatchToSpace for N-D tensors of type T.
@@ -2887,14 +3190,17 @@ public static func batchToSpaceND<T: TensorFlowScalar, TblockShape: BinaryIntege
   blockShape: Tensor<TblockShape>,
   crops: Tensor<Tcrops>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BatchToSpaceND",
-    input,
-    blockShape,
-    crops,
-    T$dtype: T.tensorFlowDataType,
-    Tblock_shape$dtype: TblockShape.tensorFlowDataType,
-    Tcrops$dtype: Tcrops.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchToSpaceND", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, crops, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tblock_shape", TblockShape.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tcrops", Tcrops.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the Bessel i0e function of `x` element-wise.
@@ -2907,10 +3213,13 @@ public static func batchToSpaceND<T: TensorFlowScalar, TblockShape: BinaryIntege
 public static func besselI0e<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BesselI0e",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BesselI0e", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the Bessel i1e function of `x` element-wise.
@@ -2923,10 +3232,13 @@ public static func besselI0e<T: FloatingPoint & TensorFlowScalar>(
 public static func besselI1e<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BesselI1e",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BesselI1e", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the regularized incomplete beta integral \\(I_x(a, b)\\).
@@ -2950,12 +3262,15 @@ public static func betainc<T: FloatingPoint & TensorFlowScalar>(
   _ b: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Betainc",
-    a,
-    b,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Betainc", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds `bias` to `value`.
@@ -2982,12 +3297,15 @@ public static func biasAdd<T: Numeric & TensorFlowScalar>(
   bias: Tensor<T>,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BiasAdd",
-    value,
-    bias,
-    T$dtype: T.tensorFlowDataType,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BiasAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bias, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// The backward operation for "BiasAdd" on the "bias" tensor.
@@ -3012,11 +3330,14 @@ public static func biasAddGrad<T: Numeric & TensorFlowScalar>(
   outBackprop: Tensor<T>,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BiasAddGrad",
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BiasAddGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds `bias` to `value`.
@@ -3036,11 +3357,14 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
   value: Tensor<T>,
   bias: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BiasAddV1",
-    value,
-    bias,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BiasAddV1", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bias, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs rows from a BigQuery table as tensorflow Examples.
@@ -3071,16 +3395,19 @@ public static func bigQueryReader(
   timestampMillis: Int64,
   testEndPoint: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("BigQueryReader",
-    container: container,
-    shared_name: sharedName,
-    project_id: projectId,
-    dataset_id: datasetId,
-    table_id: tableId,
-    columns: columns,
-    timestamp_millis: timestampMillis,
-    test_end_point: testEndPoint)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BigQueryReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  TFE_OpSetAttrString(op, "project_id", projectId, projectId.count)
+  TFE_OpSetAttrString(op, "dataset_id", datasetId, datasetId.count)
+  TFE_OpSetAttrString(op, "table_id", tableId, tableId.count)
+  _TFCOpSetAttrStringArray(op, "columns", columns)
+  TFE_OpSetAttrInt(op, "timestamp_millis", timestampMillis)
+  TFE_OpSetAttrString(op, "test_end_point", testEndPoint, testEndPoint.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -3088,11 +3415,14 @@ public static func binary<T: TensorFlowScalar>(
   _ a: Tensor<T>,
   _ b: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Binary",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Binary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Counts the number of occurrences of each value in an integer array.
@@ -3120,12 +3450,15 @@ public static func bincount<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   weights: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Bincount",
-    arr,
-    size,
-    weights,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Bincount", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, arr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, weights, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Bitcasts a tensor from one type to another without copying data.
@@ -3146,11 +3479,14 @@ public static func bincount<T: Numeric & TensorFlowScalar>(
 public static func bitcast<T: Numeric & TensorFlowScalar, Type: Numeric & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Type> {
-  let ret: TensorHandle<Type> = #tfop("Bitcast",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    type$dtype: Type.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Bitcast", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "type", Type.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Elementwise computes the bitwise AND of `x` and `y`.
@@ -3162,11 +3498,14 @@ public static func bitwiseAnd<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BitwiseAnd",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BitwiseAnd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Elementwise computes the bitwise OR of `x` and `y`.
@@ -3178,11 +3517,14 @@ public static func bitwiseOr<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BitwiseOr",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BitwiseOr", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Elementwise computes the bitwise XOR of `x` and `y`.
@@ -3194,11 +3536,14 @@ public static func bitwiseXor<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BitwiseXor",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BitwiseXor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the LSTM cell forward propagation for all the time steps.
@@ -3261,21 +3606,24 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   cellClip: Double = 3,
   usePeephole: Bool = false
 ) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("BlockLSTM",
-    seqLenMax,
-    x,
-    csPrev,
-    hPrev,
-    w,
-    wci,
-    wcf,
-    wco,
-    b,
-    T$dtype: T.tensorFlowDataType,
-    forget_bias: forgetBias,
-    cell_clip: cellClip,
-    use_peephole: usePeephole)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BlockLSTM", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, seqLenMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, w, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wcf, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wco, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "forget_bias", Float(forgetBias))
+  TFE_OpSetAttrFloat(op, "cell_clip", Float(cellClip))
+  TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the LSTM cell backward propagation for the entire time sequence.
@@ -3336,28 +3684,31 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   hGrad: Tensor<T>,
   usePeephole: Bool
 ) -> (xGrad: Tensor<T>, csPrevGrad: Tensor<T>, hPrevGrad: Tensor<T>, wGrad: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>, bGrad: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("BlockLSTMGrad",
-    seqLenMax,
-    x,
-    csPrev,
-    hPrev,
-    w,
-    wci,
-    wcf,
-    wco,
-    b,
-    i,
-    cs,
-    f,
-    o,
-    ci,
-    co,
-    h,
-    csGrad,
-    hGrad,
-    T$dtype: T.tensorFlowDataType,
-    use_peephole: usePeephole)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6), Tensor(handle: ret.7))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BlockLSTMGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, seqLenMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, w, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wcf, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wco, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, f, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, o, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, co, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, h, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csGrad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hGrad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Makes the summary of accumulated stats for the batch.
@@ -3385,14 +3736,18 @@ public static func boostedTreesMakeStatsSummary(
   maxSplits: Int64,
   numBuckets: Int64
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("BoostedTreesMakeStatsSummary",
-    nodeIds,
-    gradients,
-    hessians,
-    bucketizedFeaturesList,
-    max_splits: maxSplits,
-    num_buckets: numBuckets)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BoostedTreesMakeStatsSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, nodeIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hessians, s)
+  let bucketizedFeaturesListCount = _TFCOpAddInputFromTensorGroup(op, bucketizedFeaturesList, s)
+  TFE_OpSetAttrInt(op, "num_features", Int64(bucketizedFeaturesListCount))
+  TFE_OpSetAttrInt(op, "max_splits", maxSplits)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return the shape of s0 op s1 with broadcast.
@@ -3404,11 +3759,14 @@ public static func broadcastArgs<T: BinaryInteger & TensorFlowScalar>(
   s0: Tensor<T>,
   s1: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BroadcastArgs",
-    s0,
-    s1,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BroadcastArgs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, s0, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, s1, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return the reduction indices for computing gradients of s0 op s1 with broadcast.
@@ -3419,11 +3777,14 @@ public static func broadcastGradientArgs<T: BinaryInteger & TensorFlowScalar>(
   s0: Tensor<T>,
   s1: Tensor<T>
 ) -> (r0: Tensor<T>, r1: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("BroadcastGradientArgs",
-    s0,
-    s1,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BroadcastGradientArgs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, s0, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, s1, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Broadcast an array for a compatible shape.
@@ -3456,12 +3817,15 @@ public static func broadcastTo<T: TensorFlowScalar, Tidx: BinaryInteger & Tensor
   _ input: Tensor<T>,
   shape: Tensor<Tidx>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("BroadcastTo",
-    input,
-    shape,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BroadcastTo", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Bucketizes 'input' based on 'boundaries'.
@@ -3491,11 +3855,14 @@ public static func bucketize<T: Numeric & TensorFlowScalar>(
   _ input: Tensor<T>,
   boundaries: [Double]
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("Bucketize",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    boundaries: boundaries)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Bucketize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrDoubleArray(op, "boundaries", boundaries)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs greedy decoding on the logits given in inputs.
@@ -3531,11 +3898,14 @@ public static func cTCGreedyDecoder(
   sequenceLength: Tensor<Int32>,
   mergeRepeated: Bool = false
 ) -> (decodedIndices: Tensor<Int64>, decodedValues: Tensor<Int64>, decodedShape: Tensor<Int64>, logProbability: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Int64>, TensorHandle<Int64>, TensorHandle<Float>) = #tfop("CTCGreedyDecoder",
-    inputs,
-    sequenceLength,
-    merge_repeated: mergeRepeated)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CTCGreedyDecoder", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sequenceLength, s)
+  TFE_OpSetAttrBool(op, "merge_repeated", (mergeRepeated) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Calculates the CTC Loss (log probability) for each batch entry.  Also calculates
@@ -3575,15 +3945,18 @@ public static func cTCLoss(
   ctcMergeRepeated: Bool = true,
   ignoreLongerOutputsThanInputs: Bool = false
 ) -> (loss: Tensor<Float>, gradient: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("CTCLoss",
-    inputs,
-    labelsIndices,
-    labelsValues,
-    sequenceLength,
-    preprocess_collapse_repeated: preprocessCollapseRepeated,
-    ctc_merge_repeated: ctcMergeRepeated,
-    ignore_longer_outputs_than_inputs: ignoreLongerOutputsThanInputs)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CTCLoss", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, labelsIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, labelsValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sequenceLength, s)
+  TFE_OpSetAttrBool(op, "preprocess_collapse_repeated", (preprocessCollapseRepeated) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "ctc_merge_repeated", (ctcMergeRepeated) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "ignore_longer_outputs_than_inputs", (ignoreLongerOutputsThanInputs) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Cast x of type SrcT to y of DstT.
@@ -3592,12 +3965,15 @@ public static func cast<Srct: TensorFlowScalar, Dstt: TensorFlowScalar>(
   _ x: Tensor<Srct>,
   truncate: Bool = false
 ) -> Tensor<Dstt> {
-  let ret: TensorHandle<Dstt> = #tfop("Cast",
-    x,
-    SrcT$dtype: Srct.tensorFlowDataType,
-    DstT$dtype: Dstt.tensorFlowDataType,
-    Truncate: truncate)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cast", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "SrcT", Srct.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "DstT", Dstt.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "Truncate", (truncate) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise smallest integer not less than x.
@@ -3605,10 +3981,13 @@ public static func cast<Srct: TensorFlowScalar, Dstt: TensorFlowScalar>(
 public static func ceil<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Ceil",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Ceil", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Checks a tensor for NaN and Inf values.
@@ -3622,11 +4001,14 @@ public static func checkNumerics<T: FloatingPoint & TensorFlowScalar>(
   _ tensor: Tensor<T>,
   message: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CheckNumerics",
-    tensor,
-    T$dtype: T.tensorFlowDataType,
-    message: message)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CheckNumerics", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "message", message, message.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the Cholesky decomposition of one or more square matrices.
@@ -3652,10 +4034,13 @@ public static func checkNumerics<T: FloatingPoint & TensorFlowScalar>(
 public static func cholesky<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cholesky",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cholesky", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the reverse mode backpropagated gradient of the Cholesky algorithm.
@@ -3677,11 +4062,14 @@ public static func choleskyGrad<T: FloatingPoint & TensorFlowScalar>(
   l: Tensor<T>,
   grad: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CholeskyGrad",
-    l,
-    grad,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CholeskyGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, l, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Clips tensor values to a specified min and max.
@@ -3705,12 +4093,15 @@ public static func clipByValue<T: Numeric & TensorFlowScalar>(
   clipValueMin: Tensor<T>,
   clipValueMax: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ClipByValue",
-    t,
-    clipValueMin,
-    clipValueMax,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ClipByValue", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, clipValueMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, clipValueMax, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Mutually reduces multiple tensors of identical type and shape.
@@ -3724,16 +4115,19 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
   finalOp: FinalOp,
   subdivOffsets: [Int32]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CollectiveReduce",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    group_size: groupSize,
-    group_key: groupKey,
-    instance_key: instanceKey,
-    merge_op: mergeOp.cName,
-    final_op: finalOp.cName,
-    subdiv_offsets: subdivOffsets)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CollectiveReduce", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "group_size", groupSize)
+  TFE_OpSetAttrInt(op, "group_key", groupKey)
+  TFE_OpSetAttrInt(op, "instance_key", instanceKey)
+  TFE_OpSetAttrString(op, "merge_op", mergeOp.cName, mergeOp.cName.count)
+  TFE_OpSetAttrString(op, "final_op", finalOp.cName, finalOp.cName.count)
+  _TFCOpSetAttrInt32Array(op, "subdiv_offsets", subdivOffsets)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compare values of `input` to `threshold` and pack resulting bits into a `uint8`.
@@ -3774,11 +4168,14 @@ public static func compareAndBitpack<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   threshold: Tensor<T>
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("CompareAndBitpack",
-    input,
-    threshold,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CompareAndBitpack", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, threshold, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts two real numbers to a complex number.
@@ -3802,12 +4199,15 @@ public static func complex<T: FloatingPoint & TensorFlowScalar, Tout: TensorFlow
   real: Tensor<T>,
   imag: Tensor<T>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("Complex",
-    real,
-    imag,
-    T$dtype: T.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Complex", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, real, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, imag, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the complex absolute value of a tensor.
@@ -3820,11 +4220,14 @@ public static func complex<T: FloatingPoint & TensorFlowScalar, Tout: TensorFlow
 public static func complexAbs<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("ComplexAbs",
-    x,
-    T$dtype: T.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ComplexAbs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the ids of the positions in sampled_candidates that match true_labels.
@@ -3859,13 +4262,16 @@ public static func computeAccidentalHits(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (indices: Tensor<Int32>, ids: Tensor<Int64>, weights: Tensor<Float>) {
-  let ret: (TensorHandle<Int32>, TensorHandle<Int64>, TensorHandle<Float>) = #tfop("ComputeAccidentalHits",
-    trueClasses,
-    sampledCandidates,
-    num_true: numTrue,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ComputeAccidentalHits", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sampledCandidates, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Concatenates tensors along one dimension.
@@ -3884,11 +4290,15 @@ public static func concat<T: TensorFlowScalar>(
   concatDim: Tensor<Int32>,
   _ values: [Tensor<T>]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Concat",
-    concatDim,
-    values,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Concat", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, concatDim, s)
+  let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Concatenates tensors along one dimension.
@@ -3907,12 +4317,16 @@ public static func concatV2<T: TensorFlowScalar, Tidx: BinaryInteger & TensorFlo
   _ values: [Tensor<T>],
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ConcatV2",
-    values,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ConcatV2", s)
+  defer { TFE_DeleteOp(op) }
+  let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the complex conjugate of a complex number.
@@ -3934,10 +4348,13 @@ public static func concatV2<T: TensorFlowScalar, Tidx: BinaryInteger & TensorFlo
 public static func conj<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conj",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conj", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Shuffle dimensions of x according to a permutation and conjugate the result.
@@ -3950,18 +4367,25 @@ public static func conjugateTranspose<T: TensorFlowScalar, Tperm: BinaryInteger 
   _ x: Tensor<T>,
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ConjugateTranspose",
-    x,
-    perm,
-    T$dtype: T.tensorFlowDataType,
-    Tperm$dtype: Tperm.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ConjugateTranspose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, perm, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tperm", Tperm.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func constructionFails(
 ) {
-  return #tfop("ConstructionFails")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ConstructionFails", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Does nothing. Serves as a control trigger for scheduling.
@@ -3970,7 +4394,11 @@ public static func constructionFails(
 @inlinable @inline(__always)
 public static func controlTrigger(
 ) {
-  return #tfop("ControlTrigger")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ControlTrigger", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -3998,16 +4426,19 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv2D",
-    input,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrBool(op, "use_cudnn_on_gpu", (useCudnnOnGpu) ?     1 : 0)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -4039,17 +4470,20 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv2DBackpropFilter",
-    input,
-    filterSizes,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv2DBackpropFilter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filterSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrBool(op, "use_cudnn_on_gpu", (useCudnnOnGpu) ?     1 : 0)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -4080,17 +4514,20 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv2DBackpropInput",
-    inputSizes,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    use_cudnn_on_gpu: useCudnnOnGpu,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv2DBackpropInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrBool(op, "use_cudnn_on_gpu", (useCudnnOnGpu) ?     1 : 0)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes a 3-D convolution given 5-D `input` and `filter` tensors.
@@ -4129,15 +4566,18 @@ public static func conv3D<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv3D",
-    input,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv3D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
@@ -4162,15 +4602,18 @@ public static func conv3DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv3DBackpropFilter",
-    input,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv3DBackpropFilter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
@@ -4208,16 +4651,19 @@ public static func conv3DBackpropFilterV2<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv3DBackpropFilterV2",
-    input,
-    filterSizes,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv3DBackpropFilterV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filterSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the input.
@@ -4242,15 +4688,18 @@ public static func conv3DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv3DBackpropInput",
-    input,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv3DBackpropInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of 3-D convolution with respect to the input.
@@ -4288,17 +4737,20 @@ public static func conv3DBackpropInputV2<T: FloatingPoint & TensorFlowScalar, Ts
   dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Conv3DBackpropInputV2",
-    inputSizes,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    Tshape$dtype: Tshape.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Conv3DBackpropInputV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Copy Op.
@@ -4329,12 +4781,15 @@ public static func copy<T: TensorFlowScalar>(
   tensorName: String,
   debugOpsSpec: [String]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Copy",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    tensor_name: tensorName,
-    debug_ops_spec: debugOpsSpec)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Copy", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  _TFCOpSetAttrStringArray(op, "debug_ops_spec", debugOpsSpec)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Copy Host Op.
@@ -4363,22 +4818,28 @@ public static func copyHost<T: TensorFlowScalar>(
   tensorName: String,
   debugOpsSpec: [String]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CopyHost",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    tensor_name: tensorName,
-    debug_ops_spec: debugOpsSpec)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CopyHost", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  _TFCOpSetAttrStringArray(op, "debug_ops_spec", debugOpsSpec)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func copyOp<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CopyOp",
-    a,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CopyOp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes cos of x element-wise.
@@ -4386,10 +4847,13 @@ public static func copyOp<T: TensorFlowScalar>(
 public static func cos<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cos",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cos", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes hyperbolic cosine of x element-wise.
@@ -4397,10 +4861,13 @@ public static func cos<T: FloatingPoint & TensorFlowScalar>(
 public static func cosh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cosh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cosh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Increments 'ref' until it reaches 'limit'.
@@ -4417,11 +4884,14 @@ public static func countUpTo<T: BinaryInteger & TensorFlowScalar>(
   ref: Tensor<T>,
   limit: Int64
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CountUpTo",
-    ref,
-    T$dtype: T.tensorFlowDataType,
-    limit: limit)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CountUpTo", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "limit", limit)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extracts crops from the input image tensor and resizes them.
@@ -4478,15 +4948,18 @@ public static func cropAndResize<T: Numeric & TensorFlowScalar>(
   method: Method = .bilinear,
   extrapolationValue: Double = 0
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("CropAndResize",
-    image,
-    boxes,
-    boxInd,
-    cropSize,
-    T$dtype: T.tensorFlowDataType,
-    method: method.cName,
-    extrapolation_value: extrapolationValue)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CropAndResize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxInd, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cropSize, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "method", method.cName, method.cName.count)
+  TFE_OpSetAttrFloat(op, "extrapolation_value", Float(extrapolationValue))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of the crop_and_resize op wrt the input boxes tensor.
@@ -4520,14 +4993,17 @@ public static func cropAndResizeGradBoxes<T: Numeric & TensorFlowScalar>(
   boxInd: Tensor<Int32>,
   method: Method2 = .bilinear
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("CropAndResizeGradBoxes",
-    grads,
-    image,
-    boxes,
-    boxInd,
-    T$dtype: T.tensorFlowDataType,
-    method: method.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CropAndResizeGradBoxes", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxInd, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "method", method.cName, method.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of the crop_and_resize op wrt the input image tensor.
@@ -4562,14 +5038,17 @@ public static func cropAndResizeGradImage<T: FloatingPoint & TensorFlowScalar>(
   imageSize: Tensor<Int32>,
   method: Method = .bilinear
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CropAndResizeGradImage",
-    grads,
-    boxes,
-    boxInd,
-    imageSize,
-    T$dtype: T.tensorFlowDataType,
-    method: method.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CropAndResizeGradImage", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxInd, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, imageSize, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "method", method.cName, method.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the pairwise cross product.
@@ -4588,11 +5067,14 @@ public static func cross<T: Numeric & TensorFlowScalar>(
   _ a: Tensor<T>,
   _ b: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cross",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cross", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A RNN backed by cuDNN.
@@ -4641,20 +5123,23 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   seed2: Int64 = 0,
   isTraining: Bool = true
 ) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("CudnnRNN",
-    input,
-    inputH,
-    inputC,
-    params,
-    T$dtype: T.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNN", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Backprop step of CudnnRNN.
@@ -4718,26 +5203,29 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("CudnnRNNBackprop",
-    input,
-    inputH,
-    inputC,
-    params,
-    output,
-    outputH,
-    outputC,
-    outputBackprop,
-    outputHBackprop,
-    outputCBackprop,
-    reserveSpace,
-    T$dtype: T.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNNBackprop", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, output, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputHBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputCBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Backprop step of CudnnRNN.
@@ -4805,27 +5293,30 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("CudnnRNNBackpropV2",
-    input,
-    inputH,
-    inputC,
-    params,
-    output,
-    outputH,
-    outputC,
-    outputBackprop,
-    outputHBackprop,
-    outputCBackprop,
-    reserveSpace,
-    hostReserved,
-    T$dtype: T.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNNBackpropV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, output, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputHBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputCBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hostReserved, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts CudnnRNN params from canonical form to usable form.
@@ -4873,20 +5364,25 @@ public static func cudnnRNNCanonicalToParams<T: FloatingPoint & TensorFlowScalar
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CudnnRNNCanonicalToParams",
-    numLayers,
-    numUnits,
-    inputSize,
-    weights,
-    biases,
-    T$dtype: T.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNNCanonicalToParams", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, numLayers, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numUnits, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputSize, s)
+  let weightsCount = _TFCOpAddInputFromTensorGroup(op, weights, s)
+  TFE_OpSetAttrInt(op, "num_params", Int64(weightsCount))
+  let biasesCount = _TFCOpAddInputFromTensorGroup(op, biases, s)
+  TFE_OpSetAttrInt(op, "num_params", Int64(biasesCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes size of weights that can be used by a Cudnn RNN model.
@@ -4925,19 +5421,22 @@ public static func cudnnRNNParamsSize<T: FloatingPoint & TensorFlowScalar, S: Bi
   seed2: Int64 = 0,
   typeT: T.Type
 ) -> Tensor<S> {
-  let ret: TensorHandle<S> = #tfop("CudnnRNNParamsSize",
-    numLayers,
-    numUnits,
-    inputSize,
-    T$dtype: T.tensorFlowDataType,
-    S$dtype: S.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNNParamsSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, numLayers, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numUnits, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputSize, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A RNN backed by cuDNN.
@@ -4989,20 +5488,23 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   seed2: Int64 = 0,
   isTraining: Bool = true
 ) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>, hostReserved: Tensor<Int8>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<Int8>) = #tfop("CudnnRNNV2",
-    input,
-    inputH,
-    inputC,
-    params,
-    T$dtype: T.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "CudnnRNNV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputH, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "rnn_mode", rnnMode.cName, rnnMode.cName.count)
+  TFE_OpSetAttrString(op, "input_mode", inputMode.cName, inputMode.cName.count)
+  TFE_OpSetAttrString(op, "direction", direction.cName, direction.cName.count)
+  TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the cumulative product of the tensor `x` along `axis`.
@@ -5053,14 +5555,17 @@ public static func cumprod<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & 
   exclusive: Bool = false,
   reverse: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cumprod",
-    x,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    exclusive: exclusive,
-    reverse: reverse)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cumprod", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "exclusive", (exclusive) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "reverse", (reverse) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the cumulative sum of the tensor `x` along `axis`.
@@ -5111,14 +5616,17 @@ public static func cumsum<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   exclusive: Bool = false,
   reverse: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Cumsum",
-    x,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    exclusive: exclusive,
-    reverse: reverse)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Cumsum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "exclusive", (exclusive) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "reverse", (reverse) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the dimension index in the destination data format given the one in
@@ -5139,12 +5647,15 @@ public static func dataFormatDimMap<T: BinaryInteger & TensorFlowScalar>(
   srcFormat: String = "NHWC",
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DataFormatDimMap",
-    x,
-    T$dtype: T.tensorFlowDataType,
-    src_format: srcFormat,
-    dst_format: dstFormat)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DataFormatDimMap", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "src_format", srcFormat, srcFormat.count)
+  TFE_OpSetAttrString(op, "dst_format", dstFormat, dstFormat.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the permuted vector/tensor in the destination data format given the
@@ -5164,12 +5675,15 @@ public static func dataFormatVecPermute<T: BinaryInteger & TensorFlowScalar>(
   srcFormat: String = "NHWC",
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DataFormatVecPermute",
-    x,
-    T$dtype: T.tensorFlowDataType,
-    src_format: srcFormat,
-    dst_format: dstFormat)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DataFormatVecPermute", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "src_format", srcFormat, srcFormat.count)
+  TFE_OpSetAttrString(op, "dst_format", dstFormat, dstFormat.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Identity op for gradient debugging.
@@ -5181,10 +5695,13 @@ public static func dataFormatVecPermute<T: BinaryInteger & TensorFlowScalar>(
 public static func debugGradientIdentity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DebugGradientIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DebugGradientIdentity", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Identity op for gradient debugging.
@@ -5196,10 +5713,13 @@ public static func debugGradientIdentity<T: TensorFlowScalar>(
 public static func debugGradientRefIdentity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DebugGradientRefIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DebugGradientRefIdentity", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Debug Identity Op.
@@ -5228,14 +5748,17 @@ public static func debugIdentity<T: TensorFlowScalar>(
   debugUrls: [String],
   gatedGrpc: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DebugIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    device_name: deviceName,
-    tensor_name: tensorName,
-    debug_urls: debugUrls,
-    gated_grpc: gatedGrpc)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DebugIdentity", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "device_name", deviceName, deviceName.count)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  _TFCOpSetAttrStringArray(op, "debug_urls", debugUrls)
+  TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Debug NaN Value Counter Op
@@ -5264,14 +5787,17 @@ public static func debugNanCount<T: TensorFlowScalar>(
   debugUrls: [String],
   gatedGrpc: Bool = false
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("DebugNanCount",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    device_name: deviceName,
-    tensor_name: tensorName,
-    debug_urls: debugUrls,
-    gated_grpc: gatedGrpc)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DebugNanCount", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "device_name", deviceName, deviceName.count)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  _TFCOpSetAttrStringArray(op, "debug_urls", debugUrls)
+  TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Debug Numeric Summary Op.
@@ -5336,17 +5862,20 @@ public static func debugNumericSummary<T: TensorFlowScalar>(
   muteIfHealthy: Bool = false,
   gatedGrpc: Bool = false
 ) -> Tensor<Double> {
-  let ret: TensorHandle<Double> = #tfop("DebugNumericSummary",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    device_name: deviceName,
-    tensor_name: tensorName,
-    debug_urls: debugUrls,
-    lower_bound: lowerBound,
-    upper_bound: upperBound,
-    mute_if_healthy: muteIfHealthy,
-    gated_grpc: gatedGrpc)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DebugNumericSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "device_name", deviceName, deviceName.count)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  _TFCOpSetAttrStringArray(op, "debug_urls", debugUrls)
+  TFE_OpSetAttrFloat(op, "lower_bound", Float(lowerBound))
+  TFE_OpSetAttrFloat(op, "upper_bound", Float(upperBound))
+  TFE_OpSetAttrBool(op, "mute_if_healthy", (muteIfHealthy) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode and Crop a JPEG-encoded image to a uint8 tensor.
@@ -5402,16 +5931,19 @@ public static func decodeAndCropJpeg(
   acceptableFraction: Double = 1,
   dctMethod: String
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("DecodeAndCropJpeg",
-    contents,
-    cropWindow,
-    channels: channels,
-    ratio: ratio,
-    fancy_upscaling: fancyUpscaling,
-    try_recover_truncated: tryRecoverTruncated,
-    acceptable_fraction: acceptableFraction,
-    dct_method: dctMethod)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeAndCropJpeg", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cropWindow, s)
+  TFE_OpSetAttrInt(op, "channels", channels)
+  TFE_OpSetAttrInt(op, "ratio", ratio)
+  TFE_OpSetAttrBool(op, "fancy_upscaling", (fancyUpscaling) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "try_recover_truncated", (tryRecoverTruncated) ?     1 : 0)
+  TFE_OpSetAttrFloat(op, "acceptable_fraction", Float(acceptableFraction))
+  TFE_OpSetAttrString(op, "dct_method", dctMethod, dctMethod.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode web-safe base64-encoded strings.
@@ -5426,9 +5958,12 @@ public static func decodeAndCropJpeg(
 public static func decodeBase64(
   _ input: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("DecodeBase64",
-    input)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeBase64", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode the first frame of a BMP-encoded image to a uint8 tensor.
@@ -5450,10 +5985,13 @@ public static func decodeBmp(
   contents: StringTensor,
   channels: Int64 = 0
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("DecodeBmp",
-    contents,
-    channels: channels)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeBmp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  TFE_OpSetAttrInt(op, "channels", channels)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decompress strings.
@@ -5477,10 +6015,13 @@ public static func decodeCompressed(
   bytes: StringTensor,
   compressionType: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("DecodeCompressed",
-    bytes,
-    compression_type: compressionType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeCompressed", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, bytes, s)
+  TFE_OpSetAttrString(op, "compression_type", compressionType, compressionType.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode the first frame of a GIF-encoded image to a uint8 tensor.
@@ -5500,9 +6041,12 @@ public static func decodeCompressed(
 public static func decodeGif(
   contents: StringTensor
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("DecodeGif",
-    contents)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeGif", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Convert JSON-encoded Example records to binary protocol buffer strings.
@@ -5523,9 +6067,12 @@ public static func decodeGif(
 public static func decodeJSONExample(
   jsonExamples: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("DecodeJSONExample",
-    jsonExamples)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeJSONExample", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, jsonExamples, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode a JPEG-encoded image to a uint8 tensor.
@@ -5578,15 +6125,18 @@ public static func decodeJpeg(
   acceptableFraction: Double = 1,
   dctMethod: String
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("DecodeJpeg",
-    contents,
-    channels: channels,
-    ratio: ratio,
-    fancy_upscaling: fancyUpscaling,
-    try_recover_truncated: tryRecoverTruncated,
-    acceptable_fraction: acceptableFraction,
-    dct_method: dctMethod)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeJpeg", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  TFE_OpSetAttrInt(op, "channels", channels)
+  TFE_OpSetAttrInt(op, "ratio", ratio)
+  TFE_OpSetAttrBool(op, "fancy_upscaling", (fancyUpscaling) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "try_recover_truncated", (tryRecoverTruncated) ?     1 : 0)
+  TFE_OpSetAttrFloat(op, "acceptable_fraction", Float(acceptableFraction))
+  TFE_OpSetAttrString(op, "dct_method", dctMethod, dctMethod.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode a PNG-encoded image to a uint8 or uint16 tensor.
@@ -5617,11 +6167,14 @@ public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
   contents: StringTensor,
   channels: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("DecodePng",
-    contents,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    channels: channels)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodePng", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "channels", channels)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reinterpret the bytes of a string as a vector of numbers.
@@ -5640,11 +6193,14 @@ public static func decodeRaw<OutType: Numeric & TensorFlowScalar>(
   bytes: StringTensor,
   littleEndian: Bool = true
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("DecodeRaw",
-    bytes,
-    out_type$dtype: OutType.tensorFlowDataType,
-    little_endian: littleEndian)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeRaw", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, bytes, s)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "little_endian", (littleEndian) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Decode a 16-bit PCM WAV file to a float tensor.
@@ -5679,11 +6235,14 @@ public static func decodeWav(
   desiredChannels: Int64 = -1,
   desiredSamples: Int64 = -1
 ) -> (audio: Tensor<Float>, sampleRate: Tensor<Int32>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("DecodeWav",
-    contents,
-    desired_channels: desiredChannels,
-    desired_samples: desiredSamples)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeWav", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  TFE_OpSetAttrInt(op, "desired_channels", desiredChannels)
+  TFE_OpSetAttrInt(op, "desired_samples", desiredSamples)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Makes a copy of `x`.
@@ -5696,10 +6255,13 @@ public static func decodeWav(
 public static func deepCopy<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DeepCopy",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DeepCopy", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Delete the tensor specified by its handle in the session.
@@ -5709,8 +6271,12 @@ public static func deepCopy<T: TensorFlowScalar>(
 public static func deleteSessionTensor(
   handle: StringTensor
 ) {
-  return #tfop("DeleteSessionTensor",
-    handle)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DeleteSessionTensor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies set operation along last dimension of 2 `Tensor` inputs.
@@ -5742,13 +6308,16 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   setOperation: String,
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("DenseToDenseSetOperation",
-    set1,
-    set2,
-    T$dtype: T.tensorFlowDataType,
-    set_operation: setOperation,
-    validate_indices: validateIndices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DenseToDenseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "set_operation", setOperation, setOperation.count)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
@@ -5795,15 +6364,18 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   setOperation: String,
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("DenseToSparseSetOperation",
-    set1,
-    set2Indices,
-    set2Values,
-    set2Shape,
-    T$dtype: T.tensorFlowDataType,
-    set_operation: setOperation,
-    validate_indices: validateIndices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DenseToSparseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "set_operation", setOperation, setOperation.count)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// DepthToSpace for tensors of type T.
@@ -5905,12 +6477,15 @@ public static func depthToSpace<T: TensorFlowScalar>(
   blockSize: Int64,
   dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DepthToSpace",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    block_size: blockSize,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DepthToSpace", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "block_size", blockSize)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes a 2-D depthwise convolution given 4-D `input` and `filter` tensors.
@@ -5957,15 +6532,18 @@ public static func depthwiseConv2dNative<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNative",
-    input,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DepthwiseConv2dNative", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of depthwise convolution with respect to the filter.
@@ -6010,16 +6588,19 @@ public static func depthwiseConv2dNativeBackpropFilter<T: FloatingPoint & Tensor
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNativeBackpropFilter",
-    input,
-    filterSizes,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DepthwiseConv2dNativeBackpropFilter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filterSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradients of depthwise convolution with respect to the input.
@@ -6064,16 +6645,19 @@ public static func depthwiseConv2dNativeBackpropInput<T: FloatingPoint & TensorF
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNativeBackpropInput",
-    inputSizes,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName,
-    dilations: dilations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DepthwiseConv2dNativeBackpropInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputSizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Dequantize the 'input' tensor into a float Tensor.
@@ -6162,13 +6746,16 @@ public static func dequantize<T: TensorFlowScalar>(
   maxRange: Tensor<Float>,
   mode: Mode = .minCombined
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("Dequantize",
-    input,
-    minRange,
-    maxRange,
-    T$dtype: T.tensorFlowDataType,
-    mode: mode.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Dequantize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minRange, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxRange, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deserialize and concatenate `SparseTensors` from a serialized minibatch.
@@ -6223,10 +6810,13 @@ public static func dequantize<T: TensorFlowScalar>(
 public static func deserializeManySparse<Dtype: TensorFlowScalar>(
   serializedSparse: StringTensor
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("DeserializeManySparse",
-    serializedSparse,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DeserializeManySparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -6281,11 +6871,14 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
 public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: TensorFlowScalar>(
   serializedSparse: Tensor<Tserialized>
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("DeserializeSparse",
-    serializedSparse,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    Tserialized$dtype: Tserialized.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DeserializeSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tserialized", Tserialized.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Destroys the temporary variable and returns its final value.
@@ -6307,11 +6900,14 @@ public static func destroyTemporaryVariable<T: TensorFlowScalar>(
   ref: Tensor<T>,
   varName: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DestroyTemporaryVariable",
-    ref,
-    T$dtype: T.tensorFlowDataType,
-    var_name: varName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DestroyTemporaryVariable", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "var_name", varName, varName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a diagonal tensor with a given diagonal values.
@@ -6339,10 +6935,13 @@ public static func destroyTemporaryVariable<T: TensorFlowScalar>(
 public static func diag<T: Numeric & TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Diag",
-    diagonal,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Diag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the diagonal part of the tensor.
@@ -6373,10 +6972,13 @@ public static func diag<T: Numeric & TensorFlowScalar>(
 public static func diagPart<T: Numeric & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DiagPart",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DiagPart", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes Psi, the derivative of Lgamma (the log of the absolute value of
@@ -6386,10 +6988,13 @@ public static func diagPart<T: Numeric & TensorFlowScalar>(
 public static func digamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Digamma",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Digamma", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the grayscale dilation of 4-D `input` and 3-D `filter` tensors.
@@ -6438,14 +7043,17 @@ public static func dilation2D<T: Numeric & TensorFlowScalar>(
   rates: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Dilation2D",
-    input,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    rates: rates,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Dilation2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  _TFCOpSetAttrInt32Array(op, "rates", rates)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the filter.
@@ -6472,15 +7080,18 @@ public static func dilation2DBackpropFilter<T: Numeric & TensorFlowScalar>(
   rates: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Dilation2DBackpropFilter",
-    input,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    rates: rates,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Dilation2DBackpropFilter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  _TFCOpSetAttrInt32Array(op, "rates", rates)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the input.
@@ -6507,15 +7118,18 @@ public static func dilation2DBackpropInput<T: Numeric & TensorFlowScalar>(
   rates: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Dilation2DBackpropInput",
-    input,
-    filter,
-    outBackprop,
-    T$dtype: T.tensorFlowDataType,
-    strides: strides,
-    rates: rates,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Dilation2DBackpropInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  _TFCOpSetAttrInt32Array(op, "rates", rates)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x / y element-wise.
@@ -6527,11 +7141,14 @@ public static func div<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Div",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Div", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns 0 if the denominator is zero.
@@ -6544,11 +7161,14 @@ public static func divNoNan<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DivNoNan",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DivNoNan", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Draw bounding boxes on a batch of images.
@@ -6577,11 +7197,14 @@ public static func drawBoundingBoxes<T: FloatingPoint & TensorFlowScalar>(
   images: Tensor<T>,
   boxes: Tensor<Float>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DrawBoundingBoxes",
-    images,
-    boxes,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DrawBoundingBoxes", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Interleave the values from the `data` tensors into a single tensor.
@@ -6653,11 +7276,16 @@ public static func dynamicStitch<T: TensorFlowScalar>(
   indices: [Tensor<Int32>],
   data: [Tensor<T>]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DynamicStitch",
-    indices,
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DynamicStitch", s)
+  defer { TFE_DeleteOp(op) }
+  let indicesCount = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
+  let dataCount = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrInt(op, "N", Int64(dataCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the (possibly normalized) Levenshtein Edit Distance.
@@ -6726,16 +7354,19 @@ public static func editDistance<T: TensorFlowScalar>(
   truthShape: Tensor<Int64>,
   normalize: Bool = true
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("EditDistance",
-    hypothesisIndices,
-    hypothesisValues,
-    hypothesisShape,
-    truthIndices,
-    truthValues,
-    truthShape,
-    T$dtype: T.tensorFlowDataType,
-    normalize: normalize)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EditDistance", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, hypothesisIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hypothesisValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hypothesisShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, truthIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, truthValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, truthShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "normalize", (normalize) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes exponential linear: `exp(features) - 1` if < 0, `features` otherwise.
@@ -6746,10 +7377,13 @@ public static func editDistance<T: TensorFlowScalar>(
 public static func elu<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Elu",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Elu", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients for the exponential linear (Elu) operation.
@@ -6765,11 +7399,14 @@ public static func eluGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   outputs: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("EluGrad",
-    gradients,
-    outputs,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EluGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates a tensor with the given shape.
@@ -6786,11 +7423,14 @@ public static func empty<Dtype: TensorFlowScalar>(
   shape: Tensor<Int32>,
   init_: Bool = false
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("Empty",
-    shape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    init: init_)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Empty", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "init", (init_) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Encode strings into web-safe base64 format.
@@ -6812,10 +7452,13 @@ public static func encodeBase64(
   _ input: StringTensor,
   pad: Bool = false
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("EncodeBase64",
-    input,
-    pad: pad)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EncodeBase64", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrBool(op, "pad", (pad) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// JPEG-encode an image.
@@ -6865,18 +7508,21 @@ public static func encodeJpeg(
   yDensity: Int64 = 300,
   xmpMetadata: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("EncodeJpeg",
-    image,
-    format: format.cName,
-    quality: quality,
-    progressive: progressive,
-    optimize_size: optimizeSize,
-    chroma_downsampling: chromaDownsampling,
-    density_unit: densityUnit.cName,
-    x_density: xDensity,
-    y_density: yDensity,
-    xmp_metadata: xmpMetadata)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EncodeJpeg", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
+  TFE_OpSetAttrString(op, "format", format.cName, format.cName.count)
+  TFE_OpSetAttrInt(op, "quality", quality)
+  TFE_OpSetAttrBool(op, "progressive", (progressive) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "optimize_size", (optimizeSize) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "chroma_downsampling", (chromaDownsampling) ?     1 : 0)
+  TFE_OpSetAttrString(op, "density_unit", densityUnit.cName, densityUnit.cName.count)
+  TFE_OpSetAttrInt(op, "x_density", xDensity)
+  TFE_OpSetAttrInt(op, "y_density", yDensity)
+  TFE_OpSetAttrString(op, "xmp_metadata", xmpMetadata, xmpMetadata.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// PNG-encode an image.
@@ -6903,11 +7549,14 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
   image: Tensor<T>,
   compression: Int64 = -1
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("EncodePng",
-    image,
-    T$dtype: T.tensorFlowDataType,
-    compression: compression)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EncodePng", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "compression", compression)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// The op serializes protobuf messages provided in the input tensors.
@@ -6968,13 +7617,16 @@ public static func encodeProto<TinputTypes: TensorFlowScalar>(
   messageType: String,
   descriptorSource: String = "local://"
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("EncodeProto",
-    sizes,
-    values,
-    field_names: fieldNames,
-    message_type: messageType,
-    descriptor_source: descriptorSource)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EncodeProto", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sizes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  _TFCOpSetAttrStringArray(op, "field_names", fieldNames)
+  TFE_OpSetAttrString(op, "message_type", messageType, messageType.count)
+  TFE_OpSetAttrString(op, "descriptor_source", descriptorSource, descriptorSource.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Encode audio data using the WAV file format.
@@ -6997,10 +7649,13 @@ public static func encodeWav(
   audio: Tensor<Float>,
   sampleRate: Tensor<Int32>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("EncodeWav",
-    audio,
-    sampleRate)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EncodeWav", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, audio, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sampleRate, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -7026,13 +7681,16 @@ public static func enter<T: TensorFlowScalar>(
   isConstant: Bool = false,
   parallelIterations: Int64 = 10
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Enter",
-    data,
-    T$dtype: T.tensorFlowDataType,
-    frame_name: frameName,
-    is_constant: isConstant,
-    parallel_iterations: parallelIterations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Enter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "frame_name", frameName, frameName.count)
+  TFE_OpSetAttrBool(op, "is_constant", (isConstant) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "parallel_iterations", parallelIterations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x == y) element-wise.
@@ -7044,11 +7702,14 @@ public static func equal<T: TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("Equal",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Equal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the Gauss error function of `x` element-wise.
@@ -7056,10 +7717,13 @@ public static func equal<T: TensorFlowScalar>(
 public static func erf<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Erf",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Erf", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the complementary error function of `x` element-wise.
@@ -7067,10 +7731,13 @@ public static func erf<T: FloatingPoint & TensorFlowScalar>(
 public static func erfc<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Erfc",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Erfc", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Exits the current frame to its parent frame.
@@ -7084,10 +7751,13 @@ public static func erfc<T: FloatingPoint & TensorFlowScalar>(
 public static func exit<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Exit",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Exit", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes exponential of x element-wise.  \\(y = e^x\\).
@@ -7095,10 +7765,13 @@ public static func exit<T: TensorFlowScalar>(
 public static func exp<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Exp",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Exp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Inserts a dimension of 1 into a tensor's shape.
@@ -7145,12 +7818,15 @@ public static func expandDims<T: TensorFlowScalar, Tdim: BinaryInteger & TensorF
   _ input: Tensor<T>,
   dim: Tensor<Tdim>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ExpandDims",
-    input,
-    dim,
-    T$dtype: T.tensorFlowDataType,
-    Tdim$dtype: Tdim.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExpandDims", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dim, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tdim", Tdim.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes exponential of x - 1 element-wise.
@@ -7160,10 +7836,13 @@ public static func expandDims<T: TensorFlowScalar, Tdim: BinaryInteger & TensorF
 public static func expm1<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Expm1",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Expm1", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -7195,14 +7874,17 @@ public static func extractGlimpse(
   normalized: Bool = true,
   uniformNoise: Bool = true
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("ExtractGlimpse",
-    input,
-    size,
-    offsets,
-    centered: centered,
-    normalized: normalized,
-    uniform_noise: uniformNoise)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExtractGlimpse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, offsets, s)
+  TFE_OpSetAttrBool(op, "centered", (centered) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "normalized", (normalized) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "uniform_noise", (uniformNoise) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extract `patches` from `images` and put them in the "depth" output dimension.
@@ -7241,14 +7923,17 @@ public static func extractImagePatches<T: Numeric & TensorFlowScalar>(
   rates: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ExtractImagePatches",
-    images,
-    T$dtype: T.tensorFlowDataType,
-    ksizes: ksizes,
-    strides: strides,
-    rates: rates,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExtractImagePatches", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksizes", ksizes)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  _TFCOpSetAttrInt32Array(op, "rates", rates)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extract the shape information of a JPEG-encoded image.
@@ -7265,10 +7950,13 @@ public static func extractImagePatches<T: Numeric & TensorFlowScalar>(
 public static func extractJpegShape<OutputType: BinaryInteger & TensorFlowScalar>(
   contents: StringTensor
 ) -> Tensor<OutputType> {
-  let ret: TensorHandle<OutputType> = #tfop("ExtractJpegShape",
-    contents,
-    output_type$dtype: OutputType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExtractJpegShape", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extract `patches` from `input` and put them in the "depth" output dimension. 3D extension of `extract_image_patches`.
@@ -7300,13 +7988,16 @@ public static func extractVolumePatches<T: Numeric & TensorFlowScalar>(
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ExtractVolumePatches",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    ksizes: ksizes,
-    strides: strides,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExtractVolumePatches", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksizes", ksizes)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Fast Fourier transform.
@@ -7326,10 +8017,13 @@ public static func extractVolumePatches<T: Numeric & TensorFlowScalar>(
 public static func fFT<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("FFT",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FFT", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// 2D fast Fourier transform.
@@ -7349,10 +8043,13 @@ public static func fFT<Tcomplex: TensorFlowScalar>(
 public static func fFT2D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("FFT2D",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FFT2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// 3D fast Fourier transform.
@@ -7372,18 +8069,24 @@ public static func fFT2D<Tcomplex: TensorFlowScalar>(
 public static func fFT3D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("FFT3D",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FFT3D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Output a fact about factorials.
 @inlinable @inline(__always)
 public static func fact(
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Fact")
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Fact", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Fake-quantize the 'inputs' tensor, type float to 'outputs' tensor of same type.
@@ -7403,13 +8106,16 @@ public static func fakeQuantWithMinMaxArgs(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("FakeQuantWithMinMaxArgs",
-    inputs,
-    min: min,
-    max: max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxArgs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrFloat(op, "min", Float(min))
+  TFE_OpSetAttrFloat(op, "max", Float(max))
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxArgs operation.
@@ -7429,14 +8135,17 @@ public static func fakeQuantWithMinMaxArgsGradient(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("FakeQuantWithMinMaxArgsGradient",
-    gradients,
-    inputs,
-    min: min,
-    max: max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxArgsGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrFloat(op, "min", Float(min))
+  TFE_OpSetAttrFloat(op, "max", Float(max))
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Fake-quantize the 'inputs' tensor of type float via global float scalars `min`
@@ -7459,13 +8168,16 @@ public static func fakeQuantWithMinMaxVars(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("FakeQuantWithMinMaxVars",
-    inputs,
-    min,
-    max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxVars", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, min, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxVars operation.
@@ -7495,14 +8207,17 @@ public static func fakeQuantWithMinMaxVarsGradient(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> (backpropsWrtInput: Tensor<Float>, backpropWrtMin: Tensor<Float>, backpropWrtMax: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("FakeQuantWithMinMaxVarsGradient",
-    gradients,
-    inputs,
-    min,
-    max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxVarsGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, min, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Fake-quantize the 'inputs' tensor of type float and one of the shapes: `[d]`,
@@ -7526,13 +8241,16 @@ public static func fakeQuantWithMinMaxVarsPerChannel(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("FakeQuantWithMinMaxVarsPerChannel",
-    inputs,
-    min,
-    max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxVarsPerChannel", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, min, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxVarsPerChannel operation.
@@ -7565,14 +8283,17 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   numBits: Int64 = 8,
   narrowRange: Bool = false
 ) -> (backpropsWrtInput: Tensor<Float>, backpropWrtMin: Tensor<Float>, backpropWrtMax: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("FakeQuantWithMinMaxVarsPerChannelGradient",
-    gradients,
-    inputs,
-    min,
-    max,
-    num_bits: numBits,
-    narrow_range: narrowRange)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FakeQuantWithMinMaxVarsPerChannelGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, min, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates a tensor filled with a scalar value.
@@ -7609,19 +8330,25 @@ public static func fill<T: TensorFlowScalar, IndexType: BinaryInteger & TensorFl
   dims: Tensor<IndexType>,
   value: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Fill",
-    dims,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    index_type$dtype: IndexType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Fill", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "index_type", IndexType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func fiveFloatOutputs(
 ) -> (a: Tensor<Float>, b: Tensor<Float>, c: Tensor<Float>, d: Tensor<Float>, e: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("FiveFloatOutputs")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FiveFloatOutputs", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs fixed-length records from a file.
@@ -7647,14 +8374,17 @@ public static func fixedLengthRecordReader(
   container: String,
   sharedName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("FixedLengthRecordReader",
-    header_bytes: headerBytes,
-    record_bytes: recordBytes,
-    footer_bytes: footerBytes,
-    hop_bytes: hopBytes,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FixedLengthRecordReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "header_bytes", headerBytes)
+  TFE_OpSetAttrInt(op, "record_bytes", recordBytes)
+  TFE_OpSetAttrInt(op, "footer_bytes", footerBytes)
+  TFE_OpSetAttrInt(op, "hop_bytes", hopBytes)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -7738,43 +8468,56 @@ public static func fixedUnigramCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("FixedUnigramCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    range_max: rangeMax,
-    vocab_file: vocabFile,
-    distortion: distortion,
-    num_reserved_ids: numReservedIds,
-    num_shards: numShards,
-    shard: shard,
-    unigrams: unigrams,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FixedUnigramCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "range_max", rangeMax)
+  TFE_OpSetAttrString(op, "vocab_file", vocabFile, vocabFile.count)
+  TFE_OpSetAttrFloat(op, "distortion", Float(distortion))
+  TFE_OpSetAttrInt(op, "num_reserved_ids", numReservedIds)
+  TFE_OpSetAttrInt(op, "num_shards", numShards)
+  TFE_OpSetAttrInt(op, "shard", shard)
+  _TFCOpSetAttrDoubleArray(op, "unigrams", unigrams)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func floatInput(
   _ a: Tensor<Float>
 ) {
-  return #tfop("FloatInput",
-    a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloatInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func floatOutput(
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("FloatOutput")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloatOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func floatOutputStringOutput(
 ) -> (a: Tensor<Float>, b: StringTensor) {
-  let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("FloatOutputStringOutput")
-  return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloatOutputStringOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise largest integer not greater than x.
@@ -7782,10 +8525,13 @@ public static func floatOutputStringOutput(
 public static func floor<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Floor",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Floor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x // y element-wise.
@@ -7797,11 +8543,14 @@ public static func floorDiv<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FloorDiv",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloorDiv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise remainder of division. When `x < 0` xor `y < 0` is
@@ -7816,11 +8565,14 @@ public static func floorMod<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FloorMod",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloorMod", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -7829,11 +8581,14 @@ public static func foo1(
   _ b: Tensor<Int32>,
   c: Tensor<Int32>
 ) -> (d: Tensor<Float>, e: Tensor<Int32>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo1",
-    a,
-    b,
-    c)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Foo1", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -7842,11 +8597,14 @@ public static func foo2(
   _ b: StringTensor,
   c: StringTensor
 ) -> (d: Tensor<Float>, e: Tensor<Int32>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo2",
-    a,
-    b,
-    c)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Foo2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -7855,11 +8613,14 @@ public static func foo3(
   _ b: StringTensor,
   c: Tensor<Float>
 ) -> (d: Tensor<Float>, e: Tensor<Int32>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Int32>) = #tfop("Foo3",
-    a,
-    b,
-    c)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Foo3", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs fractional average pooling on the input.
@@ -7913,16 +8674,19 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("FractionalAvgPool",
-    value,
-    T$dtype: T.tensorFlowDataType,
-    pooling_ratio: poolingRatio,
-    pseudo_random: pseudoRandom,
-    overlapping: overlapping,
-    deterministic: deterministic,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FractionalAvgPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrDoubleArray(op, "pooling_ratio", poolingRatio)
+  TFE_OpSetAttrBool(op, "pseudo_random", (pseudoRandom) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "overlapping", (overlapping) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "deterministic", (deterministic) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradient of the FractionalAvgPool function.
@@ -7961,14 +8725,17 @@ public static func fractionalAvgPoolGrad<T: Numeric & TensorFlowScalar>(
   colPoolingSequence: Tensor<Int64>,
   overlapping: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FractionalAvgPoolGrad",
-    origInputTensorShape,
-    outBackprop,
-    rowPoolingSequence,
-    colPoolingSequence,
-    T$dtype: T.tensorFlowDataType,
-    overlapping: overlapping)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FractionalAvgPoolGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInputTensorShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rowPoolingSequence, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, colPoolingSequence, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "overlapping", (overlapping) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs fractional max pooling on the input.
@@ -8046,16 +8813,19 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("FractionalMaxPool",
-    value,
-    T$dtype: T.tensorFlowDataType,
-    pooling_ratio: poolingRatio,
-    pseudo_random: pseudoRandom,
-    overlapping: overlapping,
-    deterministic: deterministic,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FractionalMaxPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrDoubleArray(op, "pooling_ratio", poolingRatio)
+  TFE_OpSetAttrBool(op, "pseudo_random", (pseudoRandom) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "overlapping", (overlapping) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "deterministic", (deterministic) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradient of the FractionalMaxPool function.
@@ -8090,15 +8860,18 @@ public static func fractionalMaxPoolGrad<T: Numeric & TensorFlowScalar>(
   colPoolingSequence: Tensor<Int64>,
   overlapping: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FractionalMaxPoolGrad",
-    origInput,
-    origOutput,
-    outBackprop,
-    rowPoolingSequence,
-    colPoolingSequence,
-    T$dtype: T.tensorFlowDataType,
-    overlapping: overlapping)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FractionalMaxPoolGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rowPoolingSequence, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, colPoolingSequence, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "overlapping", (overlapping) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Batch normalization.
@@ -8143,17 +8916,20 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<T>, batchVariance: Tensor<T>, reserveSpace1: Tensor<T>, reserveSpace2: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNorm",
-    x,
-    scale,
-    offset,
-    mean,
-    variance,
-    T$dtype: T.tensorFlowDataType,
-    epsilon: epsilon,
-    data_format: dataFormat.cName,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedBatchNorm", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, offset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mean, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, variance, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradient for batch normalization.
@@ -8201,17 +8977,20 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<T>, offsetBackprop: Tensor<T>, reserveSpace3: Tensor<T>, reserveSpace4: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNormGrad",
-    yBackprop,
-    x,
-    scale,
-    reserveSpace1,
-    reserveSpace2,
-    T$dtype: T.tensorFlowDataType,
-    epsilon: epsilon,
-    data_format: dataFormat.cName,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedBatchNormGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, yBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace2, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradient for batch normalization.
@@ -8260,18 +9039,21 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<U>, offsetBackprop: Tensor<U>, reserveSpace3: Tensor<U>, reserveSpace4: Tensor<U>) {
-  let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormGradV2",
-    yBackprop,
-    x,
-    scale,
-    reserveSpace1,
-    reserveSpace2,
-    T$dtype: T.tensorFlowDataType,
-    U$dtype: U.tensorFlowDataType,
-    epsilon: epsilon,
-    data_format: dataFormat.cName,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedBatchNormGradV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, yBackprop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reserveSpace2, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "U", U.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Batch normalization.
@@ -8317,18 +9099,21 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<U>, batchVariance: Tensor<U>, reserveSpace1: Tensor<U>, reserveSpace2: Tensor<U>) {
-  let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormV2",
-    x,
-    scale,
-    offset,
-    mean,
-    variance,
-    T$dtype: T.tensorFlowDataType,
-    U$dtype: U.tensorFlowDataType,
-    epsilon: epsilon,
-    data_format: dataFormat.cName,
-    is_training: isTraining)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedBatchNormV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, offset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mean, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, variance, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "U", U.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  TFE_OpSetAttrBool(op, "is_training", (isTraining) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs a padding as a preprocess during a convolution.
@@ -8365,15 +9150,18 @@ public static func fusedPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FusedPadConv2D",
-    input,
-    paddings,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    mode: mode.cName,
-    strides: strides,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedPadConv2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs a resize and padding as a preprocess during a convolution.
@@ -8415,17 +9203,20 @@ public static func fusedResizeAndPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("FusedResizeAndPadConv2D",
-    input,
-    size,
-    paddings,
-    filter,
-    T$dtype: T.tensorFlowDataType,
-    resize_align_corners: resizeAlignCorners,
-    mode: mode.cName,
-    strides: strides,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FusedResizeAndPadConv2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "resize_align_corners", (resizeAlignCorners) ?     1 : 0)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the GRU cell forward propagation for 1 time step.
@@ -8483,15 +9274,18 @@ public static func gRUBlockCell<T: FloatingPoint & TensorFlowScalar>(
   bRu: Tensor<T>,
   bC: Tensor<T>
 ) -> (r: Tensor<T>, u: Tensor<T>, c: Tensor<T>, h: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("GRUBlockCell",
-    x,
-    hPrev,
-    wRu,
-    wC,
-    bRu,
-    bC,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GRUBlockCell", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wRu, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bRu, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bC, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the GRU cell back-propagation for 1 time step.
@@ -8589,19 +9383,22 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   c: Tensor<T>,
   dH: Tensor<T>
 ) -> (dX: Tensor<T>, dHPrev: Tensor<T>, dCBar: Tensor<T>, dRBarUBar: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("GRUBlockCellGrad",
-    x,
-    hPrev,
-    wRu,
-    wC,
-    bRu,
-    bC,
-    r,
-    u,
-    c,
-    dH,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GRUBlockCellGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wRu, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bRu, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bC, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, r, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, u, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dH, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gather slices from `params` according to `indices`.
@@ -8637,13 +9434,16 @@ public static func gather<Tparams: TensorFlowScalar, Tindices: BinaryInteger & T
   indices: Tensor<Tindices>,
   validateIndices: Bool = true
 ) -> Tensor<Tparams> {
-  let ret: TensorHandle<Tparams> = #tfop("Gather",
-    params,
-    indices,
-    Tparams$dtype: Tparams.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    validate_indices: validateIndices)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Gather", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gather slices from `params` into a Tensor with shape specified by `indices`.
@@ -8764,12 +9564,15 @@ public static func gatherNd<Tparams: TensorFlowScalar, Tindices: BinaryInteger &
   params: Tensor<Tparams>,
   indices: Tensor<Tindices>
 ) -> Tensor<Tparams> {
-  let ret: TensorHandle<Tparams> = #tfop("GatherNd",
-    params,
-    indices,
-    Tparams$dtype: Tparams.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GatherNd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gather slices from `params` axis `axis` according to `indices`.
@@ -8817,14 +9620,17 @@ public static func gatherV2<Tparams: TensorFlowScalar, Tindices: BinaryInteger &
   indices: Tensor<Tindices>,
   axis: Tensor<Taxis>
 ) -> Tensor<Tparams> {
-  let ret: TensorHandle<Tparams> = #tfop("GatherV2",
-    params,
-    indices,
-    axis,
-    Tparams$dtype: Tparams.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    Taxis$dtype: Taxis.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GatherV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, params, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Re-configures the GCS block cache with the new configuration values.
@@ -8838,10 +9644,14 @@ public static func gcsConfigureBlockCache(
   blockSize: Tensor<UInt64>,
   maxStaleness: Tensor<UInt64>
 ) {
-  return #tfop("GcsConfigureBlockCache",
-    maxCacheSize,
-    blockSize,
-    maxStaleness)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GcsConfigureBlockCache", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxCacheSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxStaleness, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Configures the credentials used by the GCS client of the local TF runtime.
@@ -8877,8 +9687,12 @@ public static func gcsConfigureBlockCache(
 public static func gcsConfigureCredentials(
   json: StringTensor
 ) {
-  return #tfop("GcsConfigureCredentials",
-    json)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GcsConfigureCredentials", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, json, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates serialized partition messages suitable for batch reads.
@@ -8908,15 +9722,18 @@ public static func generateBigQueryReaderPartitions(
   numPartitions: Int64,
   testEndPoint: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("GenerateBigQueryReaderPartitions",
-    project_id: projectId,
-    dataset_id: datasetId,
-    table_id: tableId,
-    columns: columns,
-    timestamp_millis: timestampMillis,
-    num_partitions: numPartitions,
-    test_end_point: testEndPoint)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GenerateBigQueryReaderPartitions", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "project_id", projectId, projectId.count)
+  TFE_OpSetAttrString(op, "dataset_id", datasetId, datasetId.count)
+  TFE_OpSetAttrString(op, "table_id", tableId, tableId.count)
+  _TFCOpSetAttrStringArray(op, "columns", columns)
+  TFE_OpSetAttrInt(op, "timestamp_millis", timestampMillis)
+  TFE_OpSetAttrInt(op, "num_partitions", numPartitions)
+  TFE_OpSetAttrString(op, "test_end_point", testEndPoint, testEndPoint.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Given a path to new and old vocabulary files, returns a remapping Tensor of
@@ -8973,13 +9790,16 @@ public static func generateVocabRemapping(
   numNewVocab: Int64,
   oldVocabSize: Int64 = -1
 ) -> (remapping: Tensor<Int64>, numPresent: Tensor<Int32>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Int32>) = #tfop("GenerateVocabRemapping",
-    newVocabFile,
-    oldVocabFile,
-    new_vocab_offset: newVocabOffset,
-    num_new_vocab: numNewVocab,
-    old_vocab_size: oldVocabSize)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GenerateVocabRemapping", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, newVocabFile, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, oldVocabFile, s)
+  TFE_OpSetAttrInt(op, "new_vocab_offset", newVocabOffset)
+  TFE_OpSetAttrInt(op, "num_new_vocab", numNewVocab)
+  TFE_OpSetAttrInt(op, "old_vocab_size", oldVocabSize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Store the input tensor in the state of the current session.
@@ -8992,10 +9812,13 @@ public static func generateVocabRemapping(
 public static func getSessionHandle<T: TensorFlowScalar>(
   value: Tensor<T>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("GetSessionHandle",
-    value,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GetSessionHandle", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Get the value of the tensor specified by its handle.
@@ -9009,17 +9832,23 @@ public static func getSessionHandle<T: TensorFlowScalar>(
 public static func getSessionTensor<Dtype: TensorFlowScalar>(
   handle: StringTensor
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("GetSessionTensor",
-    handle,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GetSessionTensor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func graphDefVersion(
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("GraphDefVersion")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GraphDefVersion", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x > y) element-wise.
@@ -9031,11 +9860,14 @@ public static func greater<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("Greater",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Greater", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x >= y) element-wise.
@@ -9047,11 +9879,14 @@ public static func greaterEqual<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("GreaterEqual",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GreaterEqual", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gives a guarantee to the TF runtime that the input tensor is a constant.
@@ -9066,10 +9901,13 @@ public static func greaterEqual<T: Numeric & TensorFlowScalar>(
 public static func guaranteeConst<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("GuaranteeConst",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GuaranteeConst", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Convert one or more images from HSV to RGB.
@@ -9087,10 +9925,13 @@ public static func guaranteeConst<T: TensorFlowScalar>(
 public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   images: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("HSVToRGB",
-    images,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "HSVToRGB", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates a non-initialized hash table.
@@ -9118,13 +9959,16 @@ public static func hashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowS
   typeKeyDtype: KeyDtype.Type,
   typeValueDtype: ValueDtype.Type
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("HashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "HashTable", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "key_dtype", KeyDtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "value_dtype", ValueDtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  TFE_OpSetAttrBool(op, "use_node_name_sharing", (useNodeNameSharing) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return histogram of values.
@@ -9159,13 +10003,16 @@ public static func histogramFixedWidth<T: Numeric & TensorFlowScalar, Dtype: Bin
   valueRange: Tensor<T>,
   nbins: Tensor<Int32>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("HistogramFixedWidth",
-    values,
-    valueRange,
-    nbins,
-    T$dtype: T.tensorFlowDataType,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "HistogramFixedWidth", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, valueRange, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, nbins, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with a histogram.
@@ -9186,11 +10033,14 @@ public static func histogramSummary<T: Numeric & TensorFlowScalar>(
   tag: StringTensor,
   _ values: Tensor<T>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("HistogramSummary",
-    tag,
-    values,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "HistogramSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Inverse fast Fourier transform.
@@ -9210,10 +10060,13 @@ public static func histogramSummary<T: Numeric & TensorFlowScalar>(
 public static func iFFT<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("IFFT",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IFFT", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Inverse 2D fast Fourier transform.
@@ -9233,10 +10086,13 @@ public static func iFFT<Tcomplex: TensorFlowScalar>(
 public static func iFFT2D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("IFFT2D",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IFFT2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Inverse 3D fast Fourier transform.
@@ -9256,10 +10112,13 @@ public static func iFFT2D<Tcomplex: TensorFlowScalar>(
 public static func iFFT3D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
-  let ret: TensorHandle<Tcomplex> = #tfop("IFFT3D",
-    input,
-    Tcomplex$dtype: Tcomplex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IFFT3D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return a tensor with the same shape and contents as the input tensor or value.
@@ -9267,10 +10126,13 @@ public static func iFFT3D<Tcomplex: TensorFlowScalar>(
 public static func identity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Identity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Identity", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs the queued work as both the key and value.
@@ -9290,10 +10152,13 @@ public static func identityReader(
   container: String,
   sharedName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("IdentityReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IdentityReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -9316,11 +10181,14 @@ public static func igamma<T: FloatingPoint & TensorFlowScalar>(
   _ a: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Igamma",
-    a,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Igamma", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of `igamma(a, x)` wrt `a`.
@@ -9329,11 +10197,14 @@ public static func igammaGradA<T: FloatingPoint & TensorFlowScalar>(
   _ a: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("IgammaGradA",
-    a,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IgammaGradA", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the upper regularized incomplete Gamma function `Q(a, x)`.
@@ -9355,11 +10226,14 @@ public static func igammac<T: FloatingPoint & TensorFlowScalar>(
   _ a: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Igammac",
-    a,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Igammac", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the imaginary part of a complex number.
@@ -9379,11 +10253,14 @@ public static func igammac<T: FloatingPoint & TensorFlowScalar>(
 public static func imag<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("Imag",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Imag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -9391,10 +10268,16 @@ public static func inPolymorphicTwice<T: TensorFlowScalar>(
   _ a: [Tensor<T>],
   _ b: [Tensor<T>]
 ) {
-  return #tfop("InPolymorphicTwice",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InPolymorphicTwice", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  let bCount = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrInt(op, "M", Int64(bCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Says whether the targets are in the top `K` predictions.
@@ -9427,12 +10310,15 @@ public static func inTopK<T: BinaryInteger & TensorFlowScalar>(
   targets: Tensor<T>,
   k: Int64
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("InTopK",
-    predictions,
-    targets,
-    T$dtype: T.tensorFlowDataType,
-    k: k)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InTopK", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, predictions, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, targets, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "k", k)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Says whether the targets are in the top `K` predictions.
@@ -9464,12 +10350,15 @@ public static func inTopKV2<T: BinaryInteger & TensorFlowScalar>(
   targets: Tensor<T>,
   k: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("InTopKV2",
-    predictions,
-    targets,
-    k,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InTopKV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, predictions, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, targets, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, k, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Table initializer that takes two tensors for keys and values respectively.
@@ -9484,12 +10373,16 @@ public static func initializeTable<Tkey: TensorFlowScalar, Tval: TensorFlowScala
   keys: Tensor<Tkey>,
   _ values: Tensor<Tval>
 ) {
-  return #tfop("InitializeTable",
-    tableHandle,
-    keys,
-    values,
-    Tkey$dtype: Tkey.tensorFlowDataType,
-    Tval$dtype: Tval.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InitializeTable", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "Tkey", Tkey.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tval", Tval.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Initializes a table from a text file.
@@ -9524,13 +10417,17 @@ public static func initializeTableFromTextFile(
   vocabSize: Int64 = -1,
   delimiter: String = "\t"
 ) {
-  return #tfop("InitializeTableFromTextFile",
-    tableHandle,
-    filename,
-    key_index: keyIndex,
-    value_index: valueIndex,
-    vocab_size: vocabSize,
-    delimiter: delimiter)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InitializeTableFromTextFile", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
+  TFE_OpSetAttrInt(op, "key_index", keyIndex)
+  TFE_OpSetAttrInt(op, "value_index", valueIndex)
+  TFE_OpSetAttrInt(op, "vocab_size", vocabSize)
+  TFE_OpSetAttrString(op, "delimiter", delimiter, delimiter.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///     Adds v into specified rows of x.
@@ -9549,12 +10446,15 @@ public static func inplaceAdd<T: TensorFlowScalar>(
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("InplaceAdd",
-    x,
-    i,
-    v,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InplaceAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///     Subtracts `v` into specified rows of `x`.
@@ -9573,12 +10473,15 @@ public static func inplaceSub<T: TensorFlowScalar>(
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("InplaceSub",
-    x,
-    i,
-    v,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InplaceSub", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///     Updates specified rows with values in `v`.
@@ -9597,36 +10500,49 @@ public static func inplaceUpdate<T: TensorFlowScalar>(
   i: Tensor<Int32>,
   v: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("InplaceUpdate",
-    x,
-    i,
-    v,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InplaceUpdate", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func int64Output(
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("Int64Output")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Int64Output", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func intAttr(
   foo: Int64 = 1
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("IntAttr",
-    foo: foo)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntAttr", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "foo", foo)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func intInput(
   _ a: Tensor<Int32>
 ) {
-  return #tfop("IntInput",
-    a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -9634,32 +10550,45 @@ public static func intInputFloatInput(
   _ a: Tensor<Int32>,
   _ b: Tensor<Float>
 ) {
-  return #tfop("IntInputFloatInput",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntInputFloatInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func intInputIntOutput(
   _ a: Tensor<Int32>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("IntInputIntOutput",
-    a)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntInputIntOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func intOutput(
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("IntOutput")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func intOutputFloatOutput(
 ) -> (a: Tensor<Int32>, b: Tensor<Float>) {
-  let ret: (TensorHandle<Int32>, TensorHandle<Float>) = #tfop("IntOutputFloatOutput")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntOutputFloatOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the reciprocal of x element-wise.
@@ -9669,10 +10598,13 @@ public static func intOutputFloatOutput(
 public static func inv<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Inv",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Inv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient for the inverse of `x` wrt its input.
@@ -9684,11 +10616,14 @@ public static func invGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("InvGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InvGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Flips all bits elementwise.
@@ -9699,10 +10634,13 @@ public static func invGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func invert<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Invert",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Invert", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the inverse permutation of a tensor.
@@ -9730,10 +10668,13 @@ public static func invert<T: BinaryInteger & TensorFlowScalar>(
 public static func invertPermutation<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("InvertPermutation",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InvertPermutation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns which elements of x are finite.
@@ -9745,10 +10686,13 @@ public static func invertPermutation<T: BinaryInteger & TensorFlowScalar>(
 public static func isFinite<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("IsFinite",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsFinite", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns which elements of x are Inf.
@@ -9760,10 +10704,13 @@ public static func isFinite<T: FloatingPoint & TensorFlowScalar>(
 public static func isInf<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("IsInf",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsInf", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns which elements of x are NaN.
@@ -9775,10 +10722,13 @@ public static func isInf<T: FloatingPoint & TensorFlowScalar>(
 public static func isNan<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("IsNan",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsNan", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Checks whether a tensor has been initialized.
@@ -9792,26 +10742,35 @@ public static func isNan<T: FloatingPoint & TensorFlowScalar>(
 public static func isVariableInitialized<Dtype: TensorFlowScalar>(
   ref: Tensor<Dtype>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("IsVariableInitialized",
-    ref,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsVariableInitialized", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func kernelLabel(
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("KernelLabel")
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "KernelLabel", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func kernelLabelRequired(
   _ input: Tensor<Int32>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("KernelLabelRequired",
-    input)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "KernelLabelRequired", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// L2 Loss.
@@ -9827,10 +10786,13 @@ public static func kernelLabelRequired(
 public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
   t: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("L2Loss",
-    t,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "L2Loss", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs the records from a LMDB file.
@@ -9847,10 +10809,13 @@ public static func lMDBReader(
   container: String,
   sharedName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("LMDBReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LMDBReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Local Response Normalization.
@@ -9882,14 +10847,17 @@ public static func lRN<T: FloatingPoint & TensorFlowScalar>(
   alpha: Double = 1,
   beta: Double = 0.5
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("LRN",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    depth_radius: depthRadius,
-    bias: bias,
-    alpha: alpha,
-    beta: beta)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LRN", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "depth_radius", depthRadius)
+  TFE_OpSetAttrFloat(op, "bias", Float(bias))
+  TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
+  TFE_OpSetAttrFloat(op, "beta", Float(beta))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradients for Local Response Normalization.
@@ -9916,16 +10884,19 @@ public static func lRNGrad<T: FloatingPoint & TensorFlowScalar>(
   alpha: Double = 1,
   beta: Double = 0.5
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("LRNGrad",
-    inputGrads,
-    inputImage,
-    outputImage,
-    T$dtype: T.tensorFlowDataType,
-    depth_radius: depthRadius,
-    bias: bias,
-    alpha: alpha,
-    beta: beta)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LRNGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputGrads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputImage, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputImage, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "depth_radius", depthRadius)
+  TFE_OpSetAttrFloat(op, "bias", Float(bias))
+  TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
+  TFE_OpSetAttrFloat(op, "beta", Float(beta))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the LSTM cell forward propagation for 1 time step.
@@ -9992,20 +10963,23 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   cellClip: Double = 3,
   usePeephole: Bool = false
 ) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("LSTMBlockCell",
-    x,
-    csPrev,
-    hPrev,
-    w,
-    wci,
-    wcf,
-    wco,
-    b,
-    T$dtype: T.tensorFlowDataType,
-    forget_bias: forgetBias,
-    cell_clip: cellClip,
-    use_peephole: usePeephole)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LSTMBlockCell", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, w, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wcf, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wco, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "forget_bias", Float(forgetBias))
+  TFE_OpSetAttrFloat(op, "cell_clip", Float(cellClip))
+  TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the LSTM cell backward propagation for 1 timestep.
@@ -10058,26 +11032,29 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   hGrad: Tensor<T>,
   usePeephole: Bool
 ) -> (csPrevGrad: Tensor<T>, dicfo: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("LSTMBlockCellGrad",
-    x,
-    csPrev,
-    hPrev,
-    w,
-    wci,
-    wcf,
-    wco,
-    b,
-    i,
-    cs,
-    f,
-    o,
-    ci,
-    co,
-    csGrad,
-    hGrad,
-    T$dtype: T.tensorFlowDataType,
-    use_peephole: usePeephole)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LSTMBlockCellGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hPrev, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, w, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wcf, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wco, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, f, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, o, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ci, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, co, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, csGrad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, hGrad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -10127,15 +11104,18 @@ public static func learnedUnigramCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("LearnedUnigramCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    range_max: rangeMax,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LearnedUnigramCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "range_max", rangeMax)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Elementwise computes the bitwise left-shift of `x` and `y`.
@@ -10147,11 +11127,14 @@ public static func leftShift<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("LeftShift",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LeftShift", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x < y) element-wise.
@@ -10163,11 +11146,14 @@ public static func less<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("Less",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Less", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x <= y) element-wise.
@@ -10179,11 +11165,14 @@ public static func lessEqual<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("LessEqual",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LessEqual", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the log of the absolute value of `Gamma(x)` element-wise.
@@ -10191,10 +11180,13 @@ public static func lessEqual<T: Numeric & TensorFlowScalar>(
 public static func lgamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Lgamma",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Lgamma", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates values in an interval.
@@ -10221,13 +11213,16 @@ public static func linSpace<T: FloatingPoint & TensorFlowScalar, Tidx: BinaryInt
   stop: Tensor<T>,
   num: Tensor<Tidx>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("LinSpace",
-    start,
-    stop,
-    num,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LinSpace", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, start, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, stop, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, num, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the difference between two lists of numbers or strings.
@@ -10266,21 +11261,29 @@ public static func listDiff<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorF
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> (out: Tensor<T>, idx: Tensor<OutIdx>) {
-  let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("ListDiff",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType,
-    out_idx$dtype: OutIdx.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ListDiff", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func listInput<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
-  return #tfop("ListInput",
-    a,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ListInput", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Loads a 2-D (matrix) `Tensor` with name `old_tensor_name` from the checkpoint
@@ -10355,16 +11358,19 @@ public static func loadAndRemapMatrix(
   numCols: Int64,
   maxRowsInMemory: Int64 = -1
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("LoadAndRemapMatrix",
-    ckptPath,
-    oldTensorName,
-    rowRemapping,
-    colRemapping,
-    initializingValues,
-    num_rows: numRows,
-    num_cols: numCols,
-    max_rows_in_memory: maxRowsInMemory)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LoadAndRemapMatrix", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ckptPath, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, oldTensorName, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rowRemapping, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, colRemapping, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, initializingValues, s)
+  TFE_OpSetAttrInt(op, "num_rows", numRows)
+  TFE_OpSetAttrInt(op, "num_cols", numCols)
+  TFE_OpSetAttrInt(op, "max_rows_in_memory", maxRowsInMemory)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes natural logarithm of x element-wise.
@@ -10374,10 +11380,13 @@ public static func loadAndRemapMatrix(
 public static func log<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Log",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Log", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes natural logarithm of (1 + x) element-wise.
@@ -10387,10 +11396,13 @@ public static func log<T: FloatingPoint & TensorFlowScalar>(
 public static func log1p<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Log1p",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Log1p", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sign and the log of the absolute value of the determinant of
@@ -10415,10 +11427,13 @@ public static func log1p<T: FloatingPoint & TensorFlowScalar>(
 public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> (sign: Tensor<T>, logAbsDeterminant: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("LogMatrixDeterminant",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogMatrixDeterminant", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes log softmax activations.
@@ -10434,10 +11449,13 @@ public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
 public static func logSoftmax<T: FloatingPoint & TensorFlowScalar>(
   logits: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("LogSoftmax",
-    logits,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogSoftmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a log-uniform distribution.
@@ -10487,15 +11505,18 @@ public static func logUniformCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("LogUniformCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    range_max: rangeMax,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogUniformCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "range_max", rangeMax)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of x AND y element-wise.
@@ -10507,10 +11528,13 @@ public static func logicalAnd(
   _ x: Tensor<Bool>,
   _ y: Tensor<Bool>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("LogicalAnd",
-    x,
-    y)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogicalAnd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of NOT x element-wise.
@@ -10518,9 +11542,12 @@ public static func logicalAnd(
 public static func logicalNot(
   _ x: Tensor<Bool>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("LogicalNot",
-    x)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogicalNot", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of x OR y element-wise.
@@ -10532,10 +11559,13 @@ public static func logicalOr(
   _ x: Tensor<Bool>,
   _ y: Tensor<Bool>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("LogicalOr",
-    x,
-    y)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogicalOr", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs all keys and values in the table.
@@ -10549,11 +11579,14 @@ public static func logicalOr(
 public static func lookupTableExport<Tkeys: TensorFlowScalar, Tvalues: TensorFlowScalar>(
   tableHandle: StringTensor
 ) -> (keys: Tensor<Tkeys>, values: Tensor<Tvalues>) {
-  let ret: (TensorHandle<Tkeys>, TensorHandle<Tvalues>) = #tfop("LookupTableExport",
-    tableHandle,
-    Tkeys$dtype: Tkeys.tensorFlowDataType,
-    Tvalues$dtype: Tvalues.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableExport", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  TFE_OpSetAttrType(op, "Tkeys", Tkeys.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tvalues", Tvalues.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Looks up keys in a table, outputs the corresponding values.
@@ -10576,13 +11609,16 @@ public static func lookupTableFind<Tin: TensorFlowScalar, Tout: TensorFlowScalar
   keys: Tensor<Tin>,
   defaultValue: Tensor<Tout>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("LookupTableFind",
-    tableHandle,
-    keys,
-    defaultValue,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableFind", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, defaultValue, s)
+  TFE_OpSetAttrType(op, "Tin", Tin.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Replaces the contents of the table with the specified keys and values.
@@ -10600,12 +11636,16 @@ public static func lookupTableImport<Tin: TensorFlowScalar, Tout: TensorFlowScal
   keys: Tensor<Tin>,
   _ values: Tensor<Tout>
 ) {
-  return #tfop("LookupTableImport",
-    tableHandle,
-    keys,
-    values,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableImport", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "Tin", Tin.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Updates the table to associates keys with values.
@@ -10623,12 +11663,16 @@ public static func lookupTableInsert<Tin: TensorFlowScalar, Tout: TensorFlowScal
   keys: Tensor<Tin>,
   _ values: Tensor<Tout>
 ) {
-  return #tfop("LookupTableInsert",
-    tableHandle,
-    keys,
-    values,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableInsert", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "Tin", Tin.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the number of elements in the given table.
@@ -10640,9 +11684,12 @@ public static func lookupTableInsert<Tin: TensorFlowScalar, Tout: TensorFlowScal
 public static func lookupTableSize(
   tableHandle: StringTensor
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("LookupTableSize",
-    tableHandle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards the input to the output.
@@ -10657,9 +11704,12 @@ public static func lookupTableSize(
 public static func loopCond(
   _ input: Tensor<Bool>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("LoopCond",
-    input)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LoopCond", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies lower_bound(sorted_search_values, values) along each row.
@@ -10695,12 +11745,15 @@ public static func lowerBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
   sortedInputs: Tensor<T>,
   _ values: Tensor<T>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("LowerBound",
-    sortedInputs,
-    values,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LowerBound", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sortedInputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op removes all elements in the underlying container.
@@ -10712,11 +11765,15 @@ public static func mapClear<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) {
-  return #tfop("MapClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapClear", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op returns the number of incomplete elements in the underlying container.
@@ -10728,12 +11785,15 @@ public static func mapIncompleteSize<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("MapIncompleteSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapIncompleteSize", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -10745,12 +11805,15 @@ public static func mapSize<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("MapSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapSize", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Stage (key, values) in the underlying container which behaves like a hashtable.
@@ -10777,14 +11840,18 @@ public static func mapStage<Dtypes: TensorFlowScalar, FakeDtypes: TensorFlowScal
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) {
-  return #tfop("MapStage",
-    key,
-    indices,
-    values,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapStage", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, key, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Multiply the matrix "a" by the matrix "b".
@@ -10807,13 +11874,16 @@ public static func matMul<T: Numeric & TensorFlowScalar>(
   transposeA: Bool = false,
   transposeB: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatMul",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType,
-    transpose_a: transposeA,
-    transpose_b: transposeB)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "transpose_a", (transposeA) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "transpose_b", (transposeB) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the set of files matching one or more glob patterns.
@@ -10829,9 +11899,12 @@ public static func matMul<T: Numeric & TensorFlowScalar>(
 public static func matchingFiles(
   pattern: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("MatchingFiles",
-    pattern)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatchingFiles", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Copy a tensor setting everything outside a central band in each innermost matrix
@@ -10890,13 +11963,16 @@ public static func matrixBandPart<T: TensorFlowScalar, Tindex: BinaryInteger & T
   numLower: Tensor<Tindex>,
   numUpper: Tensor<Tindex>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixBandPart",
-    input,
-    numLower,
-    numUpper,
-    T$dtype: T.tensorFlowDataType,
-    Tindex$dtype: Tindex.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixBandPart", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numLower, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numUpper, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindex", Tindex.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the determinant of one or more square matrices.
@@ -10912,10 +11988,13 @@ public static func matrixBandPart<T: TensorFlowScalar, Tindex: BinaryInteger & T
 public static func matrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixDeterminant",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixDeterminant", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a batched diagonal tensor with a given batched diagonal values.
@@ -10954,10 +12033,13 @@ public static func matrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
 public static func matrixDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixDiag",
-    diagonal,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixDiag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the batched diagonal part of a batched tensor.
@@ -10999,10 +12081,13 @@ public static func matrixDiag<T: TensorFlowScalar>(
 public static func matrixDiagPart<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixDiagPart",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixDiagPart", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated, use python implementation tf.linalg.matrix_exponential.
@@ -11010,10 +12095,13 @@ public static func matrixDiagPart<T: TensorFlowScalar>(
 public static func matrixExponential<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixExponential",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixExponential", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the inverse of one or more square invertible matrices or their
@@ -11042,11 +12130,14 @@ public static func matrixInverse<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixInverse",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixInverse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the matrix logarithm of one or more square matrices:
@@ -11078,10 +12169,13 @@ public static func matrixInverse<T: FloatingPoint & TensorFlowScalar>(
 public static func matrixLogarithm<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixLogarithm",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixLogarithm", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a batched matrix tensor with new batched diagonal values.
@@ -11109,11 +12203,14 @@ public static func matrixSetDiag<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   diagonal: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixSetDiag",
-    input,
-    diagonal,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixSetDiag", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Solves systems of linear equations.
@@ -11139,12 +12236,15 @@ public static func matrixSolve<T: FloatingPoint & TensorFlowScalar>(
   rhs: Tensor<T>,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixSolve",
-    matrix,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixSolve", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Solves one or more linear least-squares problems.
@@ -11201,13 +12301,16 @@ public static func matrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   l2Regularizer: Tensor<Double>,
   fast: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixSolveLs",
-    matrix,
-    rhs,
-    l2Regularizer,
-    T$dtype: T.tensorFlowDataType,
-    fast: fast)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixSolveLs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2Regularizer, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "fast", (fast) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Solves systems of linear equations with upper or lower triangular matrices by
@@ -11250,13 +12353,16 @@ public static func matrixTriangularSolve<T: FloatingPoint & TensorFlowScalar>(
   lower: Bool = true,
   adjoint: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MatrixTriangularSolve",
-    matrix,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    lower: lower,
-    adjoint: adjoint)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatrixTriangularSolve", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, matrix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "lower", (lower) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "adjoint", (adjoint) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the maximum of elements across dimensions of a tensor.
@@ -11280,13 +12386,16 @@ public static func max<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Max",
-    input,
-    reductionIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Max", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs max pooling on the input.
@@ -11313,14 +12422,17 @@ public static func maxPool<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPool",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs 3D max pooling on the input.
@@ -11348,14 +12460,17 @@ public static func maxPool3D<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPool3D",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPool3D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of max pooling function.
@@ -11386,17 +12501,20 @@ public static func maxPool3DGrad<T: FloatingPoint & TensorFlowScalar, Tinput: Fl
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPool3DGrad",
-    origInput,
-    origOutput,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    TInput$dtype: Tinput.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPool3DGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "TInput", Tinput.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -11429,16 +12547,19 @@ public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPool3DGradGrad",
-    origInput,
-    origOutput,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPool3DGradGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -11470,16 +12591,19 @@ public static func maxPoolGrad<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGrad",
-    origInput,
-    origOutput,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -11511,16 +12635,19 @@ public static func maxPoolGradGrad<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGradGrad",
-    origInput,
-    origOutput,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGradGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -11552,16 +12679,19 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGradGradV2",
-    origInput,
-    origOutput,
-    grad,
-    ksize,
-    strides,
-    T$dtype: T.tensorFlowDataType,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGradGradV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ksize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -11588,16 +12718,19 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger & TensorFlow
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGradGradWithArgmax",
-    input,
-    grad,
-    argmax,
-    Targmax$dtype: Targmax.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGradGradWithArgmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, argmax, s)
+  TFE_OpSetAttrType(op, "Targmax", Targmax.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -11629,16 +12762,19 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGradV2",
-    origInput,
-    origOutput,
-    grad,
-    ksize,
-    strides,
-    T$dtype: T.tensorFlowDataType,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGradV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, origInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, origOutput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ksize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients of the maxpooling function.
@@ -11665,16 +12801,19 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger & TensorFlowScal
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolGradWithArgmax",
-    input,
-    grad,
-    argmax,
-    Targmax$dtype: Targmax.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolGradWithArgmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, argmax, s)
+  TFE_OpSetAttrType(op, "Targmax", Targmax.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs max pooling on the input.
@@ -11702,14 +12841,17 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
   padding: Padding,
   dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MaxPoolV2",
-    input,
-    ksize,
-    strides,
-    T$dtype: T.tensorFlowDataType,
-    padding: padding.cName,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ksize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Performs max pooling on the input and outputs both max values and indices.
@@ -11741,14 +12883,17 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
   strides: [Int32],
   padding: Padding
 ) -> (output: Tensor<T>, argmax: Tensor<Targmax>) {
-  let ret: (TensorHandle<T>, TensorHandle<Targmax>) = #tfop("MaxPoolWithArgmax",
-    input,
-    Targmax$dtype: Targmax.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MaxPoolWithArgmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Targmax", Targmax.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the max of x and y (i.e. x > y ? x : y) element-wise.
@@ -11760,11 +12905,14 @@ public static func maximum<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Maximum",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Maximum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the mean of elements across dimensions of a tensor.
@@ -11788,13 +12936,16 @@ public static func mean<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Mean",
-    input,
-    reductionIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Mean", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards the value of an available tensor from `inputs` to `output`.
@@ -11814,10 +12965,14 @@ public static func mean<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
 public static func merge<T: TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("Merge",
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Merge", s)
+  defer { TFE_DeleteOp(op) }
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Merges summaries.
@@ -11838,9 +12993,13 @@ public static func merge<T: TensorFlowScalar>(
 public static func mergeSummary(
   inputs: [StringTensor]
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("MergeSummary",
-    inputs)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MergeSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// V2 format specific: merges the metadata files of sharded checkpoints.  The
@@ -11866,10 +13025,14 @@ public static func mergeV2Checkpoints(
   destinationPrefix: StringTensor,
   deleteOldDirs: Bool = true
 ) {
-  return #tfop("MergeV2Checkpoints",
-    checkpointPrefixes,
-    destinationPrefix,
-    delete_old_dirs: deleteOldDirs)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MergeV2Checkpoints", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, checkpointPrefixes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, destinationPrefix, s)
+  TFE_OpSetAttrBool(op, "delete_old_dirs", (deleteOldDirs) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Transforms a spectrogram into a form that's useful for speech recognition.
@@ -11902,14 +13065,17 @@ public static func mfcc(
   filterbankChannelCount: Int64 = 40,
   dctCoefficientCount: Int64 = 13
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("Mfcc",
-    spectrogram,
-    sampleRate,
-    upper_frequency_limit: upperFrequencyLimit,
-    lower_frequency_limit: lowerFrequencyLimit,
-    filterbank_channel_count: filterbankChannelCount,
-    dct_coefficient_count: dctCoefficientCount)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Mfcc", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, spectrogram, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sampleRate, s)
+  TFE_OpSetAttrFloat(op, "upper_frequency_limit", Float(upperFrequencyLimit))
+  TFE_OpSetAttrFloat(op, "lower_frequency_limit", Float(lowerFrequencyLimit))
+  TFE_OpSetAttrInt(op, "filterbank_channel_count", filterbankChannelCount)
+  TFE_OpSetAttrInt(op, "dct_coefficient_count", dctCoefficientCount)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the minimum of elements across dimensions of a tensor.
@@ -11933,13 +13099,16 @@ public static func min<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Min",
-    input,
-    reductionIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Min", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the min of x and y (i.e. x < y ? x : y) element-wise.
@@ -11951,11 +13120,14 @@ public static func minimum<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Minimum",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Minimum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Pads a tensor with mirrored values.
@@ -12004,13 +13176,16 @@ public static func mirrorPad<T: TensorFlowScalar, Tpaddings: BinaryInteger & Ten
   paddings: Tensor<Tpaddings>,
   mode: Mode4
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MirrorPad",
-    input,
-    paddings,
-    T$dtype: T.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
-    mode: mode.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MirrorPad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradient op for `MirrorPad` op. This op folds a mirror-padded tensor.
@@ -12048,13 +13223,16 @@ public static func mirrorPadGrad<T: TensorFlowScalar, Tpaddings: BinaryInteger &
   paddings: Tensor<Tpaddings>,
   mode: Mode4
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("MirrorPadGrad",
-    input,
-    paddings,
-    T$dtype: T.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
-    mode: mode.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MirrorPadGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise remainder of division. This emulates C semantics in that
@@ -12069,11 +13247,14 @@ public static func mod<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Mod",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Mod", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x * y element-wise.
@@ -12085,11 +13266,14 @@ public static func mul<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Mul",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Mul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Draws samples from a multinomial distribution.
@@ -12113,14 +13297,17 @@ public static func multinomial<T: Numeric & TensorFlowScalar, OutputDtype: Binar
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<OutputDtype> {
-  let ret: TensorHandle<OutputDtype> = #tfop("Multinomial",
-    logits,
-    numSamples,
-    T$dtype: T.tensorFlowDataType,
-    output_dtype$dtype: OutputDtype.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Multinomial", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSamples, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "output_dtype", OutputDtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates an empty hash table.
@@ -12148,13 +13335,16 @@ public static func mutableHashTable<KeyDtype: TensorFlowScalar, ValueDtype: Tens
   typeKeyDtype: KeyDtype.Type,
   typeValueDtype: ValueDtype.Type
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("MutableHashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MutableHashTable", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "key_dtype", KeyDtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "value_dtype", ValueDtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  TFE_OpSetAttrBool(op, "use_node_name_sharing", (useNodeNameSharing) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -12162,10 +13352,16 @@ public static func nInPolymorphicTwice<T: TensorFlowScalar>(
   _ a: [Tensor<T>],
   _ b: [Tensor<T>]
 ) {
-  return #tfop("NInPolymorphicTwice",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NInPolymorphicTwice", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  let bCount = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrInt(op, "N", Int64(bCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -12173,9 +13369,15 @@ public static func nInTwice(
   _ a: [Tensor<Int32>],
   _ b: [StringTensor]
 ) {
-  return #tfop("NInTwice",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NInTwice", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  let bCount = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrInt(op, "N", Int64(bCount))
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -12183,37 +13385,58 @@ public static func nInTwoTypeVariables<S: TensorFlowScalar, T: TensorFlowScalar>
   _ a: [Tensor<S>],
   _ b: [Tensor<T>]
 ) {
-  return #tfop("NInTwoTypeVariables",
-    a,
-    b,
-    S$dtype: S.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NInTwoTypeVariables", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  let bCount = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrInt(op, "N", Int64(bCount))
+  TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func nIntsIn(
   _ a: [Tensor<Int32>]
 ) {
-  return #tfop("NIntsIn",
-    a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NIntsIn", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func nPolymorphicIn<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
-  return #tfop("NPolymorphicIn",
-    a,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicIn", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
-  return #tfop("NPolymorphicRestrictIn",
-    a,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicRestrictIn", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes numerical negative value element-wise.
@@ -12223,10 +13446,13 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
 public static func neg<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Neg",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Neg", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Training via negative sampling.
@@ -12250,14 +13476,18 @@ public static func negTrain(
   vocabCount: [Int32],
   numNegativeSamples: Int64
 ) {
-  return #tfop("NegTrain",
-    wIn,
-    wOut,
-    examples,
-    labels,
-    lr,
-    vocab_count: vocabCount,
-    num_negative_samples: numNegativeSamples)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NegTrain", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, wIn, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, wOut, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, examples, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, labels, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  _TFCOpSetAttrInt32Array(op, "vocab_count", vocabCount)
+  TFE_OpSetAttrInt(op, "num_negative_samples", numNegativeSamples)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Makes its input available to the next iteration.
@@ -12269,17 +13499,24 @@ public static func negTrain(
 public static func nextIteration<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("NextIteration",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NextIteration", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Does nothing. Only useful as a placeholder for control edges.
 @inlinable @inline(__always)
 public static func noOp(
 ) {
-  return #tfop("NoOp")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NoOp", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12320,12 +13557,15 @@ public static func nonMaxSuppression(
   maxOutputSize: Tensor<Int32>,
   iouThreshold: Double = 0.5
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppression",
-    boxes,
-    scores,
-    maxOutputSize,
-    iou_threshold: iouThreshold)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NonMaxSuppression", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
+  TFE_OpSetAttrFloat(op, "iou_threshold", Float(iouThreshold))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12367,13 +13607,16 @@ public static func nonMaxSuppressionV2<T: FloatingPoint & TensorFlowScalar>(
   maxOutputSize: Tensor<Int32>,
   iouThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionV2",
-    boxes,
-    scores,
-    maxOutputSize,
-    iouThreshold,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NonMaxSuppressionV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, iouThreshold, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12417,14 +13660,17 @@ public static func nonMaxSuppressionV3<T: FloatingPoint & TensorFlowScalar>(
   iouThreshold: Tensor<Float>,
   scoreThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionV3",
-    boxes,
-    scores,
-    maxOutputSize,
-    iouThreshold,
-    scoreThreshold,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NonMaxSuppressionV3", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, iouThreshold, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12475,15 +13721,18 @@ public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
   scoreThreshold: Tensor<Float>,
   padToMaxOutputSize: Bool = false
 ) -> (selectedIndices: Tensor<Int32>, validOutputs: Tensor<Int32>) {
-  let ret: (TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("NonMaxSuppressionV4",
-    boxes,
-    scores,
-    maxOutputSize,
-    iouThreshold,
-    scoreThreshold,
-    T$dtype: T.tensorFlowDataType,
-    pad_to_max_output_size: padToMaxOutputSize)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NonMaxSuppressionV4", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, iouThreshold, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "pad_to_max_output_size", (padToMaxOutputSize) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12525,19 +13774,26 @@ public static func nonMaxSuppressionWithOverlaps(
   overlapThreshold: Tensor<Float>,
   scoreThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("NonMaxSuppressionWithOverlaps",
-    overlaps,
-    scores,
-    maxOutputSize,
-    overlapThreshold,
-    scoreThreshold)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NonMaxSuppressionWithOverlaps", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, overlaps, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, overlapThreshold, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func none(
 ) {
-  return #tfop("None")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "None", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the truth value of (x != y) element-wise.
@@ -12549,11 +13805,14 @@ public static func notEqual<T: TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("NotEqual",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NotEqual", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds values of the `n`-th order statistic for the last dimension.
@@ -12581,18 +13840,25 @@ public static func nthElement<T: Numeric & TensorFlowScalar>(
   n: Tensor<Int32>,
   reverse: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("NthElement",
-    input,
-    n,
-    T$dtype: T.tensorFlowDataType,
-    reverse: reverse)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NthElement", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "reverse", (reverse) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func old(
 ) {
-  return #tfop("Old")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Old", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a one-hot tensor.
@@ -12702,15 +13968,18 @@ public static func oneHot<T: TensorFlowScalar, Ti: BinaryInteger & TensorFlowSca
   offValue: Tensor<T>,
   axis: Int64 = -1
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("OneHot",
-    indices,
-    depth,
-    onValue,
-    offValue,
-    T$dtype: T.tensorFlowDataType,
-    TI$dtype: Ti.tensorFlowDataType,
-    axis: axis)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OneHot", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, depth, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, onValue, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, offValue, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "TI", Ti.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "axis", axis)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a tensor of ones with the same shape and type as x.
@@ -12722,25 +13991,35 @@ public static func oneHot<T: TensorFlowScalar, Ti: BinaryInteger & TensorFlowSca
 public static func onesLike<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("OnesLike",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OnesLike", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func opWithDefaultAttr(
   defaultFloat: Double = 123
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("OpWithDefaultAttr",
-    default_float: defaultFloat)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OpWithDefaultAttr", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrFloat(op, "default_float", Float(defaultFloat))
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func opWithFutureDefaultAttr(
 ) {
-  return #tfop("OpWithFutureDefaultAttr")
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OpWithFutureDefaultAttr", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op removes all elements in the underlying container.
@@ -12752,11 +14031,15 @@ public static func orderedMapClear<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) {
-  return #tfop("OrderedMapClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapClear", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op returns the number of incomplete elements in the underlying container.
@@ -12768,12 +14051,15 @@ public static func orderedMapIncompleteSize<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("OrderedMapIncompleteSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapIncompleteSize", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -12785,12 +14071,15 @@ public static func orderedMapSize<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("OrderedMapSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapSize", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Stage (key, values) in the underlying container which behaves like a ordered
@@ -12819,22 +14108,29 @@ public static func orderedMapStage<Dtypes: TensorFlowScalar, FakeDtypes: TensorF
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) {
-  return #tfop("OrderedMapStage",
-    key,
-    indices,
-    values,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapStage", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, key, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func outT<T: TensorFlowScalar>(
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("OutT",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutT", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor.
@@ -12870,11 +14166,15 @@ public static func pack<T: TensorFlowScalar>(
   _ values: [Tensor<T>],
   axis: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Pack",
-    values,
-    T$dtype: T.tensorFlowDataType,
-    axis: axis)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Pack", s)
+  defer { TFE_DeleteOp(op) }
+  let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "axis", axis)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Pads a tensor with zeros.
@@ -12907,12 +14207,15 @@ public static func pad<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorFlo
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Pad",
-    input,
-    paddings,
-    T$dtype: T.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Pad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Pads a tensor.
@@ -12947,13 +14250,16 @@ public static func padV2<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorF
   paddings: Tensor<Tpaddings>,
   constantValues: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("PadV2",
-    input,
-    paddings,
-    constantValues,
-    T$dtype: T.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PadV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, constantValues, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Interleave the values from the `data` tensors into a single tensor.
@@ -13024,11 +14330,16 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
   indices: [Tensor<Int32>],
   data: [Tensor<T>]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ParallelDynamicStitch",
-    indices,
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParallelDynamicStitch", s)
+  defer { TFE_DeleteOp(op) }
+  let indicesCount = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
+  let dataCount = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrInt(op, "N", Int64(dataCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from a normal distribution. The parameters may each be a
@@ -13063,17 +14374,20 @@ public static func parameterizedTruncatedNormal<Dtype: FloatingPoint & TensorFlo
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("ParameterizedTruncatedNormal",
-    shape,
-    means,
-    stdevs,
-    minvals,
-    maxvals,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParameterizedTruncatedNormal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, means, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, stdevs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minvals, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxvals, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
@@ -13088,10 +14402,13 @@ public static func parameterizedTruncatedNormal<Dtype: FloatingPoint & TensorFlo
 public static func parseTensor<OutType: TensorFlowScalar>(
   serialized: StringTensor
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("ParseTensor",
-    serialized,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParseTensor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, serialized, s)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the polygamma function \\(\psi^{(n)}(x)\\).
@@ -13107,37 +14424,49 @@ public static func polygamma<T: FloatingPoint & TensorFlowScalar>(
   _ a: Tensor<T>,
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Polygamma",
-    a,
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Polygamma", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func polymorphic<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Polymorphic",
-    a,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Polymorphic", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func polymorphicDefaultOut<T: TensorFlowScalar>(
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("PolymorphicDefaultOut",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PolymorphicDefaultOut", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func polymorphicOut<T: TensorFlowScalar>(
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("PolymorphicOut",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PolymorphicOut", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes element-wise population count (a.k.a. popcount, bitsum, bitcount).
@@ -13152,10 +14481,13 @@ public static func polymorphicOut<T: TensorFlowScalar>(
 public static func populationCount<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<UInt8> {
-  let ret: TensorHandle<UInt8> = #tfop("PopulationCount",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PopulationCount", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the power of one value to another.
@@ -13173,11 +14505,14 @@ public static func pow<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Pow",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Pow", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// An identity op that triggers an error if a gradient is requested.
@@ -13201,11 +14536,14 @@ public static func preventGradient<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   message: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("PreventGradient",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    message: message)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PreventGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "message", message, message.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Prints a list of tensors.
@@ -13230,14 +14568,17 @@ public static func print<T: TensorFlowScalar, U: TensorFlowScalar>(
   firstN: Int64 = -1,
   summarize: Int64 = 3
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Print",
-    input,
-    data,
-    T$dtype: T.tensorFlowDataType,
-    message: message,
-    first_n: firstN,
-    summarize: summarize)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Print", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "message", message, message.count)
+  TFE_OpSetAttrInt(op, "first_n", firstN)
+  TFE_OpSetAttrInt(op, "summarize", summarize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Prints a string scalar.
@@ -13252,9 +14593,13 @@ public static func printV2(
   _ input: StringTensor,
   outputStream: OutputStream = .stderr
 ) {
-  return #tfop("PrintV2",
-    input,
-    output_stream: outputStream.cName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PrintV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrString(op, "output_stream", outputStream.cName, outputStream.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the product of elements across dimensions of a tensor.
@@ -13278,13 +14623,16 @@ public static func prod<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Prod",
-    input,
-    reductionIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Prod", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the QR decompositions of one or more matrices.
@@ -13317,11 +14665,14 @@ public static func qr<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   fullMatrices: Bool = false
 ) -> (q: Tensor<T>, r: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("Qr",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    full_matrices: fullMatrices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Qr", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Use QuantizeAndDequantizeV2 instead.
@@ -13334,15 +14685,18 @@ public static func quantizeAndDequantize<T: FloatingPoint & TensorFlowScalar>(
   inputMin: Double = 0,
   inputMax: Double = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("QuantizeAndDequantize",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    signed_input: signedInput,
-    num_bits: numBits,
-    range_given: rangeGiven,
-    input_min: inputMin,
-    input_max: inputMax)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizeAndDequantize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "signed_input", (signedInput) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "range_given", (rangeGiven) ?     1 : 0)
+  TFE_OpSetAttrFloat(op, "input_min", Float(inputMin))
+  TFE_OpSetAttrFloat(op, "input_max", Float(inputMax))
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -13369,15 +14723,18 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   numBits: Int64 = 8,
   rangeGiven: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("QuantizeAndDequantizeV2",
-    input,
-    inputMin,
-    inputMax,
-    T$dtype: T.tensorFlowDataType,
-    signed_input: signedInput,
-    num_bits: numBits,
-    range_given: rangeGiven)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizeAndDequantizeV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "signed_input", (signedInput) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "num_bits", numBits)
+  TFE_OpSetAttrBool(op, "range_given", (rangeGiven) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Quantizes then dequantizes a tensor.
@@ -13393,15 +14750,18 @@ public static func quantizeAndDequantizeV3<T: FloatingPoint & TensorFlowScalar>(
   signedInput: Bool = true,
   rangeGiven: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("QuantizeAndDequantizeV3",
-    input,
-    inputMin,
-    inputMax,
-    numBits,
-    T$dtype: T.tensorFlowDataType,
-    signed_input: signedInput,
-    range_given: rangeGiven)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizeAndDequantizeV3", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numBits, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "signed_input", (signedInput) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "range_given", (rangeGiven) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Convert the quantized 'input' tensor into a lower-precision 'output', using the
@@ -13446,13 +14806,16 @@ public static func quantizeDownAndShrinkRange<Tinput: TensorFlowScalar, OutType:
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
 ) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizeDownAndShrinkRange",
-    input,
-    inputMin,
-    inputMax,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizeDownAndShrinkRange", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Quantize the 'input' tensor of type float to 'output' tensor of type 'T'.
@@ -13572,14 +14935,17 @@ public static func quantizeV2<T: TensorFlowScalar>(
   mode: Mode = .minCombined,
   roundMode: RoundMode = .halfAwayFromZero
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizeV2",
-    input,
-    minRange,
-    maxRange,
-    T$dtype: T.tensorFlowDataType,
-    mode: mode.cName,
-    round_mode: roundMode.cName)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizeV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minRange, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxRange, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "mode", mode.cName, mode.cName.count)
+  TFE_OpSetAttrString(op, "round_mode", roundMode.cName, roundMode.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x + y element-wise, working on quantized buffers.
@@ -13605,17 +14971,20 @@ public static func quantizedAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   minY: Tensor<Float>,
   maxY: Tensor<Float>
 ) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
-  let ret: (TensorHandle<Toutput>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedAdd",
-    x,
-    y,
-    minX,
-    maxX,
-    minY,
-    maxY,
-    T1$dtype: T1.tensorFlowDataType,
-    T2$dtype: T2.tensorFlowDataType,
-    Toutput$dtype: Toutput.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minX, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxX, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minY, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxY, s)
+  TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Toutput", Toutput.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Produces the average pool of the input tensor for quantized types.
@@ -13644,15 +15013,18 @@ public static func quantizedAvgPool<T: TensorFlowScalar>(
   strides: [Int32],
   padding: Padding
 ) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedAvgPool",
-    input,
-    minInput,
-    maxInput,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedAvgPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxInput, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Quantized Batch normalization.
@@ -13708,27 +15080,30 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: TensorFlowS
   varianceEpsilon: Double,
   scaleAfterNormalization: Bool
 ) -> (result: Tensor<OutType>, resultMin: Tensor<Float>, resultMax: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedBatchNormWithGlobalNormalization",
-    t,
-    tMin,
-    tMax,
-    m,
-    mMin,
-    mMax,
-    v,
-    vMin,
-    vMax,
-    beta,
-    betaMin,
-    betaMax,
-    gamma,
-    gammaMin,
-    gammaMax,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType,
-    variance_epsilon: varianceEpsilon,
-    scale_after_normalization: scaleAfterNormalization)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedBatchNormWithGlobalNormalization", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, m, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, vMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, vMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, beta, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, betaMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, betaMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gamma, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gammaMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gammaMax, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
+  TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds Tensor 'bias' to Tensor 'input' for Quantized types.
@@ -13754,17 +15129,20 @@ public static func quantizedBiasAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, 
   minBias: Tensor<Float>,
   maxBias: Tensor<Float>
 ) -> (output: Tensor<OutType>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedBiasAdd",
-    input,
-    bias,
-    minInput,
-    maxInput,
-    minBias,
-    maxBias,
-    T1$dtype: T1.tensorFlowDataType,
-    T2$dtype: T2.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedBiasAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bias, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minBias, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxBias, s)
+  TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Concatenates quantized tensors along one dimension.
@@ -13790,13 +15168,19 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   inputMins: [Tensor<Float>],
   inputMaxes: [Tensor<Float>]
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConcat",
-    concatDim,
-    values,
-    inputMins,
-    inputMaxes,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedConcat", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, concatDim, s)
+  let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
+  let inputMinsCount = _TFCOpAddInputFromTensorGroup(op, inputMins, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputMinsCount))
+  let inputMaxesCount = _TFCOpAddInputFromTensorGroup(op, inputMaxes, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputMaxesCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes a 2D convolution given quantized 4D input and filter tensors.
@@ -13838,20 +15222,23 @@ public static func quantizedConv2D<Tinput: TensorFlowScalar, Tfilter: TensorFlow
   padding: Padding,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2D",
-    input,
-    filter,
-    minInput,
-    maxInput,
-    minFilter,
-    maxFilter,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    Tfilter$dtype: Tfilter.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType,
-    strides: strides,
-    padding: padding.cName,
-    dilations: dilations)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedConv2D", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, filter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minFilter, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxFilter, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tfilter", Tfilter.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  _TFCOpSetAttrInt32Array(op, "dilations", dilations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Quantized Instance normalization.
@@ -13885,17 +15272,20 @@ public static func quantizedInstanceNorm<T: TensorFlowScalar>(
   varianceEpsilon: Double = 1e-05,
   minSeparation: Double = 0.001
 ) -> (y: Tensor<T>, yMin: Tensor<Float>, yMax: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedInstanceNorm",
-    x,
-    xMin,
-    xMax,
-    T$dtype: T.tensorFlowDataType,
-    output_range_given: outputRangeGiven,
-    given_y_min: givenYMin,
-    given_y_max: givenYMax,
-    variance_epsilon: varianceEpsilon,
-    min_separation: minSeparation)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedInstanceNorm", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, xMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, xMax, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "output_range_given", (outputRangeGiven) ?     1 : 0)
+  TFE_OpSetAttrFloat(op, "given_y_min", Float(givenYMin))
+  TFE_OpSetAttrFloat(op, "given_y_max", Float(givenYMax))
+  TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
+  TFE_OpSetAttrFloat(op, "min_separation", Float(minSeparation))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Perform a quantized matrix multiplication of  `a` by the matrix `b`.
@@ -13934,20 +15324,23 @@ public static func quantizedMatMul<T1: TensorFlowScalar, T2: TensorFlowScalar, T
   transposeB: Bool = false,
   typeTactivation: Tactivation.Type
 ) -> (out: Tensor<Toutput>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
-  let ret: (TensorHandle<Toutput>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedMatMul",
-    a,
-    b,
-    minA,
-    maxA,
-    minB,
-    maxB,
-    T1$dtype: T1.tensorFlowDataType,
-    T2$dtype: T2.tensorFlowDataType,
-    Toutput$dtype: Toutput.tensorFlowDataType,
-    Tactivation$dtype: Tactivation.tensorFlowDataType,
-    transpose_a: transposeA,
-    transpose_b: transposeB)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedMatMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minA, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxA, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minB, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxB, s)
+  TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Toutput", Toutput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tactivation", Tactivation.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "transpose_a", (transposeA) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "transpose_b", (transposeB) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Produces the max pool of the input tensor for quantized types.
@@ -13976,15 +15369,18 @@ public static func quantizedMaxPool<T: TensorFlowScalar>(
   strides: [Int32],
   padding: Padding
 ) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedMaxPool",
-    input,
-    minInput,
-    maxInput,
-    T$dtype: T.tensorFlowDataType,
-    ksize: ksize,
-    strides: strides,
-    padding: padding.cName)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedMaxPool", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxInput, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "ksize", ksize)
+  _TFCOpSetAttrInt32Array(op, "strides", strides)
+  TFE_OpSetAttrString(op, "padding", padding.cName, padding.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x * y element-wise, working on quantized buffers.
@@ -14010,17 +15406,20 @@ public static func quantizedMul<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   minY: Tensor<Float>,
   maxY: Tensor<Float>
 ) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
-  let ret: (TensorHandle<Toutput>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedMul",
-    x,
-    y,
-    minX,
-    maxX,
-    minY,
-    maxY,
-    T1$dtype: T1.tensorFlowDataType,
-    T2$dtype: T2.tensorFlowDataType,
-    Toutput$dtype: Toutput.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minX, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxX, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minY, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxY, s)
+  TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Toutput", Toutput.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes Quantized Rectified Linear: `max(features, 0)`
@@ -14039,13 +15438,16 @@ public static func quantizedRelu<Tinput: TensorFlowScalar, OutType: TensorFlowSc
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedRelu",
-    features,
-    minFeatures,
-    maxFeatures,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedRelu", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minFeatures, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes Quantized Rectified Linear 6: `min(max(features, 0), 6)`
@@ -14064,13 +15466,16 @@ public static func quantizedRelu6<Tinput: TensorFlowScalar, OutType: TensorFlowS
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedRelu6",
-    features,
-    minFeatures,
-    maxFeatures,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedRelu6", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minFeatures, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes Quantized Rectified Linear X: `min(max(features, 0), max_value)`
@@ -14090,14 +15495,17 @@ public static func quantizedReluX<Tinput: TensorFlowScalar, OutType: TensorFlowS
   minFeatures: Tensor<Float>,
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedReluX",
-    features,
-    maxValue,
-    minFeatures,
-    maxFeatures,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedReluX", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxValue, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minFeatures, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reshapes a quantized tensor as per the Reshape op.
@@ -14119,14 +15527,17 @@ public static func quantizedReshape<T: TensorFlowScalar, Tshape: BinaryInteger &
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedReshape",
-    tensor,
-    shape,
-    inputMin,
-    inputMax,
-    T$dtype: T.tensorFlowDataType,
-    Tshape$dtype: Tshape.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedReshape", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Resize quantized `images` to `size` using quantized bilinear interpolation.
@@ -14151,14 +15562,17 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   max: Tensor<Float>,
   alignCorners: Bool = false
 ) -> (resizedImages: Tensor<T>, outMin: Tensor<Float>, outMax: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedResizeBilinear",
-    images,
-    size,
-    min,
-    max,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QuantizedResizeBilinear", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, min, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Closes the given queue.
@@ -14178,9 +15592,13 @@ public static func queueClose(
   handle: StringTensor,
   cancelPendingEnqueues: Bool = false
 ) {
-  return #tfop("QueueClose",
-    handle,
-    cancel_pending_enqueues: cancelPendingEnqueues)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueClose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  TFE_OpSetAttrBool(op, "cancel_pending_enqueues", (cancelPendingEnqueues) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Enqueues a tuple of one or more tensors in the given queue.
@@ -14204,10 +15622,14 @@ public static func queueEnqueue<Tcomponents: TensorFlowScalar>(
   components: [Tensor<Tcomponents>],
   timeoutMs: Int64 = -1
 ) {
-  return #tfop("QueueEnqueue",
-    handle,
-    components,
-    timeout_ms: timeoutMs)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueEnqueue", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, components, s)
+  TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Enqueues zero or more tuples of one or more tensors in the given queue.
@@ -14236,10 +15658,14 @@ public static func queueEnqueueMany<Tcomponents: TensorFlowScalar>(
   components: [Tensor<Tcomponents>],
   timeoutMs: Int64 = -1
 ) {
-  return #tfop("QueueEnqueueMany",
-    handle,
-    components,
-    timeout_ms: timeoutMs)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueEnqueueMany", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, components, s)
+  TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns true if queue is closed.
@@ -14252,9 +15678,12 @@ public static func queueEnqueueMany<Tcomponents: TensorFlowScalar>(
 public static func queueIsClosed(
   handle: StringTensor
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("QueueIsClosed",
-    handle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueIsClosed", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the number of elements in the given queue.
@@ -14266,9 +15695,12 @@ public static func queueIsClosed(
 public static func queueSize(
   handle: StringTensor
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("QueueSize",
-    handle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts one or more images from RGB to HSV.
@@ -14288,10 +15720,13 @@ public static func queueSize(
 public static func rGBToHSV<T: FloatingPoint & TensorFlowScalar>(
   images: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RGBToHSV",
-    images,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RGBToHSV", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Randomly crop `image`.
@@ -14321,13 +15756,16 @@ public static func randomCrop<T: Numeric & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RandomCrop",
-    image,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomCrop", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from the Gamma distribution(s) described by alpha.
@@ -14358,14 +15796,17 @@ public static func randomGamma<S: BinaryInteger & TensorFlowScalar, T: FloatingP
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RandomGamma",
-    shape,
-    alpha,
-    S$dtype: S.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomGamma", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the derivative of a Gamma random sample w.r.t. `alpha`.
@@ -14374,11 +15815,14 @@ public static func randomGammaGrad<T: FloatingPoint & TensorFlowScalar>(
   alpha: Tensor<T>,
   sample: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RandomGammaGrad",
-    alpha,
-    sample,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomGammaGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sample, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Use RandomPoissonV2 instead.
@@ -14389,14 +15833,17 @@ public static func randomPoisson<S: BinaryInteger & TensorFlowScalar, Dtype: Flo
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("RandomPoisson",
-    shape,
-    rate,
-    S$dtype: S.tensorFlowDataType,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomPoisson", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rate, s)
+  TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from the Poisson distribution(s) described by rate.
@@ -14433,15 +15880,18 @@ public static func randomPoissonV2<S: BinaryInteger & TensorFlowScalar, R: Numer
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("RandomPoissonV2",
-    shape,
-    rate,
-    S$dtype: S.tensorFlowDataType,
-    R$dtype: R.tensorFlowDataType,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomPoissonV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rate, s)
+  TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "R", R.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Randomly shuffles a tensor along its first dimension.
@@ -14472,12 +15922,15 @@ public static func randomShuffle<T: TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RandomShuffle",
-    value,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomShuffle", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from a normal distribution.
@@ -14500,13 +15953,16 @@ public static func randomStandardNormal<Dtype: FloatingPoint & TensorFlowScalar,
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("RandomStandardNormal",
-    shape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomStandardNormal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from a uniform distribution.
@@ -14530,13 +15986,16 @@ public static func randomUniform<Dtype: FloatingPoint & TensorFlowScalar, T: Bin
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("RandomUniform",
-    shape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomUniform", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random integers from a uniform distribution.
@@ -14569,15 +16028,18 @@ public static func randomUniformInt<Tout: BinaryInteger & TensorFlowScalar, T: B
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("RandomUniformInt",
-    shape,
-    minval,
-    maxval,
-    Tout$dtype: Tout.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RandomUniformInt", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minval, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, maxval, s)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates a sequence of numbers.
@@ -14606,12 +16068,15 @@ public static func range<Tidx: Numeric & TensorFlowScalar>(
   limit: Tensor<Tidx>,
   delta: Tensor<Tidx>
 ) -> Tensor<Tidx> {
-  let ret: TensorHandle<Tidx> = #tfop("Range",
-    start,
-    limit,
-    delta,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Range", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, start, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, limit, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the rank of a tensor.
@@ -14633,10 +16098,13 @@ public static func range<Tidx: Numeric & TensorFlowScalar>(
 public static func rank<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("Rank",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Rank", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reads and outputs the entire contents of the input filename.
@@ -14644,9 +16112,12 @@ public static func rank<T: TensorFlowScalar>(
 public static func readFile(
   filename: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ReadFile",
-    filename)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReadFile", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the number of records this Reader has produced.
@@ -14659,9 +16130,12 @@ public static func readFile(
 public static func readerNumRecordsProduced(
   readerHandle: StringTensor
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("ReaderNumRecordsProduced",
-    readerHandle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderNumRecordsProduced", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the number of work units this Reader has finished processing.
@@ -14671,9 +16145,12 @@ public static func readerNumRecordsProduced(
 public static func readerNumWorkUnitsCompleted(
   readerHandle: StringTensor
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("ReaderNumWorkUnitsCompleted",
-    readerHandle)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderNumWorkUnitsCompleted", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the next record (key, value pair) produced by a Reader.
@@ -14694,10 +16171,13 @@ public static func readerRead(
   readerHandle: StringTensor,
   queueHandle: StringTensor
 ) -> (key: StringTensor, value: StringTensor) {
-  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderRead",
-    readerHandle,
-    queueHandle)
-  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderRead", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, queueHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns up to `num_records` (key, value) pairs produced by a Reader.
@@ -14721,11 +16201,14 @@ public static func readerReadUpTo(
   queueHandle: StringTensor,
   numRecords: Tensor<Int64>
 ) -> (keys: StringTensor, values: StringTensor) {
-  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderReadUpTo",
-    readerHandle,
-    queueHandle,
-    numRecords)
-  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderReadUpTo", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, queueHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numRecords, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Restore a Reader to its initial clean state.
@@ -14735,8 +16218,12 @@ public static func readerReadUpTo(
 public static func readerReset(
   readerHandle: StringTensor
 ) {
-  return #tfop("ReaderReset",
-    readerHandle)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderReset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Restore a reader to a previously saved state.
@@ -14753,9 +16240,13 @@ public static func readerRestoreState(
   readerHandle: StringTensor,
   state: StringTensor
 ) {
-  return #tfop("ReaderRestoreState",
-    readerHandle,
-    state)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderRestoreState", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, state, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Produce a string tensor that encodes the state of a Reader.
@@ -14768,9 +16259,12 @@ public static func readerRestoreState(
 public static func readerSerializeState(
   readerHandle: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ReaderSerializeState",
-    readerHandle)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderSerializeState", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the real part of a complex number.
@@ -14790,11 +16284,14 @@ public static func readerSerializeState(
 public static func real<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("Real",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Real", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x / y element-wise for real types.
@@ -14808,11 +16305,14 @@ public static func realDiv<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RealDiv",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RealDiv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the reciprocal of x element-wise.
@@ -14822,10 +16322,13 @@ public static func realDiv<T: Numeric & TensorFlowScalar>(
 public static func reciprocal<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Reciprocal",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Reciprocal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient for the inverse of `x` wrt its input.
@@ -14837,11 +16340,14 @@ public static func reciprocalGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ReciprocalGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReciprocalGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Emits randomized records.
@@ -14868,15 +16374,18 @@ public static func recordInput(
   batchSize: Int64 = 32,
   compressionType: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("RecordInput",
-    file_pattern: filePattern,
-    file_random_seed: fileRandomSeed,
-    file_shuffle_shift_ratio: fileShuffleShiftRatio,
-    file_buffer_size: fileBufferSize,
-    file_parallelism: fileParallelism,
-    batch_size: batchSize,
-    compression_type: compressionType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RecordInput", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "file_pattern", filePattern, filePattern.count)
+  TFE_OpSetAttrInt(op, "file_random_seed", fileRandomSeed)
+  TFE_OpSetAttrFloat(op, "file_shuffle_shift_ratio", Float(fileShuffleShiftRatio))
+  TFE_OpSetAttrInt(op, "file_buffer_size", fileBufferSize)
+  TFE_OpSetAttrInt(op, "file_parallelism", fileParallelism)
+  TFE_OpSetAttrInt(op, "batch_size", batchSize)
+  TFE_OpSetAttrString(op, "compression_type", compressionType, compressionType.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Joins a string Tensor across the given dimensions.
@@ -14924,12 +16433,15 @@ public static func reduceJoin(
   keepDims: Bool = false,
   separator: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ReduceJoin",
-    inputs,
-    reductionIndices,
-    keep_dims: keepDims,
-    separator: separator)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReduceJoin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  TFE_OpSetAttrString(op, "separator", separator, separator.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -14954,13 +16466,16 @@ public static func refEnter<T: TensorFlowScalar>(
   isConstant: Bool = false,
   parallelIterations: Int64 = 10
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefEnter",
-    data,
-    T$dtype: T.tensorFlowDataType,
-    frame_name: frameName,
-    is_constant: isConstant,
-    parallel_iterations: parallelIterations)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefEnter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "frame_name", frameName, frameName.count)
+  TFE_OpSetAttrBool(op, "is_constant", (isConstant) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "parallel_iterations", parallelIterations)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Exits the current frame to its parent frame.
@@ -14974,10 +16489,13 @@ public static func refEnter<T: TensorFlowScalar>(
 public static func refExit<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefExit",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefExit", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return the same ref tensor as the input ref tensor.
@@ -14985,19 +16503,26 @@ public static func refExit<T: TensorFlowScalar>(
 public static func refIdentity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefIdentity", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func refIn<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) {
-  return #tfop("RefIn",
-    a,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefIn", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -15005,9 +16530,13 @@ public static func refInputFloatInput(
   _ a: Tensor<Float>,
   _ b: Tensor<Float>
 ) {
-  return #tfop("RefInputFloatInput",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefInputFloatInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -15015,10 +16544,13 @@ public static func refInputFloatInputIntOutput(
   _ a: Tensor<Float>,
   _ b: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RefInputFloatInputIntOutput",
-    a,
-    b)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefInputFloatInputIntOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -15026,9 +16558,13 @@ public static func refInputIntInput(
   _ a: Tensor<Int32>,
   _ b: Tensor<Int32>
 ) {
-  return #tfop("RefInputIntInput",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefInputIntInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards the value of an available tensor from `inputs` to `output`.
@@ -15048,10 +16584,14 @@ public static func refInputIntInput(
 public static func refMerge<T: TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("RefMerge",
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefMerge", s)
+  defer { TFE_DeleteOp(op) }
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Makes its input available to the next iteration.
@@ -15063,32 +16603,44 @@ public static func refMerge<T: TensorFlowScalar>(
 public static func refNextIteration<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefNextIteration",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefNextIteration", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func refOut<T: TensorFlowScalar>(
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefOut",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefOut", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func refOutput(
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RefOutput")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func refOutputFloatOutput(
 ) -> (a: Tensor<Float>, b: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RefOutputFloatOutput")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefOutputFloatOutput", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards the `index`th element of `inputs` to `output`.
@@ -15103,11 +16655,15 @@ public static func refSelect<T: TensorFlowScalar>(
   index: Tensor<Int32>,
   inputs: [Tensor<T>]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefSelect",
-    index,
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefSelect", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards the ref tensor `data` to the output port determined by `pred`.
@@ -15129,11 +16685,14 @@ public static func refSwitch<T: TensorFlowScalar>(
   data: Tensor<T>,
   pred: Tensor<Bool>
 ) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("RefSwitch",
-    data,
-    pred,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RefSwitch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, pred, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Check if the input matches the regex pattern.
@@ -15155,10 +16714,13 @@ public static func regexFullMatch(
   _ input: StringTensor,
   pattern: StringTensor
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("RegexFullMatch",
-    input,
-    pattern)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RegexFullMatch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Replaces the match of pattern in input with rewrite.
@@ -15181,12 +16743,15 @@ public static func regexReplace(
   rewrite: StringTensor,
   replaceGlobal: Bool = true
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("RegexReplace",
-    input,
-    pattern,
-    rewrite,
-    replace_global: replaceGlobal)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RegexReplace", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rewrite, s)
+  TFE_OpSetAttrBool(op, "replace_global", (replaceGlobal) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes rectified linear: `max(features, 0)`.
@@ -15194,10 +16759,13 @@ public static func regexReplace(
 public static func relu<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Relu",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Relu", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes rectified linear 6: `min(max(features, 0), 6)`.
@@ -15205,10 +16773,13 @@ public static func relu<T: Numeric & TensorFlowScalar>(
 public static func relu6<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Relu6",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Relu6", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes rectified linear 6 gradients for a Relu6 operation.
@@ -15225,11 +16796,14 @@ public static func relu6Grad<T: Numeric & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Relu6Grad",
-    gradients,
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Relu6Grad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes rectified linear gradients for a Relu operation.
@@ -15245,11 +16819,14 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ReluGrad",
-    gradients,
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReluGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes a range that covers the actual values present in a quantized tensor.
@@ -15274,12 +16851,15 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   inputMin: Tensor<Float>,
   inputMax: Tensor<Float>
 ) -> (outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RequantizationRange",
-    input,
-    inputMin,
-    inputMax,
-    Tinput$dtype: Tinput.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RequantizationRange", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts the quantized `input` tensor into a lower-precision `output`.
@@ -15313,38 +16893,52 @@ public static func requantize<Tinput: TensorFlowScalar, OutType: TensorFlowScala
   requestedOutputMin: Tensor<Float>,
   requestedOutputMax: Tensor<Float>
 ) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
-  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("Requantize",
-    input,
-    inputMin,
-    inputMax,
-    requestedOutputMin,
-    requestedOutputMax,
-    Tinput$dtype: Tinput.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Requantize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, requestedOutputMin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, requestedOutputMax, s)
+  TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func requiresOlderGraphVersion(
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RequiresOlderGraphVersion")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RequiresOlderGraphVersion", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func reservedAttr(
   range: Int64
 ) {
-  return #tfop("ReservedAttr",
-    range: range)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReservedAttr", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "range", range)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func reservedInput(
   _ input: Tensor<Int32>
 ) {
-  return #tfop("ReservedInput",
-    input)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReservedInput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reshapes a tensor.
@@ -15412,12 +17006,15 @@ public static func reshape<T: TensorFlowScalar, Tshape: BinaryInteger & TensorFl
   _ tensor: Tensor<T>,
   shape: Tensor<Tshape>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Reshape",
-    tensor,
-    shape,
-    T$dtype: T.tensorFlowDataType,
-    Tshape$dtype: Tshape.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Reshape", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Resize `images` to `size` using area interpolation.
@@ -15450,12 +17047,15 @@ public static func resizeArea<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   alignCorners: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("ResizeArea",
-    images,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeArea", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Resize `images` to `size` using bicubic interpolation.
@@ -15478,12 +17078,15 @@ public static func resizeBicubic<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   alignCorners: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("ResizeBicubic",
-    images,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeBicubic", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of bicubic interpolation.
@@ -15505,12 +17108,15 @@ public static func resizeBicubicGrad<T: FloatingPoint & TensorFlowScalar>(
   originalImage: Tensor<T>,
   alignCorners: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ResizeBicubicGrad",
-    grads,
-    originalImage,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeBicubicGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, originalImage, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Resize `images` to `size` using bilinear interpolation.
@@ -15533,12 +17139,15 @@ public static func resizeBilinear<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   alignCorners: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("ResizeBilinear",
-    images,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeBilinear", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of bilinear interpolation.
@@ -15560,12 +17169,15 @@ public static func resizeBilinearGrad<T: FloatingPoint & TensorFlowScalar>(
   originalImage: Tensor<T>,
   alignCorners: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ResizeBilinearGrad",
-    grads,
-    originalImage,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeBilinearGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, originalImage, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Resize `images` to `size` using nearest neighbor interpolation.
@@ -15586,12 +17198,15 @@ public static func resizeNearestNeighbor<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   alignCorners: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ResizeNearestNeighbor",
-    images,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeNearestNeighbor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of nearest neighbor interpolation.
@@ -15612,12 +17227,15 @@ public static func resizeNearestNeighborGrad<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   alignCorners: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ResizeNearestNeighborGrad",
-    grads,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResizeNearestNeighborGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grads, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Restores a tensor from checkpoint files.
@@ -15657,12 +17275,15 @@ public static func restore<Dt: TensorFlowScalar>(
   tensorName: StringTensor,
   preferredShard: Int64 = -1
 ) -> Tensor<Dt> {
-  let ret: TensorHandle<Dt> = #tfop("Restore",
-    filePattern,
-    tensorName,
-    dt$dtype: Dt.tensorFlowDataType,
-    preferred_shard: preferredShard)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Restore", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filePattern, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensorName, s)
+  TFE_OpSetAttrType(op, "dt", Dt.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "preferred_shard", preferredShard)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Restores a tensor from checkpoint files.
@@ -15695,23 +17316,29 @@ public static func restoreSlice<Dt: TensorFlowScalar>(
   shapeAndSlice: StringTensor,
   preferredShard: Int64 = -1
 ) -> Tensor<Dt> {
-  let ret: TensorHandle<Dt> = #tfop("RestoreSlice",
-    filePattern,
-    tensorName,
-    shapeAndSlice,
-    dt$dtype: Dt.tensorFlowDataType,
-    preferred_shard: preferredShard)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RestoreSlice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filePattern, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensorName, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shapeAndSlice, s)
+  TFE_OpSetAttrType(op, "dt", Dt.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "preferred_shard", preferredShard)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func restrict<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Restrict",
-    a,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Restrict", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reverses specific dimensions of a tensor.
@@ -15771,11 +17398,14 @@ public static func reverse<T: TensorFlowScalar>(
   _ tensor: Tensor<T>,
   dims: Tensor<Bool>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Reverse",
-    tensor,
-    dims,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Reverse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reverses variable length slices.
@@ -15852,14 +17482,17 @@ public static func reverseSequence<T: TensorFlowScalar, Tlen: BinaryInteger & Te
   seqDim: Int64,
   batchDim: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ReverseSequence",
-    input,
-    seqLengths,
-    T$dtype: T.tensorFlowDataType,
-    Tlen$dtype: Tlen.tensorFlowDataType,
-    seq_dim: seqDim,
-    batch_dim: batchDim)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReverseSequence", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, seqLengths, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tlen", Tlen.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seq_dim", seqDim)
+  TFE_OpSetAttrInt(op, "batch_dim", batchDim)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reverses specific dimensions of a tensor.
@@ -15922,12 +17555,15 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar, T: TensorFl
   _ tensor: Tensor<T>,
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ReverseV2",
-    tensor,
-    axis,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReverseV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Elementwise computes the bitwise right-shift of `x` and `y`.
@@ -15942,11 +17578,14 @@ public static func rightShift<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RightShift",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RightShift", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise integer closest to x.
@@ -15964,10 +17603,13 @@ public static func rightShift<T: BinaryInteger & TensorFlowScalar>(
 public static func rint<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Rint",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Rint", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Rolls the elements of a tensor along an axis.
@@ -16012,14 +17654,17 @@ public static func roll<T: TensorFlowScalar, Tshift: BinaryInteger & TensorFlowS
   shift: Tensor<Tshift>,
   axis: Tensor<Taxis>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Roll",
-    input,
-    shift,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Tshift$dtype: Tshift.tensorFlowDataType,
-    Taxis$dtype: Taxis.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Roll", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shift, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tshift", Tshift.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Rounds the values of a tensor to the nearest integer, element-wise.
@@ -16030,10 +17675,13 @@ public static func roll<T: TensorFlowScalar, Tshift: BinaryInteger & TensorFlowS
 public static func round<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Round",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Round", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Perform batches of RPC requests.
@@ -16117,14 +17765,17 @@ public static func rpc(
   failFast: Bool = true,
   timeoutInMs: Int64 = 0
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Rpc",
-    address,
-    method,
-    request,
-    protocol: protocol_,
-    fail_fast: failFast,
-    timeout_in_ms: timeoutInMs)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Rpc", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, address, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, method, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, request, s)
+  TFE_OpSetAttrString(op, "protocol", protocol_, protocol_.count)
+  TFE_OpSetAttrBool(op, "fail_fast", (failFast) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "timeout_in_ms", timeoutInMs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes reciprocal of square root of x element-wise.
@@ -16134,10 +17785,13 @@ public static func rpc(
 public static func rsqrt<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Rsqrt",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Rsqrt", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient for the rsqrt of `x` wrt its input.
@@ -16149,11 +17803,14 @@ public static func rsqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RsqrtGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RsqrtGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generate a single randomly distorted bounding box for an image.
@@ -16241,18 +17898,21 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & TensorFlowScala
   maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<Float>) = #tfop("SampleDistortedBoundingBox",
-    imageSize,
-    boundingBoxes,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2,
-    min_object_covered: minObjectCovered,
-    aspect_ratio_range: aspectRatioRange,
-    area_range: areaRange,
-    max_attempts: maxAttempts,
-    use_image_if_no_bounding_boxes: useImageIfNoBoundingBoxes)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SampleDistortedBoundingBox", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, imageSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boundingBoxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  TFE_OpSetAttrFloat(op, "min_object_covered", Float(minObjectCovered))
+  _TFCOpSetAttrDoubleArray(op, "aspect_ratio_range", aspectRatioRange)
+  _TFCOpSetAttrDoubleArray(op, "area_range", areaRange)
+  TFE_OpSetAttrInt(op, "max_attempts", maxAttempts)
+  TFE_OpSetAttrBool(op, "use_image_if_no_bounding_boxes", (useImageIfNoBoundingBoxes) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generate a single randomly distorted bounding box for an image.
@@ -16340,18 +18000,21 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
   maxAttempts: Int64 = 100,
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<Float>) = #tfop("SampleDistortedBoundingBoxV2",
-    imageSize,
-    boundingBoxes,
-    minObjectCovered,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2,
-    aspect_ratio_range: aspectRatioRange,
-    area_range: areaRange,
-    max_attempts: maxAttempts,
-    use_image_if_no_bounding_boxes: useImageIfNoBoundingBoxes)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SampleDistortedBoundingBoxV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, imageSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, boundingBoxes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, minObjectCovered, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  _TFCOpSetAttrDoubleArray(op, "aspect_ratio_range", aspectRatioRange)
+  _TFCOpSetAttrDoubleArray(op, "area_range", areaRange)
+  TFE_OpSetAttrInt(op, "max_attempts", maxAttempts)
+  TFE_OpSetAttrBool(op, "use_image_if_no_bounding_boxes", (useImageIfNoBoundingBoxes) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Saves the input tensors to disk.
@@ -16372,10 +18035,14 @@ public static func save<T: TensorFlowScalar>(
   tensorNames: StringTensor,
   data: [Tensor<T>]
 ) {
-  return #tfop("Save",
-    filename,
-    tensorNames,
-    data)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Save", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensorNames, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Saves input tensors slices to disk.
@@ -16416,11 +18083,15 @@ public static func saveSlices<T: TensorFlowScalar>(
   shapesAndSlices: StringTensor,
   data: [Tensor<T>]
 ) {
-  return #tfop("SaveSlices",
-    filename,
-    tensorNames,
-    shapesAndSlices,
-    data)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SaveSlices", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensorNames, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shapesAndSlices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Saves tensors in V2 checkpoint format.
@@ -16443,11 +18114,15 @@ public static func saveV2<Dtypes: TensorFlowScalar>(
   shapeAndSlices: StringTensor,
   tensors: [Tensor<Dtypes>]
 ) {
-  return #tfop("SaveV2",
-    prefix,
-    tensorNames,
-    shapeAndSlices,
-    tensors)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SaveV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, prefix, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensorNames, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shapeAndSlices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensors, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with scalar values.
@@ -16465,11 +18140,14 @@ public static func scalarSummary<T: Numeric & TensorFlowScalar>(
   tags: StringTensor,
   _ values: Tensor<T>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ScalarSummary",
-    tags,
-    values,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScalarSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tags, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds sparse updates to a variable reference.
@@ -16514,14 +18192,17 @@ public static func scatterAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterAdd",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Divides a variable reference by sparse updates.
@@ -16564,14 +18245,17 @@ public static func scatterDiv<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterDiv",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterDiv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reduces sparse updates into a variable reference using the `max` operation.
@@ -16616,14 +18300,17 @@ public static func scatterMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMax",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reduces sparse updates into a variable reference using the `min` operation.
@@ -16668,14 +18355,17 @@ public static func scatterMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMin",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterMin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Multiplies sparse updates into a variable reference.
@@ -16718,14 +18408,17 @@ public static func scatterMul<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMul",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Scatter `updates` into a new tensor according to `indices`.
@@ -16826,13 +18519,16 @@ public static func scatterNd<T: TensorFlowScalar, Tindices: BinaryInteger & Tens
   updates: Tensor<T>,
   shape: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNd",
-    indices,
-    updates,
-    shape,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterNd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies sparse addition to individual values or slices in a Variable.
@@ -16891,14 +18587,17 @@ public static func scatterNdAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryI
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdAdd",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterNdAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies sparse addition to `input` using individual values or slices
@@ -16952,13 +18651,16 @@ public static func scatterNdNonAliasingAdd<T: TensorFlowScalar, Tindices: Binary
   indices: Tensor<Tindices>,
   updates: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdNonAliasingAdd",
-    input,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterNdNonAliasingAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies sparse subtraction to individual values or slices in a Variable.
@@ -17019,14 +18721,17 @@ public static func scatterNdSub<T: Numeric & TensorFlowScalar, Tindices: BinaryI
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdSub",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterNdSub", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies sparse `updates` to individual values or slices within a given
@@ -17087,14 +18792,17 @@ public static func scatterNdUpdate<T: TensorFlowScalar, Tindices: BinaryInteger 
   updates: Tensor<T>,
   useLocking: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdUpdate",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterNdUpdate", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Subtracts sparse updates to a variable reference.
@@ -17139,14 +18847,17 @@ public static func scatterSub<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   updates: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterSub",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterSub", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies sparse updates to a variable reference.
@@ -17196,14 +18907,17 @@ public static func scatterUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & 
   updates: Tensor<T>,
   useLocking: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterUpdate",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ScatterUpdate", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes fingerprints of the input strings.
@@ -17216,9 +18930,12 @@ public static func scatterUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & 
 public static func sdcaFprint(
   _ input: StringTensor
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("SdcaFprint",
-    input)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SdcaFprint", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies L1 regularization shrink step on the parameters.
@@ -17236,10 +18953,15 @@ public static func sdcaShrinkL1(
   l1: Double,
   l2: Double
 ) {
-  return #tfop("SdcaShrinkL1",
-    weights,
-    l1: l1,
-    l2: l2)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SdcaShrinkL1", s)
+  defer { TFE_DeleteOp(op) }
+  let weightsCount = _TFCOpAddInputFromTensorGroup(op, weights, s)
+  TFE_OpSetAttrInt(op, "num_features", Int64(weightsCount))
+  TFE_OpSetAttrFloat(op, "l1", Float(l1))
+  TFE_OpSetAttrFloat(op, "l2", Float(l2))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -17278,12 +19000,15 @@ public static func segmentMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   data: Tensor<T>,
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SegmentMax",
-    data,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SegmentMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the mean along segments of a tensor.
@@ -17323,12 +19048,15 @@ public static func segmentMean<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
   data: Tensor<T>,
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SegmentMean",
-    data,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SegmentMean", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the minimum along segments of a tensor.
@@ -17366,12 +19094,15 @@ public static func segmentMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   data: Tensor<T>,
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SegmentMin",
-    data,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SegmentMin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the product along segments of a tensor.
@@ -17410,12 +19141,15 @@ public static func segmentProd<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
   data: Tensor<T>,
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SegmentProd",
-    data,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SegmentProd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along segments of a tensor.
@@ -17454,12 +19188,15 @@ public static func segmentSum<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   data: Tensor<T>,
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SegmentSum",
-    data,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SegmentSum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Selects elements from `x` or `y`, depending on `condition`.
@@ -17516,12 +19253,15 @@ public static func select<T: TensorFlowScalar>(
   t: Tensor<T>,
   e: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Select",
-    condition,
-    t,
-    e,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Select", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, condition, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, e, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the Eigen Decomposition of a batch of square self-adjoint matrices.
@@ -17541,10 +19281,13 @@ public static func select<T: TensorFlowScalar>(
 public static func selfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SelfAdjointEig",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SelfAdjointEig", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the eigen decomposition of one or more square self-adjoint matrices.
@@ -17574,11 +19317,14 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   computeV: Bool = true
 ) -> (e: Tensor<T>, v: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SelfAdjointEigV2",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    compute_v: computeV)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SelfAdjointEigV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "compute_v", (computeV) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes scaled exponential linear: `scale * alpha * (exp(features) - 1)`
@@ -17594,10 +19340,13 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
 public static func selu<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Selu",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Selu", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients for the scaled exponential linear (Selu) operation.
@@ -17613,11 +19362,14 @@ public static func seluGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   outputs: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SeluGrad",
-    gradients,
-    outputs,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SeluGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Serialize an `N`-minibatch `SparseTensor` into an `[N, 3]` `Tensor` object.
@@ -17643,13 +19395,16 @@ public static func serializeManySparse<T: TensorFlowScalar, OutType: TensorFlowS
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("SerializeManySparse",
-    sparseIndices,
-    sparseValues,
-    sparseShape,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeManySparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
@@ -17667,13 +19422,16 @@ public static func serializeSparse<T: TensorFlowScalar, OutType: TensorFlowScala
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("SerializeSparse",
-    sparseIndices,
-    sparseValues,
-    sparseShape,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Transforms a Tensor into a serialized TensorProto proto.
@@ -17687,10 +19445,13 @@ public static func serializeSparse<T: TensorFlowScalar, OutType: TensorFlowScala
 public static func serializeTensor<T: TensorFlowScalar>(
   _ tensor: Tensor<T>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("SerializeTensor",
-    tensor,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeTensor", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Number of unique elements along last dimension of input `set`.
@@ -17717,13 +19478,16 @@ public static func setSize<T: BinaryInteger & TensorFlowScalar>(
   setShape: Tensor<Int64>,
   validateIndices: Bool = true
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("SetSize",
-    setIndices,
-    setValues,
-    setShape,
-    T$dtype: T.tensorFlowDataType,
-    validate_indices: validateIndices)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SetSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, setIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, setValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, setShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the shape of a tensor.
@@ -17740,11 +19504,14 @@ public static func setSize<T: BinaryInteger & TensorFlowScalar>(
 public static func shape<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("Shape",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Shape", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generate a sharded filename. The filename is printf formatted as
@@ -17756,11 +19523,14 @@ public static func shardedFilename(
   shard: Tensor<Int32>,
   numShards: Tensor<Int32>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ShardedFilename",
-    basename,
-    shard,
-    numShards)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ShardedFilename", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, basename, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shard, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numShards, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generate a glob pattern matching all sharded file names.
@@ -17769,10 +19539,13 @@ public static func shardedFilespec(
   basename: StringTensor,
   numShards: Tensor<Int32>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ShardedFilespec",
-    basename,
-    numShards)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ShardedFilespec", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, basename, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numShards, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes sigmoid of `x` element-wise.
@@ -17782,10 +19555,13 @@ public static func shardedFilespec(
 public static func sigmoid<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sigmoid",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sigmoid", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient of the sigmoid of `x` wrt its input.
@@ -17797,11 +19573,14 @@ public static func sigmoidGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SigmoidGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SigmoidGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns an element-wise indication of the sign of a number.
@@ -17813,19 +19592,25 @@ public static func sigmoidGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func sign<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sign",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func simple(
   _ a: Tensor<Int32>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("Simple",
-    a)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Simple", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes sin of x element-wise.
@@ -17833,10 +19618,13 @@ public static func simple(
 public static func sin<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sin",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes hyperbolic sine of x element-wise.
@@ -17844,10 +19632,13 @@ public static func sin<T: FloatingPoint & TensorFlowScalar>(
 public static func sinh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sinh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sinh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the size of a tensor.
@@ -17865,11 +19656,14 @@ public static func sinh<T: FloatingPoint & TensorFlowScalar>(
 public static func size<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("Size",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Size", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Parses a text file and creates a batch of examples.
@@ -17899,13 +19693,16 @@ public static func skipgram(
   minCount: Int64 = 5,
   subsample: Double = 0.001
 ) -> (vocabWord: StringTensor, vocabFreq: Tensor<Int32>, wordsPerEpoch: Tensor<Int64>, currentEpoch: Tensor<Int32>, totalWordsProcessed: Tensor<Int64>, examples: Tensor<Int32>, labels: Tensor<Int32>) {
-  let ret: (TensorHandle<String>, TensorHandle<Int32>, TensorHandle<Int64>, TensorHandle<Int32>, TensorHandle<Int64>, TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("Skipgram",
-    filename: filename,
-    batch_size: batchSize,
-    window_size: windowSize,
-    min_count: minCount,
-    subsample: subsample)
-  return (StringTensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Skipgram", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "filename", filename, filename.count)
+  TFE_OpSetAttrInt(op, "batch_size", batchSize)
+  TFE_OpSetAttrInt(op, "window_size", windowSize)
+  TFE_OpSetAttrInt(op, "min_count", minCount)
+  TFE_OpSetAttrFloat(op, "subsample", Float(subsample))
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return a slice from 'input'.
@@ -17930,13 +19727,16 @@ public static func slice<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowS
   begin: Tensor<Index>,
   size: Tensor<Index>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Slice",
-    input,
-    begin,
-    size,
-    T$dtype: T.tensorFlowDataType,
-    Index$dtype: Index.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Slice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, begin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Index", Index.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a copy of the input tensor.
@@ -17944,10 +19744,13 @@ public static func slice<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowS
 public static func snapshot<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Snapshot",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Snapshot", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softmax activations.
@@ -17963,10 +19766,13 @@ public static func snapshot<T: TensorFlowScalar>(
 public static func softmax<T: FloatingPoint & TensorFlowScalar>(
   logits: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Softmax",
-    logits,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Softmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softmax cross entropy cost and gradients to backpropagate.
@@ -17987,11 +19793,14 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
   features: Tensor<T>,
   labels: Tensor<T>
 ) -> (loss: Tensor<T>, backprop: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntropyWithLogits",
-    features,
-    labels,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SoftmaxCrossEntropyWithLogits", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, labels, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softplus: `log(exp(features) + 1)`.
@@ -17999,10 +19808,13 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
 public static func softplus<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Softplus",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Softplus", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softplus gradients for a softplus operation.
@@ -18017,11 +19829,14 @@ public static func softplusGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SoftplusGrad",
-    gradients,
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SoftplusGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softsign: `features / (abs(features) + 1)`.
@@ -18029,10 +19844,13 @@ public static func softplusGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func softsign<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Softsign",
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Softsign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softsign gradients for a softsign operation.
@@ -18047,11 +19865,14 @@ public static func softsignGrad<T: FloatingPoint & TensorFlowScalar>(
   gradients: Tensor<T>,
   features: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SoftsignGrad",
-    gradients,
-    features,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SoftsignGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// SpaceToBatch for 4-D tensors of type T.
@@ -18157,13 +19978,16 @@ public static func spaceToBatch<T: TensorFlowScalar, Tpaddings: BinaryInteger & 
   paddings: Tensor<Tpaddings>,
   blockSize: Int64
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SpaceToBatch",
-    input,
-    paddings,
-    T$dtype: T.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType,
-    block_size: blockSize)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SpaceToBatch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "block_size", blockSize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// SpaceToBatch for N-D tensors of type T.
@@ -18295,14 +20119,17 @@ public static func spaceToBatchND<T: TensorFlowScalar, TblockShape: BinaryIntege
   blockShape: Tensor<TblockShape>,
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SpaceToBatchND",
-    input,
-    blockShape,
-    paddings,
-    T$dtype: T.tensorFlowDataType,
-    Tblock_shape$dtype: TblockShape.tensorFlowDataType,
-    Tpaddings$dtype: Tpaddings.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SpaceToBatchND", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tblock_shape", TblockShape.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// SpaceToDepth for tensors of type T.
@@ -18398,12 +20225,15 @@ public static func spaceToDepth<T: TensorFlowScalar>(
   blockSize: Int64,
   dataFormat: DataFormat3 = .nhwc
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SpaceToDepth",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    block_size: blockSize,
-    data_format: dataFormat.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SpaceToDepth", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "block_size", blockSize)
+  TFE_OpSetAttrString(op, "data_format", dataFormat.cName, dataFormat.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies a sparse gradient to a given accumulator.
@@ -18435,14 +20265,18 @@ public static func sparseAccumulatorApplyGradient<Dtype: Numeric & TensorFlowSca
   gradientShape: Tensor<Int64>,
   hasKnownShape: Bool
 ) {
-  return #tfop("SparseAccumulatorApplyGradient",
-    handle,
-    localStep,
-    gradientIndices,
-    gradientValues,
-    gradientShape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    has_known_shape: hasKnownShape)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseAccumulatorApplyGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, localStep, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientShape, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "has_known_shape", (hasKnownShape) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Extracts the average sparse gradient in a SparseConditionalAccumulator.
@@ -18470,11 +20304,14 @@ public static func sparseAccumulatorTakeGradient<Dtype: Numeric & TensorFlowScal
   handle: StringTensor,
   numRequired: Tensor<Int32>
 ) -> (indices: Tensor<Int64>, values: Tensor<Dtype>, shape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("SparseAccumulatorTakeGradient",
-    handle,
-    numRequired,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseAccumulatorTakeGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numRequired, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds two `SparseTensor` objects to produce another `SparseTensor`.
@@ -18512,17 +20349,20 @@ public static func sparseAdd<T: Numeric & TensorFlowScalar, Treal: Numeric & Ten
   bShape: Tensor<Int64>,
   thresh: Tensor<Treal>
 ) -> (sumIndices: Tensor<Int64>, sumValues: Tensor<T>, sumShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseAdd",
-    aIndices,
-    aValues,
-    aShape,
-    bIndices,
-    bValues,
-    bShape,
-    thresh,
-    T$dtype: T.tensorFlowDataType,
-    Treal$dtype: Treal.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, thresh, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Treal", Treal.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// The gradient operator for the SparseAdd op.
@@ -18552,13 +20392,16 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
   bIndices: Tensor<Int64>,
   sumIndices: Tensor<Int64>
 ) -> (aValGrad: Tensor<T>, bValGrad: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SparseAddGrad",
-    backpropValGrad,
-    aIndices,
-    bIndices,
-    sumIndices,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseAddGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, backpropValGrad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sumIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// var: Should be from a Variable().
@@ -18588,19 +20431,22 @@ public static func sparseApplyAdadelta<T: Numeric & TensorFlowScalar, Tindices: 
   indices: Tensor<Tindices>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdadelta",
-    var_,
-    accum,
-    accumUpdate,
-    lr,
-    rho,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyAdadelta", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accumUpdate, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update relevant entries in '*var' and '*accum' according to the adagrad scheme.
@@ -18631,17 +20477,20 @@ public static func sparseApplyAdagrad<T: Numeric & TensorFlowScalar, Tindices: B
   useLocking: Bool = false,
   updateSlots: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdagrad",
-    var_,
-    accum,
-    lr,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking,
-    update_slots: updateSlots)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyAdagrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "update_slots", (updateSlots) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update entries in '*var' and '*accum' according to the proximal adagrad scheme.
@@ -18674,20 +20523,23 @@ public static func sparseApplyAdagradDA<T: Numeric & TensorFlowScalar, Tindices:
   globalStep: Tensor<Int64>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdagradDA",
-    var_,
-    gradientAccumulator,
-    gradientSquaredAccumulator,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    globalStep,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyAdagradDA", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientAccumulator, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradientSquaredAccumulator, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, globalStep, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the centered RMSProp algorithm.
@@ -18739,21 +20591,24 @@ public static func sparseApplyCenteredRMSProp<T: Numeric & TensorFlowScalar, Tin
   indices: Tensor<Tindices>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyCenteredRMSProp",
-    var_,
-    mg,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyCenteredRMSProp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mg, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ms, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mom, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update relevant entries in '*var' according to the Ftrl-proximal scheme.
@@ -18794,20 +20649,23 @@ public static func sparseApplyFtrl<T: Numeric & TensorFlowScalar, Tindices: Bina
   lrPower: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyFtrl",
-    var_,
-    accum,
-    linear,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyFtrl", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, linear, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lrPower, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update relevant entries in '*var' according to the Ftrl-proximal scheme.
@@ -18851,21 +20709,24 @@ public static func sparseApplyFtrlV2<T: Numeric & TensorFlowScalar, Tindices: Bi
   lrPower: Tensor<T>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyFtrlV2",
-    var_,
-    accum,
-    linear,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    l2Shrinkage,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyFtrlV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, linear, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2Shrinkage, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lrPower, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update relevant entries in '*var' and '*accum' according to the momentum scheme.
@@ -18905,18 +20766,21 @@ public static func sparseApplyMomentum<T: Numeric & TensorFlowScalar, Tindices: 
   useLocking: Bool = false,
   useNesterov: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyMomentum",
-    var_,
-    accum,
-    lr,
-    grad,
-    indices,
-    momentum,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyMomentum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "use_nesterov", (useNesterov) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Sparse update entries in '*var' and '*accum' according to FOBOS algorithm.
@@ -18951,18 +20815,21 @@ public static func sparseApplyProximalAdagrad<T: Numeric & TensorFlowScalar, Tin
   indices: Tensor<Tindices>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyProximalAdagrad",
-    var_,
-    accum,
-    lr,
-    l1,
-    l2,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyProximalAdagrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, accum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Sparse update '*var' as FOBOS algorithm with fixed learning rate.
@@ -18993,17 +20860,20 @@ public static func sparseApplyProximalGradientDescent<T: Numeric & TensorFlowSca
   indices: Tensor<Tindices>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyProximalGradientDescent",
-    var_,
-    alpha,
-    l1,
-    l2,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyProximalGradientDescent", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Update '*var' according to the RMSProp algorithm.
@@ -19047,20 +20917,23 @@ public static func sparseApplyRMSProp<T: Numeric & TensorFlowScalar, Tindices: B
   indices: Tensor<Tindices>,
   useLocking: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyRMSProp",
-    var_,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseApplyRMSProp", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, var_, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, ms, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, mom, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lr, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rho, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, momentum, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "use_locking", (useLocking) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Concatenates a list of `SparseTensor` along the specified dimension.
@@ -19126,13 +20999,19 @@ public static func sparseConcat<T: TensorFlowScalar>(
   shapes: [Tensor<Int64>],
   concatDim: Int64
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseConcat",
-    indices,
-    values,
-    shapes,
-    T$dtype: T.tensorFlowDataType,
-    concat_dim: concatDim)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseConcat", s)
+  defer { TFE_DeleteOp(op) }
+  let indicesCount = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
+  let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
+  let shapesCount = _TFCOpAddInputFromTensorGroup(op, shapes, s)
+  TFE_OpSetAttrInt(op, "N", Int64(shapesCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "concat_dim", concatDim)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates sparse cross from a list of sparse and dense tensors.
@@ -19204,17 +21083,22 @@ public static func sparseCross<SparseTypes: BinaryInteger & TensorFlowScalar, De
   hashKey: Int64,
   typeInternalType: InternalType.Type
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<OutType>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<OutType>, TensorHandle<Int64>) = #tfop("SparseCross",
-    indices,
-    values,
-    shapes,
-    denseInputs,
-    out_type$dtype: OutType.tensorFlowDataType,
-    internal_type$dtype: InternalType.tensorFlowDataType,
-    hashed_output: hashedOutput,
-    num_buckets: numBuckets,
-    hash_key: hashKey)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseCross", s)
+  defer { TFE_DeleteOp(op) }
+  let indicesCount = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  let shapesCount = _TFCOpAddInputFromTensorGroup(op, shapes, s)
+  TFE_OpSetAttrInt(op, "N", Int64(shapesCount))
+  let _ = _TFCOpAddInputFromTensorGroup(op, denseInputs, s)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "internal_type", InternalType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "hashed_output", (hashedOutput) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  TFE_OpSetAttrInt(op, "hash_key", hashKey)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
@@ -19243,13 +21127,16 @@ public static func sparseDenseCwiseAdd<T: Numeric & TensorFlowScalar>(
   spShape: Tensor<Int64>,
   dense: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseDenseCwiseAdd",
-    spIndices,
-    spValues,
-    spShape,
-    dense,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseDenseCwiseAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, spIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Component-wise divides a SparseTensor by a dense Tensor.
@@ -19272,13 +21159,16 @@ public static func sparseDenseCwiseDiv<T: Numeric & TensorFlowScalar>(
   spShape: Tensor<Int64>,
   dense: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseDenseCwiseDiv",
-    spIndices,
-    spValues,
-    spShape,
-    dense,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseDenseCwiseDiv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, spIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Component-wise multiplies a SparseTensor by a dense Tensor.
@@ -19305,13 +21195,16 @@ public static func sparseDenseCwiseMul<T: Numeric & TensorFlowScalar>(
   spShape: Tensor<Int64>,
   dense: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseDenseCwiseMul",
-    spIndices,
-    spValues,
-    spShape,
-    dense,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseDenseCwiseMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, spIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Fills empty rows in the input 2-D `SparseTensor` with a default value.
@@ -19373,13 +21266,16 @@ public static func sparseFillEmptyRows<T: TensorFlowScalar>(
   denseShape: Tensor<Int64>,
   defaultValue: Tensor<T>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, emptyRowIndicator: Tensor<Bool>, reverseIndexMap: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Bool>, TensorHandle<Int64>) = #tfop("SparseFillEmptyRows",
-    indices,
-    values,
-    denseShape,
-    defaultValue,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseFillEmptyRows", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, denseShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, defaultValue, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// The gradient of SparseFillEmptyRows.
@@ -19405,11 +21301,14 @@ public static func sparseFillEmptyRowsGrad<T: TensorFlowScalar>(
   reverseIndexMap: Tensor<Int64>,
   gradValues: Tensor<T>
 ) -> (dValues: Tensor<T>, dDefaultValue: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SparseFillEmptyRowsGrad",
-    reverseIndexMap,
-    gradValues,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseFillEmptyRowsGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, reverseIndexMap, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, gradValues, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Multiply matrix "a" by matrix "b".
@@ -19432,16 +21331,19 @@ public static func sparseMatMul<Ta: FloatingPoint & TensorFlowScalar, Tb: Floati
   aIsSparse: Bool = false,
   bIsSparse: Bool = false
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("SparseMatMul",
-    a,
-    b,
-    Ta$dtype: Ta.tensorFlowDataType,
-    Tb$dtype: Tb.tensorFlowDataType,
-    transpose_a: transposeA,
-    transpose_b: transposeB,
-    a_is_sparse: aIsSparse,
-    b_is_sparse: bIsSparse)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseMatMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "Ta", Ta.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tb", Tb.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "transpose_a", (transposeA) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "transpose_b", (transposeB) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "a_is_sparse", (aIsSparse) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "b_is_sparse", (bIsSparse) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the max of elements across dimensions of a SparseTensor.
@@ -19477,14 +21379,17 @@ public static func sparseReduceMax<T: Numeric & TensorFlowScalar>(
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseReduceMax",
-    inputIndices,
-    inputValues,
-    inputShape,
-    reductionAxes,
-    T$dtype: T.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReduceMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the max of elements across dimensions of a SparseTensor.
@@ -19518,14 +21423,17 @@ public static func sparseReduceMaxSparse<T: Numeric & TensorFlowScalar>(
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseReduceMaxSparse",
-    inputIndices,
-    inputValues,
-    inputShape,
-    reductionAxes,
-    T$dtype: T.tensorFlowDataType,
-    keep_dims: keepDims)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReduceMaxSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum of elements across dimensions of a SparseTensor.
@@ -19561,14 +21469,17 @@ public static func sparseReduceSum<T: Numeric & TensorFlowScalar>(
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseReduceSum",
-    inputIndices,
-    inputValues,
-    inputShape,
-    reductionAxes,
-    T$dtype: T.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReduceSum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum of elements across dimensions of a SparseTensor.
@@ -19602,14 +21513,17 @@ public static func sparseReduceSumSparse<T: Numeric & TensorFlowScalar>(
   reductionAxes: Tensor<Int32>,
   keepDims: Bool = false
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseReduceSumSparse",
-    inputIndices,
-    inputValues,
-    inputShape,
-    reductionAxes,
-    T$dtype: T.tensorFlowDataType,
-    keep_dims: keepDims)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReduceSumSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reorders a SparseTensor into the canonical, row-major ordering.
@@ -19639,12 +21553,15 @@ public static func sparseReorder<T: TensorFlowScalar>(
   inputValues: Tensor<T>,
   inputShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>) = #tfop("SparseReorder",
-    inputIndices,
-    inputValues,
-    inputShape,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReorder", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reshapes a SparseTensor to represent values in a new dense shape.
@@ -19683,11 +21600,14 @@ public static func sparseReshape(
   inputShape: Tensor<Int64>,
   newShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Int64>) = #tfop("SparseReshape",
-    inputIndices,
-    inputShape,
-    newShape)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseReshape", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, newShape, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the mean along sparse segments of a tensor.
@@ -19709,13 +21629,16 @@ public static func sparseSegmentMean<T: FloatingPoint & TensorFlowScalar, Tidx: 
   indices: Tensor<Tidx>,
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentMean",
-    data,
-    indices,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentMean", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients for SparseSegmentMean.
@@ -19735,14 +21658,17 @@ public static func sparseSegmentMeanGrad<T: FloatingPoint & TensorFlowScalar, Ti
   segmentIds: Tensor<Int32>,
   outputDim0: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentMeanGrad",
-    grad,
-    indices,
-    segmentIds,
-    outputDim0,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentMeanGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputDim0, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the mean along sparse segments of a tensor.
@@ -19768,15 +21694,18 @@ public static func sparseSegmentMeanWithNumSegments<T: FloatingPoint & TensorFlo
   segmentIds: Tensor<Int32>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentMeanWithNumSegments",
-    data,
-    indices,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentMeanWithNumSegments", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along sparse segments of a tensor divided by the sqrt of N.
@@ -19798,13 +21727,16 @@ public static func sparseSegmentSqrtN<T: FloatingPoint & TensorFlowScalar, Tidx:
   indices: Tensor<Tidx>,
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentSqrtN",
-    data,
-    indices,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentSqrtN", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes gradients for SparseSegmentSqrtN.
@@ -19824,14 +21756,17 @@ public static func sparseSegmentSqrtNGrad<T: FloatingPoint & TensorFlowScalar, T
   segmentIds: Tensor<Int32>,
   outputDim0: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentSqrtNGrad",
-    grad,
-    indices,
-    segmentIds,
-    outputDim0,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentSqrtNGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputDim0, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along sparse segments of a tensor divided by the sqrt of N.
@@ -19859,15 +21794,18 @@ public static func sparseSegmentSqrtNWithNumSegments<T: FloatingPoint & TensorFl
   segmentIds: Tensor<Int32>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentSqrtNWithNumSegments",
-    data,
-    indices,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentSqrtNWithNumSegments", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along sparse segments of a tensor.
@@ -19914,13 +21852,16 @@ public static func sparseSegmentSum<T: Numeric & TensorFlowScalar, Tidx: BinaryI
   indices: Tensor<Tidx>,
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentSum",
-    data,
-    indices,
-    segmentIds,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentSum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along sparse segments of a tensor.
@@ -19967,15 +21908,18 @@ public static func sparseSegmentSumWithNumSegments<T: Numeric & TensorFlowScalar
   segmentIds: Tensor<Int32>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSegmentSumWithNumSegments",
-    data,
-    indices,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSegmentSumWithNumSegments", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Slice a `SparseTensor` based on the `start` and `size`.
@@ -20018,14 +21962,17 @@ public static func sparseSlice<T: TensorFlowScalar>(
   start: Tensor<Int64>,
   size: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseSlice",
-    indices,
-    values,
-    shape,
-    start,
-    size,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSlice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, start, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// The gradient operator for the SparseSlice op.
@@ -20049,13 +21996,16 @@ public static func sparseSliceGrad<T: Numeric & TensorFlowScalar>(
   inputStart: Tensor<Int64>,
   outputIndices: Tensor<Int64>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSliceGrad",
-    backpropValGrad,
-    inputIndices,
-    inputStart,
-    outputIndices,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSliceGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, backpropValGrad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputStart, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies softmax to a batched N-D `SparseTensor`.
@@ -20089,12 +22039,15 @@ public static func sparseSoftmax<T: FloatingPoint & TensorFlowScalar>(
   spValues: Tensor<T>,
   spShape: Tensor<Int64>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseSoftmax",
-    spIndices,
-    spValues,
-    spShape,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSoftmax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, spIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes softmax cross entropy cost and gradients to backpropagate.
@@ -20119,12 +22072,15 @@ public static func sparseSoftmaxCrossEntropyWithLogits<T: FloatingPoint & Tensor
   features: Tensor<T>,
   labels: Tensor<Tlabels>
 ) -> (loss: Tensor<T>, backprop: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SparseSoftmaxCrossEntropyWithLogits",
-    features,
-    labels,
-    T$dtype: T.tensorFlowDataType,
-    Tlabels$dtype: Tlabels.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSoftmaxCrossEntropyWithLogits", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, labels, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tlabels", Tlabels.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the element-wise max of two SparseTensors.
@@ -20152,15 +22108,18 @@ public static func sparseSparseMaximum<T: Numeric & TensorFlowScalar>(
   bValues: Tensor<T>,
   bShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>) = #tfop("SparseSparseMaximum",
-    aIndices,
-    aValues,
-    aShape,
-    bIndices,
-    bValues,
-    bShape,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSparseMaximum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the element-wise min of two SparseTensors.
@@ -20188,15 +22147,18 @@ public static func sparseSparseMinimum<T: Numeric & TensorFlowScalar>(
   bValues: Tensor<T>,
   bShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>) = #tfop("SparseSparseMinimum",
-    aIndices,
-    aValues,
-    aShape,
-    bIndices,
-    bValues,
-    bShape,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseSparseMinimum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Adds up a `SparseTensor` and a dense `Tensor`, producing a dense `Tensor`.
@@ -20215,14 +22177,17 @@ public static func sparseTensorDenseAdd<T: Numeric & TensorFlowScalar, Tindices:
   aShape: Tensor<Tindices>,
   _ b: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseTensorDenseAdd",
-    aIndices,
-    aValues,
-    aShape,
-    b,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseTensorDenseAdd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Multiply SparseTensor (of rank 2) "A" by dense matrix "B".
@@ -20257,16 +22222,19 @@ public static func sparseTensorDenseMatMul<T: TensorFlowScalar, Tindices: Binary
   adjointA: Bool = false,
   adjointB: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseTensorDenseMatMul",
-    aIndices,
-    aValues,
-    aShape,
-    b,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    adjoint_a: adjointA,
-    adjoint_b: adjointB)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseTensorDenseMatMul", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, aIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, aShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "adjoint_a", (adjointA) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "adjoint_b", (adjointB) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts a sparse representation into a dense tensor.
@@ -20312,15 +22280,18 @@ public static func sparseToDense<T: TensorFlowScalar, Tindices: BinaryInteger & 
   defaultValue: Tensor<T>,
   validateIndices: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseToDense",
-    sparseIndices,
-    outputShape,
-    sparseValues,
-    defaultValue,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    validate_indices: validateIndices)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseToDense", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, outputShape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, defaultValue, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies set operation along last dimension of 2 `SparseTensor` inputs.
@@ -20382,17 +22353,20 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   setOperation: String,
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("SparseToSparseSetOperation",
-    set1Indices,
-    set1Values,
-    set1Shape,
-    set2Indices,
-    set2Values,
-    set2Shape,
-    T$dtype: T.tensorFlowDataType,
-    set_operation: setOperation,
-    validate_indices: validateIndices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseToSparseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "set_operation", setOperation, setOperation.count)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes square root of x element-wise.
@@ -20402,10 +22376,13 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
 public static func sqrt<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sqrt",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sqrt", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient for the sqrt of `x` wrt its input.
@@ -20417,11 +22394,14 @@ public static func sqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SqrtGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SqrtGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes square of x element-wise.
@@ -20431,10 +22411,13 @@ public static func sqrtGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func square<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Square",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Square", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns (x - y)(x - y) element-wise.
@@ -20446,11 +22429,14 @@ public static func squaredDifference<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SquaredDifference",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SquaredDifference", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Removes dimensions of size 1 from the shape of a tensor.
@@ -20487,11 +22473,14 @@ public static func squeeze<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   squeezeDims: [Int32]
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Squeeze",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    squeeze_dims: squeezeDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Squeeze", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrInt32Array(op, "squeeze_dims", squeezeDims)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated, use StackV2.
@@ -20500,10 +22489,13 @@ public static func stack<ElemType: TensorFlowScalar>(
   stackName: String,
   typeElemType: ElemType.Type
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Stack",
-    elem_type$dtype: ElemType.tensorFlowDataType,
-    stack_name: stackName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Stack", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "elem_type", ElemType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "stack_name", stackName, stackName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated, use StackCloseV2.
@@ -20511,8 +22503,12 @@ public static func stack<ElemType: TensorFlowScalar>(
 public static func stackClose(
   handle: StringTensor
 ) {
-  return #tfop("StackClose",
-    handle)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StackClose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated, use StackPopV2.
@@ -20520,10 +22516,13 @@ public static func stackClose(
 public static func stackPop<ElemType: TensorFlowScalar>(
   handle: StringTensor
 ) -> Tensor<ElemType> {
-  let ret: TensorHandle<ElemType> = #tfop("StackPop",
-    handle,
-    elem_type$dtype: ElemType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StackPop", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  TFE_OpSetAttrType(op, "elem_type", ElemType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated, use StackPushV2.
@@ -20533,12 +22532,15 @@ public static func stackPush<T: TensorFlowScalar>(
   elem: Tensor<T>,
   swapMemory: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StackPush",
-    handle,
-    elem,
-    T$dtype: T.tensorFlowDataType,
-    swap_memory: swapMemory)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StackPush", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, elem, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "swap_memory", (swapMemory) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Stage values similar to a lightweight Enqueue.
@@ -20565,12 +22567,16 @@ public static func stage<Dtypes: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) {
-  return #tfop("Stage",
-    values,
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Stage", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op removes all elements in the underlying container.
@@ -20582,11 +22588,15 @@ public static func stageClear<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) {
-  return #tfop("StageClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StageClear", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -20598,12 +22608,15 @@ public static func stageSize<Dtypes: TensorFlowScalar>(
   sharedName: String,
   typeDtypes: Dtypes.Type
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("StageSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StageSize", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "capacity", capacity)
+  TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Draws samples from a multinomial distribution.
@@ -20622,14 +22635,17 @@ public static func statelessMultinomial<T: Numeric & TensorFlowScalar, Tseed: Bi
   numSamples: Tensor<Int32>,
   seed: Tensor<Tseed>
 ) -> Tensor<OutputDtype> {
-  let ret: TensorHandle<OutputDtype> = #tfop("StatelessMultinomial",
-    logits,
-    numSamples,
-    seed,
-    T$dtype: T.tensorFlowDataType,
-    Tseed$dtype: Tseed.tensorFlowDataType,
-    output_dtype$dtype: OutputDtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessMultinomial", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSamples, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "output_dtype", OutputDtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs deterministic pseudorandom values from a normal distribution.
@@ -20650,13 +22666,16 @@ public static func statelessRandomNormal<Dtype: FloatingPoint & TensorFlowScalar
   shape: Tensor<T>,
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("StatelessRandomNormal",
-    shape,
-    seed,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    Tseed$dtype: Tseed.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessRandomNormal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs deterministic pseudorandom random values from a uniform distribution.
@@ -20678,13 +22697,16 @@ public static func statelessRandomUniform<Dtype: FloatingPoint & TensorFlowScala
   shape: Tensor<T>,
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("StatelessRandomUniform",
-    shape,
-    seed,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    Tseed$dtype: Tseed.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessRandomUniform", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs deterministic pseudorandom values from a truncated normal distribution.
@@ -20707,13 +22729,16 @@ public static func statelessTruncatedNormal<Dtype: FloatingPoint & TensorFlowSca
   shape: Tensor<T>,
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("StatelessTruncatedNormal",
-    shape,
-    seed,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    Tseed$dtype: Tseed.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessTruncatedNormal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Check if the input matches the regex pattern.
@@ -20735,10 +22760,13 @@ public static func staticRegexFullMatch(
   _ input: StringTensor,
   pattern: String
 ) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("StaticRegexFullMatch",
-    input,
-    pattern: pattern)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StaticRegexFullMatch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrString(op, "pattern", pattern, pattern.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Replaces the match of pattern in input with rewrite.
@@ -20761,12 +22789,15 @@ public static func staticRegexReplace(
   rewrite: String,
   replaceGlobal: Bool = true
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("StaticRegexReplace",
-    input,
-    pattern: pattern,
-    rewrite: rewrite,
-    replace_global: replaceGlobal)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StaticRegexReplace", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrString(op, "pattern", pattern, pattern.count)
+  TFE_OpSetAttrString(op, "rewrite", rewrite, rewrite.count)
+  TFE_OpSetAttrBool(op, "replace_global", (replaceGlobal) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Stops gradient computation.
@@ -20794,10 +22825,13 @@ public static func staticRegexReplace(
 public static func stopGradient<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StopGradient",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StopGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Return a strided slice from `input`.
@@ -20939,19 +22973,22 @@ public static func stridedSlice<T: TensorFlowScalar, Index: BinaryInteger & Tens
   newAxisMask: Int64 = 0,
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StridedSlice",
-    input,
-    begin,
-    end,
-    strides,
-    T$dtype: T.tensorFlowDataType,
-    Index$dtype: Index.tensorFlowDataType,
-    begin_mask: beginMask,
-    end_mask: endMask,
-    ellipsis_mask: ellipsisMask,
-    new_axis_mask: newAxisMask,
-    shrink_axis_mask: shrinkAxisMask)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StridedSlice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, begin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, end, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Index", Index.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "begin_mask", beginMask)
+  TFE_OpSetAttrInt(op, "end_mask", endMask)
+  TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
+  TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
+  TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Assign `value` to the sliced l-value reference of `ref`.
@@ -20975,20 +23012,23 @@ public static func stridedSliceAssign<T: TensorFlowScalar, Index: BinaryInteger 
   newAxisMask: Int64 = 0,
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StridedSliceAssign",
-    ref,
-    begin,
-    end,
-    strides,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    Index$dtype: Index.tensorFlowDataType,
-    begin_mask: beginMask,
-    end_mask: endMask,
-    ellipsis_mask: ellipsisMask,
-    new_axis_mask: newAxisMask,
-    shrink_axis_mask: shrinkAxisMask)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StridedSliceAssign", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, ref, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, begin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, end, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Index", Index.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "begin_mask", beginMask)
+  TFE_OpSetAttrInt(op, "end_mask", endMask)
+  TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
+  TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
+  TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the gradient of `StridedSlice`.
@@ -21014,20 +23054,23 @@ public static func stridedSliceGrad<T: TensorFlowScalar, Index: BinaryInteger & 
   newAxisMask: Int64 = 0,
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StridedSliceGrad",
-    shape,
-    begin,
-    end,
-    strides,
-    dy,
-    T$dtype: T.tensorFlowDataType,
-    Index$dtype: Index.tensorFlowDataType,
-    begin_mask: beginMask,
-    end_mask: endMask,
-    ellipsis_mask: ellipsisMask,
-    new_axis_mask: newAxisMask,
-    shrink_axis_mask: shrinkAxisMask)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StridedSliceGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, begin, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, end, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, strides, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Index", Index.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "begin_mask", beginMask)
+  TFE_OpSetAttrInt(op, "end_mask", endMask)
+  TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
+  TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
+  TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Formats a string template using a list of tensors.
@@ -21049,12 +23092,15 @@ public static func stringFormat<T: TensorFlowScalar>(
   placeholder: String = "%s",
   summarize: Int64 = 3
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("StringFormat",
-    inputs,
-    template: template,
-    placeholder: placeholder,
-    summarize: summarize)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringFormat", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrString(op, "template", template, template.count)
+  TFE_OpSetAttrString(op, "placeholder", placeholder, placeholder.count)
+  TFE_OpSetAttrInt(op, "summarize", summarize)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Joins the strings in the given list of string tensors into one tensor;
@@ -21071,10 +23117,14 @@ public static func stringJoin(
   inputs: [StringTensor],
   separator: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("StringJoin",
-    inputs,
-    separator: separator)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringJoin", s)
+  defer { TFE_DeleteOp(op) }
+  let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
+  TFE_OpSetAttrString(op, "separator", separator, separator.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// String lengths of `input`.
@@ -21096,10 +23146,13 @@ public static func stringLength(
   _ input: StringTensor,
   unit: Unit = .byte
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("StringLength",
-    input,
-    unit: unit.cName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringLength", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrString(op, "unit", unit.cName, unit.cName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21107,9 +23160,13 @@ public static func stringListAttr(
   _ a: [String],
   _ b: String
 ) {
-  return #tfop("StringListAttr",
-    a: a,
-    b: b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringListAttr", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrStringArray(op, "a", a)
+  TFE_OpSetAttrString(op, "b", b, b.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Split elements of `input` based on `delimiter` into a `SparseTensor`.
@@ -21153,11 +23210,14 @@ public static func stringSplit(
   delimiter: StringTensor,
   skipEmpty: Bool = true
 ) -> (indices: Tensor<Int64>, values: StringTensor, shape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<String>, TensorHandle<Int64>) = #tfop("StringSplit",
-    input,
-    delimiter,
-    skip_empty: skipEmpty)
-  return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringSplit", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delimiter, s)
+  TFE_OpSetAttrBool(op, "skip_empty", (skipEmpty) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Split elements of `source` based on `sep` into a `SparseTensor`.
@@ -21198,11 +23258,14 @@ public static func stringSplitV2(
   sep: StringTensor,
   maxsplit: Int64 = -1
 ) -> (indices: Tensor<Int64>, values: StringTensor, shape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<String>, TensorHandle<Int64>) = #tfop("StringSplitV2",
-    input,
-    sep,
-    maxsplit: maxsplit)
-  return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringSplitV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sep, s)
+  TFE_OpSetAttrInt(op, "maxsplit", maxsplit)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Strip leading and trailing whitespaces from the Tensor.
@@ -21214,9 +23277,12 @@ public static func stringSplitV2(
 public static func stringStrip(
   _ input: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("StringStrip",
-    input)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringStrip", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -21236,10 +23302,13 @@ public static func stringToHashBucket(
   stringTensor: StringTensor,
   numBuckets: Int64
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("StringToHashBucket",
-    stringTensor,
-    num_buckets: numBuckets)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringToHashBucket", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, stringTensor, s)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -21261,10 +23330,13 @@ public static func stringToHashBucketFast(
   _ input: StringTensor,
   numBuckets: Int64
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("StringToHashBucketFast",
-    input,
-    num_buckets: numBuckets)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringToHashBucketFast", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -21294,11 +23366,14 @@ public static func stringToHashBucketStrong(
   numBuckets: Int64,
   key: [Int32]
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("StringToHashBucketStrong",
-    input,
-    num_buckets: numBuckets,
-    key: key)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringToHashBucketStrong", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  _TFCOpSetAttrInt32Array(op, "key", key)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts each string in the input Tensor to the specified numeric type.
@@ -21313,10 +23388,13 @@ public static func stringToHashBucketStrong(
 public static func stringToNumber<OutType: Numeric & TensorFlowScalar>(
   stringTensor: StringTensor
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("StringToNumber",
-    stringTensor,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringToNumber", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, stringTensor, s)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x - y element-wise.
@@ -21328,11 +23406,14 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sub",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sub", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 ///
@@ -21348,12 +23429,15 @@ public static func substr<T: BinaryInteger & TensorFlowScalar>(
   pos: Tensor<T>,
   len: Tensor<T>
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Substr",
-    input,
-    pos,
-    len,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Substr", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, pos, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, len, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum of elements across dimensions of a tensor.
@@ -21377,13 +23461,16 @@ public static func sum<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   reductionIndices: Tensor<Tidx>,
   keepDims: Bool = false
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Sum",
-    input,
-    reductionIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tidx$dtype: Tidx.tensorFlowDataType,
-    keep_dims: keepDims)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Sum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the singular value decompositions of one or more matrices.
@@ -21425,12 +23512,15 @@ public static func svd<T: FloatingPoint & TensorFlowScalar>(
   computeUv: Bool = true,
   fullMatrices: Bool = false
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("Svd",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    compute_uv: computeUv,
-    full_matrices: fullMatrices)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Svd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "compute_uv", (computeUv) ?     1 : 0)
+  TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Forwards `data` to the output port determined by `pred`.
@@ -21452,11 +23542,14 @@ public static func switch_<T: TensorFlowScalar>(
   data: Tensor<T>,
   pred: Tensor<Bool>
 ) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("Switch",
-    data,
-    pred,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Switch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, pred, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs the records from a TensorFlow Records file.
@@ -21474,11 +23567,14 @@ public static func tFRecordReader(
   sharedName: String,
   compressionType: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TFRecordReader",
-    container: container,
-    shared_name: sharedName,
-    compression_type: compressionType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TFRecordReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  TFE_OpSetAttrString(op, "compression_type", compressionType, compressionType.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -21553,12 +23649,15 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("TakeManySparseFromTensorsMap",
-    sparseHandles,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TakeManySparseFromTensorsMap", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseHandles, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes tan of x element-wise.
@@ -21566,10 +23665,13 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
 public static func tan<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Tan",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Tan", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes hyperbolic tangent of `x` element-wise.
@@ -21577,10 +23679,13 @@ public static func tan<T: Numeric & TensorFlowScalar>(
 public static func tanh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Tanh",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Tanh", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the gradient for the tanh of `x` wrt its input.
@@ -21592,19 +23697,26 @@ public static func tanhGrad<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>,
   dy: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("TanhGrad",
-    y,
-    dy,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TanhGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func tensorArrayClose(
   handle: StringTensor
 ) {
-  return #tfop("TensorArrayClose",
-    handle)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayClose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArrayCloseV3
@@ -21612,8 +23724,12 @@ public static func tensorArrayClose(
 public static func tensorArrayCloseV2(
   handle: StringTensor
 ) {
-  return #tfop("TensorArrayCloseV2",
-    handle)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayCloseV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21622,11 +23738,14 @@ public static func tensorArrayGrad(
   flowIn: Tensor<Float>,
   source: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorArrayGrad",
-    handle,
-    flowIn,
-    source: source)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrString(op, "source", source, source.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -21636,11 +23755,14 @@ public static func tensorArrayGradV2(
   flowIn: Tensor<Float>,
   source: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorArrayGradV2",
-    handle,
-    flowIn,
-    source: source)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayGradV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrString(op, "source", source, source.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21649,12 +23771,15 @@ public static func tensorArrayRead<Dtype: TensorFlowScalar>(
   index: Tensor<Int32>,
   flowIn: Tensor<Float>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("TensorArrayRead",
-    handle,
-    index,
-    flowIn,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayRead", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArrayReadV3
@@ -21664,12 +23789,15 @@ public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
   index: Tensor<Int32>,
   flowIn: Tensor<Float>
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("TensorArrayReadV2",
-    handle,
-    index,
-    flowIn,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayReadV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21679,13 +23807,16 @@ public static func tensorArrayScatter<T: TensorFlowScalar>(
   value: Tensor<T>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayScatter",
-    handle,
-    indices,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayScatter", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArrayScatterV3
@@ -21696,13 +23827,16 @@ public static func tensorArrayScatterV2<T: TensorFlowScalar>(
   value: Tensor<T>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayScatterV2",
-    handle,
-    indices,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayScatterV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21710,10 +23844,13 @@ public static func tensorArraySize(
   handle: StringTensor,
   flowIn: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("TensorArraySize",
-    handle,
-    flowIn)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArraySize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArraySizeV3
@@ -21722,10 +23859,13 @@ public static func tensorArraySizeV2(
   handle: StringTensor,
   flowIn: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("TensorArraySizeV2",
-    handle,
-    flowIn)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArraySizeV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21735,13 +23875,16 @@ public static func tensorArraySplit<T: TensorFlowScalar>(
   lengths: Tensor<Int64>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArraySplit",
-    handle,
-    value,
-    lengths,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArraySplit", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lengths, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArraySplitV3
@@ -21752,13 +23895,16 @@ public static func tensorArraySplitV2<T: TensorFlowScalar>(
   lengths: Tensor<Int64>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArraySplitV2",
-    handle,
-    value,
-    lengths,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArraySplitV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lengths, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21767,12 +23913,15 @@ public static func tensorArrayUnpack<T: TensorFlowScalar>(
   value: Tensor<T>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayUnpack",
-    handle,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayUnpack", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -21782,13 +23931,16 @@ public static func tensorArrayWrite<T: TensorFlowScalar>(
   value: Tensor<T>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayWrite",
-    handle,
-    index,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayWrite", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -21799,13 +23951,16 @@ public static func tensorArrayWriteV2<T: TensorFlowScalar>(
   value: Tensor<T>,
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayWriteV2",
-    handle,
-    index,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorArrayWriteV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor.
@@ -21827,13 +23982,16 @@ public static func tensorSummary<T: TensorFlowScalar>(
   labels: [String],
   displayName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorSummary",
-    tensor,
-    T$dtype: T.tensorFlowDataType,
-    description: description,
-    labels: labels,
-    display_name: displayName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorSummary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "description", description, description.count)
+  _TFCOpSetAttrStringArray(op, "labels", labels)
+  TFE_OpSetAttrString(op, "display_name", displayName, displayName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor and per-plugin data.
@@ -21849,29 +24007,38 @@ public static func tensorSummaryV2<T: TensorFlowScalar>(
   _ tensor: Tensor<T>,
   serializedSummaryMetadata: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorSummaryV2",
-    tag,
-    tensor,
-    serializedSummaryMetadata,
-    T$dtype: T.tensorFlowDataType)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorSummaryV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, serializedSummaryMetadata, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func testAttr<T: FloatingPoint & TensorFlowScalar>(
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("TestAttr",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TestAttr", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func testStringOutput(
   _ input: Tensor<Float>
 ) -> (output1: Tensor<Float>, output2: StringTensor) {
-  let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("TestStringOutput",
-    input)
-  return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TestStringOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs the lines of a file delimited by '\n'.
@@ -21890,11 +24057,14 @@ public static func textLineReader(
   container: String,
   sharedName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TextLineReader",
-    skip_header_lines: skipHeaderLines,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TextLineReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrInt(op, "skip_header_lines", skipHeaderLines)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -21944,15 +24114,18 @@ public static func threadUnsafeUnigramCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("ThreadUnsafeUnigramCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    range_max: rangeMax,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ThreadUnsafeUnigramCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "range_max", rangeMax)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Constructs a tensor by tiling a given tensor.
@@ -21971,12 +24144,15 @@ public static func tile<T: TensorFlowScalar, Tmultiples: BinaryInteger & TensorF
   _ input: Tensor<T>,
   multiples: Tensor<Tmultiples>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Tile",
-    input,
-    multiples,
-    T$dtype: T.tensorFlowDataType,
-    Tmultiples$dtype: Tmultiples.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Tile", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, multiples, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tmultiples", Tmultiples.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns the gradient of `Tile`.
@@ -21989,11 +24165,14 @@ public static func tileGrad<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   multiples: Tensor<Int32>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("TileGrad",
-    input,
-    multiples,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TileGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, multiples, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Provides the time since epoch in seconds.
@@ -22005,8 +24184,11 @@ public static func tileGrad<T: TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func timestamp(
 ) -> Tensor<Double> {
-  let ret: TensorHandle<Double> = #tfop("Timestamp")
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Timestamp", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds values and indices of the `k` largest elements for the last dimension.
@@ -22041,12 +24223,15 @@ public static func topK<T: Numeric & TensorFlowScalar>(
   k: Int64,
   sorted: Bool = true
 ) -> (values: Tensor<T>, indices: Tensor<Int32>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("TopK",
-    input,
-    T$dtype: T.tensorFlowDataType,
-    k: k,
-    sorted: sorted)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TopK", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "k", k)
+  TFE_OpSetAttrBool(op, "sorted", (sorted) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds values and indices of the `k` largest elements for the last dimension.
@@ -22079,12 +24264,15 @@ public static func topKV2<T: Numeric & TensorFlowScalar>(
   k: Tensor<Int32>,
   sorted: Bool = true
 ) -> (values: Tensor<T>, indices: Tensor<Int32>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("TopKV2",
-    input,
-    k,
-    T$dtype: T.tensorFlowDataType,
-    sorted: sorted)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TopKV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, k, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrBool(op, "sorted", (sorted) ?     1 : 0)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Shuffle dimensions of x according to a permutation.
@@ -22096,12 +24284,15 @@ public static func transpose<T: TensorFlowScalar, Tperm: BinaryInteger & TensorF
   _ x: Tensor<T>,
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Transpose",
-    x,
-    perm,
-    T$dtype: T.tensorFlowDataType,
-    Tperm$dtype: Tperm.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Transpose", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, perm, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tperm", Tperm.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns x / y element-wise for integer types.
@@ -22118,11 +24309,14 @@ public static func truncateDiv<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("TruncateDiv",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TruncateDiv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns element-wise remainder of division. This emulates C semantics in that
@@ -22137,11 +24331,14 @@ public static func truncateMod<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("TruncateMod",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TruncateMod", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Outputs random values from a truncated normal distribution.
@@ -22167,13 +24364,16 @@ public static func truncatedNormal<Dtype: FloatingPoint & TensorFlowScalar, T: B
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("TruncatedNormal",
-    shape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    T$dtype: T.tensorFlowDataType,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TruncatedNormal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Perform batches of RPC requests.
@@ -22263,14 +24463,17 @@ public static func tryRpc(
   failFast: Bool = true,
   timeoutInMs: Int64 = 0
 ) -> (response: StringTensor, statusCode: Tensor<Int32>, statusMessage: StringTensor) {
-  let ret: (TensorHandle<String>, TensorHandle<Int32>, TensorHandle<String>) = #tfop("TryRpc",
-    address,
-    method,
-    request,
-    protocol: protocol_,
-    fail_fast: failFast,
-    timeout_in_ms: timeoutInMs)
-  return (StringTensor(handle: ret.0), Tensor(handle: ret.1), StringTensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TryRpc", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, address, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, method, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, request, s)
+  TFE_OpSetAttrString(op, "protocol", protocol_, protocol_.count)
+  TFE_OpSetAttrBool(op, "fail_fast", (failFast) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "timeout_in_ms", timeoutInMs)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22278,9 +24481,13 @@ public static func twoFloatInputs(
   _ a: Tensor<Float>,
   _ b: Tensor<Float>
 ) {
-  return #tfop("TwoFloatInputs",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoFloatInputs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22288,10 +24495,13 @@ public static func twoFloatInputsFloatOutput(
   _ a: Tensor<Float>,
   _ b: Tensor<Float>
 ) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TwoFloatInputsFloatOutput",
-    a,
-    b)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoFloatInputsFloatOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22299,17 +24509,23 @@ public static func twoFloatInputsIntOutput(
   _ a: Tensor<Float>,
   _ b: Tensor<Float>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("TwoFloatInputsIntOutput",
-    a,
-    b)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoFloatInputsIntOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func twoFloatOutputs(
 ) -> (a: Tensor<Float>, b: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("TwoFloatOutputs")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoFloatOutputs", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22317,16 +24533,23 @@ public static func twoIntInputs(
   _ a: Tensor<Int32>,
   _ b: Tensor<Int32>
 ) {
-  return #tfop("TwoIntInputs",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoIntInputs", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func twoIntOutputs(
 ) -> (a: Tensor<Int32>, b: Tensor<Int32>) {
-  let ret: (TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("TwoIntOutputs")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoIntOutputs", s)
+  defer { TFE_DeleteOp(op) }
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22334,26 +24557,38 @@ public static func twoRefsIn<T: TensorFlowScalar>(
   _ a: Tensor<T>,
   _ b: Tensor<T>
 ) {
-  return #tfop("TwoRefsIn",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoRefsIn", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func typeList<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
-  return #tfop("TypeList",
-    a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TypeList", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func typeListRestrict<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
-  return #tfop("TypeListRestrict",
-    a)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TypeListRestrict", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
@@ -22361,19 +24596,26 @@ public static func typeListTwice<T: TensorFlowScalar>(
   _ a: [Tensor<T>],
   _ b: [Tensor<T>]
 ) {
-  return #tfop("TypeListTwice",
-    a,
-    b)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TypeListTwice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 @inlinable @inline(__always)
 public static func unary<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Unary",
-    a,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Unary", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Reverses the operation of Batch for a single output Tensor.
@@ -22405,15 +24647,18 @@ public static func unbatch<T: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Unbatch",
-    batchedTensor,
-    batchIndex,
-    id,
-    T$dtype: T.tensorFlowDataType,
-    timeout_micros: timeoutMicros,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Unbatch", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, batchedTensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, batchIndex, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, id, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "timeout_micros", timeoutMicros)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Gradient of Unbatch.
@@ -22441,15 +24686,18 @@ public static func unbatchGrad<T: TensorFlowScalar>(
   container: String,
   sharedName: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("UnbatchGrad",
-    originalInput,
-    batchIndex,
-    grad,
-    id,
-    T$dtype: T.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnbatchGrad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, originalInput, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, batchIndex, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, id, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Determine the script codes of a given tensor of Unicode integer code points.
@@ -22467,9 +24715,12 @@ public static func unbatchGrad<T: TensorFlowScalar>(
 public static func unicodeScript(
   _ input: Tensor<Int32>
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("UnicodeScript",
-    input)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnicodeScript", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Generates labels for candidate sampling with a uniform distribution.
@@ -22519,15 +24770,18 @@ public static func uniformCandidateSampler(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> (sampledCandidates: Tensor<Int64>, trueExpectedCount: Tensor<Float>, sampledExpectedCount: Tensor<Float>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("UniformCandidateSampler",
-    trueClasses,
-    num_true: numTrue,
-    num_sampled: numSampled,
-    unique: unique,
-    range_max: rangeMax,
-    seed: seed,
-    seed2: seed2)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UniformCandidateSampler", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, trueClasses, s)
+  TFE_OpSetAttrInt(op, "num_true", numTrue)
+  TFE_OpSetAttrInt(op, "num_sampled", numSampled)
+  TFE_OpSetAttrBool(op, "unique", (unique) ?     1 : 0)
+  TFE_OpSetAttrInt(op, "range_max", rangeMax)
+  TFE_OpSetAttrInt(op, "seed", seed)
+  TFE_OpSetAttrInt(op, "seed2", seed2)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -22557,11 +24811,14 @@ public static func uniformCandidateSampler(
 public static func unique<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
-  let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("Unique",
-    x,
-    T$dtype: T.tensorFlowDataType,
-    out_idx$dtype: OutIdx.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Unique", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -22624,13 +24881,16 @@ public static func uniqueV2<T: TensorFlowScalar, Taxis: BinaryInteger & TensorFl
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
-  let ret: (TensorHandle<T>, TensorHandle<OutIdx>) = #tfop("UniqueV2",
-    x,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Taxis$dtype: Taxis.tensorFlowDataType,
-    out_idx$dtype: OutIdx.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UniqueV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -22663,11 +24923,14 @@ public static func uniqueV2<T: TensorFlowScalar, Taxis: BinaryInteger & TensorFl
 public static func uniqueWithCounts<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
-  let ret: (TensorHandle<T>, TensorHandle<OutIdx>, TensorHandle<OutIdx>) = #tfop("UniqueWithCounts",
-    x,
-    T$dtype: T.tensorFlowDataType,
-    out_idx$dtype: OutIdx.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UniqueWithCounts", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -22735,13 +24998,16 @@ public static func uniqueWithCountsV2<T: TensorFlowScalar, Taxis: BinaryInteger 
   _ x: Tensor<T>,
   axis: Tensor<Taxis>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
-  let ret: (TensorHandle<T>, TensorHandle<OutIdx>, TensorHandle<OutIdx>) = #tfop("UniqueWithCountsV2",
-    x,
-    axis,
-    T$dtype: T.tensorFlowDataType,
-    Taxis$dtype: Taxis.tensorFlowDataType,
-    out_idx$dtype: OutIdx.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UniqueWithCountsV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Converts a flat index or array of flat indices into a tuple of
@@ -22765,11 +25031,14 @@ public static func unravelIndex<Tidx: BinaryInteger & TensorFlowScalar>(
   indices: Tensor<Tidx>,
   dims: Tensor<Tidx>
 ) -> Tensor<Tidx> {
-  let ret: TensorHandle<Tidx> = #tfop("UnravelIndex",
-    indices,
-    dims,
-    Tidx$dtype: Tidx.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnravelIndex", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -22817,14 +25086,17 @@ public static func unsortedSegmentMax<T: Numeric & TensorFlowScalar, Tindices: B
   segmentIds: Tensor<Tindices>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("UnsortedSegmentMax",
-    data,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnsortedSegmentMax", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the minimum along segments of a tensor.
@@ -22867,14 +25139,17 @@ public static func unsortedSegmentMin<T: Numeric & TensorFlowScalar, Tindices: B
   segmentIds: Tensor<Tindices>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("UnsortedSegmentMin",
-    data,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnsortedSegmentMin", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the product along segments of a tensor.
@@ -22916,14 +25191,17 @@ public static func unsortedSegmentProd<T: Numeric & TensorFlowScalar, Tindices: 
   segmentIds: Tensor<Tindices>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("UnsortedSegmentProd",
-    data,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnsortedSegmentProd", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Computes the sum along segments of a tensor.
@@ -22967,14 +25245,17 @@ public static func unsortedSegmentSum<T: Numeric & TensorFlowScalar, Tindices: B
   segmentIds: Tensor<Tindices>,
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("UnsortedSegmentSum",
-    data,
-    segmentIds,
-    numSegments,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    Tnumsegments$dtype: Tnumsegments.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnsortedSegmentSum", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numSegments, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Applies upper_bound(sorted_search_values, values) along each row.
@@ -23010,12 +25291,15 @@ public static func upperBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
   sortedInputs: Tensor<T>,
   _ values: Tensor<T>
 ) -> Tensor<OutType> {
-  let ret: TensorHandle<OutType> = #tfop("UpperBound",
-    sortedInputs,
-    values,
-    T$dtype: T.tensorFlowDataType,
-    out_type$dtype: OutType.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UpperBound", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sortedInputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns locations of nonzero / true values in a tensor.
@@ -23083,10 +25367,13 @@ public static func upperBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
 public static func where_<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("Where",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Where", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// A Reader that outputs the entire contents of a file as a value.
@@ -23106,10 +25393,13 @@ public static func wholeFileReader(
   container: String,
   sharedName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("WholeFileReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "WholeFileReader", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrString(op, "container", container, container.count)
+  TFE_OpSetAttrString(op, "shared_name", sharedName, sharedName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Writes contents to the file at input filename. Creates file and recursively
@@ -23124,9 +25414,13 @@ public static func writeFile(
   filename: StringTensor,
   contents: StringTensor
 ) {
-  return #tfop("WriteFile",
-    filename,
-    contents)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "WriteFile", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns 0 if x == 0, and x / y otherwise, elementwise.
@@ -23135,11 +25429,14 @@ public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Xdivy",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Xdivy", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Helper operator for performing XLA-style broadcasts
@@ -23162,13 +25459,16 @@ public static func xlaBroadcastHelper<T: Numeric & TensorFlowScalar, Tindices: B
   rhs: Tensor<T>,
   broadcastDims: Tensor<Tindices>
 ) -> (lhsOutput: Tensor<T>, rhsOutput: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("XlaBroadcastHelper",
-    lhs,
-    rhs,
-    broadcastDims,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaBroadcastHelper", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, lhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, broadcastDims, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Operator that connects the output of an XLA computation to other consumer graph nodes.
@@ -23176,10 +25476,13 @@ public static func xlaBroadcastHelper<T: Numeric & TensorFlowScalar, Tindices: B
 public static func xlaClusterOutput<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaClusterOutput",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaClusterOutput", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA ConvGeneralDilated operator, documented at
@@ -23211,19 +25514,22 @@ public static func xlaConv<T: Numeric & TensorFlowScalar, Tindices: BinaryIntege
   dimensionNumbers: String,
   precisionConfig: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaConv",
-    lhs,
-    rhs,
-    windowStrides,
-    padding,
-    lhsDilation,
-    rhsDilation,
-    featureGroupCount,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    dimension_numbers: dimensionNumbers,
-    precision_config: precisionConfig)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaConv", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, lhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, windowStrides, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, padding, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, lhsDilation, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhsDilation, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, featureGroupCount, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "dimension_numbers", dimensionNumbers, dimensionNumbers.count)
+  TFE_OpSetAttrString(op, "precision_config", precisionConfig, precisionConfig.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA ConvGeneralDilated operator, documented at
@@ -23245,13 +25551,16 @@ public static func xlaDot<T: Numeric & TensorFlowScalar>(
   dimensionNumbers: String,
   precisionConfig: String
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDot",
-    lhs,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    dimension_numbers: dimensionNumbers,
-    precision_config: precisionConfig)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaDot", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, lhs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "dimension_numbers", dimensionNumbers, dimensionNumbers.count)
+  TFE_OpSetAttrString(op, "precision_config", precisionConfig, precisionConfig.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA DynamicSlice operator, documented at
@@ -23277,13 +25586,16 @@ public static func xlaDynamicSlice<T: TensorFlowScalar, Tindices: BinaryInteger 
   startIndices: Tensor<Tindices>,
   sizeIndices: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDynamicSlice",
-    input,
-    startIndices,
-    sizeIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaDynamicSlice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, startIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sizeIndices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA DynamicUpdateSlice operator, documented at
@@ -23311,13 +25623,16 @@ public static func xlaDynamicUpdateSlice<T: TensorFlowScalar, Tindices: BinaryIn
   update: Tensor<T>,
   indices: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDynamicUpdateSlice",
-    input,
-    update,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaDynamicUpdateSlice", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, update, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA Sort operator, documented at
@@ -23339,12 +25654,15 @@ public static func xlaKeyValueSort<K: Numeric & TensorFlowScalar, V: TensorFlowS
   keys: Tensor<K>,
   _ values: Tensor<V>
 ) -> (sortedKeys: Tensor<K>, sortedValues: Tensor<V>) {
-  let ret: (TensorHandle<K>, TensorHandle<V>) = #tfop("XlaKeyValueSort",
-    keys,
-    values,
-    K$dtype: K.tensorFlowDataType,
-    V$dtype: V.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaKeyValueSort", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, keys, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  TFE_OpSetAttrType(op, "K", K.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "V", V.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA Pad operator, documented at
@@ -23368,15 +25686,18 @@ public static func xlaPad<T: TensorFlowScalar, Tindices: BinaryInteger & TensorF
   paddingHigh: Tensor<Tindices>,
   paddingInterior: Tensor<Tindices>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaPad",
-    input,
-    paddingValue,
-    paddingLow,
-    paddingHigh,
-    paddingInterior,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaPad", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddingValue, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddingLow, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddingHigh, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, paddingInterior, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Sends the named tensor to another XLA computation. Wraps the XLA Send operator
@@ -23392,10 +25713,14 @@ public static func xlaSend<T: TensorFlowScalar>(
   _ tensor: Tensor<T>,
   tensorName: String
 ) {
-  return #tfop("XlaSend",
-    tensor,
-    T$dtype: T.tensorFlowDataType,
-    tensor_name: tensorName)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaSend", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrString(op, "tensor_name", tensorName, tensorName.count)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Wraps the XLA Sort operator, documented at
@@ -23412,10 +25737,13 @@ public static func xlaSend<T: TensorFlowScalar>(
 public static func xlaSort<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaSort",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "XlaSort", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns 0 if x == 0, and x * log(y) otherwise, elementwise.
@@ -23424,11 +25752,14 @@ public static func xlogy<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Xlogy",
-    x,
-    y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Xlogy", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Returns a tensor of zeros with the same shape and type as x.
@@ -23440,10 +25771,13 @@ public static func xlogy<T: FloatingPoint & TensorFlowScalar>(
 public static func zerosLike<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ZerosLike",
-    x,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ZerosLike", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 /// Compute the Hurwitz zeta function \\(\zeta(x, q)\\).
@@ -23457,11 +25791,14 @@ public static func zeta<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>,
   q: Tensor<T>
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Zeta",
-    x,
-    q,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Zeta", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, q, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  return TensorGroupExecuteOp(op, s)
 }
 
 }

@@ -19,6 +19,7 @@ from __future__ import print_function
 
 import collections
 import os
+import six
 import tensorflow as tf
 
 from tensorflow.core.framework import types_pb2
@@ -176,8 +177,9 @@ class EnumStore(object):
   def enum_codes(self):
     """Generates the swift code for enums."""
     codes = []
-    entries = list(self._entries.iteritems())
+    entries = list(six.iteritems(self._entries))
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
+      allowed_values = [str(a, encoding='utf-8') for a in allowed_values]
       codes.append(
           # FIXME: Readd `@_frozen` after SR-9739 is resolved.
           # https://bugs.swift.org/browse/SR-9739
@@ -434,7 +436,7 @@ def generate_code(op, api_def, enum_store):
   tfop_args = ',\n    '.join(
       ['"' + op.name + '"'] +
       [name for name, _ in input_names_and_types] +
-      filter(None, [t.op_arg() for t in types]) +
+      list(filter(None, [t.op_arg() for t in types])) +
       [a.tfop_name + ': ' + a.swift_value for a in attributes_as_input]
   )
 
@@ -528,7 +530,14 @@ def main(argv):
     try:
       if op_name[0] == '_': continue
       op = api_def_map.get_op_def(op_name)
-      api_def = api_def_map.get_api_def(bytes(op_name))
+
+      if any(a.is_ref for a in op.input_arg):
+        raise UnableToGenerateCodeError('has ref-valued input')
+
+      if any(a.is_ref for a in op.output_arg):
+        raise UnableToGenerateCodeError('has ref-valued output')
+
+      api_def = api_def_map.get_api_def(bytes(op_name, 'utf8'))
       op_codes.append(generate_code(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op.name, e.details))

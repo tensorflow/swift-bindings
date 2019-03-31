@@ -2332,46 +2332,6 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// A Reader that outputs rows from a BigQuery table as tensorflow Examples.
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///   - project_id: GCP project ID.
-///   - dataset_id: BigQuery Dataset ID.
-///   - table_id: Table to read.
-///   - columns: List of columns to read. Leave empty to read all columns.
-///   - timestamp_millis: Table snapshot timestamp in millis since epoch. Relative
-///     (negative or zero) snapshot times are not allowed. For more details, see
-///     'Table Decorators' in BigQuery docs.
-///   - test_end_point: Do not use. For testing purposes only.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func bigQueryReader(
-  container: String,
-  sharedName: String,
-  projectId: String,
-  datasetId: String,
-  tableId: String,
-  columns: [String],
-  timestampMillis: Int64,
-  testEndPoint: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("BigQueryReader",
-    container: container,
-    shared_name: sharedName,
-    project_id: projectId,
-    dataset_id: datasetId,
-    table_id: tableId,
-    columns: columns,
-    timestamp_millis: timestampMillis,
-    test_end_point: testEndPoint)
-  return StringTensor(handle: ret)
-}
-
 @inlinable @inline(__always)
 public static func binary<T: TensorFlowScalar>(
   _ a: Tensor<T>,
@@ -7502,39 +7462,6 @@ public static func fiveFloatOutputs(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
 
-/// A Reader that outputs fixed-length records from a file.
-///
-/// - Attrs:
-///   - header_bytes: Number of bytes in the header, defaults to 0.
-///   - record_bytes: Number of bytes in the record.
-///   - footer_bytes: Number of bytes in the footer, defaults to 0.
-///   - hop_bytes: Number of bytes to hop before each read. Default of 0 means using
-///     record_bytes.
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func fixedLengthRecordReader(
-  headerBytes: Int64 = 0,
-  recordBytes: Int64,
-  footerBytes: Int64 = 0,
-  hopBytes: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("FixedLengthRecordReader",
-    header_bytes: headerBytes,
-    record_bytes: recordBytes,
-    footer_bytes: footerBytes,
-    hop_bytes: hopBytes,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
-}
-
 /// Generates labels for candidate sampling with a learned unigram distribution.
 ///
 /// A unigram sampler could use a fixed unigram distribution read from a
@@ -8971,40 +8898,6 @@ public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Creates a non-initialized hash table.
-///
-/// This op creates a hash table, specifying the type of its keys and values.
-/// Before using the table you will have to initialize it.  After initialization the
-/// table will be immutable.
-///
-/// - Attrs:
-///   - container: If non-empty, this table is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this table is shared under the given name across
-///     multiple sessions.
-///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
-///     using the node name.
-///   - key_dtype: Type of the table keys.
-///   - value_dtype: Type of the table values.
-///
-/// - Output table_handle: Handle to a table.
-@inlinable @inline(__always)
-public static func hashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
-  container: String,
-  sharedName: String,
-  useNodeNameSharing: Bool = false,
-  typeKeyDtype: KeyDtype.Type,
-  typeValueDtype: ValueDtype.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("HashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
-}
-
 /// Return histogram of values.
 ///
 /// Given the tensor `values`, this operation returns a rank 1 histogram counting
@@ -9149,29 +9042,6 @@ public static func identity<T: TensorFlowScalar>(
     input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// A Reader that outputs the queued work as both the key and value.
-///
-/// To use, enqueue strings in a Queue.  ReaderRead will take the front
-/// work string and output (work, work).
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func identityReader(
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("IdentityReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -9687,26 +9557,6 @@ public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
     t,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// A Reader that outputs the records from a LMDB file.
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func lMDBReader(
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("LMDBReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Local Response Normalization.
@@ -12558,40 +12408,6 @@ public static func multinomial<T: Numeric & TensorFlowScalar, OutputDtype: Binar
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
-}
-
-/// Creates an empty hash table.
-///
-/// This op creates a mutable hash table, specifying the type of its keys and
-/// values. Each value must be a scalar. Data can be inserted into the table using
-/// the insert operations. It does not support the initialization operation.
-///
-/// - Attrs:
-///   - container: If non-empty, this table is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this table is shared under the given name across
-///     multiple sessions.
-///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
-///     using the node name.
-///   - key_dtype: Type of the table keys.
-///   - value_dtype: Type of the table values.
-///
-/// - Output table_handle: Handle to a table.
-@inlinable @inline(__always)
-public static func mutableHashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
-  container: String,
-  sharedName: String,
-  useNodeNameSharing: Bool = false,
-  typeKeyDtype: KeyDtype.Type,
-  typeValueDtype: ValueDtype.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("MutableHashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -15796,28 +15612,6 @@ public static func reduceJoin(
     keep_dims: keepDims,
     separator: separator)
   return StringTensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOut<T: TensorFlowScalar>(
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefOut",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOutput(
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RefOutput")
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOutputFloatOutput(
-) -> (a: Tensor<Float>, b: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RefOutputFloatOutput")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
 /// Check if the input matches the regex pattern.
@@ -20619,18 +20413,6 @@ public static func squeeze<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Deprecated, use StackV2.
-@inlinable @inline(__always)
-public static func stack<ElemType: TensorFlowScalar>(
-  stackName: String,
-  typeElemType: ElemType.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Stack",
-    elem_type$dtype: ElemType.tensorFlowDataType,
-    stack_name: stackName)
-  return StringTensor(handle: ret)
-}
-
 /// Stage values similar to a lightweight Enqueue.
 ///
 /// The basic functionality of this Op is similar to a queue with many
@@ -21630,28 +21412,6 @@ public static func switch_<T: TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
-/// A Reader that outputs the records from a TensorFlow Records file.
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func tFRecordReader(
-  container: String,
-  sharedName: String,
-  compressionType: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TFRecordReader",
-    container: container,
-    shared_name: sharedName,
-    compression_type: compressionType)
-  return StringTensor(handle: ret)
-}
-
 /// CompilationResultProto indicating the status of the TPU compilation.
 @inlinable @inline(__always)
 public static func tPUCompilationResult(
@@ -21875,19 +21635,6 @@ public static func tensorArrayCloseV2(
 ) {
   return #tfop("TensorArrayCloseV2",
     handle)
-}
-
-@inlinable @inline(__always)
-public static func tensorArrayGrad(
-  handle: StringTensor,
-  flowIn: Tensor<Float>,
-  source: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorArrayGrad",
-    handle,
-    flowIn,
-    source: source)
-  return StringTensor(handle: ret)
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -22358,29 +22105,6 @@ public static func testStringOutput(
   let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("TestStringOutput",
     input)
   return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
-}
-
-/// A Reader that outputs the lines of a file delimited by '\n'.
-///
-/// - Attrs:
-///   - skip_header_lines: Number of lines to skip from the beginning of every file.
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func textLineReader(
-  skipHeaderLines: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TextLineReader",
-    skip_header_lines: skipHeaderLines,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -23837,29 +23561,6 @@ public static func where_<T: TensorFlowScalar>(
     input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// A Reader that outputs the entire contents of a file as a value.
-///
-/// To use, enqueue filenames in a Queue.  The output of ReaderRead will
-/// be a filename (key) and the contents of that file (value).
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func wholeFileReader(
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("WholeFileReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Worker heartbeat op.

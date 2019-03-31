@@ -534,6 +534,9 @@ def main(argv):
       if any(a.is_ref for a in op.input_arg):
         raise UnableToGenerateCodeError('has ref-valued input')
 
+      if any(a.is_ref for a in op.output_arg):
+        raise UnableToGenerateCodeError('has ref-valued output')
+
       api_def = api_def_map.get_api_def(bytes(op_name, 'utf8'))
       op_codes.append(generate_code(op, api_def, enum_store))
     except UnableToGenerateCodeError as e:

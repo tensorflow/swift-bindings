@@ -181,7 +181,7 @@ class EnumStore(object):
     for allowed_values, type_name in sorted(entries, key=lambda x: x[1]):
       allowed_values = [str(a, encoding='utf-8') for a in allowed_values]
       codes.append(
-          # FIXME: Read `@_frozen` after SR-9739 is resolved.
+          # FIXME: Readd `@_frozen` after SR-9739 is resolved.
           # https://bugs.swift.org/browse/SR-9739
           # '@_frozen\n' +
           '// @_frozen // SR-9739\n' +

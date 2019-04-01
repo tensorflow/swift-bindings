@@ -148,7 +148,7 @@ def swift_compatible(s, capitalize=False):
   without_underscores = []
   capitalize_next_char = False
   for c in s:
-    if c == '_' or c == '(' or c == ')':
+    if c == '-' or c == '_' or c == '(' or c == ')':
       capitalize_next_char = True
     elif capitalize_next_char:
       capitalize_next_char = False

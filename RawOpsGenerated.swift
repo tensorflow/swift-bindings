@@ -311,18 +311,18 @@ public enum Mode5 {
 
 // @_frozen // SR-9739
 public enum OutputEncoding {
-  case utf-16-be
-  case utf-32-be
-  case utf-8
+  case utf16Be
+  case utf32Be
+  case utf8
 
   @inlinable
   var cName: String {
     @inline(__always)
     get {
       switch self {
-      case .utf-16-be: return "UTF-16-BE"
-      case .utf-32-be: return "UTF-32-BE"
-      case .utf-8: return "UTF-8"
+      case .utf16Be: return "UTF-16-BE"
+      case .utf32Be: return "UTF-32-BE"
+      case .utf8: return "UTF-8"
       }
     }
   }

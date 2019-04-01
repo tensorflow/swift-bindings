@@ -16,8 +16,8 @@
 
 public enum Raw {
 
-static let generatedTensorFlowVersion = "1.12.0"
-static let generatedTensorFlowGitVersion = "v1.12.0-0-ga6d8ffae09"
+static let generatedTensorFlowVersion = "1.13.1"
+static let generatedTensorFlowGitVersion = "v1.12.0-11444-g8b2884c9cb"
 
 // @_frozen // SR-9739
 public enum A {
@@ -71,7 +71,7 @@ public enum DataFormat1 {
 }
 
 // @_frozen // SR-9739
-public enum DataFormat3 {
+public enum DataFormat4 {
   case nchw
   case nchwVectC
   case nhwc
@@ -118,6 +118,25 @@ public enum Direction {
       switch self {
       case .bidirectional: return "bidirectional"
       case .unidirectional: return "unidirectional"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum Errors {
+  case ignore
+  case replace
+  case strict
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .ignore: return "ignore"
+      case .replace: return "replace"
+      case .strict: return "strict"
       }
     }
   }
@@ -240,7 +259,7 @@ public enum Method {
 }
 
 // @_frozen // SR-9739
-public enum Method2 {
+public enum Method3 {
   case bilinear
 
   @inlinable
@@ -274,7 +293,7 @@ public enum Mode {
 }
 
 // @_frozen // SR-9739
-public enum Mode4 {
+public enum Mode5 {
   case reflect
   case symmetric
 
@@ -291,23 +310,19 @@ public enum Mode4 {
 }
 
 // @_frozen // SR-9739
-public enum OutputStream {
-  case logError
-  case logInfo
-  case logWarning
-  case stderr
-  case stdout
+public enum OutputEncoding {
+  case utf-16-be
+  case utf-32-be
+  case utf-8
 
   @inlinable
   var cName: String {
     @inline(__always)
     get {
       switch self {
-      case .logError: return "log(error)"
-      case .logInfo: return "log(info)"
-      case .logWarning: return "log(warning)"
-      case .stderr: return "stderr"
-      case .stdout: return "stdout"
+      case .utf-16-be: return "UTF-16-BE"
+      case .utf-32-be: return "UTF-32-BE"
+      case .utf-8: return "UTF-8"
       }
     }
   }
@@ -325,6 +340,46 @@ public enum Padding {
       switch self {
       case .same: return "SAME"
       case .valid: return "VALID"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum Padding2 {
+  case explicit
+  case same
+  case valid
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .explicit: return "EXPLICIT"
+      case .same: return "SAME"
+      case .valid: return "VALID"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum Reduction {
+  case max
+  case min
+  case prod
+  case sum
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .max: return "max"
+      case .min: return "min"
+      case .prod: return "prod"
+      case .sum: return "sum"
       }
     }
   }
@@ -353,6 +408,23 @@ public enum RnnMode {
 
 // @_frozen // SR-9739
 public enum RoundMode {
+  case halfToEven
+  case halfUp
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .halfToEven: return "HALF_TO_EVEN"
+      case .halfUp: return "HALF_UP"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum RoundMode6 {
   case halfAwayFromZero
   case halfToEven
 
@@ -422,90 +494,6 @@ public static func abs<T: Numeric & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Abs",
     x,
     T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Applies a gradient to a given accumulator.
-///
-/// Does not add if local_step is lesser than the accumulator's global_step.
-///
-/// - Parameters:
-///   - handle: The handle to a accumulator.
-///   - local_step: The local_step value at which the gradient was computed.
-///   - gradient: A tensor of the gradient to be accumulated.
-///
-/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
-///   of the accumulator.
-@inlinable @inline(__always)
-public static func accumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
-  handle: StringTensor,
-  localStep: Tensor<Int64>,
-  gradient: Tensor<Dtype>
-) {
-  return #tfop("AccumulatorApplyGradient",
-    handle,
-    localStep,
-    gradient,
-    dtype$dtype: Dtype.tensorFlowDataType)
-}
-
-/// Returns the number of gradients aggregated in the given accumulators.
-///
-/// - Parameter handle: The handle to an accumulator.
-///
-/// - Output num_accumulated: The number of gradients aggregated in the given accumulator.
-@inlinable @inline(__always)
-public static func accumulatorNumAccumulated(
-  handle: StringTensor
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("AccumulatorNumAccumulated",
-    handle)
-  return Tensor(handle: ret)
-}
-
-/// Updates the accumulator with a new value for global_step.
-///
-/// Logs warning if the accumulator's value is already higher than
-/// new_global_step.
-///
-/// - Parameters:
-///   - handle: The handle to an accumulator.
-///   - new_global_step: The new global_step value to set.
-@inlinable @inline(__always)
-public static func accumulatorSetGlobalStep(
-  handle: StringTensor,
-  newGlobalStep: Tensor<Int64>
-) {
-  return #tfop("AccumulatorSetGlobalStep",
-    handle,
-    newGlobalStep)
-}
-
-/// Extracts the average gradient in the given ConditionalAccumulator.
-///
-/// The op blocks until sufficient (i.e., more than num_required)
-/// gradients have been accumulated.  If the accumulator has already
-/// aggregated more than num_required gradients, it returns the average of
-/// the accumulated gradients.  Also automatically increments the recorded
-/// global_step in the accumulator by 1, and resets the aggregate to 0.
-///
-/// - Parameters:
-///   - handle: The handle to an accumulator.
-///   - num_required: Number of gradients required before we return an aggregate.
-///
-/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
-///   of the accumulator.
-///
-/// - Output average: The average of the accumulated gradients.
-@inlinable @inline(__always)
-public static func accumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
-  handle: StringTensor,
-  numRequired: Tensor<Int32>
-) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("AccumulatorTakeGradient",
-    handle,
-    numRequired,
-    dtype$dtype: Dtype.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -715,13 +703,14 @@ public static func adjustContrast<T: Numeric & TensorFlowScalar>(
 ///
 /// - Output output: The contrast-adjusted image or images.
 @inlinable @inline(__always)
-public static func adjustContrastv2(
-  images: Tensor<Float>,
+public static func adjustContrastv2<T: FloatingPoint & TensorFlowScalar>(
+  images: Tensor<T>,
   contrastFactor: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustContrastv2",
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("AdjustContrastv2",
     images,
-    contrastFactor)
+    contrastFactor,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -740,13 +729,14 @@ public static func adjustContrastv2(
 ///
 /// - Output output: The hue-adjusted image or images.
 @inlinable @inline(__always)
-public static func adjustHue(
-  images: Tensor<Float>,
+public static func adjustHue<T: FloatingPoint & TensorFlowScalar>(
+  images: Tensor<T>,
   delta: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustHue",
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("AdjustHue",
     images,
-    delta)
+    delta,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -765,13 +755,14 @@ public static func adjustHue(
 ///
 /// - Output output: The hue-adjusted image or images.
 @inlinable @inline(__always)
-public static func adjustSaturation(
-  images: Tensor<Float>,
+public static func adjustSaturation<T: FloatingPoint & TensorFlowScalar>(
+  images: Tensor<T>,
   scale: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("AdjustSaturation",
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("AdjustSaturation",
     images,
-    scale)
+    scale,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -859,6 +850,57 @@ public static func allCandidateSampler(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
+/// An Op to exchange data across TPU replicas.
+///
+/// On each replica, the input is split into `split_count` blocks along
+/// `split_dimension` and send to the other replicas given group_assignment. After
+/// receiving `split_count` - 1 blocks from other replicas, we concatenate the
+/// blocks along `concat_dimension` as the output.
+///
+/// For example, suppose there are 2 TPU replicas:
+/// replica 0 receives input: `[[A, B]]`
+/// replica 1 receives input: `[[C, D]]`
+///
+/// group_assignment=`[[0, 1]]`
+/// concat_dimension=0
+/// split_dimension=1
+/// split_count=2
+///
+/// replica 0's output: `[[A], [C]]`
+/// replica 1's output: `[[B], [D]]`
+///
+/// - Parameters:
+///   - input: The local input to the sum.
+///   - group_assignment: An int32 tensor with shape
+///     [num_groups, num_replicas_per_group]. `group_assignment[i]` represents the
+///     replica ids in the ith subgroup.
+///
+/// - Attrs:
+///   - T: The type of elements to be exchanged.
+///   - concat_dimension: The dimension number to concatenate.
+///   - split_dimension: The dimension number to split.
+///   - split_count: The number of splits, this number must equal to the sub-group
+///     size(group_assignment.get_shape()[1])
+///
+/// - Output output: The exchanged result.
+@inlinable @inline(__always)
+public static func allToAll<T: TensorFlowScalar>(
+  _ input: Tensor<T>,
+  groupAssignment: Tensor<Int32>,
+  concatDimension: Int64,
+  splitDimension: Int64,
+  splitCount: Int64
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("AllToAll",
+    input,
+    groupAssignment,
+    T$dtype: T.tensorFlowDataType,
+    concat_dimension: concatDimension,
+    split_dimension: splitDimension,
+    split_count: splitCount)
+  return Tensor(handle: ret)
+}
+
 /// Returns the argument of a complex number.
 ///
 /// Given a tensor `input` of complex numbers, this operation returns a tensor of
@@ -918,691 +960,6 @@ public static func any<Tidx: BinaryInteger & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Update '*var' according to the AdaMax algorithm.
-///
-/// m_t <- beta1 * m_{t-1} + (1 - beta1) * g
-/// v_t <- max(beta2 * v_{t-1}, abs(g))
-/// variable <- variable - learning_rate / (1 - beta1^t) * m_t / (v_t + epsilon)
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - m: Should be from a Variable().
-///   - v: Should be from a Variable().
-///   - beta1_power: Must be a scalar.
-///   - lr: Scaling factor. Must be a scalar.
-///   - beta1: Momentum factor. Must be a scalar.
-///   - beta2: Momentum factor. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var, m, and v tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAdaMax<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  m: Tensor<T>,
-  v: Tensor<T>,
-  beta1Power: Tensor<T>,
-  lr: Tensor<T>,
-  beta1: Tensor<T>,
-  beta2: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdaMax",
-    var_,
-    m,
-    v,
-    beta1Power,
-    lr,
-    beta1,
-    beta2,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the adadelta scheme.
-///
-/// accum = rho() * accum + (1 - rho()) * grad.square();
-/// update = (update_accum + epsilon).sqrt() * (accum + epsilon()).rsqrt() * grad;
-/// update_accum = rho() * update_accum + (1 - rho()) * update.square();
-/// var -= update;
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - accum_update: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - rho: Decay factor. Must be a scalar.
-///   - epsilon: Constant factor. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If True, updating of the var, accum and update_accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAdadelta<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  accumUpdate: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdadelta",
-    var_,
-    accum,
-    accumUpdate,
-    lr,
-    rho,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the adagrad scheme.
-///
-/// accum += grad * grad
-/// var -= lr * grad * (1 / sqrt(accum))
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAdagrad<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false,
-  updateSlots: Bool = true
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdagrad",
-    var_,
-    accum,
-    lr,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    update_slots: updateSlots)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the proximal adagrad scheme.
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - gradient_accumulator: Should be from a Variable().
-///   - gradient_squared_accumulator: Should be from a Variable().
-///   - grad: The gradient.
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - global_step: Training step number. Must be a scalar.
-///
-/// - Attr use_locking: If True, updating of the var and accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAdagradDA<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  gradientAccumulator: Tensor<T>,
-  gradientSquaredAccumulator: Tensor<T>,
-  grad: Tensor<T>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  globalStep: Tensor<Int64>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdagradDA",
-    var_,
-    gradientAccumulator,
-    gradientSquaredAccumulator,
-    grad,
-    lr,
-    l1,
-    l2,
-    globalStep,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the Adam algorithm.
-///
-/// $$lr_t := \text{learning\_rate} * \sqrt{1 - beta_2^t} / (1 - beta_1^t)$$
-/// $$m_t := beta_1 * m_{t-1} + (1 - beta_1) * g$$
-/// $$v_t := beta_2 * v_{t-1} + (1 - beta_2) * g * g$$
-/// $$variable := variable - lr_t * m_t / (\sqrt{v_t} + \epsilon)$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - m: Should be from a Variable().
-///   - v: Should be from a Variable().
-///   - beta1_power: Must be a scalar.
-///   - beta2_power: Must be a scalar.
-///   - lr: Scaling factor. Must be a scalar.
-///   - beta1: Momentum factor. Must be a scalar.
-///   - beta2: Momentum factor. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attrs:
-///   - use_locking: If `True`, updating of the var, m, and v tensors will be protected
-///     by a lock; otherwise the behavior is undefined, but may exhibit less
-///     contention.
-///   - use_nesterov: If `True`, uses the nesterov update.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAdam<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  m: Tensor<T>,
-  v: Tensor<T>,
-  beta1Power: Tensor<T>,
-  beta2Power: Tensor<T>,
-  lr: Tensor<T>,
-  beta1: Tensor<T>,
-  beta2: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false,
-  useNesterov: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAdam",
-    var_,
-    m,
-    v,
-    beta1Power,
-    beta2Power,
-    lr,
-    beta1,
-    beta2,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the AddSign update.
-///
-/// m_t <- beta1 * m_{t-1} + (1 - beta1) * g
-/// update <- (alpha + sign_decay * sign(g) *sign(m)) * g
-/// variable <- variable - lr_t * update
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - m: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - alpha: Must be a scalar.
-///   - sign_decay: Must be a scalar.
-///   - beta: Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var and m tensors is
-///   protected by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyAddSign<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  m: Tensor<T>,
-  lr: Tensor<T>,
-  alpha: Tensor<T>,
-  signDecay: Tensor<T>,
-  beta: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyAddSign",
-    var_,
-    m,
-    lr,
-    alpha,
-    signDecay,
-    beta,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the centered RMSProp algorithm.
-///
-/// The centered RMSProp algorithm uses an estimate of the centered second moment
-/// (i.e., the variance) for normalization, as opposed to regular RMSProp, which
-/// uses the (uncentered) second moment. This often helps with training, but is
-/// slightly more expensive in terms of computation and memory.
-///
-/// Note that in dense implementation of this algorithm, mg, ms, and mom will
-/// update even if the grad is zero, but in this sparse implementation, mg, ms,
-/// and mom will not update in iterations during which the grad is zero.
-///
-/// mean_square = decay * mean_square + (1-decay) * gradient ** 2
-/// mean_grad = decay * mean_grad + (1-decay) * gradient
-///
-/// Delta = learning_rate * gradient / sqrt(mean_square + epsilon - mean_grad ** 2)
-///
-/// mg <- rho * mg_{t-1} + (1-rho) * grad
-/// ms <- rho * ms_{t-1} + (1-rho) * grad * grad
-/// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms - mg * mg + epsilon)
-/// var <- var - mom
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - mg: Should be from a Variable().
-///   - ms: Should be from a Variable().
-///   - mom: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - rho: Decay rate. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var, mg, ms, and mom tensors is
-///   protected by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyCenteredRMSProp<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  mg: Tensor<T>,
-  ms: Tensor<T>,
-  mom: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  momentum: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyCenteredRMSProp",
-    var_,
-    mg,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the Ftrl-proximal scheme.
-///
-/// accum_new = accum + grad * grad
-/// linear += grad + (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
-/// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
-/// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
-/// accum = accum_new
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - linear: Should be from a Variable().
-///   - grad: The gradient.
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regulariation. Must be a scalar.
-///   - l2: L2 regulariation. Must be a scalar.
-///   - lr_power: Scaling factor. Must be a scalar.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyFtrl<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  linear: Tensor<T>,
-  grad: Tensor<T>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  lrPower: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyFtrl",
-    var_,
-    accum,
-    linear,
-    grad,
-    lr,
-    l1,
-    l2,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the Ftrl-proximal scheme.
-///
-/// grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-/// accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-/// linear += grad_with_shrinkage +
-///     (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
-/// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
-/// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
-/// accum = accum_new
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - linear: Should be from a Variable().
-///   - grad: The gradient.
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regulariation. Must be a scalar.
-///   - l2: L2 shrinkage regulariation. Must be a scalar.
-///   - lr_power: Scaling factor. Must be a scalar.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyFtrlV2<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  linear: Tensor<T>,
-  grad: Tensor<T>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  l2Shrinkage: Tensor<T>,
-  lrPower: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyFtrlV2",
-    var_,
-    accum,
-    linear,
-    grad,
-    lr,
-    l1,
-    l2,
-    l2Shrinkage,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' by subtracting 'alpha' * 'delta' from it.
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - alpha: Scaling factor. Must be a scalar.
-///   - delta: The change.
-///
-/// - Attr use_locking: If `True`, the subtraction will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyGradientDescent<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  alpha: Tensor<T>,
-  delta: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyGradientDescent",
-    var_,
-    alpha,
-    delta,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the momentum scheme. Set use_nesterov = True if you
-///
-/// want to use Nesterov momentum.
-///
-/// accum = accum * momentum + grad
-/// var -= lr * accum
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - grad: The gradient.
-///   - momentum: Momentum. Must be a scalar.
-///
-/// - Attrs:
-///   - use_locking: If `True`, updating of the var and accum tensors will be protected
-///     by a lock; otherwise the behavior is undefined, but may exhibit less
-///     contention.
-///   - use_nesterov: If `True`, the tensor passed to compute grad will be
-///     var - lr * momentum * accum, so in the end, the var you get is actually
-///     var - lr * momentum * accum.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyMomentum<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  grad: Tensor<T>,
-  momentum: Tensor<T>,
-  useLocking: Bool = false,
-  useNesterov: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyMomentum",
-    var_,
-    accum,
-    lr,
-    grad,
-    momentum,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the AddSign update.
-///
-/// m_t <- beta1 * m_{t-1} + (1 - beta1) * g
-/// update <- exp(logbase * sign_decay * sign(g) * sign(m_t)) * g
-/// variable <- variable - lr_t * update
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - m: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - logbase: Must be a scalar.
-///   - sign_decay: Must be a scalar.
-///   - beta: Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var and m tensors is
-///   protected by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyPowerSign<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  m: Tensor<T>,
-  lr: Tensor<T>,
-  logbase: Tensor<T>,
-  signDecay: Tensor<T>,
-  beta: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyPowerSign",
-    var_,
-    m,
-    lr,
-    logbase,
-    signDecay,
-    beta,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' and '*accum' according to FOBOS with Adagrad learning rate.
-///
-/// accum += grad * grad
-/// prox_v = var - lr * grad * (1 / sqrt(accum))
-/// var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If True, updating of the var and accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyProximalAdagrad<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyProximalAdagrad",
-    var_,
-    accum,
-    lr,
-    l1,
-    l2,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' as FOBOS algorithm with fixed learning rate.
-///
-/// prox_v = var - alpha * delta
-/// var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - alpha: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - delta: The change.
-///
-/// - Attr use_locking: If True, the subtraction will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyProximalGradientDescent<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  alpha: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  delta: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyProximalGradientDescent",
-    var_,
-    alpha,
-    l1,
-    l2,
-    delta,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the RMSProp algorithm.
-///
-/// Note that in dense implementation of this algorithm, ms and mom will
-/// update even if the grad is zero, but in this sparse implementation, ms
-/// and mom will not update in iterations during which the grad is zero.
-///
-/// mean_square = decay * mean_square + (1-decay) * gradient ** 2
-/// Delta = learning_rate * gradient / sqrt(mean_square + epsilon)
-///
-/// ms <- rho * ms_{t-1} + (1-rho) * grad * grad
-/// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
-/// var <- var - mom
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - ms: Should be from a Variable().
-///   - mom: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - rho: Decay rate. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///
-/// - Attr use_locking: If `True`, updating of the var, ms, and mom tensors is protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func applyRMSProp<T: Numeric & TensorFlowScalar>(
-  var_: Tensor<T>,
-  ms: Tensor<T>,
-  mom: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  momentum: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ApplyRMSProp",
-    var_,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
 /// Returns the truth value of abs(x-y) < tolerance element-wise.
 @inlinable @inline(__always)
 public static func approximateEqual<T: Numeric & TensorFlowScalar>(
@@ -1621,6 +978,16 @@ public static func approximateEqual<T: Numeric & TensorFlowScalar>(
 /// Returns the index with the largest value across dimensions of a tensor.
 ///
 /// Note that in case of ties the identity of the return value is not guaranteed.
+///
+/// Usage:
+///   ```python
+///   import tensorflow as tf
+///   a = [1, 10, 26.9, 2.8, 166.32, 62.3]
+///   b = tf.math.argmax(input = a)
+///   c = tf.keras.backend.eval(b)  
+///   # c = 4
+///   # here a[4] = 166.32 which is the largest element of a across axis 0
+///   ```
 ///
 /// - Parameter dimension: int32 or int64, must be in the range `[-rank(input), rank(input))`.
 ///   Describes which dimension of the input Tensor to reduce across. For vectors,
@@ -1642,6 +1009,16 @@ public static func argMax<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
 /// Returns the index with the smallest value across dimensions of a tensor.
 ///
 /// Note that in case of ties the identity of the return value is not guaranteed.
+///
+/// Usage:
+///   ```python
+///   import tensorflow as tf
+///   a = [1, 10, 26.9, 2.8, 166.32, 62.3]
+///   b = tf.math.argmin(input = a)
+///   c = tf.keras.backend.eval(b)  
+///   # c = 0
+///   # here a[0] = 1 which is the smallest element of a across axis 0
+///   ```
 ///
 /// - Parameter dimension: int32 or int64, must be in the range `[-rank(input), rank(input))`.
 ///   Describes which dimension of the input Tensor to reduce across. For vectors,
@@ -1695,7 +1072,24 @@ public static func asString<T: TensorFlowScalar>(
   return StringTensor(handle: ret)
 }
 
-/// Computes asin of x element-wise.
+/// Computes the trignometric inverse sine of x element-wise.
+///
+/// The `tf.math.asin` operation returns the inverse of `tf.math.sin`, such that
+/// if `y = tf.math.sin(x)` then, `x = tf.math.asin(y)`.
+///
+/// **Note**: The output of `tf.math.asin` will lie within the invertible range 
+/// of sine, i.e [-pi/2, pi/2].
+///
+/// For example:
+///
+/// ```python
+/// # Note: [1.047, 0.785] ~= [(pi/3), (pi/4)]
+/// x = tf.constant([1.047, 0.785])
+/// y = tf.math.sin(x) # [0.8659266, 0.7068252]
+///
+/// tf.math.asin(y) # [1.047, 0.785] = x
+/// ```
+///
 @inlinable @inline(__always)
 public static func asin<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
@@ -1739,97 +1133,24 @@ public static func assert<T: TensorFlowScalar>(
     summarize: summarize)
 }
 
-/// Update 'ref' by assigning 'value' to it.
+/// Computes the trignometric inverse tangent of x element-wise.
 ///
-/// This operation outputs "ref" after the assignment is done.
-/// This makes it easier to chain operations that need to use the reset value.
+/// The `tf.math.atan` operation returns the inverse of `tf.math.tan`, such that
+/// if `y = tf.math.tan(x)` then, `x = tf.math.atan(y)`.
 ///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node. May be uninitialized.
-///   - value: The value to be assigned to the variable.
+/// **Note**: The output of `tf.math.atan` will lie within the invertible range 
+/// of tan, i.e (-pi/2, pi/2).
 ///
-/// - Attrs:
-///   - validate_shape: If true, the operation will validate that the shape
-///     of 'value' matches the shape of the Tensor being assigned to.  If false,
-///     'ref' will take on the shape of 'value'.
-///   - use_locking: If True, the assignment will be protected by a lock;
-///     otherwise the behavior is undefined, but may exhibit less contention.
+/// For example:
 ///
-/// - Output output_ref: = Same as "ref".  Returned as a convenience for operations that want
-///   to use the new value after the variable has been reset.
-@inlinable @inline(__always)
-public static func assign<T: TensorFlowScalar>(
-  ref: Tensor<T>,
-  value: Tensor<T>,
-  validateShape: Bool = true,
-  useLocking: Bool = true
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("Assign",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    validate_shape: validateShape,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update 'ref' by adding 'value' to it.
+/// ```python
+/// # Note: [1.047, 0.785] ~= [(pi/3), (pi/4)]
+/// x = tf.constant([1.047, 0.785])
+/// y = tf.math.tan(x) # [1.731261, 0.99920404]
 ///
-/// This operation outputs "ref" after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
+/// tf.math.atan(y) # [1.047, 0.785] = x
+/// ```
 ///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - value: The value to be added to the variable.
-///
-/// - Attr use_locking: If True, the addition will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as "ref".  Returned as a convenience for operations that want
-///   to use the new value after the variable has been updated.
-@inlinable @inline(__always)
-public static func assignAdd<T: Numeric & TensorFlowScalar>(
-  ref: Tensor<T>,
-  value: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AssignAdd",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update 'ref' by subtracting 'value' from it.
-///
-/// This operation outputs "ref" after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - value: The value to be subtracted to the variable.
-///
-/// - Attr use_locking: If True, the subtraction will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as "ref".  Returned as a convenience for operations that want
-///   to use the new value after the variable has been updated.
-@inlinable @inline(__always)
-public static func assignSub<T: Numeric & TensorFlowScalar>(
-  ref: Tensor<T>,
-  value: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("AssignSub",
-    ref,
-    value,
-    T$dtype: T.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Computes atan of x element-wise.
 @inlinable @inline(__always)
 public static func atan<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
@@ -2261,89 +1582,6 @@ public static func b(
   return Tensor(handle: ret)
 }
 
-/// Closes the given barrier.
-///
-/// This operation signals that no more new elements will be inserted in the
-/// given barrier. Subsequent InsertMany that try to introduce a new key will fail.
-/// Subsequent InsertMany operations that just add missing components to already
-/// existing elements will continue to succeed. Subsequent TakeMany operations will
-/// continue to succeed if sufficient completed elements remain in the barrier.
-/// Subsequent TakeMany operations that would block will fail immediately.
-///
-/// - Parameter handle: The handle to a barrier.
-///
-/// - Attr cancel_pending_enqueues: If true, all pending enqueue requests that are
-///   blocked on the barrier's queue will be canceled. InsertMany will fail, even
-///   if no new key is introduced.
-@inlinable @inline(__always)
-public static func barrierClose(
-  handle: StringTensor,
-  cancelPendingEnqueues: Bool = false
-) {
-  return #tfop("BarrierClose",
-    handle,
-    cancel_pending_enqueues: cancelPendingEnqueues)
-}
-
-/// Computes the number of incomplete elements in the given barrier.
-///
-/// - Parameter handle: The handle to a barrier.
-///
-/// - Output size: The number of incomplete elements (i.e. those with some of their value
-///   components not set) in the barrier.
-@inlinable @inline(__always)
-public static func barrierIncompleteSize(
-  handle: StringTensor
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("BarrierIncompleteSize",
-    handle)
-  return Tensor(handle: ret)
-}
-
-/// For each key, assigns the respective value to the specified component.
-///
-/// If a key is not found in the barrier, this operation will create a new
-/// incomplete element. If a key is found in the barrier, and the element
-/// already has a value at component_index, this operation will fail with
-/// INVALID_ARGUMENT, and leave the barrier in an undefined state.
-///
-/// - Parameters:
-///   - handle: The handle to a barrier.
-///   - keys: A one-dimensional tensor of keys, with length n.
-///   - values: An any-dimensional tensor of values, which are associated with the
-///     respective keys. The 0th dimension must have length n.
-///
-/// - Attr component_index: The component of the barrier elements that is being assigned.
-@inlinable @inline(__always)
-public static func barrierInsertMany<T: TensorFlowScalar>(
-  handle: StringTensor,
-  keys: StringTensor,
-  _ values: Tensor<T>,
-  componentIndex: Int64
-) {
-  return #tfop("BarrierInsertMany",
-    handle,
-    keys,
-    values,
-    T$dtype: T.tensorFlowDataType,
-    component_index: componentIndex)
-}
-
-/// Computes the number of complete elements in the given barrier.
-///
-/// - Parameter handle: The handle to a barrier.
-///
-/// - Output size: The number of complete elements (i.e. those with all of their value
-///   components set) in the barrier.
-@inlinable @inline(__always)
-public static func barrierReadySize(
-  handle: StringTensor
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("BarrierReadySize",
-    handle)
-  return Tensor(handle: ret)
-}
-
 @inlinable @inline(__always)
 public static func batchCholesky<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
@@ -2404,6 +1642,57 @@ public static func batchMatMul<T: Numeric & TensorFlowScalar>(
   adjY: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BatchMatMul",
+    x,
+    y,
+    T$dtype: T.tensorFlowDataType,
+    adj_x: adjX,
+    adj_y: adjY)
+  return Tensor(handle: ret)
+}
+
+/// Multiplies slices of two tensors in batches.
+///
+/// Multiplies all slices of `Tensor` `x` and `y` (each slice can be
+/// viewed as an element of a batch), and arranges the individual results
+/// in a single output tensor of the same batch size. Each of the
+/// individual slices can optionally be adjointed (to adjoint a matrix
+/// means to transpose and conjugate it) before multiplication by setting
+/// the `adj_x` or `adj_y` flag to `True`, which are by default `False`.
+///
+/// The input tensors `x` and `y` are 2-D or higher with shape `[..., r_x, c_x]`
+/// and `[..., r_y, c_y]`.
+///
+/// The output tensor is 2-D or higher with shape `[..., r_o, c_o]`, where:
+///
+///     r_o = c_x if adj_x else r_x
+///     c_o = r_y if adj_y else c_y
+///
+/// It is computed as:
+///
+///     output[..., :, :] = matrix(x[..., :, :]) * matrix(y[..., :, :])
+///
+/// *NOTE*: `BatchMatMulV2` supports broadcasting in the batch dimensions. More
+/// about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
+///
+///
+/// - Parameters:
+///   - x: 2-D or higher with shape `[..., r_x, c_x]`.
+///   - y: 2-D or higher with shape `[..., r_y, c_y]`.
+///
+/// - Attrs:
+///   - adj_x: If `True`, adjoint the slices of `x`. Defaults to `False`.
+///   - adj_y: If `True`, adjoint the slices of `y`. Defaults to `False`.
+///
+/// - Output output: 3-D or higher with shape `[..., r_o, c_o]`
+@inlinable @inline(__always)
+public static func batchMatMulV2<T: Numeric & TensorFlowScalar>(
+  _ x: Tensor<T>,
+  _ y: Tensor<T>,
+  adjX: Bool = false,
+  adjY: Bool = false
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("BatchMatMulV2",
     x,
     y,
     T$dtype: T.tensorFlowDataType,
@@ -3043,46 +2332,6 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// A Reader that outputs rows from a BigQuery table as tensorflow Examples.
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///   - project_id: GCP project ID.
-///   - dataset_id: BigQuery Dataset ID.
-///   - table_id: Table to read.
-///   - columns: List of columns to read. Leave empty to read all columns.
-///   - timestamp_millis: Table snapshot timestamp in millis since epoch. Relative
-///     (negative or zero) snapshot times are not allowed. For more details, see
-///     'Table Decorators' in BigQuery docs.
-///   - test_end_point: Do not use. For testing purposes only.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func bigQueryReader(
-  container: String,
-  sharedName: String,
-  projectId: String,
-  datasetId: String,
-  tableId: String,
-  columns: [String],
-  timestampMillis: Int64,
-  testEndPoint: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("BigQueryReader",
-    container: container,
-    shared_name: sharedName,
-    project_id: projectId,
-    dataset_id: datasetId,
-    table_id: tableId,
-    columns: columns,
-    timestamp_millis: timestampMillis,
-    test_end_point: testEndPoint)
-  return StringTensor(handle: ret)
-}
-
 @inlinable @inline(__always)
 public static func binary<T: TensorFlowScalar>(
   _ a: Tensor<T>,
@@ -3713,6 +2962,34 @@ public static func clipByValue<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// An Op to permute tensors across replicated TPU instances.
+///
+/// Each instance supplies its own input.
+///
+/// For example, suppose there are 4 TPU instances: `[A, B, C, D]`. Passing
+/// source_target_pairs=`[[0,1],[1,2],[2,3],[3,0]]` gets the outputs:
+/// `[D, A, B, C]`.
+///
+/// - Parameters:
+///   - input: The local input to be permuted. Currently only supports float and
+///     bfloat16.
+///   - source_target_pairs: A tensor with shape [num_pairs, 2].
+///
+/// - Attr T: The type of elements to be exchanged.
+///
+/// - Output output: The permuted input.
+@inlinable @inline(__always)
+public static func collectivePermute<T: Numeric & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  sourceTargetPairs: Tensor<Int32>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("CollectivePermute",
+    input,
+    sourceTargetPairs,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Mutually reduces multiple tensors of identical type and shape.
 @inlinable @inline(__always)
 public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
@@ -3722,7 +2999,8 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
   instanceKey: Int64,
   mergeOp: MergeOp,
   finalOp: FinalOp,
-  subdivOffsets: [Int32]
+  subdivOffsets: [Int32],
+  waitFor: [Int32]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CollectiveReduce",
     input,
@@ -3732,8 +3010,77 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
     instance_key: instanceKey,
     merge_op: mergeOp.cName,
     final_op: finalOp.cName,
-    subdiv_offsets: subdivOffsets)
+    subdiv_offsets: subdivOffsets,
+    wait_for: waitFor)
   return Tensor(handle: ret)
+}
+
+/// Greedily selects a subset of bounding boxes in descending order of score,
+///
+/// This operation performs non_max_suppression on the inputs per batch, across
+/// all classes.
+/// Prunes away boxes that have high intersection-over-union (IOU) overlap
+/// with previously selected boxes.  Bounding boxes are supplied as
+/// [y1, x1, y2, x2], where (y1, x1) and (y2, x2) are the coordinates of any
+/// diagonal pair of box corners and the coordinates can be provided as normalized
+/// (i.e., lying in the interval [0, 1]) or absolute.  Note that this algorithm
+/// is agnostic to where the origin is in the coordinate system. Also note that
+/// this algorithm is invariant to orthogonal transformations and translations
+/// of the coordinate system; thus translating or reflections of the coordinate
+/// system result in the same boxes being selected by the algorithm.
+/// The output of this operation is the final boxes, scores and classes tensor
+/// returned after performing non_max_suppression.
+///
+/// - Parameters:
+///   - boxes: A 4-D float tensor of shape `[batch_size, num_boxes, q, 4]`. If `q` is 1 then 
+///     same boxes are used for all classes otherwise, if `q` is equal to number of 
+///     classes, class-specific boxes are used.
+///   - scores: A 3-D float tensor of shape `[batch_size, num_boxes, num_classes]`
+///     representing a single score corresponding to each box (each row of boxes).
+///   - max_output_size_per_class: A scalar integer tensor representing the maximum number of 
+///     boxes to be selected by non max suppression per class
+///   - max_total_size: A scalar representing maximum number of boxes retained over all classes.
+///   - iou_threshold: A 0-D float tensor representing the threshold for deciding whether
+///     boxes overlap too much with respect to IOU.
+///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
+///     boxes based on score.
+///
+/// - Attr pad_per_class: If false, the output nmsed boxes, scores and classes
+///   are padded/clipped to `max_total_size`. If true, the
+///   output nmsed boxes, scores and classes are padded to be of length
+///   `max_size_per_class`*`num_classes`, unless it exceeds `max_total_size` in
+///   which case it is clipped to `max_total_size`. Defaults to false.
+///
+/// - Outputs:
+///   - nmsed_boxes: A [batch_size, max_detections, 4] float32 tensor 
+///     containing the non-max suppressed boxes.
+///   - nmsed_scores: A [batch_size, max_detections] float32 tensor 
+///     containing the scores for the boxes.
+///   - nmsed_classes: A [batch_size, max_detections] float32 tensor 
+///     containing the classes for the boxes.
+///   - valid_detections: A [batch_size] int32 tensor indicating the number of
+///     valid detections per batch item. Only the top num_detections[i] entries in
+///     nms_boxes[i], nms_scores[i] and nms_class[i] are valid. The rest of the
+///     entries are zero paddings.
+@inlinable @inline(__always)
+public static func combinedNonMaxSuppression(
+  boxes: Tensor<Float>,
+  scores: Tensor<Float>,
+  maxOutputSizePerClass: Tensor<Int32>,
+  maxTotalSize: Tensor<Int32>,
+  iouThreshold: Tensor<Float>,
+  scoreThreshold: Tensor<Float>,
+  padPerClass: Bool = false
+) -> (nmsedBoxes: Tensor<Float>, nmsedScores: Tensor<Float>, nmsedClasses: Tensor<Float>, validDetections: Tensor<Int32>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Int32>) = #tfop("CombinedNonMaxSuppression",
+    boxes,
+    scores,
+    maxOutputSizePerClass,
+    maxTotalSize,
+    iouThreshold,
+    scoreThreshold,
+    pad_per_class: padPerClass)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
 /// Compare values of `input` to `threshold` and pack resulting bits into a `uint8`.
@@ -3915,6 +3262,29 @@ public static func concatV2<T: TensorFlowScalar, Tidx: BinaryInteger & TensorFlo
   return Tensor(handle: ret)
 }
 
+/// Sets up the centralized structures for a distributed TPU system.
+///
+/// - Attrs:
+///   - embedding_config: Reserved. Do not use.
+///   - tpu_embedding_config: Serialized tensorflow.tpu.TPUEmbeddingConfiguration that
+///     describes the embedding lookups of the program.
+///   - is_global_init: Reserved. Do not use.
+///
+/// - Output topology: A serialized tensorflow.tpu.TopologyProto that describes the TPU
+///   topology.
+@inlinable @inline(__always)
+public static func configureDistributedTPU(
+  embeddingConfig: String,
+  tpuEmbeddingConfig: String,
+  isGlobalInit: Bool = false
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("ConfigureDistributedTPU",
+    embedding_config: embeddingConfig,
+    tpu_embedding_config: tpuEmbeddingConfig,
+    is_global_init: isGlobalInit)
+  return StringTensor(handle: ret)
+}
+
 /// Returns the complex conjugate of a complex number.
 ///
 /// Given a tensor `input` of complex numbers, this operation returns a tensor of
@@ -3973,6 +3343,29 @@ public static func controlTrigger(
   return #tfop("ControlTrigger")
 }
 
+/// Computes a 2-D convolution given 4-D `input` and `filter` tensors.
+///
+/// Given an input tensor of shape `[batch, in_height, in_width, in_channels]`
+/// and a filter / kernel tensor of shape
+/// `[filter_height, filter_width, in_channels, out_channels]`, this op
+/// performs the following:
+///
+/// 1. Flattens the filter to a 2-D matrix with shape
+///    `[filter_height * filter_width * in_channels, output_channels]`.
+/// 2. Extracts image patches from the input tensor to form a *virtual*
+///    tensor of shape `[batch, out_height, out_width,
+///    filter_height * filter_width * in_channels]`.
+/// 3. For each patch, right-multiplies the filter matrix and the image patch
+///    vector.
+///
+/// In detail, with the default NHWC format,
+///
+///     output[b, i, j, k] =
+///         sum_{di, dj, q} input[b, strides[1] * i + di, strides[2] * j + dj, q] *
+///                         filter[di, dj, q, k]
+///
+/// Must have `strides[0] = strides[3] = 1`.  For the most common case of the same
+/// horizontal and vertices strides, `strides = [1, stride, stride, 1]`.
 ///
 /// - Parameters:
 ///   - input: A 4-D tensor. The dimension order is interpreted according to the value
@@ -3985,6 +3378,20 @@ public static func controlTrigger(
 ///     dimension of `input`. The dimension order is determined by the value of
 ///     `data_format`, see below for details.
 ///   - padding: The type of padding algorithm to use.
+///   - explicit_paddings: If `padding` is `"EXPLICIT"`, the list of explicit padding amounts. For the ith
+///     dimension, the amount of padding inserted before and after the dimension is
+///     `explicit_paddings[2 * i]` and `explicit_paddings[2 * i + 1]`, respectively. If
+///     `padding` is not `"EXPLICIT"`, `explicit_paddings` must be empty.
+///   - data_format: Specify the data format of the input and output data. With the
+///     default format "NHWC", the data is stored in the order of:
+///         [batch, height, width, channels].
+///     Alternatively, the format could be "NCHW", the data storage order of:
+///         [batch, channels, height, width].
+///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
+///     `input`. If set to k > 1, there will be k-1 skipped cells between each
+///     filter element on that dimension. The dimension order is determined by the
+///     value of `data_format`, see above for details. Dilations in the batch and
+///     depth dimensions must be 1.
 ///
 /// - Output output: A 4-D tensor. The dimension order is determined by the value of
 ///   `data_format`, see below for details.
@@ -3994,7 +3401,8 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   filter: Tensor<T>,
   strides: [Int32],
   useCudnnOnGpu: Bool = true,
-  padding: Padding,
+  padding: Padding2,
+  explicitPaddings: [Int32],
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
@@ -4005,11 +3413,13 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
+    explicit_paddings: explicitPaddings,
     data_format: dataFormat.cName,
     dilations: dilations)
   return Tensor(handle: ret)
 }
 
+/// Computes the gradients of convolution with respect to the filter.
 ///
 /// - Parameters:
 ///   - input: 4-D with shape `[batch, in_height, in_width, in_channels]`.
@@ -4024,6 +3434,20 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
 ///     of the convolution. Must be in the same order as the dimension specified with
 ///     format.
 ///   - padding: The type of padding algorithm to use.
+///   - explicit_paddings: If `padding` is `"EXPLICIT"`, the list of explicit padding amounts. For the ith
+///     dimension, the amount of padding inserted before and after the dimension is
+///     `explicit_paddings[2 * i]` and `explicit_paddings[2 * i + 1]`, respectively. If
+///     `padding` is not `"EXPLICIT"`, `explicit_paddings` must be empty.
+///   - data_format: Specify the data format of the input and output data. With the
+///     default format "NHWC", the data is stored in the order of:
+///         [batch, in_height, in_width, in_channels].
+///     Alternatively, the format could be "NCHW", the data storage order of:
+///         [batch, in_channels, in_height, in_width].
+///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
+///     `input`. If set to k > 1, there will be k-1 skipped cells between each filter
+///     element on that dimension. The dimension order is determined by the value of
+///     `data_format`, see above for details. Dilations in the batch and depth
+///     dimensions must be 1.
 ///
 /// - Output output: 4-D with shape
 ///   `[filter_height, filter_width, in_channels, out_channels]`.  Gradient w.r.t.
@@ -4035,7 +3459,8 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   outBackprop: Tensor<T>,
   strides: [Int32],
   useCudnnOnGpu: Bool = true,
-  padding: Padding,
+  padding: Padding2,
+  explicitPaddings: [Int32],
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
@@ -4047,11 +3472,13 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
+    explicit_paddings: explicitPaddings,
     data_format: dataFormat.cName,
     dilations: dilations)
   return Tensor(handle: ret)
 }
 
+/// Computes the gradients of convolution with respect to the input.
 ///
 /// - Parameters:
 ///   - input_sizes: An integer vector representing the shape of `input`,
@@ -4066,6 +3493,20 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
 ///     of the convolution. Must be in the same order as the dimension specified with
 ///     format.
 ///   - padding: The type of padding algorithm to use.
+///   - explicit_paddings: If `padding` is `"EXPLICIT"`, the list of explicit padding amounts. For the ith
+///     dimension, the amount of padding inserted before and after the dimension is
+///     `explicit_paddings[2 * i]` and `explicit_paddings[2 * i + 1]`, respectively. If
+///     `padding` is not `"EXPLICIT"`, `explicit_paddings` must be empty.
+///   - data_format: Specify the data format of the input and output data. With the
+///     default format "NHWC", the data is stored in the order of:
+///         [batch, in_height, in_width, in_channels].
+///     Alternatively, the format could be "NCHW", the data storage order of:
+///         [batch, in_channels, in_height, in_width].
+///   - dilations: 1-D tensor of length 4.  The dilation factor for each dimension of
+///     `input`. If set to k > 1, there will be k-1 skipped cells between each filter
+///     element on that dimension. The dimension order is determined by the value of
+///     `data_format`, see above for details. Dilations in the batch and depth
+///     dimensions must be 1.
 ///
 /// - Output output: 4-D with shape `[batch, in_height, in_width, in_channels]`.  Gradient
 ///   w.r.t. the input of the convolution.
@@ -4076,7 +3517,8 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   outBackprop: Tensor<T>,
   strides: [Int32],
   useCudnnOnGpu: Bool = true,
-  padding: Padding,
+  padding: Padding2,
+  explicitPaddings: [Int32],
   dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
@@ -4088,6 +3530,7 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
     strides: strides,
     use_cudnn_on_gpu: useCudnnOnGpu,
     padding: padding.cName,
+    explicit_paddings: explicitPaddings,
     data_format: dataFormat.cName,
     dilations: dilations)
   return Tensor(handle: ret)
@@ -4403,27 +3846,6 @@ public static func cosh<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Increments 'ref' until it reaches 'limit'.
-///
-/// - Parameter ref: Should be from a scalar `Variable` node.
-///
-/// - Attr limit: If incrementing ref would bring it above limit, instead generates an
-///   'OutOfRange' error.
-///
-/// - Output output: A copy of the input before increment. If nothing else modifies the
-///   input, the values produced will all be distinct.
-@inlinable @inline(__always)
-public static func countUpTo<T: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  limit: Int64
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("CountUpTo",
-    ref,
-    T$dtype: T.tensorFlowDataType,
-    limit: limit)
-  return Tensor(handle: ret)
-}
-
 /// Extracts crops from the input image tensor and resizes them.
 ///
 /// Extracts crops from the input image tensor and resizes them using bilinear
@@ -4518,7 +3940,7 @@ public static func cropAndResizeGradBoxes<T: Numeric & TensorFlowScalar>(
   image: Tensor<T>,
   boxes: Tensor<Float>,
   boxInd: Tensor<Int32>,
-  method: Method2 = .bilinear
+  method: Method3 = .bilinear
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("CropAndResizeGradBoxes",
     grads,
@@ -4591,6 +4013,36 @@ public static func cross<T: Numeric & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Cross",
     a,
     b,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// An Op to sum inputs across replicated TPU instances.
+///
+/// Each instance supplies its own input.
+///
+/// For example, suppose there are 8 TPU instances: `[A, B, C, D, E, F, G, H]`.
+/// Passing group_assignment=`[[0,2,4,6],[1,3,5,7]]` sets `A, C, E, G` as group 0,
+/// and `B, D, F, H` as group 1. Thus we get the outputs:
+/// `[A+C+E+G, B+D+F+H, A+C+E+G, B+D+F+H, A+C+E+G, B+D+F+H, A+C+E+G, B+D+F+H]`.
+///
+/// - Parameters:
+///   - input: The local input to the sum.
+///   - group_assignment: An int32 tensor with shape
+///     [num_groups, num_replicas_per_group]. `group_assignment[i]` represents the
+///     replica ids in the ith subgroup.
+///
+/// - Attr T: The type of elements to be summed.
+///
+/// - Output output: The sum of all the distributed inputs.
+@inlinable @inline(__always)
+public static func crossReplicaSum<T: Numeric & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  groupAssignment: Tensor<Int32>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("CrossReplicaSum",
+    input,
+    groupAssignment,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
@@ -4828,6 +4280,103 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
+/// Backprop step of CudnnRNNV3.
+///
+/// Compute the backprop of both data and weights in a RNN. Takes an extra
+///     "sequence_lengths" input than CudnnRNNBackprop.
+///
+/// rnn_mode: Indicates the type of the RNN model.
+/// input_mode: Indicates whether there is a linear projection between the input and
+///     the actual computation before the first layer. 'skip_input' is only allowed
+///     when input_size == num_units; 'auto_select' implies 'skip_input' when
+///     input_size == num_units; otherwise, it implies 'linear_input'.
+/// direction: Indicates whether a bidirectional model will be used. Should be
+///   "unidirectional" or "bidirectional".
+/// dropout: Dropout probability. When set to 0., dropout is disabled.
+/// seed: The 1st part of a seed to initialize dropout.
+/// seed2: The 2nd part of a seed to initialize dropout.
+/// input: If time_major is true, this is a 3-D tensor with the shape of
+///     [seq_length, batch_size, input_size]. If time_major is false, the shape is
+///     [batch_size, seq_length, input_size].
+/// input_h: If time_major is true, this is a 3-D tensor with the shape of
+///     [num_layer * dir, batch_size, num_units]. If time_major is false, the shape
+///     is [batch_size, num_layer * dir, num_units].
+/// input_c: For LSTM, a 3-D tensor with the shape of
+///     [num_layer * dir, batch, num_units]. For other models, it is ignored.
+/// params: A 1-D tensor that contains the weights and biases in an opaque layout.
+///     The size must be created through CudnnRNNParamsSize, and initialized
+///     separately. Note that they might not be compatible across different
+///     generations. So it is a good idea to save and restore
+/// sequence_lengths: a vector of lengths of each input sequence.
+/// output: If time_major is true, this is a 3-D tensor with the shape of
+///     [seq_length, batch_size, dir * num_units]. If time_major is false, the
+///     shape is [batch_size, seq_length, dir * num_units].
+/// output_h: The same shape has input_h.
+/// output_c: The same shape as input_c for LSTM. An empty tensor for other models.
+/// output_backprop: A 3-D tensor with the same shape as output in the forward pass.
+/// output_h_backprop: A 3-D tensor with the same shape as output_h in the forward
+///     pass.
+/// output_c_backprop: A 3-D tensor with the same shape as output_c in the forward
+///     pass.
+/// time_major: Indicates whether the input/output format is time major or batch
+///     major.
+/// reserve_space: The same reserve_space produced in the forward operation.
+/// input_backprop: The backprop to input in the forward pass. Has the same shape
+///     as input.
+/// input_h_backprop: The backprop to input_h in the forward pass. Has the same
+///     shape as input_h.
+/// input_c_backprop: The backprop to input_c in the forward pass. Has the same
+///     shape as input_c.
+/// params_backprop: The backprop to the params buffer in the forward pass. Has the
+///     same shape as params.
+@inlinable @inline(__always)
+public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  inputH: Tensor<T>,
+  inputC: Tensor<T>,
+  params: Tensor<T>,
+  sequenceLengths: Tensor<Int32>,
+  output: Tensor<T>,
+  outputH: Tensor<T>,
+  outputC: Tensor<T>,
+  outputBackprop: Tensor<T>,
+  outputHBackprop: Tensor<T>,
+  outputCBackprop: Tensor<T>,
+  reserveSpace: Tensor<T>,
+  hostReserved: Tensor<Int8>,
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
+  dropout: Double = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
+  timeMajor: Bool = true
+) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
+  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("CudnnRNNBackpropV3",
+    input,
+    inputH,
+    inputC,
+    params,
+    sequenceLengths,
+    output,
+    outputH,
+    outputC,
+    outputBackprop,
+    outputHBackprop,
+    outputCBackprop,
+    reserveSpace,
+    hostReserved,
+    T$dtype: T.tensorFlowDataType,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
+    dropout: dropout,
+    seed: seed,
+    seed2: seed2,
+    time_major: timeMajor)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
 /// Converts CudnnRNN params from canonical form to usable form.
 ///
 /// Writes a set of weights into the opaque params buffer so they can be used in
@@ -5002,6 +4551,79 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
     seed: seed,
     seed2: seed2,
     is_training: isTraining)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+}
+
+/// A RNN backed by cuDNN.
+///
+/// Computes the RNN from the input and initial states, with respect to the params
+/// buffer. Accepts one extra input "sequence_lengths" than CudnnRNN.
+///
+/// rnn_mode: Indicates the type of the RNN model.
+/// input_mode: Indicates whether there is a linear projection between the input and
+///   the actual computation before the first layer. 'skip_input' is only allowed
+///   when input_size == num_units; 'auto_select' implies 'skip_input' when
+///   input_size == num_units; otherwise, it implies 'linear_input'.
+/// direction: Indicates whether a bidirectional model will be used. Should be
+///   "unidirectional" or "bidirectional".
+/// dropout: Dropout probability. When set to 0., dropout is disabled.
+/// seed: The 1st part of a seed to initialize dropout.
+/// seed2: The 2nd part of a seed to initialize dropout.
+/// input: If time_major is true, this is a 3-D tensor with the shape of
+///     [seq_length, batch_size, input_size]. If time_major is false, the shape is
+///     [batch_size, seq_length, input_size].
+/// input_h: If time_major is true, this is a 3-D tensor with the shape of
+///     [num_layer * dir, batch_size, num_units]. If time_major is false, the shape
+///     is [batch_size, num_layer * dir, num_units].
+/// input_c: For LSTM, a 3-D tensor with the shape of
+///     [num_layer * dir, batch, num_units]. For other models, it is ignored.
+/// params: A 1-D tensor that contains the weights and biases in an opaque layout.
+///     The size must be created through CudnnRNNParamsSize, and initialized
+///     separately. Note that they might not be compatible across different
+///     generations. So it is a good idea to save and restore
+/// sequence_lengths: a vector of lengths of each input sequence.
+/// output: If time_major is true, this is a 3-D tensor with the shape of
+///     [seq_length, batch_size, dir * num_units]. If time_major is false, the
+///     shape is [batch_size, seq_length, dir * num_units].
+/// output_h: The same shape has input_h.
+/// output_c: The same shape as input_c for LSTM. An empty tensor for other models.
+/// is_training: Indicates whether this operation is used for inferenece or
+///   training.
+/// time_major: Indicates whether the input/output format is time major or batch
+///     major.
+/// reserve_space: An opaque tensor that can be used in backprop calculation. It
+///   is only produced if is_training is true.
+@inlinable @inline(__always)
+public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  inputH: Tensor<T>,
+  inputC: Tensor<T>,
+  params: Tensor<T>,
+  sequenceLengths: Tensor<Int32>,
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
+  dropout: Double = 0,
+  seed: Int64 = 0,
+  seed2: Int64 = 0,
+  isTraining: Bool = true,
+  timeMajor: Bool = true
+) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>, hostReserved: Tensor<Int8>) {
+  let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<Int8>) = #tfop("CudnnRNNV3",
+    input,
+    inputH,
+    inputC,
+    params,
+    sequenceLengths,
+    T$dtype: T.tensorFlowDataType,
+    rnn_mode: rnnMode.cName,
+    input_mode: inputMode.cName,
+    direction: direction.cName,
+    dropout: dropout,
+    seed: seed,
+    seed2: seed2,
+    is_training: isTraining,
+    time_major: timeMajor)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
 }
 
@@ -5182,21 +4804,6 @@ public static func debugGradientIdentity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DebugGradientIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Identity op for gradient debugging.
-///
-/// This op is hidden from public in Python. It is used by TensorFlow Debugger to
-/// register gradient tensors for gradient debugging.
-/// This op operates on reference-type tensors.
-@inlinable @inline(__always)
-public static func debugGradientRefIdentity<T: TensorFlowScalar>(
-  _ input: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DebugGradientRefIdentity",
     input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
@@ -5483,10 +5090,11 @@ public static func decodeCompressed(
   return StringTensor(handle: ret)
 }
 
-/// Decode the first frame of a GIF-encoded image to a uint8 tensor.
+/// Decode the frame(s) of a GIF-encoded image to a uint8 tensor.
 ///
-/// GIF with frame or transparency compression are not supported
-/// convert animated GIF from compressed to uncompressed by:
+/// GIF images with frame or transparency compression are not supported.
+/// On Linux and MacOS systems, convert animated GIFs from compressed to
+/// uncompressed by running:
 ///
 ///     convert $src.gif -coalesce $dst.gif
 ///
@@ -5495,7 +5103,7 @@ public static func decodeCompressed(
 ///
 /// - Parameter contents: 0-D.  The GIF-encoded image.
 ///
-/// - Output image: 4-D with shape `[num_frames, height, width, 3]`. RGB order
+/// - Output image: 4-D with shape `[num_frames, height, width, 3]`. RGB channel order.
 @inlinable @inline(__always)
 public static func decodeGif(
   contents: StringTensor
@@ -5636,7 +5244,7 @@ public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
 ///   added dimension will have size equal to the length of the elements
 ///   of `bytes` divided by the number of bytes to represent `out_type`.
 @inlinable @inline(__always)
-public static func decodeRaw<OutType: Numeric & TensorFlowScalar>(
+public static func decodeRaw<OutType: TensorFlowScalar>(
   bytes: StringTensor,
   littleEndian: Bool = true
 ) -> Tensor<OutType> {
@@ -5903,7 +5511,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
 public static func depthToSpace<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat3 = .nhwc
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthToSpace",
     input,
@@ -6288,30 +5896,11 @@ public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: Tenso
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
-/// Destroys the temporary variable and returns its final value.
-///
-/// Sets output to the value of the Tensor pointed to by 'ref', then destroys
-/// the temporary variable called 'var_name'.
-/// All other uses of 'ref' *must* have executed before this op.
-/// This is typically achieved by chaining the ref through each assign op, or by
-/// using control dependencies.
-///
-/// Outputs the final value of the tensor pointed to by 'ref'.
-///
-/// - Parameter ref: A reference to the temporary variable tensor.
-///
-/// - Attr var_name: Name of the temporary variable, usually the name of the matching
-///   'TemporaryVariable' op.
 @inlinable @inline(__always)
-public static func destroyTemporaryVariable<T: TensorFlowScalar>(
-  ref: Tensor<T>,
-  varName: String
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("DestroyTemporaryVariable",
-    ref,
-    T$dtype: T.tensorFlowDataType,
-    var_name: varName)
-  return Tensor(handle: ret)
+public static func devicePlacementOp(
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("DevicePlacementOp")
+  return StringTensor(handle: ret)
 }
 
 /// Returns a diagonal tensor with a given diagonal values.
@@ -6879,6 +6468,28 @@ public static func encodeJpeg(
   return StringTensor(handle: ret)
 }
 
+/// JPEG encode input image with provided compression quality.
+///
+/// `image` is a 3-D uint8 Tensor of shape `[height, width, channels]`.
+/// `quality` is an int32 jpeg compression quality value between 0 and 100.
+///
+///
+/// - Parameters:
+///   - images: Images to adjust.  At least 3-D.
+///   - quality: An int quality to encode to.
+///
+/// - Output contents: 0-D. JPEG-encoded image.
+@inlinable @inline(__always)
+public static func encodeJpegVariableQuality(
+  images: Tensor<UInt8>,
+  quality: Tensor<Int32>
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("EncodeJpegVariableQuality",
+    images,
+    quality)
+  return StringTensor(handle: ret)
+}
+
 /// PNG-encode an image.
 ///
 /// `image` is a 3-D uint8 or uint16 Tensor of shape `[height, width, channels]`
@@ -7003,6 +6614,148 @@ public static func encodeWav(
   return StringTensor(handle: ret)
 }
 
+/// An op that enqueues a list of input batch tensors to TPUEmbedding.
+///
+/// - Parameters:
+///   - batch: A list of 1D tensors, one for each embedding table, containing the
+///     indices into the tables.
+///   - mode_override: A string input that overrides the mode specified in the
+///     TPUEmbeddingConfiguration. Supported values are {'unspecified', 'inference',
+///     'training', 'backward_pass_only'}. When set to 'unspecified', the mode set
+///     in TPUEmbeddingConfiguration is used, otherwise mode_override is used.
+///
+/// - Attr device_ordinal: The TPU device to use. Should be >= 0 and less than the number
+///   of TPU cores in the task on which the node is placed.
+@inlinable @inline(__always)
+public static func enqueueTPUEmbeddingIntegerBatch(
+  batch: [Tensor<Int32>],
+  modeOverride: StringTensor,
+  deviceOrdinal: Int64 = -1
+) {
+  return #tfop("EnqueueTPUEmbeddingIntegerBatch",
+    batch,
+    modeOverride,
+    device_ordinal: deviceOrdinal)
+}
+
+/// An op that enqueues TPUEmbedding input indices from a SparseTensor.
+///
+/// This Op eases the porting of code that uses embedding_lookup_sparse(),
+/// although some Python preprocessing of the SparseTensor arguments to
+/// embedding_lookup_sparse() is required to produce the arguments to this Op,
+/// since only a single EnqueueTPUEmbeddingSparseBatch Op is allowed per training
+/// step.
+///
+/// The tensors at corresponding positions in the three input lists
+/// must have the same shape, i.e. rank 1 with dim_size() equal to the total
+/// number of lookups into the table described by the corresponding table_id.
+///
+/// - Parameters:
+///   - sample_indices: A list of rank 1 Tensors specifying the training example and
+///     feature to which the corresponding embedding_indices and aggregation_weights
+///     values belong. sample_indices[i] must equal b * nf + f, where nf is the
+///     number of features from the corresponding table, f is in [0, nf), and
+///     b is in [0, batch size).
+///   - embedding_indices: A list of rank 1 Tensors, indices into the embedding tables.
+///   - aggregation_weights: A list of rank 1 Tensors containing per sample -- i.e. per
+///     (training example, feature) -- aggregation weights.
+///   - mode_override: A string input that overrides the mode specified in the
+///     TPUEmbeddingConfiguration. Supported values are {'unspecified', 'inference',
+///     'training', 'backward_pass_only'}. When set to 'unspecified', the mode set
+///     in TPUEmbeddingConfiguration is used, otherwise mode_override is used.
+///
+/// - Attrs:
+///   - device_ordinal: The TPU device to use. Should be >= 0 and less than the number
+///     of TPU cores in the task on which the node is placed.
+///   - combiners: A list of string scalars, one for each embedding table that specify
+///     how to normalize the embedding activations after weighted summation.
+///     Supported combiners are 'mean', 'sum', or 'sqrtn'. It is invalid to have
+///     the sum of the weights be 0 for 'mean' or the sum of the squared weights be
+///     0 for 'sqrtn'. If combiners isn't passed, the default is to use 'sum' for
+///     all tables.
+@inlinable @inline(__always)
+public static func enqueueTPUEmbeddingSparseBatch<T1: BinaryInteger & TensorFlowScalar, T2: BinaryInteger & TensorFlowScalar, T3: FloatingPoint & TensorFlowScalar>(
+  sampleIndices: [Tensor<T1>],
+  embeddingIndices: [Tensor<T2>],
+  aggregationWeights: [Tensor<T3>],
+  modeOverride: StringTensor,
+  deviceOrdinal: Int64 = -1,
+  combiners: [String]
+) {
+  return #tfop("EnqueueTPUEmbeddingSparseBatch",
+    sampleIndices,
+    embeddingIndices,
+    aggregationWeights,
+    modeOverride,
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    T3$dtype: T3.tensorFlowDataType,
+    device_ordinal: deviceOrdinal,
+    combiners: combiners)
+}
+
+/// Eases the porting of code that uses tf.nn.embedding_lookup_sparse().
+///
+/// sample_indices[i], embedding_indices[i] and aggregation_weights[i] correspond
+/// to the ith feature. table_ids[i] indicates which embedding table to look up ith
+/// feature.
+///
+/// The tensors at corresponding positions in the three input lists (sample_indices,
+/// embedding_indices and aggregation_weights) must have the same shape, i.e. rank 1
+/// with dim_size() equal to the total number of lookups into the table described by
+/// the corresponding feature.
+///
+/// - Parameters:
+///   - sample_indices: A list of rank 1 Tensors specifying the training example to
+///     which the corresponding embedding_indices and aggregation_weights values
+///     belong. It corresponds to sp_ids.indices[:,0] in  embedding_lookup_sparse().
+///   - embedding_indices: A list of rank 1 Tensors, indices into the embedding tables.
+///     It corresponds to sp_ids.values in embedding_lookup_sparse().
+///   - aggregation_weights: A list of rank 1 Tensors containing per training example
+///     aggregation weights. It corresponds to sp_weights.values in
+///     embedding_lookup_sparse().
+///   - mode_override: A string input that overrides the mode specified in the
+///     TPUEmbeddingConfiguration. Supported values are {'unspecified', 'inference',
+///     'training', 'backward_pass_only'}. When set to 'unspecified', the mode set
+///     in TPUEmbeddingConfiguration is used, otherwise mode_override is used.
+///
+/// - Attrs:
+///   - device_ordinal: The TPU device to use. Should be >= 0 and less than the number
+///     of TPU cores in the task on which the node is placed.
+///   - combiners: A list of string scalars, one for each embedding table that specify
+///     how to normalize the embedding activations after weighted summation.
+///     Supported combiners are 'mean', 'sum', or 'sqrtn'. It is invalid to have
+///     the sum of the weights be 0 for 'mean' or the sum of the squared weights be
+///     0 for 'sqrtn'. If combiners isn't passed, the default is to use 'sum' for
+///     all tables.
+///   - table_ids: A list of integers specifying the identifier of the embedding table
+///     (offset of TableDescriptor in the TPUEmbeddingConfiguration) to lookup the
+///     corresponding input. The ith input is looked up using table_ids[i]. The size
+///     of the table_ids list must be equal to that of sample_indices,
+///     embedding_indices and aggregation_weights.
+@inlinable @inline(__always)
+public static func enqueueTPUEmbeddingSparseTensorBatch<T1: BinaryInteger & TensorFlowScalar, T2: BinaryInteger & TensorFlowScalar, T3: FloatingPoint & TensorFlowScalar>(
+  sampleIndices: [Tensor<T1>],
+  embeddingIndices: [Tensor<T2>],
+  aggregationWeights: [Tensor<T3>],
+  modeOverride: StringTensor,
+  deviceOrdinal: Int64 = -1,
+  combiners: [String],
+  tableIds: [Int32]
+) {
+  return #tfop("EnqueueTPUEmbeddingSparseTensorBatch",
+    sampleIndices,
+    embeddingIndices,
+    aggregationWeights,
+    modeOverride,
+    T1$dtype: T1.tensorFlowDataType,
+    T2$dtype: T2.tensorFlowDataType,
+    T3$dtype: T3.tensorFlowDataType,
+    device_ordinal: deviceOrdinal,
+    combiners: combiners,
+    table_ids: tableIds)
+}
+
 /// Creates or finds a child frame, and makes `data` available to the child frame.
 ///
 /// This op is used together with `Exit` to create loops in the graph.
@@ -7070,6 +6823,36 @@ public static func erfc<T: FloatingPoint & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Erfc",
     x,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Computes the euclidean norm of elements across dimensions of a tensor.
+///
+/// Reduces `input` along the dimensions given in `axis`. Unless
+/// `keep_dims` is true, the rank of the tensor is reduced by 1 for each entry in
+/// `axis`. If `keep_dims` is true, the reduced dimensions are
+/// retained with length 1.
+///
+/// - Parameters:
+///   - input: The tensor to reduce.
+///   - reduction_indices: The dimensions to reduce. Must be in the range
+///     `[-rank(input), rank(input))`.
+///
+/// - Attr keep_dims: If true, retain reduced dimensions with length 1.
+///
+/// - Output output: The reduced tensor.
+@inlinable @inline(__always)
+public static func euclideanNorm<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  reductionIndices: Tensor<Tidx>,
+  keepDims: Bool = false
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("EuclideanNorm",
+    input,
+    reductionIndices,
+    T$dtype: T.tensorFlowDataType,
+    Tidx$dtype: Tidx.tensorFlowDataType,
+    keep_dims: keepDims)
   return Tensor(handle: ret)
 }
 
@@ -7166,6 +6949,29 @@ public static func expm1<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Extracts a glimpse from the input tensor.
+///
+/// Returns a set of windows called glimpses extracted at location
+/// `offsets` from the input tensor. If the windows only partially
+/// overlaps the inputs, the non overlapping areas will be filled with
+/// random noise.
+///
+/// The result is a 4-D tensor of shape `[batch_size, glimpse_height,
+/// glimpse_width, channels]`. The channels and batch dimensions are the
+/// same as that of the input tensor. The height and width of the output
+/// windows are specified in the `size` parameter.
+///
+/// The argument `normalized` and `centered` controls how the windows are built:
+///
+/// * If the coordinates are normalized but not centered, 0.0 and 1.0
+///   correspond to the minimum and maximum of each height and width
+///   dimension.
+/// * If the coordinates are both normalized and centered, they range from
+///   -1.0 to 1.0. The coordinates (-1.0, -1.0) correspond to the upper
+///   left corner, the lower right corner is located at (1.0, 1.0) and the
+///   center is at (0, 0).
+/// * If the coordinates are not normalized they are interpreted as
+///   numbers of pixels.
 ///
 /// - Parameters:
 ///   - input: A 4-D float tensor of shape `[batch_size, height, width, channels]`.
@@ -7183,6 +6989,9 @@ public static func expm1<T: FloatingPoint & TensorFlowScalar>(
 ///   - normalized: indicates if the offset coordinates are normalized.
 ///   - uniform_noise: indicates if the noise should be generated using a
 ///     uniform distribution or a Gaussian distribution.
+///   - noise: indicates if the noise should `uniform`, `gaussian`, or
+///     `zero`. The default is `uniform` which means the the noise type
+///     will be decided by `uniform_noise`.
 ///
 /// - Output glimpse: A tensor representing the glimpses `[batch_size,
 ///   glimpse_height, glimpse_width, channels]`.
@@ -7193,7 +7002,8 @@ public static func extractGlimpse(
   offsets: Tensor<Float>,
   centered: Bool = true,
   normalized: Bool = true,
-  uniformNoise: Bool = true
+  uniformNoise: Bool = true,
+  noise: String = "uniform"
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("ExtractGlimpse",
     input,
@@ -7201,7 +7011,8 @@ public static func extractGlimpse(
     offsets,
     centered: centered,
     normalized: normalized,
-    uniform_noise: uniformNoise)
+    uniform_noise: uniformNoise,
+    noise: noise)
   return Tensor(handle: ret)
 }
 
@@ -7394,6 +7205,15 @@ public static func fact(
 /// then de-quantized and output as floats in `[min; max]` interval.
 /// `num_bits` is the bitwidth of the quantization; between 2 and 16, inclusive.
 ///
+/// Before quantization, `min` and `max` values are adjusted with the following
+/// logic.
+/// It is suggested to have `min <= 0 <= max`. If `0` is not in the range of values,
+/// the behavior can be unexpected:
+/// If `0 < min < max`: `min_adj = 0` and `max_adj = max - min`.
+/// If `min < max < 0`: `min_adj = min - max` and `max_adj = 0`.
+/// If `min <= 0 <= max`: `scale = (max - min) / (2^num_bits - 1) `,
+/// `min_adj = scale * round(min / scale)` and `max_adj = max + min_adj - min`.
+///
 /// Quantization is called fake since the output is still in floating point.
 @inlinable @inline(__always)
 public static func fakeQuantWithMinMaxArgs(
@@ -7448,6 +7268,15 @@ public static func fakeQuantWithMinMaxArgsGradient(
 /// when `narrow_range` is false and `[1; 2^num_bits - 1]` when it is true) and
 /// then de-quantized and output as floats in `[min; max]` interval.
 /// `num_bits` is the bitwidth of the quantization; between 2 and 16, inclusive.
+///
+/// Before quantization, `min` and `max` values are adjusted with the following
+/// logic.
+/// It is suggested to have `min <= 0 <= max`. If `0` is not in the range of values,
+/// the behavior can be unexpected:
+/// If `0 < min < max`: `min_adj = 0` and `max_adj = max - min`.
+/// If `min < max < 0`: `min_adj = min - max` and `max_adj = 0`.
+/// If `min <= 0 <= max`: `scale = (max - min) / (2^num_bits - 1) `,
+/// `min_adj = scale * round(min / scale)` and `max_adj = max + min_adj - min`.
 ///
 /// This operation has a gradient and thus allows for training `min` and `max`
 /// values.
@@ -7515,6 +7344,15 @@ public static func fakeQuantWithMinMaxVarsGradient(
 /// when `narrow_range` is false and `[1; 2^num_bits - 1]` when it is true) and
 /// then de-quantized and output as floats in `[min; max]` interval.
 /// `num_bits` is the bitwidth of the quantization; between 2 and 16, inclusive.
+///
+/// Before quantization, `min` and `max` values are adjusted with the following
+/// logic.
+/// It is suggested to have `min <= 0 <= max`. If `0` is not in the range of values,
+/// the behavior can be unexpected:
+/// If `0 < min < max`: `min_adj = 0` and `max_adj = max - min`.
+/// If `min < max < 0`: `min_adj = min - max` and `max_adj = 0`.
+/// If `min <= 0 <= max`: `scale = (max - min) / (2^num_bits - 1) `,
+/// `min_adj = scale * round(min / scale)` and `max_adj = max + min_adj - min`.
 ///
 /// This operation has a gradient and thus allows for training `min` and `max`
 /// values.
@@ -7622,39 +7460,6 @@ public static func fiveFloatOutputs(
 ) -> (a: Tensor<Float>, b: Tensor<Float>, c: Tensor<Float>, d: Tensor<Float>, e: Tensor<Float>) {
   let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("FiveFloatOutputs")
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
-}
-
-/// A Reader that outputs fixed-length records from a file.
-///
-/// - Attrs:
-///   - header_bytes: Number of bytes in the header, defaults to 0.
-///   - record_bytes: Number of bytes in the record.
-///   - footer_bytes: Number of bytes in the footer, defaults to 0.
-///   - hop_bytes: Number of bytes to hop before each read. Default of 0 means using
-///     record_bytes.
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func fixedLengthRecordReader(
-  headerBytes: Int64 = 0,
-  recordBytes: Int64,
-  footerBytes: Int64 = 0,
-  hopBytes: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("FixedLengthRecordReader",
-    header_bytes: headerBytes,
-    record_bytes: recordBytes,
-    footer_bytes: footerBytes,
-    hop_bytes: hopBytes,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -8361,7 +8166,7 @@ public static func fusedPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
-  mode: Mode4,
+  mode: Mode5,
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
@@ -8411,7 +8216,7 @@ public static func fusedResizeAndPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   paddings: Tensor<Int32>,
   filter: Tensor<T>,
   resizeAlignCorners: Bool = false,
-  mode: Mode4,
+  mode: Mode5,
   strides: [Int32],
   padding: Padding
 ) -> Tensor<T> {
@@ -9093,40 +8898,6 @@ public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Creates a non-initialized hash table.
-///
-/// This op creates a hash table, specifying the type of its keys and values.
-/// Before using the table you will have to initialize it.  After initialization the
-/// table will be immutable.
-///
-/// - Attrs:
-///   - container: If non-empty, this table is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this table is shared under the given name across
-///     multiple sessions.
-///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
-///     using the node name.
-///   - key_dtype: Type of the table keys.
-///   - value_dtype: Type of the table values.
-///
-/// - Output table_handle: Handle to a table.
-@inlinable @inline(__always)
-public static func hashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
-  container: String,
-  sharedName: String,
-  useNodeNameSharing: Bool = false,
-  typeKeyDtype: KeyDtype.Type,
-  typeValueDtype: ValueDtype.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("HashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
-}
-
 /// Return histogram of values.
 ///
 /// Given the tensor `values`, this operation returns a rank 1 histogram counting
@@ -9271,29 +9042,6 @@ public static func identity<T: TensorFlowScalar>(
     input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// A Reader that outputs the queued work as both the key and value.
-///
-/// To use, enqueue strings in a Queue.  ReaderRead will take the front
-/// work string and output (work, work).
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func identityReader(
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("IdentityReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -9470,67 +9218,6 @@ public static func inTopKV2<T: BinaryInteger & TensorFlowScalar>(
     k,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// Table initializer that takes two tensors for keys and values respectively.
-///
-/// - Parameters:
-///   - table_handle: Handle to a table which will be initialized.
-///   - keys: Keys of type Tkey.
-///   - values: Values of type Tval.
-@inlinable @inline(__always)
-public static func initializeTable<Tkey: TensorFlowScalar, Tval: TensorFlowScalar>(
-  tableHandle: StringTensor,
-  keys: Tensor<Tkey>,
-  _ values: Tensor<Tval>
-) {
-  return #tfop("InitializeTable",
-    tableHandle,
-    keys,
-    values,
-    Tkey$dtype: Tkey.tensorFlowDataType,
-    Tval$dtype: Tval.tensorFlowDataType)
-}
-
-/// Initializes a table from a text file.
-///
-/// It inserts one key-value pair into the table for each line of the file.
-/// The key and value is extracted from the whole line content, elements from the
-/// split line based on `delimiter` or the line number (starting from zero).
-/// Where to extract the key and value from a line is specified by `key_index` and
-/// `value_index`.
-///
-/// - A value of -1 means use the line number(starting from zero), expects `int64`.
-/// - A value of -2 means use the whole line content, expects `string`.
-/// - A value >= 0 means use the index (starting at zero) of the split line based
-///   on `delimiter`.
-///
-/// - Parameters:
-///   - table_handle: Handle to a table which will be initialized.
-///   - filename: Filename of a vocabulary text file.
-///
-/// - Attrs:
-///   - key_index: Column index in a line to get the table `key` values from.
-///   - value_index: Column index that represents information of a line to get the table
-///     `value` values from.
-///   - vocab_size: Number of elements of the file, use -1 if unknown.
-///   - delimiter: Delimiter to separate fields in a line.
-@inlinable @inline(__always)
-public static func initializeTableFromTextFile(
-  tableHandle: StringTensor,
-  filename: StringTensor,
-  keyIndex: Int64,
-  valueIndex: Int64,
-  vocabSize: Int64 = -1,
-  delimiter: String = "\t"
-) {
-  return #tfop("InitializeTableFromTextFile",
-    tableHandle,
-    filename,
-    key_index: keyIndex,
-    value_index: valueIndex,
-    vocab_size: vocabSize,
-    delimiter: delimiter)
 }
 
 ///     Adds v into specified rows of x.
@@ -9781,20 +9468,27 @@ public static func isNan<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Checks whether a tensor has been initialized.
+/// Returns the index of a data point that should be added to the seed set.
 ///
-/// Outputs boolean scalar indicating whether the tensor has been initialized.
+/// Entries in distances are assumed to be squared distances of candidate points to
+/// the already sampled centers in the seed set. The op constructs one Markov chain
+/// of the k-MC^2 algorithm and returns the index of one candidate point to be added
+/// as an additional cluster center.
 ///
-/// - Parameter ref: Should be from a `Variable` node. May be uninitialized.
+/// - Parameters:
+///   - distances: Vector with squared distances to the closest previously sampled cluster center
+///     for each candidate point.
+///   - seed: Scalar. Seed for initializing the random number generator.
 ///
-/// - Attr dtype: The type of elements in the variable tensor.
+/// - Output index: Scalar with the index of the sampled point.
 @inlinable @inline(__always)
-public static func isVariableInitialized<Dtype: TensorFlowScalar>(
-  ref: Tensor<Dtype>
-) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("IsVariableInitialized",
-    ref,
-    dtype$dtype: Dtype.tensorFlowDataType)
+public static func kMC2ChainInitialization(
+  distances: Tensor<Float>,
+  seed: Tensor<Int64>
+) -> Tensor<Int64> {
+  let ret: TensorHandle<Int64> = #tfop("KMC2ChainInitialization",
+    distances,
+    seed)
   return Tensor(handle: ret)
 }
 
@@ -9814,6 +9508,38 @@ public static func kernelLabelRequired(
   return StringTensor(handle: ret)
 }
 
+/// Selects num_to_sample rows of input using the KMeans++ criterion.
+///
+/// Rows of points are assumed to be input points. One row is selected at random.
+/// Subsequent rows are sampled with probability proportional to the squared L2
+/// distance from the nearest row selected thus far till num_to_sample rows have
+/// been sampled.
+///
+/// - Parameters:
+///   - points: Matrix of shape (n, d). Rows are assumed to be input points.
+///   - num_to_sample: Scalar. The number of rows to sample. This value must not be larger than n.
+///   - seed: Scalar. Seed for initializing the random number generator.
+///   - num_retries_per_sample: Scalar. For each row that is sampled, this parameter
+///     specifies the number of additional points to draw from the current
+///     distribution before selecting the best. If a negative value is specified, a
+///     heuristic is used to sample O(log(num_to_sample)) additional points.
+///
+/// - Output samples: Matrix of shape (num_to_sample, d). The sampled rows.
+@inlinable @inline(__always)
+public static func kmeansPlusPlusInitialization(
+  points: Tensor<Float>,
+  numToSample: Tensor<Int64>,
+  seed: Tensor<Int64>,
+  numRetriesPerSample: Tensor<Int64>
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("KmeansPlusPlusInitialization",
+    points,
+    numToSample,
+    seed,
+    numRetriesPerSample)
+  return Tensor(handle: ret)
+}
+
 /// L2 Loss.
 ///
 /// Computes half the L2 norm of a tensor without the `sqrt`:
@@ -9831,26 +9557,6 @@ public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
     t,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
-}
-
-/// A Reader that outputs the records from a LMDB file.
-///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func lMDBReader(
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("LMDBReader",
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Local Response Normalization.
@@ -10078,6 +9784,41 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     use_peephole: usePeephole)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4))
+}
+
+/// Computes rectified linear: `max(features, features * alpha)`.
+@inlinable @inline(__always)
+public static func leakyRelu<T: FloatingPoint & TensorFlowScalar>(
+  features: Tensor<T>,
+  alpha: Double = 0.2
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("LeakyRelu",
+    features,
+    T$dtype: T.tensorFlowDataType,
+    alpha: alpha)
+  return Tensor(handle: ret)
+}
+
+/// Computes rectified linear gradients for a LeakyRelu operation.
+///
+/// - Parameters:
+///   - gradients: The backpropagated gradients to the corresponding LeakyRelu operation.
+///   - features: The features passed as input to the corresponding LeakyRelu operation,
+///     OR the outputs of that operation (both work equivalently).
+///
+/// - Output backprops: `gradients * (features > 0) + alpha * gradients * (featurs <= 0)`.
+@inlinable @inline(__always)
+public static func leakyReluGrad<T: FloatingPoint & TensorFlowScalar>(
+  gradients: Tensor<T>,
+  features: Tensor<T>,
+  alpha: Double = 0.2
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("LeakyReluGrad",
+    gradients,
+    features,
+    T$dtype: T.tensorFlowDataType,
+    alpha: alpha)
+  return Tensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -10367,6 +10108,552 @@ public static func loadAndRemapMatrix(
   return Tensor(handle: ret)
 }
 
+/// Load ADAM embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the ADAM optimization algorithm.
+///   - momenta: Value of momenta used in the ADAM optimization algorithm.
+///   - velocities: Value of velocities used in the ADAM optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingADAMParameters(
+  parameters: Tensor<Float>,
+  momenta: Tensor<Float>,
+  velocities: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingADAMParameters",
+    parameters,
+    momenta,
+    velocities,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load ADAM embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the ADAM optimization algorithm.
+///   - momenta: Value of momenta used in the ADAM optimization algorithm.
+///   - velocities: Value of velocities used in the ADAM optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the ADAM optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingADAMParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  momenta: Tensor<Float>,
+  velocities: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingADAMParametersGradAccumDebug",
+    parameters,
+    momenta,
+    velocities,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Adadelta embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Adadelta optimization algorithm.
+///   - accumulators: Value of accumulators used in the Adadelta optimization algorithm.
+///   - updates: Value of updates used in the Adadelta optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingAdadeltaParameters(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  updates: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingAdadeltaParameters",
+    parameters,
+    accumulators,
+    updates,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Adadelta parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Adadelta optimization algorithm.
+///   - accumulators: Value of accumulators used in the Adadelta optimization algorithm.
+///   - updates: Value of updates used in the Adadelta optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the Adadelta optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingAdadeltaParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  updates: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingAdadeltaParametersGradAccumDebug",
+    parameters,
+    accumulators,
+    updates,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Adagrad embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Adagrad optimization algorithm.
+///   - accumulators: Value of accumulators used in the Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingAdagradParameters(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingAdagradParameters",
+    parameters,
+    accumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Adagrad embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Adagrad optimization algorithm.
+///   - accumulators: Value of accumulators used in the Adagrad optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingAdagradParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingAdagradParametersGradAccumDebug",
+    parameters,
+    accumulators,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load centered RMSProp embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the centered RMSProp optimization algorithm.
+///   - ms: Value of ms used in the centered RMSProp optimization algorithm.
+///   - mom: Value of mom used in the centered RMSProp optimization algorithm.
+///   - mg: Value of mg used in the centered RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingCenteredRMSPropParameters(
+  parameters: Tensor<Float>,
+  ms: Tensor<Float>,
+  mom: Tensor<Float>,
+  mg: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingCenteredRMSPropParameters",
+    parameters,
+    ms,
+    mom,
+    mg,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load FTRL embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the FTRL optimization algorithm.
+///   - accumulators: Value of accumulators used in the FTRL optimization algorithm.
+///   - linears: Value of linears used in the FTRL optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingFTRLParameters(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  linears: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingFTRLParameters",
+    parameters,
+    accumulators,
+    linears,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load FTRL embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the FTRL optimization algorithm.
+///   - accumulators: Value of accumulators used in the FTRL optimization algorithm.
+///   - linears: Value of linears used in the FTRL optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the FTRL optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingFTRLParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  linears: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingFTRLParametersGradAccumDebug",
+    parameters,
+    accumulators,
+    linears,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load MDL Adagrad Light embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the MDL Adagrad Light optimization algorithm.
+///   - accumulators: Value of accumulators used in the MDL Adagrad Light optimization algorithm.
+///   - weights: Value of weights used in the MDL Adagrad Light optimization algorithm.
+///   - benefits: Value of benefits used in the MDL Adagrad Light optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingMDLAdagradLightParameters(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  weights: Tensor<Float>,
+  benefits: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingMDLAdagradLightParameters",
+    parameters,
+    accumulators,
+    weights,
+    benefits,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Momentum embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Momentum optimization algorithm.
+///   - momenta: Value of momenta used in the Momentum optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingMomentumParameters(
+  parameters: Tensor<Float>,
+  momenta: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingMomentumParameters",
+    parameters,
+    momenta,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load Momentum embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the Momentum optimization algorithm.
+///   - momenta: Value of momenta used in the Momentum optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the Momentum optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingMomentumParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  momenta: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingMomentumParametersGradAccumDebug",
+    parameters,
+    momenta,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load proximal Adagrad embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the proximal Adagrad optimization algorithm.
+///   - accumulators: Value of accumulators used in the proximal Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingProximalAdagradParameters(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingProximalAdagradParameters",
+    parameters,
+    accumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load proximal Adagrad embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the proximal Adagrad optimization algorithm.
+///   - accumulators: Value of accumulators used in the proximal Adagrad optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the proximal Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingProximalAdagradParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  accumulators: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug",
+    parameters,
+    accumulators,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load RMSProp embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the RMSProp optimization algorithm.
+///   - ms: Value of ms used in the RMSProp optimization algorithm.
+///   - mom: Value of mom used in the RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingRMSPropParameters(
+  parameters: Tensor<Float>,
+  ms: Tensor<Float>,
+  mom: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingRMSPropParameters",
+    parameters,
+    ms,
+    mom,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load RMSProp embedding parameters with debug support.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameters:
+///   - parameters: Value of parameters used in the RMSProp optimization algorithm.
+///   - ms: Value of ms used in the RMSProp optimization algorithm.
+///   - mom: Value of mom used in the RMSProp optimization algorithm.
+///   - gradient_accumulators: Value of gradient_accumulators used in the RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingRMSPropParametersGradAccumDebug(
+  parameters: Tensor<Float>,
+  ms: Tensor<Float>,
+  mom: Tensor<Float>,
+  gradientAccumulators: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingRMSPropParametersGradAccumDebug",
+    parameters,
+    ms,
+    mom,
+    gradientAccumulators,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
+/// Load SGD embedding parameters.
+///
+/// An op that loads optimization parameters into HBM for embedding. Must be
+/// preceded by a ConfigureTPUEmbeddingHost op that sets up the correct
+/// embedding table configuration. For example, this op is used to install
+/// parameters that are loaded from a checkpoint before a training loop is
+/// executed.
+///
+/// - Parameter parameters: Value of parameters used in the stochastic gradient descent optimization algorithm.
+@inlinable @inline(__always)
+public static func loadTPUEmbeddingStochasticGradientDescentParameters(
+  parameters: Tensor<Float>,
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) {
+  return #tfop("LoadTPUEmbeddingStochasticGradientDescentParameters",
+    parameters,
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+}
+
 /// Computes natural logarithm of x element-wise.
 ///
 /// I.e., \\(y = \log_e x\\).
@@ -10538,113 +10825,6 @@ public static func logicalOr(
   return Tensor(handle: ret)
 }
 
-/// Outputs all keys and values in the table.
-///
-/// - Parameter table_handle: Handle to the table.
-///
-/// - Outputs:
-///   - keys: Vector of all keys present in the table.
-///   - values: Tensor of all values in the table. Indexed in parallel with `keys`.
-@inlinable @inline(__always)
-public static func lookupTableExport<Tkeys: TensorFlowScalar, Tvalues: TensorFlowScalar>(
-  tableHandle: StringTensor
-) -> (keys: Tensor<Tkeys>, values: Tensor<Tvalues>) {
-  let ret: (TensorHandle<Tkeys>, TensorHandle<Tvalues>) = #tfop("LookupTableExport",
-    tableHandle,
-    Tkeys$dtype: Tkeys.tensorFlowDataType,
-    Tvalues$dtype: Tvalues.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// Looks up keys in a table, outputs the corresponding values.
-///
-/// The tensor `keys` must of the same type as the keys of the table.
-/// The output `values` is of the type of the table values.
-///
-/// The scalar `default_value` is the value output for keys not present in the
-/// table. It must also be of the same type as the table values.
-///
-/// - Parameters:
-///   - table_handle: Handle to the table.
-///   - keys: Any shape.  Keys to look up.
-///
-/// - Output values: Same shape as `keys`.  Values found in the table, or `default_values`
-///   for missing keys.
-@inlinable @inline(__always)
-public static func lookupTableFind<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
-  tableHandle: StringTensor,
-  keys: Tensor<Tin>,
-  defaultValue: Tensor<Tout>
-) -> Tensor<Tout> {
-  let ret: TensorHandle<Tout> = #tfop("LookupTableFind",
-    tableHandle,
-    keys,
-    defaultValue,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Replaces the contents of the table with the specified keys and values.
-///
-/// The tensor `keys` must be of the same type as the keys of the table.
-/// The tensor `values` must be of the type of the table values.
-///
-/// - Parameters:
-///   - table_handle: Handle to the table.
-///   - keys: Any shape.  Keys to look up.
-///   - values: Values to associate with keys.
-@inlinable @inline(__always)
-public static func lookupTableImport<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
-  tableHandle: StringTensor,
-  keys: Tensor<Tin>,
-  _ values: Tensor<Tout>
-) {
-  return #tfop("LookupTableImport",
-    tableHandle,
-    keys,
-    values,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-}
-
-/// Updates the table to associates keys with values.
-///
-/// The tensor `keys` must be of the same type as the keys of the table.
-/// The tensor `values` must be of the type of the table values.
-///
-/// - Parameters:
-///   - table_handle: Handle to the table.
-///   - keys: Any shape.  Keys to look up.
-///   - values: Values to associate with keys.
-@inlinable @inline(__always)
-public static func lookupTableInsert<Tin: TensorFlowScalar, Tout: TensorFlowScalar>(
-  tableHandle: StringTensor,
-  keys: Tensor<Tin>,
-  _ values: Tensor<Tout>
-) {
-  return #tfop("LookupTableInsert",
-    tableHandle,
-    keys,
-    values,
-    Tin$dtype: Tin.tensorFlowDataType,
-    Tout$dtype: Tout.tensorFlowDataType)
-}
-
-/// Computes the number of elements in the given table.
-///
-/// - Parameter table_handle: Handle to the table.
-///
-/// - Output size: Scalar that contains number of elements in the table.
-@inlinable @inline(__always)
-public static func lookupTableSize(
-  tableHandle: StringTensor
-) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("LookupTableSize",
-    tableHandle)
-  return Tensor(handle: ret)
-}
-
 /// Forwards the input to the output.
 ///
 /// This operator represents the loop termination condition used by the
@@ -10701,6 +10881,52 @@ public static func lowerBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
     T$dtype: T.tensorFlowDataType,
     out_type$dtype: OutType.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Computes the LU decomposition of one or more square matrices.
+///
+/// The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+/// form square matrices.
+///
+/// The input has to be invertible.
+///
+/// The output consists of two tensors LU and P containing the LU decomposition
+/// of all input submatrices `[..., :, :]`. LU encodes the lower triangular and
+/// upper triangular factors.
+///
+/// For each input submatrix of shape `[M, M]`, L is a lower triangular matrix of
+/// shape `[M, M]` with unit diagonal whose entries correspond to the strictly lower
+/// triangular part of LU. U is a upper triangular matrix of shape `[M, M]` whose
+/// entries correspond to the upper triangular part, including the diagonal, of LU.
+///
+/// P represents a permutation matrix encoded as a list of indices each between `0`
+/// and `M-1`, inclusive. If P_mat denotes the permutation matrix corresponding to
+/// P, then the L, U and P satisfies P_mat * input = L * U.
+///
+/// - Parameter input: A tensor of shape `[..., M, M]` whose inner-most 2 dimensions form matrices of
+///   size `[M, M]`.
+///
+/// - Outputs:
+///   - lu: A tensor of shape `[..., M, M]` whose strictly lower triangular part denotes the
+///     lower triangular factor `L` with unit diagonal, and whose upper triangular part
+///     denotes the upper triangular factor `U`.
+///   - p: Permutation of the rows encoded as a list of indices in `0..M-1`. Shape is
+///     `[..., M]`.
+///     @compatibility(scipy)
+///     Similar to `scipy.linalg.lu`, except the triangular factors `L` and `U` are
+///     packed into a single tensor, the permutation is applied to `input` instead of
+///     the right hand side and the permutation `P` is returned as a list of indices
+///     instead of a permutation matrix.
+///     @end_compatibility
+@inlinable @inline(__always)
+public static func lu<T: FloatingPoint & TensorFlowScalar, OutputIdxType: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>
+) -> (lu: Tensor<T>, p: Tensor<OutputIdxType>) {
+  let ret: (TensorHandle<T>, TensorHandle<OutputIdxType>) = #tfop("Lu",
+    input,
+    T$dtype: T.tensorFlowDataType,
+    output_idx_type$dtype: OutputIdxType.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
 /// Op removes all elements in the underlying container.
@@ -11210,6 +11436,41 @@ public static func matrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Computes the matrix square root of one or more square matrices:
+///
+/// matmul(sqrtm(A), sqrtm(A)) = A
+///
+/// The input matrix should be invertible. If the input matrix is real, it should
+/// have no eigenvalues which are real and negative (pairs of complex conjugate
+/// eigenvalues are allowed).
+///
+/// The matrix square root is computed by first reducing the matrix to 
+/// quasi-triangular form with the real Schur decomposition. The square root 
+/// of the quasi-triangular matrix is then computed directly. Details of 
+/// the algorithm can be found in: Nicholas J. Higham, "Computing real 
+/// square roots of a real matrix", Linear Algebra Appl., 1987.
+///
+/// The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+/// form square matrices. The output is a tensor of the same shape as the input
+/// containing the matrix square root for all input submatrices `[..., :, :]`.
+///
+/// - Parameter input: Shape is `[..., M, M]`.
+///
+/// - Output output: Shape is `[..., M, M]`.
+///
+///   @compatibility(scipy)
+///   Equivalent to scipy.linalg.sqrtm
+///   @end_compatibility
+@inlinable @inline(__always)
+public static func matrixSquareRoot<T: FloatingPoint & TensorFlowScalar>(
+  _ input: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("MatrixSquareRoot",
+    input,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Solves systems of linear equations with upper or lower triangular matrices by
 ///
 /// backsubstitution.
@@ -11311,7 +11572,7 @@ public static func maxPool<T: Numeric & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat3 = .nhwc
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool",
     input,
@@ -11577,6 +11838,7 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
 ///   - strides: The stride of the sliding window for each dimension of the
 ///     input tensor.
 ///   - padding: The type of padding algorithm to use.
+///   - include_batch_in_index: Whether to include batch dimension in flattened index of `argmax`.
 ///
 /// - Output output: Gradients of gradients w.r.t. the input of `max_pool`.
 @inlinable @inline(__always)
@@ -11586,7 +11848,8 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger & TensorFlow
   argmax: Tensor<Targmax>,
   ksize: [Int32],
   strides: [Int32],
-  padding: Padding
+  padding: Padding,
+  includeBatchInIndex: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGradGradWithArgmax",
     input,
@@ -11596,7 +11859,8 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger & TensorFlow
     T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
-    padding: padding.cName)
+    padding: padding.cName,
+    include_batch_in_index: includeBatchInIndex)
   return Tensor(handle: ret)
 }
 
@@ -11654,6 +11918,7 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
 ///   - strides: The stride of the sliding window for each dimension of the
 ///     input tensor.
 ///   - padding: The type of padding algorithm to use.
+///   - include_batch_in_index: Whether to include batch dimension in flattened index of `argmax`.
 ///
 /// - Output output: Gradients w.r.t. the input of `max_pool`.
 @inlinable @inline(__always)
@@ -11663,7 +11928,8 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger & TensorFlowScal
   argmax: Tensor<Targmax>,
   ksize: [Int32],
   strides: [Int32],
-  padding: Padding
+  padding: Padding,
+  includeBatchInIndex: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGradWithArgmax",
     input,
@@ -11673,7 +11939,8 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger & TensorFlowScal
     T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
-    padding: padding.cName)
+    padding: padding.cName,
+    include_batch_in_index: includeBatchInIndex)
   return Tensor(handle: ret)
 }
 
@@ -11700,7 +11967,7 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
-  dataFormat: DataFormat3 = .nhwc
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolV2",
     input,
@@ -11715,8 +11982,9 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
 /// Performs max pooling on the input and outputs both max values and indices.
 ///
 /// The indices in `argmax` are flattened, so that a maximum value at position
-/// `[b, y, x, c]` becomes flattened index
-/// `((b * height + y) * width + x) * channels + c`.
+/// `[b, y, x, c]` becomes flattened index:
+/// `(y * width + x) * channels + c` if `include_batch_in_index` is False;
+/// `((b * height + y) * width + x) * channels + c` if `include_batch_in_index` is True.
 ///
 /// The indices returned are always in `[0, height) x [0, width)` before flattening,
 /// even if padding is involved and the mathematically correct answer is outside
@@ -11730,6 +11998,7 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
 ///   - strides: The stride of the sliding window for each dimension of the
 ///     input tensor.
 ///   - padding: The type of padding algorithm to use.
+///   - include_batch_in_index: Whether to include batch dimension in flattened index of `argmax`.
 ///
 /// - Outputs:
 ///   - output: The max pooled output tensor.
@@ -11739,7 +12008,8 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
   _ input: Tensor<T>,
   ksize: [Int32],
   strides: [Int32],
-  padding: Padding
+  padding: Padding,
+  includeBatchInIndex: Bool = false
 ) -> (output: Tensor<T>, argmax: Tensor<Targmax>) {
   let ret: (TensorHandle<T>, TensorHandle<Targmax>) = #tfop("MaxPoolWithArgmax",
     input,
@@ -11747,7 +12017,8 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
     T$dtype: T.tensorFlowDataType,
     ksize: ksize,
     strides: strides,
-    padding: padding.cName)
+    padding: padding.cName,
+    include_batch_in_index: includeBatchInIndex)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
@@ -12002,7 +12273,7 @@ public static func minimum<T: Numeric & TensorFlowScalar>(
 public static func mirrorPad<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
-  mode: Mode4
+  mode: Mode5
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MirrorPad",
     input,
@@ -12046,7 +12317,7 @@ public static func mirrorPad<T: TensorFlowScalar, Tpaddings: BinaryInteger & Ten
 public static func mirrorPadGrad<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>,
   paddings: Tensor<Tpaddings>,
-  mode: Mode4
+  mode: Mode5
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MirrorPadGrad",
     input,
@@ -12092,6 +12363,22 @@ public static func mul<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Returns x * y element-wise. Returns zero if y is zero, even if x if infinite or NaN.
+///
+/// *NOTE*: `Mul` supports broadcasting. More about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+@inlinable @inline(__always)
+public static func mulNoNan<T: FloatingPoint & TensorFlowScalar>(
+  _ x: Tensor<T>,
+  _ y: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("MulNoNan",
+    x,
+    y,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Draws samples from a multinomial distribution.
 ///
 /// - Parameters:
@@ -12121,40 +12408,6 @@ public static func multinomial<T: Numeric & TensorFlowScalar, OutputDtype: Binar
     seed: seed,
     seed2: seed2)
   return Tensor(handle: ret)
-}
-
-/// Creates an empty hash table.
-///
-/// This op creates a mutable hash table, specifying the type of its keys and
-/// values. Each value must be a scalar. Data can be inserted into the table using
-/// the insert operations. It does not support the initialization operation.
-///
-/// - Attrs:
-///   - container: If non-empty, this table is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this table is shared under the given name across
-///     multiple sessions.
-///   - use_node_name_sharing: If true and shared_name is empty, the table is shared
-///     using the node name.
-///   - key_dtype: Type of the table keys.
-///   - value_dtype: Type of the table values.
-///
-/// - Output table_handle: Handle to a table.
-@inlinable @inline(__always)
-public static func mutableHashTable<KeyDtype: TensorFlowScalar, ValueDtype: TensorFlowScalar>(
-  container: String,
-  sharedName: String,
-  useNodeNameSharing: Bool = false,
-  typeKeyDtype: KeyDtype.Type,
-  typeValueDtype: ValueDtype.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("MutableHashTable",
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype$dtype: ValueDtype.tensorFlowDataType,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing)
-  return StringTensor(handle: ret)
 }
 
 @inlinable @inline(__always)
@@ -12216,6 +12469,88 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType)
 }
 
+/// Outputs a tensor containing the reduction across all input tensors.
+///
+/// Outputs a tensor containing the reduction across all input tensors passed to ops
+/// within the same `shared_name.
+///
+/// The graph should be constructed so if one op runs with shared_name value `c`,
+/// then `num_devices` ops will run with shared_name value `c`.  Failure to do so
+/// will cause the graph execution to fail to complete.
+///
+/// input: the input to the reduction
+/// data: the value of the reduction across all `num_devices` devices.
+/// reduction: the reduction operation to perform.
+/// num_devices: The number of devices participating in this reduction.
+/// shared_name: Identifier that shared between ops of the same reduction.
+@inlinable @inline(__always)
+public static func ncclAllReduce<T: Numeric & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  reduction: Reduction,
+  numDevices: Int64,
+  sharedName: String
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("NcclAllReduce",
+    input,
+    T$dtype: T.tensorFlowDataType,
+    reduction: reduction.cName,
+    num_devices: numDevices,
+    shared_name: sharedName)
+  return Tensor(handle: ret)
+}
+
+/// Reduces `input` from `num_devices` using `reduction` to a single device.
+///
+/// Reduces `input` from `num_devices` using `reduction` to a single device.
+///
+/// The graph should be constructed so that all inputs have a valid device
+/// assignment, and the op itself is assigned one of these devices.
+///
+/// input: The input to the reduction.
+/// data: the value of the reduction across all `num_devices` devices.
+/// reduction: the reduction operation to perform.
+@inlinable @inline(__always)
+public static func ncclReduce<T: Numeric & TensorFlowScalar>(
+  _ input: [Tensor<T>],
+  reduction: Reduction
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("NcclReduce",
+    input,
+    T$dtype: T.tensorFlowDataType,
+    reduction: reduction.cName)
+  return Tensor(handle: ret)
+}
+
+/// Selects the k nearest centers for each point.
+///
+/// Rows of points are assumed to be input points. Rows of centers are assumed to be
+/// the list of candidate centers. For each point, the k centers that have least L2
+/// distance to it are computed.
+///
+/// - Parameters:
+///   - points: Matrix of shape (n, d). Rows are assumed to be input points.
+///   - centers: Matrix of shape (m, d). Rows are assumed to be centers.
+///   - k: Number of nearest centers to return for each point. If k is larger than m, then
+///     only m centers are returned.
+///
+/// - Outputs:
+///   - nearest_center_indices: Matrix of shape (n, min(m, k)). Each row contains the indices of the centers
+///     closest to the corresponding point, ordered by increasing distance.
+///   - nearest_center_distances: Matrix of shape (n, min(m, k)). Each row contains the squared L2 distance to the
+///     corresponding center in nearest_center_indices.
+@inlinable @inline(__always)
+public static func nearestNeighbors(
+  points: Tensor<Float>,
+  centers: Tensor<Float>,
+  k: Tensor<Int64>
+) -> (nearestCenterIndices: Tensor<Int64>, nearestCenterDistances: Tensor<Float>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Float>) = #tfop("NearestNeighbors",
+    points,
+    centers,
+    k)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
 /// Computes numerical negative value element-wise.
 ///
 /// I.e., \\(y = -x\\).
@@ -12229,35 +12564,25 @@ public static func neg<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Training via negative sampling.
+/// Returns the next representable value of `x1` in the direction of `x2`, element-wise.
 ///
-/// - Parameters:
-///   - w_in: input word embedding.
-///   - w_out: output word embedding.
-///   - examples: A vector of word ids.
-///   - labels: A vector of word ids.
+/// This operation returns the same result as the C++ std::nextafter function.
 ///
-/// - Attrs:
-///   - vocab_count: Count of words in the vocabulary.
-///   - num_negative_samples: Number of negative samples per example.
+/// It can also return a subnormal number.
+///
+/// @compatibility(cpp)
+/// Equivalent to C++ std::nextafter function.
+/// @end_compatibility
 @inlinable @inline(__always)
-public static func negTrain(
-  wIn: Tensor<Float>,
-  wOut: Tensor<Float>,
-  examples: Tensor<Int32>,
-  labels: Tensor<Int32>,
-  lr: Tensor<Float>,
-  vocabCount: [Int32],
-  numNegativeSamples: Int64
-) {
-  return #tfop("NegTrain",
-    wIn,
-    wOut,
-    examples,
-    labels,
-    lr,
-    vocab_count: vocabCount,
-    num_negative_samples: numNegativeSamples)
+public static func nextAfter<T: FloatingPoint & TensorFlowScalar>(
+  x1: Tensor<T>,
+  x2: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("NextAfter",
+    x1,
+    x2,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Makes its input available to the next iteration.
@@ -12280,6 +12605,26 @@ public static func nextIteration<T: TensorFlowScalar>(
 public static func noOp(
 ) {
   return #tfop("NoOp")
+}
+
+/// Non-deterministically generates some integers.
+///
+/// This op may use some OS-provided source of non-determinism (e.g. an RNG), so each execution will give different results.
+///
+/// - Parameter shape: The shape of the output tensor.
+///
+/// - Attr dtype: The type of the output.
+///
+/// - Output output: Non-deterministic integer values with specified shape.
+@inlinable @inline(__always)
+public static func nonDeterministicInts<Dtype: TensorFlowScalar, ShapeDtype: TensorFlowScalar>(
+  shape: Tensor<ShapeDtype>
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("NonDeterministicInts",
+    shape,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    shape_dtype$dtype: ShapeDtype.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -12837,6 +13182,30 @@ public static func outT<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Enqueue a Tensor on the computation outfeed.
+///
+/// - Parameter input: A tensor that will be inserted into the outfeed queue.
+@inlinable @inline(__always)
+public static func outfeedEnqueue<Dtype: TensorFlowScalar>(
+  _ input: Tensor<Dtype>
+) {
+  return #tfop("OutfeedEnqueue",
+    input,
+    dtype$dtype: Dtype.tensorFlowDataType)
+}
+
+/// Enqueue multiple Tensor values on the computation outfeed.
+///
+/// - Parameter inputs: A list of tensors that will be inserted into the outfeed queue as an
+///   XLA tuple.
+@inlinable @inline(__always)
+public static func outfeedEnqueueTuple<Dtypes: TensorFlowScalar>(
+  inputs: [Tensor<Dtypes>]
+) {
+  return #tfop("OutfeedEnqueueTuple",
+    inputs)
+}
+
 /// Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor.
 ///
 /// Packs the `N` tensors in `values` into a tensor with rank one higher than each
@@ -13099,9 +13468,10 @@ public static func parseTensor<OutType: TensorFlowScalar>(
 /// The polygamma function is defined as:
 ///
 ///
-/// \\(\psi^{(n)}(x) = \frac{d^n}{dx^n} \psi(x)\\)
+/// \\(\psi^{(a)}(x) = \frac{d^a}{dx^a} \psi(x)\\)
 ///
 /// where \\(\psi(x)\\) is the digamma function.
+/// The polygamma function is defined only for non-negative integer orders \\a\\.
 @inlinable @inline(__always)
 public static func polygamma<T: FloatingPoint & TensorFlowScalar>(
   _ a: Tensor<T>,
@@ -13250,11 +13620,11 @@ public static func print<T: TensorFlowScalar, U: TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func printV2(
   _ input: StringTensor,
-  outputStream: OutputStream = .stderr
+  outputStream: String = "stderr"
 ) {
   return #tfop("PrintV2",
     input,
-    output_stream: outputStream.cName)
+    output_stream: outputStream)
 }
 
 /// Computes the product of elements across dimensions of a tensor.
@@ -13345,6 +13715,60 @@ public static func quantizeAndDequantize<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Quantizes then dequantizes a tensor.
+///
+/// This op simulates the precision loss from the quantized forward pass by:
+///
+/// 1. Quantizing the tensor to fixed point numbers, which should match the target
+///    quantization method when it is used in inference.
+/// 2. Dequantizing it back to floating point numbers for the following ops, most
+///    likely matmul.
+///
+/// There are different ways to quantize. This version uses only scaling, so 0.0
+/// maps to 0.
+///
+/// From the specified 'num_bits' in the quantized output type, it determines
+/// minimum and maximum representable quantized values.
+///
+/// e.g.
+///
+/// *   [-128, 127] for signed, num_bits = 8, or
+/// *   [0, 255] for unsigned, num_bits = 8.
+///
+/// If range_given == False, the initial input_min, input_max will be determined
+/// automatically as the minimum and maximum values in the input tensor, otherwise
+/// the specified values of input_min, input_max are used.
+///
+/// Note: If the input_min, input_max are specified, they do not need to equal the
+/// actual minimum and maximum values in the tensor. e.g. in some cases it may be
+/// beneficial to specify these values such that the low probability extremes of the
+/// input distribution are clipped.
+///
+/// This op determines the maximum scale_factor that would map the initial
+/// [input_min, input_max] range to a range that lies within the representable
+/// quantized range.
+///
+/// It determines the scale from one of input_min and input_max, then updates the
+/// other one to maximize the respresentable range.
+///
+/// e.g.
+///
+/// *   if the output is signed, num_bits = 8, [input_min, input_max] = [-10.0,
+///     5.0]: it would use a scale_factor of -128 / -10.0 = 12.8 In this case, it
+///     would update input_max to be 127 / 12.8 = 9.921875
+/// *   if the output is signed, num_bits = 8, [input_min, input_max] = [-10.0,
+///     10.0]: it would use a scale_factor of 127 / 10.0 = 12.7 In this case, it
+///     would update input_min to be 128.0 / 12.7 = -10.07874
+/// *   if the output is unsigned, input_min is forced to be 0, and only the
+///     specified input_max is used.
+///
+/// After determining the scale_factor and updating the input range, it applies the
+/// following to each value in the 'input' tensor.
+///
+/// output = round(clamp(value, input_min, input_max) * scale_factor) / scale_factor.
+///
+/// The above round function rounds the value based on the given round_mode.
+///
 ///
 /// - Parameters:
 ///   - input: Tensor to quantize and then dequantize.
@@ -13360,6 +13784,14 @@ public static func quantizeAndDequantize<T: FloatingPoint & TensorFlowScalar>(
 ///     have been called <b>`signed_output`</b>)
 ///   - num_bits: The bitwidth of the quantization.
 ///   - range_given: Whether the range is given or should be determined from the `input` tensor.
+///   - round_mode: The 'round_mode' attribute controls which rounding tie-breaking algorithm is
+///     used when rounding float values to their quantized equivalents. The following
+///     rounding modes are currently supported:
+///
+///     *   HALF_TO_EVEN: this is the default round_mode.
+///     *   HALF_UP: round towards positive. In this mode 7.5 rounds up to 8 and -7.5
+///         rounds up to -7.
+///
 @inlinable @inline(__always)
 public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>,
@@ -13367,7 +13799,8 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   inputMax: Tensor<T>,
   signedInput: Bool = true,
   numBits: Int64 = 8,
-  rangeGiven: Bool = false
+  rangeGiven: Bool = false,
+  roundMode: RoundMode = .halfToEven
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("QuantizeAndDequantizeV2",
     input,
@@ -13376,7 +13809,8 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     signed_input: signedInput,
     num_bits: numBits,
-    range_given: rangeGiven)
+    range_given: rangeGiven,
+    round_mode: roundMode.cName)
   return Tensor(handle: ret)
 }
 
@@ -13570,7 +14004,7 @@ public static func quantizeV2<T: TensorFlowScalar>(
   minRange: Tensor<Float>,
   maxRange: Tensor<Float>,
   mode: Mode = .minCombined,
-  roundMode: RoundMode = .halfAwayFromZero
+  roundMode: RoundMode6 = .halfAwayFromZero
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizeV2",
     input,
@@ -13851,6 +14285,413 @@ public static func quantizedConv2D<Tinput: TensorFlowScalar, Tfilter: TensorFlow
     strides: strides,
     padding: padding.cName,
     dilations: dilations)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DAndRelu<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DAndRelu",
+    input,
+    filter,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DAndReluAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DAndReluAndRequantize",
+    input,
+    filter,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DAndRequantize",
+    input,
+    filter,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Computes QuantizedConv2D per channel.
+///
+/// - Parameters:
+///   - input: The original input tensor.
+///   - filter: The original filter tensor.
+///   - min_input: The minimum value of the input tensor
+///   - max_input: The maximum value of the input tensor.
+///   - min_filter: The minimum value of the filter tensor.
+///   - max_filter: The maximum value of the filter tensor.
+///
+/// - Attrs:
+///   - Tinput: The quantized type of input tensor that needs to be converted. 
+///   - Tfilter: The quantized type of filter tensor that needs to be converted. 
+///   - out_type: The quantized type of output tensor that needs to be converted.
+///   - strides: list of stride values.
+///   - dilations: list of dilation values.
+///
+/// - Outputs:
+///   - output: The output tensor.
+///   - min_output: The minimum value of the final output tensor.
+///   - max_output: The maximum value of the final output tensor.
+@inlinable @inline(__always)
+public static func quantizedConv2DPerChannel<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DPerChannel",
+    input,
+    filter,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBias<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Float>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBias",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasAndRelu<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Float>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasAndRelu",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasAndReluAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, Tbias: FloatingPoint & TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Tbias>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasAndReluAndRequantize",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    Tbias$dtype: Tbias.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, Tbias: FloatingPoint & TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Tbias>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasAndRequantize",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    Tbias$dtype: Tbias.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, Tbias: FloatingPoint & TensorFlowScalar, Tsummand: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Tbias>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  summand: Tensor<Tsummand>,
+  minSummand: Tensor<Float>,
+  maxSummand: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasSignedSumAndReluAndRequantize",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    summand,
+    minSummand,
+    maxSummand,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    Tbias$dtype: Tbias.tensorFlowDataType,
+    Tsummand$dtype: Tsummand.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasSumAndRelu<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Float>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  summand: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasSumAndRelu",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    summand,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+@inlinable @inline(__always)
+public static func quantizedConv2DWithBiasSumAndReluAndRequantize<Tinput: TensorFlowScalar, Tfilter: TensorFlowScalar, Tbias: FloatingPoint & TensorFlowScalar, Tsummand: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<Tinput>,
+  filter: Tensor<Tfilter>,
+  bias: Tensor<Tbias>,
+  minInput: Tensor<Float>,
+  maxInput: Tensor<Float>,
+  minFilter: Tensor<Float>,
+  maxFilter: Tensor<Float>,
+  minFreezedOutput: Tensor<Float>,
+  maxFreezedOutput: Tensor<Float>,
+  summand: Tensor<Tsummand>,
+  minSummand: Tensor<Float>,
+  maxSummand: Tensor<Float>,
+  strides: [Int32],
+  padding: Padding,
+  dilations: [Int32] = [1, 1, 1, 1],
+  paddingList: [Int32]
+) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedConv2DWithBiasSumAndReluAndRequantize",
+    input,
+    filter,
+    bias,
+    minInput,
+    maxInput,
+    minFilter,
+    maxFilter,
+    minFreezedOutput,
+    maxFreezedOutput,
+    summand,
+    minSummand,
+    maxSummand,
+    Tinput$dtype: Tinput.tensorFlowDataType,
+    Tfilter$dtype: Tfilter.tensorFlowDataType,
+    Tbias$dtype: Tbias.tensorFlowDataType,
+    Tsummand$dtype: Tsummand.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType,
+    strides: strides,
+    padding: padding.cName,
+    dilations: dilations,
+    padding_list: paddingList)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
@@ -14149,7 +14990,8 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   size: Tensor<Int32>,
   min: Tensor<Float>,
   max: Tensor<Float>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> (resizedImages: Tensor<T>, outMin: Tensor<Float>, outMax: Tensor<Float>) {
   let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedResizeBilinear",
     images,
@@ -14157,118 +14999,9 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
     min,
     max,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
-}
-
-/// Closes the given queue.
-///
-/// This operation signals that no more elements will be enqueued in the
-/// given queue. Subsequent Enqueue(Many) operations will fail.
-/// Subsequent Dequeue(Many) operations will continue to succeed if
-/// sufficient elements remain in the queue. Subsequent Dequeue(Many)
-/// operations that would block will fail immediately.
-///
-/// - Parameter handle: The handle to a queue.
-///
-/// - Attr cancel_pending_enqueues: If true, all pending enqueue requests that are
-///   blocked on the given queue will be canceled.
-@inlinable @inline(__always)
-public static func queueClose(
-  handle: StringTensor,
-  cancelPendingEnqueues: Bool = false
-) {
-  return #tfop("QueueClose",
-    handle,
-    cancel_pending_enqueues: cancelPendingEnqueues)
-}
-
-/// Enqueues a tuple of one or more tensors in the given queue.
-///
-/// The components input has k elements, which correspond to the components of
-/// tuples stored in the given queue.
-///
-/// N.B. If the queue is full, this operation will block until the given
-/// element has been enqueued (or 'timeout_ms' elapses, if specified).
-///
-/// - Parameters:
-///   - handle: The handle to a queue.
-///   - components: One or more tensors from which the enqueued tensors should be taken.
-///
-/// - Attr timeout_ms: If the queue is full, this operation will block for up to
-///   timeout_ms milliseconds.
-///   Note: This option is not supported yet.
-@inlinable @inline(__always)
-public static func queueEnqueue<Tcomponents: TensorFlowScalar>(
-  handle: StringTensor,
-  components: [Tensor<Tcomponents>],
-  timeoutMs: Int64 = -1
-) {
-  return #tfop("QueueEnqueue",
-    handle,
-    components,
-    timeout_ms: timeoutMs)
-}
-
-/// Enqueues zero or more tuples of one or more tensors in the given queue.
-///
-/// This operation slices each component tensor along the 0th dimension to
-/// make multiple queue elements. All of the tuple components must have the
-/// same size in the 0th dimension.
-///
-/// The components input has k elements, which correspond to the components of
-/// tuples stored in the given queue.
-///
-/// N.B. If the queue is full, this operation will block until the given
-/// elements have been enqueued (or 'timeout_ms' elapses, if specified).
-///
-/// - Parameters:
-///   - handle: The handle to a queue.
-///   - components: One or more tensors from which the enqueued tensors should
-///     be taken.
-///
-/// - Attr timeout_ms: If the queue is too full, this operation will block for up
-///   to timeout_ms milliseconds.
-///   Note: This option is not supported yet.
-@inlinable @inline(__always)
-public static func queueEnqueueMany<Tcomponents: TensorFlowScalar>(
-  handle: StringTensor,
-  components: [Tensor<Tcomponents>],
-  timeoutMs: Int64 = -1
-) {
-  return #tfop("QueueEnqueueMany",
-    handle,
-    components,
-    timeout_ms: timeoutMs)
-}
-
-/// Returns true if queue is closed.
-///
-/// This operation returns true if the queue is closed and false if the queue
-/// is open.
-///
-/// - Parameter handle: The handle to a queue.
-@inlinable @inline(__always)
-public static func queueIsClosed(
-  handle: StringTensor
-) -> Tensor<Bool> {
-  let ret: TensorHandle<Bool> = #tfop("QueueIsClosed",
-    handle)
-  return Tensor(handle: ret)
-}
-
-/// Computes the number of elements in the given queue.
-///
-/// - Parameter handle: The handle to a queue.
-///
-/// - Output size: The number of elements in the given queue.
-@inlinable @inline(__always)
-public static func queueSize(
-  handle: StringTensor
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("QueueSize",
-    handle)
-  return Tensor(handle: ret)
 }
 
 /// Converts one or more images from RGB to HSV.
@@ -14292,6 +15025,79 @@ public static func rGBToHSV<T: FloatingPoint & TensorFlowScalar>(
     images,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Returns a `RaggedTensor` containing the specified sequences of numbers.
+///
+///
+/// Returns a `RaggedTensor` `result` composed from `rt_dense_values` and
+/// `rt_nested_splits`, such that
+/// `result[i] = range(starts[i], limits[i], deltas[i])`.
+///
+/// ```python
+/// >>> (rt_nested_splits, rt_dense_values) = gen_ragged_ops.ragged_range(
+/// ...     starts=[2, 5, 8], limits=[3, 5, 12], deltas=1)
+/// >>> result = ragged.from_nested_row_splits(rt_dense_values, rt_nested_splits)
+/// >>> print result.eval().tolist()
+/// [[2],               # result[0] = range(2, 3)
+///  [],                # result[1] = range(5, 5)
+///  [8, 9, 10, 11]]    # result[2] = range(8, 12)
+/// ```
+///
+/// The input tensors `starts`, `limits`, and `deltas` may be scalars or vectors.
+/// The vector inputs must all have the same size.  Scalar inputs are broadcast
+/// to match the size of the vector inputs.
+///
+/// - Parameters:
+///   - starts: The starts of each range.
+///   - limits: The limits of each range.
+///   - deltas: The deltas of each range.
+///
+/// - Outputs:
+///   - rt_nested_splits: The `row_splits` for the returned `RaggedTensor`.
+///   - rt_dense_values: The `flat_values` for the returned `RaggedTensor`.
+@inlinable @inline(__always)
+public static func raggedRange<T: Numeric & TensorFlowScalar>(
+  starts: Tensor<T>,
+  limits: Tensor<T>,
+  deltas: Tensor<T>
+) -> (rtNestedSplits: Tensor<Int64>, rtDenseValues: Tensor<T>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<T>) = #tfop("RaggedRange",
+    starts,
+    limits,
+    deltas,
+    T$dtype: T.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Converts a `RaggedTensor` into a `SparseTensor` with the same values.
+///
+/// input=ragged.from_nested_row_splits(rt_dense_values, rt_nested_splits)
+/// output=SparseTensor(indices=sparse_indices, values=sparse_values,
+///                     dense_shape=sparse_dense_shape)
+///
+/// - Parameters:
+///   - rt_nested_splits: The `row_splits` for the `RaggedTensor`.
+///   - rt_dense_values: The `flat_values` for the `RaggedTensor`.
+///
+/// - Attr RAGGED_RANK: The ragged rank of the input RaggedTensor.  `rt_nested_splits` should contain
+///   this number of ragged-splits tensors.  This value should equal
+///   `input.ragged_rank`.
+///
+/// - Outputs:
+///   - sparse_indices: The indices for the `SparseTensor`.
+///   - sparse_values: The values of the `SparseTensor`.
+///   - sparse_dense_shape: `sparse_dense_shape` is a tight bounding box of the input `RaggedTensor`.
+@inlinable @inline(__always)
+public static func raggedTensorToSparse<T: TensorFlowScalar>(
+  rtNestedSplits: [Tensor<Int64>],
+  rtDenseValues: Tensor<T>
+) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<T>, sparseDenseShape: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<T>, TensorHandle<Int64>) = #tfop("RaggedTensorToSparse",
+    rtNestedSplits,
+    rtDenseValues,
+    T$dtype: T.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 /// Randomly crop `image`.
@@ -14649,130 +15455,6 @@ public static func readFile(
   return StringTensor(handle: ret)
 }
 
-/// Returns the number of records this Reader has produced.
-///
-/// This is the same as the number of ReaderRead executions that have
-/// succeeded.
-///
-/// - Parameter reader_handle: Handle to a Reader.
-@inlinable @inline(__always)
-public static func readerNumRecordsProduced(
-  readerHandle: StringTensor
-) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("ReaderNumRecordsProduced",
-    readerHandle)
-  return Tensor(handle: ret)
-}
-
-/// Returns the number of work units this Reader has finished processing.
-///
-/// - Parameter reader_handle: Handle to a Reader.
-@inlinable @inline(__always)
-public static func readerNumWorkUnitsCompleted(
-  readerHandle: StringTensor
-) -> Tensor<Int64> {
-  let ret: TensorHandle<Int64> = #tfop("ReaderNumWorkUnitsCompleted",
-    readerHandle)
-  return Tensor(handle: ret)
-}
-
-/// Returns the next record (key, value pair) produced by a Reader.
-///
-/// Will dequeue from the input queue if necessary (e.g. when the
-/// Reader needs to start reading from a new file since it has finished
-/// with the previous file).
-///
-/// - Parameters:
-///   - reader_handle: Handle to a Reader.
-///   - queue_handle: Handle to a Queue, with string work items.
-///
-/// - Outputs:
-///   - key: A scalar.
-///   - value: A scalar.
-@inlinable @inline(__always)
-public static func readerRead(
-  readerHandle: StringTensor,
-  queueHandle: StringTensor
-) -> (key: StringTensor, value: StringTensor) {
-  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderRead",
-    readerHandle,
-    queueHandle)
-  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
-}
-
-/// Returns up to `num_records` (key, value) pairs produced by a Reader.
-///
-/// Will dequeue from the input queue if necessary (e.g. when the
-/// Reader needs to start reading from a new file since it has finished
-/// with the previous file).
-/// It may return less than `num_records` even before the last batch.
-///
-/// - Parameters:
-///   - reader_handle: Handle to a `Reader`.
-///   - queue_handle: Handle to a `Queue`, with string work items.
-///   - num_records: number of records to read from `Reader`.
-///
-/// - Outputs:
-///   - keys: A 1-D tensor.
-///   - values: A 1-D tensor.
-@inlinable @inline(__always)
-public static func readerReadUpTo(
-  readerHandle: StringTensor,
-  queueHandle: StringTensor,
-  numRecords: Tensor<Int64>
-) -> (keys: StringTensor, values: StringTensor) {
-  let ret: (TensorHandle<String>, TensorHandle<String>) = #tfop("ReaderReadUpTo",
-    readerHandle,
-    queueHandle,
-    numRecords)
-  return (StringTensor(handle: ret.0), StringTensor(handle: ret.1))
-}
-
-/// Restore a Reader to its initial clean state.
-///
-/// - Parameter reader_handle: Handle to a Reader.
-@inlinable @inline(__always)
-public static func readerReset(
-  readerHandle: StringTensor
-) {
-  return #tfop("ReaderReset",
-    readerHandle)
-}
-
-/// Restore a reader to a previously saved state.
-///
-/// Not all Readers support being restored, so this can produce an
-/// Unimplemented error.
-///
-/// - Parameters:
-///   - reader_handle: Handle to a Reader.
-///   - state: Result of a ReaderSerializeState of a Reader with type
-///     matching reader_handle.
-@inlinable @inline(__always)
-public static func readerRestoreState(
-  readerHandle: StringTensor,
-  state: StringTensor
-) {
-  return #tfop("ReaderRestoreState",
-    readerHandle,
-    state)
-}
-
-/// Produce a string tensor that encodes the state of a Reader.
-///
-/// Not all Readers support being serialized, so this can produce an
-/// Unimplemented error.
-///
-/// - Parameter reader_handle: Handle to a Reader.
-@inlinable @inline(__always)
-public static func readerSerializeState(
-  readerHandle: StringTensor
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("ReaderSerializeState",
-    readerHandle)
-  return StringTensor(handle: ret)
-}
-
 /// Returns the real part of a complex number.
 ///
 /// Given a tensor `input` of complex numbers, this operation returns a tensor of
@@ -14932,210 +15614,6 @@ public static func reduceJoin(
   return StringTensor(handle: ret)
 }
 
-/// Creates or finds a child frame, and makes `data` available to the child frame.
-///
-/// The unique `frame_name` is used by the `Executor` to identify frames. If
-/// `is_constant` is true, `output` is a constant in the child frame; otherwise
-/// it may be changed in the child frame. At most `parallel_iterations` iterations
-/// are run in parallel in the child frame.
-///
-/// - Parameter data: The tensor to be made available to the child frame.
-///
-/// - Attrs:
-///   - frame_name: The name of the child frame.
-///   - is_constant: If true, the output is constant within the child frame.
-///   - parallel_iterations: The number of iterations allowed to run in parallel.
-///
-/// - Output output: The same tensor as `data`.
-@inlinable @inline(__always)
-public static func refEnter<T: TensorFlowScalar>(
-  data: Tensor<T>,
-  frameName: String,
-  isConstant: Bool = false,
-  parallelIterations: Int64 = 10
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefEnter",
-    data,
-    T$dtype: T.tensorFlowDataType,
-    frame_name: frameName,
-    is_constant: isConstant,
-    parallel_iterations: parallelIterations)
-  return Tensor(handle: ret)
-}
-
-/// Exits the current frame to its parent frame.
-///
-/// Exit makes its input `data` available to the parent frame.
-///
-/// - Parameter data: The tensor to be made available to the parent frame.
-///
-/// - Output output: The same tensor as `data`.
-@inlinable @inline(__always)
-public static func refExit<T: TensorFlowScalar>(
-  data: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefExit",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Return the same ref tensor as the input ref tensor.
-@inlinable @inline(__always)
-public static func refIdentity<T: TensorFlowScalar>(
-  _ input: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefIdentity",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refIn<T: TensorFlowScalar>(
-  _ a: Tensor<T>
-) {
-  return #tfop("RefIn",
-    a,
-    T$dtype: T.tensorFlowDataType)
-}
-
-@inlinable @inline(__always)
-public static func refInputFloatInput(
-  _ a: Tensor<Float>,
-  _ b: Tensor<Float>
-) {
-  return #tfop("RefInputFloatInput",
-    a,
-    b)
-}
-
-@inlinable @inline(__always)
-public static func refInputFloatInputIntOutput(
-  _ a: Tensor<Float>,
-  _ b: Tensor<Float>
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RefInputFloatInputIntOutput",
-    a,
-    b)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refInputIntInput(
-  _ a: Tensor<Int32>,
-  _ b: Tensor<Int32>
-) {
-  return #tfop("RefInputIntInput",
-    a,
-    b)
-}
-
-/// Forwards the value of an available tensor from `inputs` to `output`.
-///
-/// `Merge` waits for at least one of the tensors in `inputs` to become available.
-/// It is usually combined with `Switch` to implement branching.
-///
-/// `Merge` forwards the first tensor for become available to `output`, and sets
-/// `value_index` to its index in `inputs`.
-///
-/// - Parameter inputs: The input tensors, exactly one of which will become available.
-///
-/// - Outputs:
-///   - output: Will be set to the available input tensor.
-///   - value_index: The index of the chosen input tensor in `inputs`.
-@inlinable @inline(__always)
-public static func refMerge<T: TensorFlowScalar>(
-  inputs: [Tensor<T>]
-) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
-  let ret: (TensorHandle<T>, TensorHandle<Int32>) = #tfop("RefMerge",
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// Makes its input available to the next iteration.
-///
-/// - Parameter data: The tensor to be made available to the next iteration.
-///
-/// - Output output: The same tensor as `data`.
-@inlinable @inline(__always)
-public static func refNextIteration<T: TensorFlowScalar>(
-  data: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefNextIteration",
-    data,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOut<T: TensorFlowScalar>(
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefOut",
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOutput(
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("RefOutput")
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func refOutputFloatOutput(
-) -> (a: Tensor<Float>, b: Tensor<Float>) {
-  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RefOutputFloatOutput")
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// Forwards the `index`th element of `inputs` to `output`.
-///
-/// - Parameters:
-///   - index: A scalar that determines the input that gets selected.
-///   - inputs: A list of ref tensors, one of which will be forwarded to `output`.
-///
-/// - Output output: The forwarded tensor.
-@inlinable @inline(__always)
-public static func refSelect<T: TensorFlowScalar>(
-  index: Tensor<Int32>,
-  inputs: [Tensor<T>]
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("RefSelect",
-    index,
-    inputs,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Forwards the ref tensor `data` to the output port determined by `pred`.
-///
-/// If `pred` is true, the `data` input is forwarded to `output_true`. Otherwise,
-/// the data goes to `output_false`.
-///
-/// See also `Switch` and `Merge`.
-///
-/// - Parameters:
-///   - data: The ref tensor to be forwarded to the appropriate output.
-///   - pred: A scalar that specifies which output port will receive data.
-///
-/// - Outputs:
-///   - output_false: If `pred` is false, data will be forwarded to this output.
-///   - output_true: If `pred` is true, data will be forwarded to this output.
-@inlinable @inline(__always)
-public static func refSwitch<T: TensorFlowScalar>(
-  data: Tensor<T>,
-  pred: Tensor<Bool>
-) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("RefSwitch",
-    data,
-    pred,
-    T$dtype: T.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
 /// Check if the input matches the regex pattern.
 ///
 /// The input is a string tensor of any shape. The pattern is a scalar
@@ -15161,19 +15639,22 @@ public static func regexFullMatch(
   return Tensor(handle: ret)
 }
 
-/// Replaces the match of pattern in input with rewrite.
+/// Replaces matches of the `pattern` regular expression in `input` with the
+/// replacement string provided in `rewrite`.
 ///
 /// It follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
 ///
 /// - Parameters:
 ///   - input: The text to be processed.
-///   - pattern: The regular expression to match the input.
-///   - rewrite: The rewrite to be applied to the matched expression.
+///   - pattern: The regular expression to be matched in the `input` strings.
+///   - rewrite: The rewrite string to be substituted for the `pattern` expression where it is
+///     matched in the `input` strings.
 ///
-/// - Attr replace_global: If True, the replacement is global, otherwise the replacement
-///   is done only on the first match.
+/// - Attr replace_global: If True, the replacement is global (that is, all matches of the `pattern` regular
+///   expression in each input string are rewritten), otherwise the `rewrite`
+///   substitution is only made for the first `pattern` match.
 ///
-/// - Output output: The text after applying pattern and rewrite.
+/// - Output output: The text after applying pattern match and rewrite substitution.
 @inlinable @inline(__always)
 public static func regexReplace(
   _ input: StringTensor,
@@ -15282,6 +15763,37 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
+/// Computes requantization range per channel.
+///
+/// - Parameters:
+///   - input: The original input tensor.
+///   - input_min: The minimum value of the input tensor
+///   - input_max: The maximum value of the input tensor.
+///
+/// - Attrs:
+///   - T: The quantized type of input tensor that needs to be converted. 
+///   - clip_value_max: The maximum value of the output that needs to be clipped.
+///     Example: set this to 6 for Relu6. 
+///
+/// - Outputs:
+///   - output_min: The minimum value of the final output tensor
+///   - output_max: The maximum value of the final output tensor.
+@inlinable @inline(__always)
+public static func requantizationRangePerChannel<T: TensorFlowScalar>(
+  _ input: Tensor<T>,
+  inputMin: Tensor<Float>,
+  inputMax: Tensor<Float>,
+  clipValueMax: Double
+) -> (outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RequantizationRangePerChannel",
+    input,
+    inputMin,
+    inputMax,
+    T$dtype: T.tensorFlowDataType,
+    clip_value_max: clipValueMax)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
 /// Converts the quantized `input` tensor into a lower-precision `output`.
 ///
 /// Converts the quantized `input` tensor into a lower-precision `output`, using the
@@ -15320,6 +15832,42 @@ public static func requantize<Tinput: TensorFlowScalar, OutType: TensorFlowScala
     requestedOutputMin,
     requestedOutputMax,
     Tinput$dtype: Tinput.tensorFlowDataType,
+    out_type$dtype: OutType.tensorFlowDataType)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Requantizes input with min and max values known per channel.
+///
+/// - Parameters:
+///   - input: The original input tensor.
+///   - input_min: The minimum value of the input tensor
+///   - input_max: The maximum value of the input tensor.
+///   - requested_output_min: The minimum value of the output tensor requested.
+///   - requested_output_max: The maximum value of the output tensor requested.
+///
+/// - Attrs:
+///   - T: The quantized type of input tensor that needs to be converted. 
+///   - out_type: The quantized type of output tensor that needs to be converted.
+///
+/// - Outputs:
+///   - output: Output tensor.
+///   - output_min: The minimum value of the final output tensor
+///   - output_max: The maximum value of the final output tensor.
+@inlinable @inline(__always)
+public static func requantizePerChannel<T: TensorFlowScalar, OutType: TensorFlowScalar>(
+  _ input: Tensor<T>,
+  inputMin: Tensor<Float>,
+  inputMax: Tensor<Float>,
+  requestedOutputMin: Tensor<Float>,
+  requestedOutputMax: Tensor<Float>
+) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
+  let ret: (TensorHandle<OutType>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RequantizePerChannel",
+    input,
+    inputMin,
+    inputMax,
+    requestedOutputMin,
+    requestedOutputMax,
+    T$dtype: T.tensorFlowDataType,
     out_type$dtype: OutType.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
@@ -15476,13 +16024,15 @@ public static func resizeArea<T: Numeric & TensorFlowScalar>(
 public static func resizeBicubic<T: Numeric & TensorFlowScalar>(
   images: Tensor<T>,
   size: Tensor<Int32>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("ResizeBicubic",
     images,
     size,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15503,13 +16053,15 @@ public static func resizeBicubic<T: Numeric & TensorFlowScalar>(
 public static func resizeBicubicGrad<T: FloatingPoint & TensorFlowScalar>(
   grads: Tensor<Float>,
   originalImage: Tensor<T>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ResizeBicubicGrad",
     grads,
     originalImage,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15531,13 +16083,15 @@ public static func resizeBicubicGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func resizeBilinear<T: Numeric & TensorFlowScalar>(
   images: Tensor<T>,
   size: Tensor<Int32>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("ResizeBilinear",
     images,
     size,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15558,13 +16112,15 @@ public static func resizeBilinear<T: Numeric & TensorFlowScalar>(
 public static func resizeBilinearGrad<T: FloatingPoint & TensorFlowScalar>(
   grads: Tensor<Float>,
   originalImage: Tensor<T>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ResizeBilinearGrad",
     grads,
     originalImage,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15584,13 +16140,15 @@ public static func resizeBilinearGrad<T: FloatingPoint & TensorFlowScalar>(
 public static func resizeNearestNeighbor<T: Numeric & TensorFlowScalar>(
   images: Tensor<T>,
   size: Tensor<Int32>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ResizeNearestNeighbor",
     images,
     size,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15610,13 +16168,15 @@ public static func resizeNearestNeighbor<T: Numeric & TensorFlowScalar>(
 public static func resizeNearestNeighborGrad<T: Numeric & TensorFlowScalar>(
   grads: Tensor<T>,
   size: Tensor<Int32>,
-  alignCorners: Bool = false
+  alignCorners: Bool = false,
+  halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ResizeNearestNeighborGrad",
     grads,
     size,
     T$dtype: T.tensorFlowDataType,
-    align_corners: alignCorners)
+    align_corners: alignCorners,
+    half_pixel_centers: halfPixelCenters)
   return Tensor(handle: ret)
 }
 
@@ -15711,6 +16271,448 @@ public static func restrict<T: TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Restrict",
     a,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Retrieve ADAM embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the ADAM optimization algorithm.
+///   - momenta: Parameter momenta updated by the ADAM optimization algorithm.
+///   - velocities: Parameter velocities updated by the ADAM optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingADAMParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, momenta: Tensor<Float>, velocities: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingADAMParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve ADAM embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the ADAM optimization algorithm.
+///   - momenta: Parameter momenta updated by the ADAM optimization algorithm.
+///   - velocities: Parameter velocities updated by the ADAM optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the ADAM optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingADAMParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, momenta: Tensor<Float>, velocities: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingADAMParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve Adadelta embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Adadelta optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the Adadelta optimization algorithm.
+///   - updates: Parameter updates updated by the Adadelta optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingAdadeltaParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, updates: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingAdadeltaParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve Adadelta embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Adadelta optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the Adadelta optimization algorithm.
+///   - updates: Parameter updates updated by the Adadelta optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the Adadelta optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, updates: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve Adagrad embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Adagrad optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingAdagradParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingAdagradParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Retrieve Adagrad embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Adagrad optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the Adagrad optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingAdagradParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingAdagradParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve centered RMSProp embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the centered RMSProp optimization algorithm.
+///   - ms: Parameter ms updated by the centered RMSProp optimization algorithm.
+///   - mom: Parameter mom updated by the centered RMSProp optimization algorithm.
+///   - mg: Parameter mg updated by the centered RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingCenteredRMSPropParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, ms: Tensor<Float>, mom: Tensor<Float>, mg: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingCenteredRMSPropParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve FTRL embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the FTRL optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the FTRL optimization algorithm.
+///   - linears: Parameter linears updated by the FTRL optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingFTRLParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, linears: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingFTRLParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve FTRL embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the FTRL optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the FTRL optimization algorithm.
+///   - linears: Parameter linears updated by the FTRL optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the FTRL optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingFTRLParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, linears: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingFTRLParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve MDL Adagrad Light embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the MDL Adagrad Light optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the MDL Adagrad Light optimization algorithm.
+///   - weights: Parameter weights updated by the MDL Adagrad Light optimization algorithm.
+///   - benefits: Parameter benefits updated by the MDL Adagrad Light optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingMDLAdagradLightParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, weights: Tensor<Float>, benefits: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingMDLAdagradLightParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve Momentum embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Momentum optimization algorithm.
+///   - momenta: Parameter momenta updated by the Momentum optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingMomentumParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, momenta: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingMomentumParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Retrieve Momentum embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the Momentum optimization algorithm.
+///   - momenta: Parameter momenta updated by the Momentum optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the Momentum optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingMomentumParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, momenta: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingMomentumParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve proximal Adagrad embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the proximal Adagrad optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the proximal Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingProximalAdagradParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingProximalAdagradParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Retrieve proximal Adagrad embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the proximal Adagrad optimization algorithm.
+///   - accumulators: Parameter accumulators updated by the proximal Adagrad optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the proximal Adagrad optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, accumulators: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve RMSProp embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the RMSProp optimization algorithm.
+///   - ms: Parameter ms updated by the RMSProp optimization algorithm.
+///   - mom: Parameter mom updated by the RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingRMSPropParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, ms: Tensor<Float>, mom: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingRMSPropParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Retrieve RMSProp embedding parameters with debug support.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Outputs:
+///   - parameters: Parameter parameters updated by the RMSProp optimization algorithm.
+///   - ms: Parameter ms updated by the RMSProp optimization algorithm.
+///   - mom: Parameter mom updated by the RMSProp optimization algorithm.
+///   - gradient_accumulators: Parameter gradient_accumulators updated by the RMSProp optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingRMSPropParametersGradAccumDebug(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> (parameters: Tensor<Float>, ms: Tensor<Float>, mom: Tensor<Float>, gradientAccumulators: Tensor<Float>) {
+  let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
+}
+
+/// Retrieve SGD embedding parameters.
+///
+/// An op that retrieves optimization parameters from embedding to host
+/// memory. Must be preceded by a ConfigureTPUEmbeddingHost op that sets up
+/// the correct embedding table configuration. For example, this op is
+/// used to retrieve updated parameters before saving a checkpoint.
+///
+/// - Output parameters: Parameter parameters updated by the stochastic gradient descent optimization algorithm.
+@inlinable @inline(__always)
+public static func retrieveTPUEmbeddingStochasticGradientDescentParameters(
+  tableId: Int64 = -1,
+  tableName: String,
+  numShards: Int64,
+  shardId: Int64
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("RetrieveTPUEmbeddingStochasticGradientDescentParameters",
+    table_id: tableId,
+    table_name: tableName,
+    num_shards: numShards,
+    shard_id: shardId)
   return Tensor(handle: ret)
 }
 
@@ -16472,259 +17474,43 @@ public static func scalarSummary<T: Numeric & TensorFlowScalar>(
   return StringTensor(handle: ret)
 }
 
-/// Adds sparse updates to a variable reference.
-///
-/// This operation computes
-///
-///     # Scalar indices
-///     ref[indices, ...] += updates[...]
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] += updates[i, ...]
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] += updates[i, ..., j, ...]
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their contributions add.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
-/// </div>
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to add to `ref`.
-///
-/// - Attr use_locking: If True, the addition will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
 @inlinable @inline(__always)
-public static func scatterAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterAdd",
-    ref,
-    indices,
-    updates,
+public static func scaleAndTranslate<T: Numeric & TensorFlowScalar>(
+  images: Tensor<T>,
+  size: Tensor<Int32>,
+  scale: Tensor<Float>,
+  translation: Tensor<Float>,
+  kernelType: String = "lanczos3",
+  antialias: Bool = true
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("ScaleAndTranslate",
+    images,
+    size,
+    scale,
+    translation,
     T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
+    kernel_type: kernelType,
+    antialias: antialias)
   return Tensor(handle: ret)
 }
 
-/// Divides a variable reference by sparse updates.
-///
-/// This operation computes
-///
-/// ```python
-///     # Scalar indices
-///     ref[indices, ...] /= updates[...]
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] /= updates[i, ...]
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] /= updates[i, ..., j, ...]
-/// ```
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their contributions divide.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of values that `ref` is divided by.
-///
-/// - Attr use_locking: If True, the operation will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
 @inlinable @inline(__always)
-public static func scatterDiv<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
+public static func scaleAndTranslateGrad<T: FloatingPoint & TensorFlowScalar>(
+  grads: Tensor<T>,
+  originalImage: Tensor<T>,
+  scale: Tensor<Float>,
+  translation: Tensor<Float>,
+  kernelType: String = "lanczos3",
+  antialias: Bool = true
 ) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterDiv",
-    ref,
-    indices,
-    updates,
+  let ret: TensorHandle<T> = #tfop("ScaleAndTranslateGrad",
+    grads,
+    originalImage,
+    scale,
+    translation,
     T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Reduces sparse updates into a variable reference using the `max` operation.
-///
-/// This operation computes
-///
-///     # Scalar indices
-///     ref[indices, ...] = max(ref[indices, ...], updates[...])
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] = max(ref[indices[i], ...], updates[i, ...])
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] = max(ref[indices[i, ..., j], ...], updates[i, ..., j, ...])
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their contributions combine.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
-/// </div>
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to reduce into `ref`.
-///
-/// - Attr use_locking: If True, the update will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMax",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Reduces sparse updates into a variable reference using the `min` operation.
-///
-/// This operation computes
-///
-///     # Scalar indices
-///     ref[indices, ...] = min(ref[indices, ...], updates[...])
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] = min(ref[indices[i], ...], updates[i, ...])
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] = min(ref[indices[i, ..., j], ...], updates[i, ..., j, ...])
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their contributions combine.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
-/// </div>
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to reduce into `ref`.
-///
-/// - Attr use_locking: If True, the update will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMin",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Multiplies sparse updates into a variable reference.
-///
-/// This operation computes
-///
-/// ```python
-///     # Scalar indices
-///     ref[indices, ...] *= updates[...]
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] *= updates[i, ...]
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] *= updates[i, ..., j, ...]
-/// ```
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their contributions multiply.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to multiply to `ref`.
-///
-/// - Attr use_locking: If True, the operation will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterMul<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterMul",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
+    kernel_type: kernelType,
+    antialias: antialias)
   return Tensor(handle: ret)
 }
 
@@ -16835,72 +17621,6 @@ public static func scatterNd<T: TensorFlowScalar, Tindices: BinaryInteger & Tens
   return Tensor(handle: ret)
 }
 
-/// Applies sparse addition to individual values or slices in a Variable.
-///
-/// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
-///
-/// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
-///
-/// The innermost dimension of `indices` (with length `K`) corresponds to
-/// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
-/// dimension of `ref`.
-///
-/// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
-///
-/// ```
-/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]]
-/// ```
-///
-/// For example, say we want to add 4 scattered elements to a rank-1 tensor to
-/// 8 elements. In Python, that addition would look like this:
-///
-/// ```python
-/// ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
-/// indices = tf.constant([[4], [3], [1], [7]])
-/// updates = tf.constant([9, 10, 11, 12])
-/// add = tf.scatter_nd_add(ref, indices, updates)
-/// with tf.Session() as sess:
-///   print sess.run(add)
-/// ```
-///
-/// The resulting update to ref would look like this:
-///
-///     [1, 13, 3, 14, 14, 6, 7, 20]
-///
-/// See `tf.scatter_nd` for more details about how to make updates to
-/// slices.
-///
-/// - Parameters:
-///   - ref: A mutable Tensor. Should be from a Variable node.
-///   - indices: A Tensor. Must be one of the following types: int32, int64.
-///     A tensor of indices into ref.
-///   - updates: A Tensor. Must have the same type as ref. A tensor of updated values
-///     to add to ref.
-///
-/// - Attr use_locking: An optional bool. Defaults to True. If True, the assignment will
-///   be protected by a lock; otherwise the behavior is undefined,
-///   but may exhibit less contention.
-///
-/// - Output output_ref: Same as ref. Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterNdAdd<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdAdd",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
 /// Applies sparse addition to `input` using individual values or slices
 ///
 /// from `updates` according to indices `indices`.  The updates are non-aliasing:
@@ -16961,251 +17681,6 @@ public static func scatterNdNonAliasingAdd<T: TensorFlowScalar, Tindices: Binary
   return Tensor(handle: ret)
 }
 
-/// Applies sparse subtraction to individual values or slices in a Variable.
-///
-/// within a given variable according to `indices`.
-///
-/// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
-///
-/// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape `[d_0, ..., d_{Q-2}, K]` where `0 < K <= P`.
-///
-/// The innermost dimension of `indices` (with length `K`) corresponds to
-/// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
-/// dimension of `ref`.
-///
-/// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
-///
-/// ```
-/// [d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]]
-/// ```
-///
-/// For example, say we want to subtract 4 scattered elements from a rank-1 tensor
-/// with 8 elements. In Python, that subtraction would look like this:
-///
-/// ```python
-/// ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
-/// indices = tf.constant([[4], [3], [1], [7]])
-/// updates = tf.constant([9, 10, 11, 12])
-/// sub = tf.scatter_nd_sub(ref, indices, updates)
-/// with tf.Session() as sess:
-///   print sess.run(sub)
-/// ```
-///
-/// The resulting update to ref would look like this:
-///
-///     [1, -9, 3, -6, -4, 6, 7, -4]
-///
-/// See `tf.scatter_nd` for more details about how to make updates to
-/// slices.
-///
-/// - Parameters:
-///   - ref: A mutable Tensor. Should be from a Variable node.
-///   - indices: A Tensor. Must be one of the following types: int32, int64.
-///     A tensor of indices into ref.
-///   - updates: A Tensor. Must have the same type as ref. A tensor of updated values
-///     to subtract from ref.
-///
-/// - Attr use_locking: An optional bool. Defaults to True. If True, the assignment will
-///   be protected by a lock; otherwise the behavior is undefined,
-///   but may exhibit less contention.
-///
-/// - Output output_ref: Same as ref. Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterNdSub<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdSub",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Applies sparse `updates` to individual values or slices within a given
-///
-/// variable according to `indices`.
-///
-/// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
-///
-/// `indices` must be integer tensor, containing indices into `ref`.
-/// It must be shape \\([d_0, ..., d_{Q-2}, K]\\) where `0 < K <= P`.
-///
-/// The innermost dimension of `indices` (with length `K`) corresponds to
-/// indices into elements (if `K = P`) or slices (if `K < P`) along the `K`th
-/// dimension of `ref`.
-///
-/// `updates` is `Tensor` of rank `Q-1+P-K` with shape:
-///
-/// $$[d_0, ..., d_{Q-2}, ref.shape[K], ..., ref.shape[P-1]].$$
-///
-/// For example, say we want to update 4 scattered elements to a rank-1 tensor to
-/// 8 elements. In Python, that update would look like this:
-///
-/// ```python
-///     ref = tf.Variable([1, 2, 3, 4, 5, 6, 7, 8])
-///     indices = tf.constant([[4], [3], [1] ,[7]])
-///     updates = tf.constant([9, 10, 11, 12])
-///     update = tf.scatter_nd_update(ref, indices, updates)
-///     with tf.Session() as sess:
-///       print sess.run(update)
-/// ```
-///
-/// The resulting update to ref would look like this:
-///
-///     [1, 11, 3, 10, 9, 6, 7, 12]
-///
-/// See `tf.scatter_nd` for more details about how to make updates to
-/// slices.
-///
-/// See also `tf.scatter_update` and `tf.batch_scatter_update`.
-///
-/// - Parameters:
-///   - ref: A mutable Tensor. Should be from a Variable node.
-///   - indices: A Tensor. Must be one of the following types: int32, int64.
-///     A tensor of indices into ref.
-///   - updates: A Tensor. Must have the same type as ref. A tensor of updated
-///     values to add to ref.
-///
-/// - Attr use_locking: An optional bool. Defaults to True. If True, the assignment will
-///   be protected by a lock; otherwise the behavior is undefined,
-///   but may exhibit less contention.
-///
-/// - Output output_ref: Same as ref. Returned as a convenience for operations that want to
-///   use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterNdUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = true
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterNdUpdate",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Subtracts sparse updates to a variable reference.
-///
-/// ```python
-///     # Scalar indices
-///     ref[indices, ...] -= updates[...]
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] -= updates[i, ...]
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] -= updates[i, ..., j, ...]
-/// ```
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// Duplicate entries are handled correctly: if multiple `indices` reference
-/// the same location, their (negated) contributions add.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterSub.png" alt>
-/// </div>
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to subtract from `ref`.
-///
-/// - Attr use_locking: If True, the subtraction will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterSub<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterSub",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Applies sparse updates to a variable reference.
-///
-/// This operation computes
-///
-/// ```python
-///     # Scalar indices
-///     ref[indices, ...] = updates[...]
-///
-///     # Vector indices (for each i)
-///     ref[indices[i], ...] = updates[i, ...]
-///
-///     # High rank indices (for each i, ..., j)
-///     ref[indices[i, ..., j], ...] = updates[i, ..., j, ...]
-/// ```
-///
-/// This operation outputs `ref` after the update is done.
-/// This makes it easier to chain operations that need to use the reset value.
-///
-/// If values in `ref` is to be updated more than once, because there are
-/// duplicate entries in `indices`, the order at which the updates happen
-/// for each value is undefined.
-///
-/// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
-///
-/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
-/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterUpdate.png" alt>
-/// </div>
-///
-/// See also `tf.batch_scatter_update` and `tf.scatter_nd_update`.
-///
-/// - Parameters:
-///   - ref: Should be from a `Variable` node.
-///   - indices: A tensor of indices into the first dimension of `ref`.
-///   - updates: A tensor of updated values to store in `ref`.
-///
-/// - Attr use_locking: If True, the assignment will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output output_ref: = Same as `ref`.  Returned as a convenience for operations that want
-///   to use the updated values after the update is done.
-@inlinable @inline(__always)
-public static func scatterUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  indices: Tensor<Tindices>,
-  updates: Tensor<T>,
-  useLocking: Bool = true
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("ScatterUpdate",
-    ref,
-    indices,
-    updates,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
 /// Computes fingerprints of the input strings.
 ///
 /// - Parameter input: vector of strings to compute fingerprints on.
@@ -17219,27 +17694,6 @@ public static func sdcaFprint(
   let ret: TensorHandle<Int64> = #tfop("SdcaFprint",
     input)
   return Tensor(handle: ret)
-}
-
-/// Applies L1 regularization shrink step on the parameters.
-///
-/// - Parameter weights: a list of vectors where each value is the weight associated with a
-///   feature group.
-///
-/// - Attrs:
-///   - num_features: Number of feature groups to apply shrinking step.
-///   - l1: Symmetric l1 regularization strength.
-///   - l2: Symmetric l2 regularization strength. Should be a positive float.
-@inlinable @inline(__always)
-public static func sdcaShrinkL1(
-  weights: [Tensor<Float>],
-  l1: Double,
-  l2: Double
-) {
-  return #tfop("SdcaShrinkL1",
-    weights,
-    l1: l1,
-    l2: l2)
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -17620,6 +18074,35 @@ public static func seluGrad<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Performs gradient updates of embedding tables.
+///
+/// - Parameters:
+///   - inputs: A TensorList of gradients with which to update embedding tables.
+///     This argument has the same length and shapes as the return value of
+///     RecvTPUEmbeddingActivations, but contains gradients of the model's loss
+///     with respect to the embedding activations. The embedding tables are updated
+///     from these gradients via the optimizer specified in the TPU embedding
+///     configuration given to tpu.initialize_system.
+///   - learning_rates: A TensorList of float32 scalars, one for each dynamic learning
+///     rate tag: see the comments in
+///     //third_party/tensorflow/core/protobuf/tpu/optimization_parameters.proto.
+///     Multiple tables can share the same dynamic learning rate tag as specified
+///     in the configuration. If the learning rates for all tables are constant,
+///     this list should be empty.
+///
+/// - Attr config: Serialized TPUEmbeddingConfiguration proto.
+@inlinable @inline(__always)
+public static func sendTPUEmbeddingGradients(
+  inputs: [Tensor<Float>],
+  learningRates: [Tensor<Float>],
+  config: String
+) {
+  return #tfop("SendTPUEmbeddingGradients",
+    inputs,
+    learningRates,
+    config: config)
+}
+
 /// Serialize an `N`-minibatch `SparseTensor` into an `[N, 3]` `Tensor` object.
 ///
 /// The `SparseTensor` must have rank `R` greater than 1, and the first dimension
@@ -17773,6 +18256,15 @@ public static func shardedFilespec(
     basename,
     numShards)
   return StringTensor(handle: ret)
+}
+
+/// Shuts down a running distributed TPU system.
+///
+/// The op returns an error if no system is running.
+@inlinable @inline(__always)
+public static func shutdownDistributedTPU(
+) {
+  return #tfop("ShutdownDistributedTPU")
 }
 
 /// Computes sigmoid of `x` element-wise.
@@ -18396,7 +18888,7 @@ public static func spaceToBatchND<T: TensorFlowScalar, TblockShape: BinaryIntege
 public static func spaceToDepth<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat3 = .nhwc
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("SpaceToDepth",
     input,
@@ -18404,77 +18896,6 @@ public static func spaceToDepth<T: TensorFlowScalar>(
     block_size: blockSize,
     data_format: dataFormat.cName)
   return Tensor(handle: ret)
-}
-
-/// Applies a sparse gradient to a given accumulator.
-///
-/// Does not add if local_step is smaller than the accumulator's
-/// global_step.
-///
-/// - Parameters:
-///   - handle: The handle to a accumulator.
-///   - local_step: The local_step value at which the sparse gradient was computed.
-///   - gradient_indices: Indices of the sparse gradient to be accumulated. Must be a
-///     vector.
-///   - gradient_values: Values are the non-zero slices of the gradient, and must have
-///     the same first dimension as indices, i.e., the nnz represented by indices and
-///     values must be consistent.
-///   - gradient_shape: Shape of the sparse gradient to be accumulated.
-///
-/// - Attrs:
-///   - dtype: The data type of accumulated gradients. Needs to correspond to the type
-///     of the accumulator.
-///   - has_known_shape: Boolean indicating whether gradient_shape is unknown, in which
-///     case the input is ignored during validation.
-@inlinable @inline(__always)
-public static func sparseAccumulatorApplyGradient<Dtype: Numeric & TensorFlowScalar>(
-  handle: StringTensor,
-  localStep: Tensor<Int64>,
-  gradientIndices: Tensor<Int64>,
-  gradientValues: Tensor<Dtype>,
-  gradientShape: Tensor<Int64>,
-  hasKnownShape: Bool
-) {
-  return #tfop("SparseAccumulatorApplyGradient",
-    handle,
-    localStep,
-    gradientIndices,
-    gradientValues,
-    gradientShape,
-    dtype$dtype: Dtype.tensorFlowDataType,
-    has_known_shape: hasKnownShape)
-}
-
-/// Extracts the average sparse gradient in a SparseConditionalAccumulator.
-///
-/// The op will blocks until sufficient (i.e., more than num_required)
-/// gradients have been accumulated. If the accumulator has already
-/// aggregated more than num_required gradients, it will return its
-/// average of the accumulated gradients.  Also automatically increments
-/// the recorded global_step in the accumulator by 1, and resets the
-/// aggregate to 0.
-///
-/// - Parameters:
-///   - handle: The handle to a SparseConditionalAccumulator.
-///   - num_required: Number of gradients required before we return an aggregate.
-///
-/// - Attr dtype: The data type of accumulated gradients. Needs to correspond to the type
-///   of the accumulator.
-///
-/// - Outputs:
-///   - indices: Indices of the average of the accumulated sparse gradients.
-///   - values: Values of the average of the accumulated sparse gradients.
-///   - shape: Shape of the average of the accumulated sparse gradients.
-@inlinable @inline(__always)
-public static func sparseAccumulatorTakeGradient<Dtype: Numeric & TensorFlowScalar>(
-  handle: StringTensor,
-  numRequired: Tensor<Int32>
-) -> (indices: Tensor<Int64>, values: Tensor<Dtype>, shape: Tensor<Int64>) {
-  let ret: (TensorHandle<Int64>, TensorHandle<Dtype>, TensorHandle<Int64>) = #tfop("SparseAccumulatorTakeGradient",
-    handle,
-    numRequired,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
 }
 
 /// Adds two `SparseTensor` objects to produce another `SparseTensor`.
@@ -18559,508 +18980,6 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
     sumIndices,
     T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// var: Should be from a Variable().
-///
-/// - Parameters:
-///   - accum: Should be from a Variable().
-///   - accum_update: : Should be from a Variable().
-///   - lr: Learning rate. Must be a scalar.
-///   - rho: Decay factor. Must be a scalar.
-///   - epsilon: Constant factor. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///
-/// - Attr use_locking: If True, updating of the var and accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyAdadelta<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  accumUpdate: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdadelta",
-    var_,
-    accum,
-    accumUpdate,
-    lr,
-    rho,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update relevant entries in '*var' and '*accum' according to the adagrad scheme.
-///
-/// That is for rows we have grad for, we update var and accum as follows:
-/// $$accum += grad * grad$$
-/// $$var -= lr * grad * (1 / sqrt(accum))$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Learning rate. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyAdagrad<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false,
-  updateSlots: Bool = true
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdagrad",
-    var_,
-    accum,
-    lr,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking,
-    update_slots: updateSlots)
-  return Tensor(handle: ret)
-}
-
-/// Update entries in '*var' and '*accum' according to the proximal adagrad scheme.
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - gradient_accumulator: Should be from a Variable().
-///   - gradient_squared_accumulator: Should be from a Variable().
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///   - lr: Learning rate. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - global_step: Training step number. Must be a scalar.
-///
-/// - Attr use_locking: If True, updating of the var and accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyAdagradDA<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  gradientAccumulator: Tensor<T>,
-  gradientSquaredAccumulator: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  globalStep: Tensor<Int64>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyAdagradDA",
-    var_,
-    gradientAccumulator,
-    gradientSquaredAccumulator,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    globalStep,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the centered RMSProp algorithm.
-///
-/// The centered RMSProp algorithm uses an estimate of the centered second moment
-/// (i.e., the variance) for normalization, as opposed to regular RMSProp, which
-/// uses the (uncentered) second moment. This often helps with training, but is
-/// slightly more expensive in terms of computation and memory.
-///
-/// Note that in dense implementation of this algorithm, mg, ms, and mom will
-/// update even if the grad is zero, but in this sparse implementation, mg, ms,
-/// and mom will not update in iterations during which the grad is zero.
-///
-/// mean_square = decay * mean_square + (1-decay) * gradient ** 2
-/// mean_grad = decay * mean_grad + (1-decay) * gradient
-/// Delta = learning_rate * gradient / sqrt(mean_square + epsilon - mean_grad ** 2)
-///
-/// $$ms <- rho * ms_{t-1} + (1-rho) * grad * grad$$
-/// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
-/// $$var <- var - mom$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - mg: Should be from a Variable().
-///   - ms: Should be from a Variable().
-///   - mom: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - rho: Decay rate. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var, ms and mom.
-///
-/// - Attr use_locking: If `True`, updating of the var, mg, ms, and mom tensors is
-///   protected by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyCenteredRMSProp<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  mg: Tensor<T>,
-  ms: Tensor<T>,
-  mom: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  momentum: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyCenteredRMSProp",
-    var_,
-    mg,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update relevant entries in '*var' according to the Ftrl-proximal scheme.
-///
-/// That is for rows we have grad for, we update var, accum and linear as follows:
-/// $$accum_new = accum + grad * grad$$
-/// $$linear += grad + (accum_{new}^{-lr_{power}} - accum^{-lr_{power}} / lr * var$$
-/// $$quadratic = 1.0 / (accum_{new}^{lr_{power}} * lr) + 2 * l2$$
-/// $$var = (sign(linear) * l1 - linear) / quadratic\ if\ |linear| > l1\ else\ 0.0$$
-/// $$accum = accum_{new}$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - linear: Should be from a Variable().
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - lr_power: Scaling factor. Must be a scalar.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyFtrl<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  linear: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  lrPower: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyFtrl",
-    var_,
-    accum,
-    linear,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update relevant entries in '*var' according to the Ftrl-proximal scheme.
-///
-/// That is for rows we have grad for, we update var, accum and linear as follows:
-/// grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-/// accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-/// linear += grad_with_shrinkage +
-///     (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
-/// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
-/// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
-/// accum = accum_new
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - linear: Should be from a Variable().
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///   - lr: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 shrinkage regulariation. Must be a scalar.
-///   - lr_power: Scaling factor. Must be a scalar.
-///
-/// - Attr use_locking: If `True`, updating of the var and accum tensors will be protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyFtrlV2<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  linear: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  l2Shrinkage: Tensor<T>,
-  lrPower: Tensor<T>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyFtrlV2",
-    var_,
-    accum,
-    linear,
-    grad,
-    indices,
-    lr,
-    l1,
-    l2,
-    l2Shrinkage,
-    lrPower,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update relevant entries in '*var' and '*accum' according to the momentum scheme.
-///
-/// Set use_nesterov = True if you want to use Nesterov momentum.
-///
-/// That is for rows we have grad for, we update var and accum as follows:
-///
-/// $$accum = accum * momentum + grad$$
-/// $$var -= lr * accum$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Learning rate. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///   - momentum: Momentum. Must be a scalar.
-///
-/// - Attrs:
-///   - use_locking: If `True`, updating of the var and accum tensors will be protected
-///     by a lock; otherwise the behavior is undefined, but may exhibit less
-///     contention.
-///   - use_nesterov: If `True`, the tensor passed to compute grad will be
-///     var - lr * momentum * accum, so in the end, the var you get is actually
-///     var - lr * momentum * accum.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyMomentum<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  momentum: Tensor<T>,
-  useLocking: Bool = false,
-  useNesterov: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyMomentum",
-    var_,
-    accum,
-    lr,
-    grad,
-    indices,
-    momentum,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking,
-    use_nesterov: useNesterov)
-  return Tensor(handle: ret)
-}
-
-/// Sparse update entries in '*var' and '*accum' according to FOBOS algorithm.
-///
-/// That is for rows we have grad for, we update var and accum as follows:
-/// $$accum += grad * grad$$
-/// $$prox_v = var$$
-/// $$prox_v -= lr * grad * (1 / sqrt(accum))$$
-/// $$var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - accum: Should be from a Variable().
-///   - lr: Learning rate. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///
-/// - Attr use_locking: If True, updating of the var and accum tensors will be protected by
-///   a lock; otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyProximalAdagrad<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  accum: Tensor<T>,
-  lr: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyProximalAdagrad",
-    var_,
-    accum,
-    lr,
-    l1,
-    l2,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Sparse update '*var' as FOBOS algorithm with fixed learning rate.
-///
-/// That is for rows we have grad for, we update var as follows:
-/// $$prox_v = var - alpha * grad$$
-/// $$var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - alpha: Scaling factor. Must be a scalar.
-///   - l1: L1 regularization. Must be a scalar.
-///   - l2: L2 regularization. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var and accum.
-///
-/// - Attr use_locking: If True, the subtraction will be protected by a lock;
-///   otherwise the behavior is undefined, but may exhibit less contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyProximalGradientDescent<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  alpha: Tensor<T>,
-  l1: Tensor<T>,
-  l2: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyProximalGradientDescent",
-    var_,
-    alpha,
-    l1,
-    l2,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
-}
-
-/// Update '*var' according to the RMSProp algorithm.
-///
-/// Note that in dense implementation of this algorithm, ms and mom will
-/// update even if the grad is zero, but in this sparse implementation, ms
-/// and mom will not update in iterations during which the grad is zero.
-///
-/// mean_square = decay * mean_square + (1-decay) * gradient ** 2
-/// Delta = learning_rate * gradient / sqrt(mean_square + epsilon)
-///
-/// $$ms <- rho * ms_{t-1} + (1-rho) * grad * grad$$
-/// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
-/// $$var <- var - mom$$
-///
-/// - Parameters:
-///   - var: Should be from a Variable().
-///   - ms: Should be from a Variable().
-///   - mom: Should be from a Variable().
-///   - lr: Scaling factor. Must be a scalar.
-///   - rho: Decay rate. Must be a scalar.
-///   - epsilon: Ridge term. Must be a scalar.
-///   - grad: The gradient.
-///   - indices: A vector of indices into the first dimension of var, ms and mom.
-///
-/// - Attr use_locking: If `True`, updating of the var, ms, and mom tensors is protected
-///   by a lock; otherwise the behavior is undefined, but may exhibit less
-///   contention.
-///
-/// - Output out: Same as "var".
-@inlinable @inline(__always)
-public static func sparseApplyRMSProp<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  var_: Tensor<T>,
-  ms: Tensor<T>,
-  mom: Tensor<T>,
-  lr: Tensor<T>,
-  rho: Tensor<T>,
-  momentum: Tensor<T>,
-  epsilon: Tensor<T>,
-  grad: Tensor<T>,
-  indices: Tensor<Tindices>,
-  useLocking: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("SparseApplyRMSProp",
-    var_,
-    ms,
-    mom,
-    lr,
-    rho,
-    momentum,
-    epsilon,
-    grad,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    use_locking: useLocking)
-  return Tensor(handle: ret)
 }
 
 /// Concatenates a list of `SparseTensor` along the specified dimension.
@@ -20494,53 +20413,6 @@ public static func squeeze<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// Deprecated, use StackV2.
-@inlinable @inline(__always)
-public static func stack<ElemType: TensorFlowScalar>(
-  stackName: String,
-  typeElemType: ElemType.Type
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("Stack",
-    elem_type$dtype: ElemType.tensorFlowDataType,
-    stack_name: stackName)
-  return StringTensor(handle: ret)
-}
-
-/// Deprecated, use StackCloseV2.
-@inlinable @inline(__always)
-public static func stackClose(
-  handle: StringTensor
-) {
-  return #tfop("StackClose",
-    handle)
-}
-
-/// Deprecated, use StackPopV2.
-@inlinable @inline(__always)
-public static func stackPop<ElemType: TensorFlowScalar>(
-  handle: StringTensor
-) -> Tensor<ElemType> {
-  let ret: TensorHandle<ElemType> = #tfop("StackPop",
-    handle,
-    elem_type$dtype: ElemType.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Deprecated, use StackPushV2.
-@inlinable @inline(__always)
-public static func stackPush<T: TensorFlowScalar>(
-  handle: StringTensor,
-  elem: Tensor<T>,
-  swapMemory: Bool = false
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StackPush",
-    handle,
-    elem,
-    T$dtype: T.tensorFlowDataType,
-    swap_memory: swapMemory)
-  return Tensor(handle: ret)
-}
-
 /// Stage values similar to a lightweight Enqueue.
 ///
 /// The basic functionality of this Op is similar to a queue with many
@@ -20681,6 +20553,39 @@ public static func statelessRandomUniform<Dtype: FloatingPoint & TensorFlowScala
   let ret: TensorHandle<Dtype> = #tfop("StatelessRandomUniform",
     shape,
     seed,
+    dtype$dtype: Dtype.tensorFlowDataType,
+    T$dtype: T.tensorFlowDataType,
+    Tseed$dtype: Tseed.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Outputs deterministic pseudorandom random integers from a uniform distribution.
+///
+/// The generated values follow a uniform distribution in the range `[minval, maxval)`.
+///
+/// The outputs are a deterministic function of `shape`, `seed`, `minval`, and `maxval`.
+///
+/// - Parameters:
+///   - shape: The shape of the output tensor.
+///   - seed: 2 seeds (shape [2]).
+///   - minval: Minimum value (inclusive, scalar).
+///   - maxval: Maximum value (exclusive, scalar).
+///
+/// - Attr dtype: The type of the output.
+///
+/// - Output output: Random values with specified shape.
+@inlinable @inline(__always)
+public static func statelessRandomUniformInt<Dtype: BinaryInteger & TensorFlowScalar, T: BinaryInteger & TensorFlowScalar, Tseed: BinaryInteger & TensorFlowScalar>(
+  shape: Tensor<T>,
+  seed: Tensor<Tseed>,
+  minval: Tensor<Dtype>,
+  maxval: Tensor<Dtype>
+) -> Tensor<Dtype> {
+  let ret: TensorHandle<Dtype> = #tfop("StatelessRandomUniformInt",
+    shape,
+    seed,
+    minval,
+    maxval,
     dtype$dtype: Dtype.tensorFlowDataType,
     T$dtype: T.tensorFlowDataType,
     Tseed$dtype: Tseed.tensorFlowDataType)
@@ -20944,43 +20849,6 @@ public static func stridedSlice<T: TensorFlowScalar, Index: BinaryInteger & Tens
     begin,
     end,
     strides,
-    T$dtype: T.tensorFlowDataType,
-    Index$dtype: Index.tensorFlowDataType,
-    begin_mask: beginMask,
-    end_mask: endMask,
-    ellipsis_mask: ellipsisMask,
-    new_axis_mask: newAxisMask,
-    shrink_axis_mask: shrinkAxisMask)
-  return Tensor(handle: ret)
-}
-
-/// Assign `value` to the sliced l-value reference of `ref`.
-///
-/// The values of `value` are assigned to the positions in the variable
-/// `ref` that are selected by the slice parameters. The slice parameters
-/// `begin`, `end`, `strides`, etc. work exactly as in `StridedSlice`.
-///
-/// NOTE this op currently does not support broadcasting and so `value`'s
-/// shape must be exactly the shape produced by the slice of `ref`.
-@inlinable @inline(__always)
-public static func stridedSliceAssign<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowScalar>(
-  ref: Tensor<T>,
-  begin: Tensor<Index>,
-  end: Tensor<Index>,
-  strides: Tensor<Index>,
-  value: Tensor<T>,
-  beginMask: Int64 = 0,
-  endMask: Int64 = 0,
-  ellipsisMask: Int64 = 0,
-  newAxisMask: Int64 = 0,
-  shrinkAxisMask: Int64 = 0
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("StridedSliceAssign",
-    ref,
-    begin,
-    end,
-    strides,
-    value,
     T$dtype: T.tensorFlowDataType,
     Index$dtype: Index.tensorFlowDataType,
     begin_mask: beginMask,
@@ -21335,24 +21203,109 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Return substrings from `Tensor` of strings.
+///
+/// For each string in the input `Tensor`, creates a substring starting at index
+/// `pos` with a total length of `len`.
+///
+/// If `len` defines a substring that would extend beyond the length of the input
+/// string, then as many characters as possible are used.
+///
+/// A negative `pos` indicates distance within the string backwards from the end.
+///
+/// If `pos` specifies an index which is out of range for any of the input strings,
+/// then an `InvalidArgumentError` is thrown.
+///
+/// `pos` and `len` must have the same shape, otherwise a `ValueError` is thrown on
+/// Op creation.
+///
+/// *NOTE*: `Substr` supports broadcasting up to two dimensions. More about
+/// broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+///
+/// ---
+///
+/// Examples
+///
+/// Using scalar `pos` and `len`:
+///
+/// ```python
+/// input = [b'Hello', b'World']
+/// position = 1
+/// length = 3
+///
+/// output = [b'ell', b'orl']
+/// ```
+///
+/// Using `pos` and `len` with same shape as `input`:
+///
+/// ```python
+/// input = [[b'ten', b'eleven', b'twelve'],
+///          [b'thirteen', b'fourteen', b'fifteen'],
+///          [b'sixteen', b'seventeen', b'eighteen']]
+/// position = [[1, 2, 3],
+///             [1, 2, 3],
+///             [1, 2, 3]]
+/// length =   [[2, 3, 4],
+///             [4, 3, 2],
+///             [5, 5, 5]]
+///
+/// output = [[b'en', b'eve', b'lve'],
+///           [b'hirt', b'urt', b'te'],
+///           [b'ixtee', b'vente', b'hteen']]
+/// ```
+///
+/// Broadcasting `pos` and `len` onto `input`:
+///
+/// ```
+/// input = [[b'ten', b'eleven', b'twelve'],
+///          [b'thirteen', b'fourteen', b'fifteen'],
+///          [b'sixteen', b'seventeen', b'eighteen'],
+///          [b'nineteen', b'twenty', b'twentyone']]
+/// position = [1, 2, 3]
+/// length =   [1, 2, 3]
+///
+/// output = [[b'e', b'ev', b'lve'],
+///           [b'h', b'ur', b'tee'],
+///           [b'i', b've', b'hte'],
+///           [b'i', b'en', b'nty']]
+/// ```
+///
+/// Broadcasting `input` onto `pos` and `len`:
+///
+/// ```
+/// input = b'thirteen'
+/// position = [1, 5, 7]
+/// length =   [3, 2, 1]
+///
+/// output = [b'hir', b'ee', b'n']
+/// ```
 ///
 /// - Parameters:
 ///   - input: Tensor of strings
 ///   - pos: Scalar defining the position of first character in each substring
 ///   - len: Scalar defining the number of characters to include in each substring
 ///
+/// - Attr unit: The unit that is used to create the substring.  One of: `"BYTE"` (for
+///   defining position and length by bytes) or `"UTF8_CHAR"` (for the UTF-8
+///   encoded Unicode code points).  The default is `"BYTE"`. Results are undefined if
+///   `unit=UTF8_CHAR` and the `input` strings do not contain structurally valid
+///   UTF-8.
+///
 /// - Output output: Tensor of substrings
 @inlinable @inline(__always)
 public static func substr<T: BinaryInteger & TensorFlowScalar>(
   _ input: StringTensor,
   pos: Tensor<T>,
-  len: Tensor<T>
+  len: Tensor<T>,
+  unit: Unit = .byte
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("Substr",
     input,
     pos,
     len,
-    T$dtype: T.tensorFlowDataType)
+    T$dtype: T.tensorFlowDataType,
+    unit: unit.cName)
   return StringTensor(handle: ret)
 }
 
@@ -21459,26 +21412,102 @@ public static func switch_<T: TensorFlowScalar>(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
-/// A Reader that outputs the records from a TensorFlow Records file.
+/// CompilationResultProto indicating the status of the TPU compilation.
+@inlinable @inline(__always)
+public static func tPUCompilationResult(
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("TPUCompilationResult")
+  return StringTensor(handle: ret)
+}
+
+/// An op enabling differentiation of TPU Embeddings.
+///
+/// This op simply returns its first input, which is assumed to have been sliced
+/// from the Tensors returned by TPUEmbeddingDequeueActivations. The presence of
+/// this op, and its first argument being a trainable Variable, enables automatic
+/// differentiation of graphs containing embeddings via the TPU Embedding Python
+/// libraries.
+///
+/// - Parameters:
+///   - embedding_variable: A trainable variable, enabling optimizers to find this op.
+///   - sliced_activations: The embedding activations Tensor to return.
 ///
 /// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
+///   - table_id: The id of the table in the embedding layer configuration from which
+///     these activations were computed.
+///   - lookup_id: Identifier of the set of embedding indices which produced these
+///     activations.
 @inlinable @inline(__always)
-public static func tFRecordReader(
-  container: String,
-  sharedName: String,
-  compressionType: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TFRecordReader",
-    container: container,
-    shared_name: sharedName,
-    compression_type: compressionType)
-  return StringTensor(handle: ret)
+public static func tPUEmbeddingActivations(
+  embeddingVariable: Tensor<Float>,
+  slicedActivations: Tensor<Float>,
+  tableId: Int64,
+  lookupId: Int64
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("TPUEmbeddingActivations",
+    embeddingVariable,
+    slicedActivations,
+    table_id: tableId,
+    lookup_id: lookupId)
+  return Tensor(handle: ret)
+}
+
+/// A TPU core selector Op.
+///
+/// This Op produces a set of TPU cores (for warm-up) or a single TPU core
+/// (for regular inference) to execute the TPU program on. The output is
+/// consumed by TPUPartitionedCall.
+///
+/// - Output device_ordinals: A vector 1 or more TPU cores.
+@inlinable @inline(__always)
+public static func tPUOrdinalSelector(
+) -> Tensor<Int32> {
+  let ret: TensorHandle<Int32> = #tfop("TPUOrdinalSelector")
+  return Tensor(handle: ret)
+}
+
+/// Metadata indicaitng how the TPU computation should be replicated.
+///
+/// - Attrs:
+///   - num_replicas: Number of replicas of the computation
+///   - num_cores_per_replica: Number of cores per replica. Used for model parallelism.
+///   - topology: TopologyProto indicating the topology of the TPU pod slice.
+///   - use_tpu: Whether to place the computation on the TPU.
+///   - device_assignment: The assignment of devices for the computation.
+///   - computation_shape: DEPRECATED. Use num_cores_per_replica instead.
+@inlinable @inline(__always)
+public static func tPUReplicateMetadata(
+  numReplicas: Int64,
+  numCoresPerReplica: Int64 = 1,
+  topology: String,
+  useTpu: Bool = true,
+  deviceAssignment: [Int32],
+  computationShape: [Int32],
+  hostComputeCore: [String],
+  paddingMap: [String],
+  stepMarkerLocation: String = "STEP_MARK_AT_ENTRY"
+) {
+  return #tfop("TPUReplicateMetadata",
+    num_replicas: numReplicas,
+    num_cores_per_replica: numCoresPerReplica,
+    topology: topology,
+    use_tpu: useTpu,
+    device_assignment: deviceAssignment,
+    computation_shape: computationShape,
+    host_compute_core: hostComputeCore,
+    padding_map: paddingMap,
+    step_marker_location: stepMarkerLocation)
+}
+
+/// Connects N inputs to an N-way replicated TPU computation.
+@inlinable @inline(__always)
+public static func tPUReplicatedInput<T: TensorFlowScalar>(
+  inputs: [Tensor<T>]
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TPUReplicatedInput",
+    inputs,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -21599,14 +21628,6 @@ public static func tanhGrad<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func tensorArrayClose(
-  handle: StringTensor
-) {
-  return #tfop("TensorArrayClose",
-    handle)
-}
-
 /// Deprecated. Use TensorArrayCloseV3
 @inlinable @inline(__always)
 public static func tensorArrayCloseV2(
@@ -21614,19 +21635,6 @@ public static func tensorArrayCloseV2(
 ) {
   return #tfop("TensorArrayCloseV2",
     handle)
-}
-
-@inlinable @inline(__always)
-public static func tensorArrayGrad(
-  handle: StringTensor,
-  flowIn: Tensor<Float>,
-  source: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorArrayGrad",
-    handle,
-    flowIn,
-    source: source)
-  return StringTensor(handle: ret)
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -21643,20 +21651,6 @@ public static func tensorArrayGradV2(
   return StringTensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func tensorArrayRead<Dtype: TensorFlowScalar>(
-  handle: StringTensor,
-  index: Tensor<Int32>,
-  flowIn: Tensor<Float>
-) -> Tensor<Dtype> {
-  let ret: TensorHandle<Dtype> = #tfop("TensorArrayRead",
-    handle,
-    index,
-    flowIn,
-    dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
 /// Deprecated. Use TensorArrayReadV3
 @inlinable @inline(__always)
 public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
@@ -21669,22 +21663,6 @@ public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
     index,
     flowIn,
     dtype$dtype: Dtype.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func tensorArrayScatter<T: TensorFlowScalar>(
-  handle: StringTensor,
-  indices: Tensor<Int32>,
-  value: Tensor<T>,
-  flowIn: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayScatter",
-    handle,
-    indices,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -21705,17 +21683,6 @@ public static func tensorArrayScatterV2<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func tensorArraySize(
-  handle: StringTensor,
-  flowIn: Tensor<Float>
-) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("TensorArraySize",
-    handle,
-    flowIn)
-  return Tensor(handle: ret)
-}
-
 /// Deprecated. Use TensorArraySizeV3
 @inlinable @inline(__always)
 public static func tensorArraySizeV2(
@@ -21725,22 +21692,6 @@ public static func tensorArraySizeV2(
   let ret: TensorHandle<Int32> = #tfop("TensorArraySizeV2",
     handle,
     flowIn)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func tensorArraySplit<T: TensorFlowScalar>(
-  handle: StringTensor,
-  value: Tensor<T>,
-  lengths: Tensor<Int64>,
-  flowIn: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArraySplit",
-    handle,
-    value,
-    lengths,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -21761,36 +21712,6 @@ public static func tensorArraySplitV2<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-@inlinable @inline(__always)
-public static func tensorArrayUnpack<T: TensorFlowScalar>(
-  handle: StringTensor,
-  value: Tensor<T>,
-  flowIn: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayUnpack",
-    handle,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-@inlinable @inline(__always)
-public static func tensorArrayWrite<T: TensorFlowScalar>(
-  handle: StringTensor,
-  index: Tensor<Int32>,
-  value: Tensor<T>,
-  flowIn: Tensor<Float>
-) -> Tensor<Float> {
-  let ret: TensorHandle<Float> = #tfop("TensorArrayWrite",
-    handle,
-    index,
-    value,
-    flowIn,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
 /// Deprecated. Use TensorArrayGradV3
 @inlinable @inline(__always)
 public static func tensorArrayWriteV2<T: TensorFlowScalar>(
@@ -21805,6 +21726,282 @@ public static func tensorArrayWriteV2<T: TensorFlowScalar>(
     value,
     flowIn,
     T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Adds sparse `updates` to an existing tensor according to `indices`.
+///
+/// This operation creates a new tensor by adding sparse `updates` to the passed
+/// in `tensor`.
+/// This operation is very similar to `tf.scatter_nd_add`, except that the updates
+/// are added onto an existing tensor (as opposed to a variable). If the memory
+/// for the existing tensor cannot be re-used, a copy is made and updated.
+///
+/// `indices` is an integer tensor containing indices into a new tensor of shape
+/// `shape`.  The last dimension of `indices` can be at most the rank of `shape`:
+///
+///     indices.shape[-1] <= shape.rank
+///
+/// The last dimension of `indices` corresponds to indices into elements
+/// (if `indices.shape[-1] = shape.rank`) or slices
+/// (if `indices.shape[-1] < shape.rank`) along dimension `indices.shape[-1]` of
+/// `shape`.  `updates` is a tensor with shape
+///
+///     indices.shape[:-1] + shape[indices.shape[-1]:]
+///
+/// The simplest form of tensor_scatter_add is to add individual elements to a
+/// tensor by index. For example, say we want to add 4 elements in a rank-1
+/// tensor with 8 elements.
+///
+/// In Python, this scatter add operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[4], [3], [1], [7]])
+///     updates = tf.constant([9, 10, 11, 12])
+///     tensor = tf.ones([8], dtype=tf.int32)
+///     updated = tf.tensor_scatter_add(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [1, 12, 1, 11, 10, 1, 1, 13]
+///
+/// We can also, insert entire slices of a higher rank tensor all at once. For
+/// example, if we wanted to insert two slices in the first dimension of a
+/// rank-3 tensor with two matrices of new values.
+///
+/// In Python, this scatter add operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[0], [2]])
+///     updates = tf.constant([[[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]],
+///                            [[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]]])
+///     tensor = tf.ones([4, 4, 4])
+///     updated = tf.tensor_scatter_add(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [[[6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8], [9, 9, 9, 9]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+///      [[6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8], [9, 9, 9, 9]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]]
+///
+/// Note that on CPU, if an out of bound index is found, an error is returned.
+/// On GPU, if an out of bound index is found, the index is ignored.
+///
+/// - Parameters:
+///   - tensor: Tensor to copy/update.
+///   - indices: Index tensor.
+///   - updates: Updates to scatter into output.
+///
+/// - Output output: A new tensor copied from tensor and updates added according to the indices.
+@inlinable @inline(__always)
+public static func tensorScatterAdd<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ tensor: Tensor<T>,
+  indices: Tensor<Tindices>,
+  updates: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TensorScatterAdd",
+    tensor,
+    indices,
+    updates,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Subtracts sparse `updates` from an existing tensor according to `indices`.
+///
+/// This operation creates a new tensor by subtracting sparse `updates` from the
+/// passed in `tensor`.
+/// This operation is very similar to `tf.scatter_nd_sub`, except that the updates
+/// are subtracted from an existing tensor (as opposed to a variable). If the memory
+/// for the existing tensor cannot be re-used, a copy is made and updated.
+///
+/// `indices` is an integer tensor containing indices into a new tensor of shape
+/// `shape`.  The last dimension of `indices` can be at most the rank of `shape`:
+///
+///     indices.shape[-1] <= shape.rank
+///
+/// The last dimension of `indices` corresponds to indices into elements
+/// (if `indices.shape[-1] = shape.rank`) or slices
+/// (if `indices.shape[-1] < shape.rank`) along dimension `indices.shape[-1]` of
+/// `shape`.  `updates` is a tensor with shape
+///
+///     indices.shape[:-1] + shape[indices.shape[-1]:]
+///
+/// The simplest form of tensor_scatter_sub is to subtract individual elements
+/// from a tensor by index. For example, say we want to insert 4 scattered elements
+/// in a rank-1 tensor with 8 elements.
+///
+/// In Python, this scatter subtract operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[4], [3], [1], [7]])
+///     updates = tf.constant([9, 10, 11, 12])
+///     tensor = tf.ones([8], dtype=tf.int32)
+///     updated = tf.tensor_scatter_sub(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [1, -10, 1, -9, -8, 1, 1, -11]
+///
+/// We can also, insert entire slices of a higher rank tensor all at once. For
+/// example, if we wanted to insert two slices in the first dimension of a
+/// rank-3 tensor with two matrices of new values.
+///
+/// In Python, this scatter add operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[0], [2]])
+///     updates = tf.constant([[[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]],
+///                            [[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]]])
+///     tensor = tf.ones([4, 4, 4])
+///     updated = tf.tensor_scatter_sub(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [[[-4, -4, -4, -4], [-5, -5, -5, -5], [-6, -6, -6, -6], [-7, -7, -7, -7]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+///      [[-4, -4, -4, -4], [-5, -5, -5, -5], [-6, -6, -6, -6], [-7, -7, -7, -7]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]]
+///
+/// Note that on CPU, if an out of bound index is found, an error is returned.
+/// On GPU, if an out of bound index is found, the index is ignored.
+///
+/// - Parameters:
+///   - tensor: Tensor to copy/update.
+///   - indices: Index tensor.
+///   - updates: Updates to scatter into output.
+///
+/// - Output output: A new tensor copied from tensor and updates subtracted according to the indices.
+@inlinable @inline(__always)
+public static func tensorScatterSub<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ tensor: Tensor<T>,
+  indices: Tensor<Tindices>,
+  updates: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TensorScatterSub",
+    tensor,
+    indices,
+    updates,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Scatter `updates` into an existing tensor according to `indices`.
+///
+/// This operation creates a new tensor by applying sparse `updates` to the passed
+/// in `tensor`.
+/// This operation is very similar to `tf.scatter_nd`, except that the updates are
+/// scattered onto an existing tensor (as opposed to a zero-tensor). If the memory
+/// for the existing tensor cannot be re-used, a copy is made and updated.
+///
+/// If `indices` contains duplicates, then their updates are accumulated (summed).
+///
+/// **WARNING**: The order in which updates are applied is nondeterministic, so the
+/// output will be nondeterministic if `indices` contains duplicates -- because
+/// of some numerical approximation issues, numbers summed in different order
+/// may yield different results.
+///
+/// `indices` is an integer tensor containing indices into a new tensor of shape
+/// `shape`.  The last dimension of `indices` can be at most the rank of `shape`:
+///
+///     indices.shape[-1] <= shape.rank
+///
+/// The last dimension of `indices` corresponds to indices into elements
+/// (if `indices.shape[-1] = shape.rank`) or slices
+/// (if `indices.shape[-1] < shape.rank`) along dimension `indices.shape[-1]` of
+/// `shape`.  `updates` is a tensor with shape
+///
+///     indices.shape[:-1] + shape[indices.shape[-1]:]
+///
+/// The simplest form of scatter is to insert individual elements in a tensor by
+/// index. For example, say we want to insert 4 scattered elements in a rank-1
+/// tensor with 8 elements.
+///
+/// <div style="width:70%; margin:auto; margin-bottom:10px; margin-top:20px;">
+/// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterNd1.png" alt>
+/// </div>
+///
+/// In Python, this scatter operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[4], [3], [1], [7]])
+///     updates = tf.constant([9, 10, 11, 12])
+///     tensor = tf.ones([8], dtype=tf.int32)
+///     updated = tf.tensor_scatter_update(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [1, 11, 1, 10, 9, 1, 1, 12]
+///
+/// We can also, insert entire slices of a higher rank tensor all at once. For
+/// example, if we wanted to insert two slices in the first dimension of a
+/// rank-3 tensor with two matrices of new values.
+///
+/// In Python, this scatter operation would look like this:
+///
+/// ```python
+///     indices = tf.constant([[0], [2]])
+///     updates = tf.constant([[[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]],
+///                            [[5, 5, 5, 5], [6, 6, 6, 6],
+///                             [7, 7, 7, 7], [8, 8, 8, 8]]])
+///     tensor = tf.ones([4, 4, 4])
+///     updated = tf.tensor_scatter_update(tensor, indices, updates)
+///     with tf.Session() as sess:
+///       print(sess.run(scatter))
+/// ```
+///
+/// The resulting tensor would look like this:
+///
+///     [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+///      [[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+///      [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]]
+///
+/// Note that on CPU, if an out of bound index is found, an error is returned.
+/// On GPU, if an out of bound index is found, the index is ignored.
+///
+/// - Parameters:
+///   - tensor: Tensor to copy/update.
+///   - indices: Index tensor.
+///   - updates: Updates to scatter into output.
+///
+/// - Output output: A new tensor with the given shape and updates applied according
+///   to the indices.
+@inlinable @inline(__always)
+public static func tensorScatterUpdate<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
+  _ tensor: Tensor<T>,
+  indices: Tensor<Tindices>,
+  updates: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TensorScatterUpdate",
+    tensor,
+    indices,
+    updates,
+    T$dtype: T.tensorFlowDataType,
+    Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -21872,29 +22069,6 @@ public static func testStringOutput(
   let ret: (TensorHandle<Float>, TensorHandle<String>) = #tfop("TestStringOutput",
     input)
   return (Tensor(handle: ret.0), StringTensor(handle: ret.1))
-}
-
-/// A Reader that outputs the lines of a file delimited by '\n'.
-///
-/// - Attrs:
-///   - skip_header_lines: Number of lines to skip from the beginning of every file.
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
-///
-/// - Output reader_handle: The handle to reference the Reader.
-@inlinable @inline(__always)
-public static func textLineReader(
-  skipHeaderLines: Int64 = 0,
-  container: String,
-  sharedName: String
-) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TextLineReader",
-    skip_header_lines: skipHeaderLines,
-    container: container,
-    shared_name: sharedName)
-  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -22101,6 +22275,33 @@ public static func transpose<T: TensorFlowScalar, Tperm: BinaryInteger & TensorF
     perm,
     T$dtype: T.tensorFlowDataType,
     Tperm$dtype: Tperm.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
+/// Solves tridiagonal systems of equations.
+///
+/// `diagonals` is a tensor of shape `[..., 3, M]` whose inner-most 2 dimensions
+/// represent matrices with three rows being the superdiagonal, diagonals, and
+/// subdiagonals, in order. The last element of the superdiagonal and the first
+/// element of the subdiagonal is ignored.
+/// `rhs` is a tensor of shape `[..., M, K]`, representing K right-hand sides per
+/// each left-hand side.
+/// The output is a tensor of shape `[..., M, K]` containing the solutions.
+///
+/// - Parameters:
+///   - diagonals: Shape is `[..., 3, M]`.
+///   - rhs: Shape is `[..., M, K]`.
+///
+/// - Output output: Shape is `[..., M, K]`.
+@inlinable @inline(__always)
+public static func tridiagonalSolve<T: FloatingPoint & TensorFlowScalar>(
+  diagonals: Tensor<T>,
+  rhs: Tensor<T>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TridiagonalSolve",
+    diagonals,
+    rhs,
+    T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }
 
@@ -22330,17 +22531,6 @@ public static func twoIntOutputs(
 }
 
 @inlinable @inline(__always)
-public static func twoRefsIn<T: TensorFlowScalar>(
-  _ a: Tensor<T>,
-  _ b: Tensor<T>
-) {
-  return #tfop("TwoRefsIn",
-    a,
-    b,
-    T$dtype: T.tensorFlowDataType)
-}
-
-@inlinable @inline(__always)
 public static func typeList<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
@@ -22452,6 +22642,181 @@ public static func unbatchGrad<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Decodes each string in `input` into a sequence of Unicode code points.
+///
+/// The character codepoints for all strings are returned using a single vector
+/// `char_values`, with strings expanded to characters in row-major order.
+///
+/// The `row_splits` tensor indicates where the codepoints for
+/// each input string begin and end within the `char_values` tensor.
+/// In particular, the values for the `i`th
+/// string (in row-major order) are stored in the slice
+/// `[row_splits[i]:row_splits[i+1]]`. Thus:
+///
+/// * `char_values[row_splits[i]+j]` is the Unicode codepoint for the `j`th
+///   character in the `i`th string (in row-major order).
+/// * `row_splits[i+1] - row_splits[i]` is the number of characters in the `i`th
+///   string (in row-major order).
+///
+/// - Parameter input: The text to be decoded. Can have any shape. Note that the output is flattened
+///   to a vector of char values.
+///
+/// - Attrs:
+///   - input_encoding: Text encoding of the input strings. This is any of the encodings supported
+///     by ICU ucnv algorithmic converters. Examples: `"UTF-16", "US ASCII", "UTF-8"`.
+///   - errors: Error handling policy when there is invalid formatting found in the input.
+///     The value of 'strict' will cause the operation to produce a InvalidArgument
+///     error on any invalid input formatting. A value of 'replace' (the default) will
+///     cause the operation to replace any invalid formatting in the input with the
+///     `replacement_char` codepoint. A value of 'ignore' will cause the operation to
+///     skip any invalid formatting in the input and produce no corresponding output
+///     character.
+///   - replacement_char: The replacement character codepoint to be used in place of any invalid
+///     formatting in the input when `errors='replace'`. Any valid unicode codepoint may
+///     be used. The default value is the default unicode replacement character is
+///     0xFFFD or U+65533.)
+///   - replace_control_characters: Whether to replace the C0 control characters (00-1F) with the
+///     `replacement_char`. Default is false.
+///
+/// - Outputs:
+///   - row_splits: A 1D int32 tensor containing the row splits.
+///   - char_values: A 1D int32 Tensor containing the decoded codepoints.
+@inlinable @inline(__always)
+public static func unicodeDecode(
+  _ input: StringTensor,
+  inputEncoding: String,
+  errors: Errors = .replace,
+  replacementChar: Int64 = 65533,
+  replaceControlCharacters: Bool = false
+) -> (rowSplits: Tensor<Int64>, charValues: Tensor<Int32>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Int32>) = #tfop("UnicodeDecode",
+    input,
+    input_encoding: inputEncoding,
+    errors: errors.cName,
+    replacement_char: replacementChar,
+    replace_control_characters: replaceControlCharacters)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+/// Decodes each string in `input` into a sequence of Unicode code points.
+///
+/// The character codepoints for all strings are returned using a single vector
+/// `char_values`, with strings expanded to characters in row-major order.
+/// Similarly, the character start byte offsets are returned using a single vector
+/// `char_to_byte_starts`, with strings expanded in row-major order.
+///
+/// The `row_splits` tensor indicates where the codepoints and start offsets for
+/// each input string begin and end within the `char_values` and
+/// `char_to_byte_starts` tensors.  In particular, the values for the `i`th
+/// string (in row-major order) are stored in the slice
+/// `[row_splits[i]:row_splits[i+1]]`. Thus:
+///
+/// * `char_values[row_splits[i]+j]` is the Unicode codepoint for the `j`th
+///   character in the `i`th string (in row-major order).
+/// * `char_to_bytes_starts[row_splits[i]+j]` is the start byte offset for the `j`th
+///   character in the `i`th string (in row-major order).
+/// * `row_splits[i+1] - row_splits[i]` is the number of characters in the `i`th
+///   string (in row-major order).
+///
+/// - Parameter input: The text to be decoded. Can have any shape. Note that the output is flattened
+///   to a vector of char values.
+///
+/// - Attrs:
+///   - input_encoding: Text encoding of the input strings. This is any of the encodings supported
+///     by ICU ucnv algorithmic converters. Examples: `"UTF-16", "US ASCII", "UTF-8"`.
+///   - errors: Error handling policy when there is invalid formatting found in the input.
+///     The value of 'strict' will cause the operation to produce a InvalidArgument
+///     error on any invalid input formatting. A value of 'replace' (the default) will
+///     cause the operation to replace any invalid formatting in the input with the
+///     `replacement_char` codepoint. A value of 'ignore' will cause the operation to
+///     skip any invalid formatting in the input and produce no corresponding output
+///     character.
+///   - replacement_char: The replacement character codepoint to be used in place of any invalid
+///     formatting in the input when `errors='replace'`. Any valid unicode codepoint may
+///     be used. The default value is the default unicode replacement character is
+///     0xFFFD or U+65533.)
+///   - replace_control_characters: Whether to replace the C0 control characters (00-1F) with the
+///     `replacement_char`. Default is false.
+///
+/// - Outputs:
+///   - row_splits: A 1D int32 tensor containing the row splits.
+///   - char_values: A 1D int32 Tensor containing the decoded codepoints.
+///   - char_to_byte_starts: A 1D int32 Tensor containing the byte index in the input string where each
+///     character in `char_values` starts.
+@inlinable @inline(__always)
+public static func unicodeDecodeWithOffsets(
+  _ input: StringTensor,
+  inputEncoding: String,
+  errors: Errors = .replace,
+  replacementChar: Int64 = 65533,
+  replaceControlCharacters: Bool = false
+) -> (rowSplits: Tensor<Int64>, charValues: Tensor<Int32>, charToByteStarts: Tensor<Int64>) {
+  let ret: (TensorHandle<Int64>, TensorHandle<Int32>, TensorHandle<Int64>) = #tfop("UnicodeDecodeWithOffsets",
+    input,
+    input_encoding: inputEncoding,
+    errors: errors.cName,
+    replacement_char: replacementChar,
+    replace_control_characters: replaceControlCharacters)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Encode a tensor of ints into unicode strings.
+///
+/// Returns a vector of strings, where `output[i]` is constructed by encoding the
+/// Unicode codepoints in `input_values[input_splits[i]:input_splits[i+1]]`
+/// using `output_encoding`.
+///
+/// ---
+///
+/// Example:
+///
+/// ```
+/// input_values = [72, 101, 108, 108, 111, 87, 111, 114, 108, 100]
+/// input_splits = [0, 5, 10]
+/// output_encoding = 'UTF-8'
+///
+/// output = ['Hello', 'World']
+/// ```
+///
+/// - Parameters:
+///   - input_values: A 1D tensor containing the unicode codepoints that should be encoded.
+///   - input_splits: A 1D tensor specifying how the unicode codepoints should be split into strings.
+///     In particular, `output[i]` is constructed by encoding the codepoints in the
+///     slice `input_values[input_splits[i]:input_splits[i+1]]`.
+///
+/// - Attrs:
+///   - errors: Error handling policy when there is invalid formatting found in the input.
+///     The value of 'strict' will cause the operation to produce a InvalidArgument
+///     error on any invalid input formatting. A value of 'replace' (the default) will
+///     cause the operation to replace any invalid formatting in the input with the
+///     `replacement_char` codepoint. A value of 'ignore' will cause the operation to
+///     skip any invalid formatting in the input and produce no corresponding output
+///     character.
+///   - output_encoding: Unicode encoding of the output strings. Valid encodings are: `"UTF-8",
+///     "UTF-16-BE", and "UTF-32-BE"`.
+///   - replacement_char: The replacement character codepoint to be used in place of any invalid
+///     formatting in the input when `errors='replace'`. Any valid unicode codepoint may
+///     be used. The default value is the default unicode replacement character is
+///     0xFFFD (U+65533).
+///
+/// - Output output: The 1-D Tensor of strings encoded from the provided unicode codepoints.
+@inlinable @inline(__always)
+public static func unicodeEncode(
+  inputValues: Tensor<Int32>,
+  inputSplits: Tensor<Int64>,
+  errors: Errors = .replace,
+  outputEncoding: OutputEncoding,
+  replacementChar: Int64 = 65533
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("UnicodeEncode",
+    inputValues,
+    inputSplits,
+    errors: errors.cName,
+    output_encoding: outputEncoding.cName,
+    replacement_char: replacementChar)
+  return StringTensor(handle: ret)
+}
+
 /// Determine the script codes of a given tensor of Unicode integer code points.
 ///
 /// This operation converts Unicode code points to script codes corresponding to
@@ -22470,6 +22835,79 @@ public static func unicodeScript(
   let ret: TensorHandle<Int32> = #tfop("UnicodeScript",
     input)
   return Tensor(handle: ret)
+}
+
+/// Transcode the input text from a source encoding to a destination encoding.
+///
+/// The input is a string tensor of any shape. The output is a string tensor of
+/// the same shape containing the transcoded strings. Output strings are always
+/// valid unicode. If the input contains invalid encoding positions, the
+/// `errors` attribute sets the policy for how to deal with them. If the default
+/// error-handling policy is used, invalid formatting will be substituted in the
+/// output by the `replacement_char`. If the errors policy is to `ignore`, any
+/// invalid encoding positions in the input are skipped and not included in the
+/// output. If it set to `strict` then any invalid formatting will result in an
+/// InvalidArgument error.
+///
+/// This operation can be used with `output_encoding = input_encoding` to enforce
+/// correct formatting for inputs even if they are already in the desired encoding.
+///
+/// If the input is prefixed by a Byte Order Mark needed to determine encoding
+/// (e.g. if the encoding is UTF-16 and the BOM indicates big-endian), then that
+/// BOM will be consumed and not emitted into the output. If the input encoding
+/// is marked with an explicit endianness (e.g. UTF-16-BE), then the BOM is
+/// interpreted as a non-breaking-space and is preserved in the output (including
+/// always for UTF-8).
+///
+/// The end result is that if the input is marked as an explicit endianness the
+/// transcoding is faithful to all codepoints in the source. If it is not marked
+/// with an explicit endianness, the BOM is not considered part of the string itself
+/// but as metadata, and so is not preserved in the output.
+///
+/// - Parameter input: The text to be processed. Can have any shape.
+///
+/// - Attrs:
+///   - input_encoding: Text encoding of the input strings. This is any of the encodings supported
+///     by ICU ucnv algorithmic converters. Examples: `"UTF-16", "US ASCII", "UTF-8"`.
+///   - output_encoding: The unicode encoding to use in the output. Must be one of
+///     `"UTF-8", "UTF-16-BE", "UTF-32-BE"`. Multi-byte encodings will be big-endian.
+///   - errors: Error handling policy when there is invalid formatting found in the input.
+///     The value of 'strict' will cause the operation to produce a InvalidArgument
+///     error on any invalid input formatting. A value of 'replace' (the default) will
+///     cause the operation to replace any invalid formatting in the input with the
+///     `replacement_char` codepoint. A value of 'ignore' will cause the operation to
+///     skip any invalid formatting in the input and produce no corresponding output
+///     character.
+///   - replacement_char: The replacement character codepoint to be used in place of any invalid
+///     formatting in the input when `errors='replace'`. Any valid unicode codepoint may
+///     be used. The default value is the default unicode replacement character is
+///     0xFFFD or U+65533.)
+///
+///     Note that for UTF-8, passing a replacement character expressible in 1 byte, such
+///     as ' ', will preserve string alignment to the source since invalid bytes will be
+///     replaced with a 1-byte replacement. For UTF-16-BE and UTF-16-LE, any 1 or 2 byte
+///     replacement character will preserve byte alignment to the source.
+///   - replace_control_characters: Whether to replace the C0 control characters (00-1F) with the
+///     `replacement_char`. Default is false.
+///
+/// - Output output: A string tensor containing unicode text encoded using `output_encoding`.
+@inlinable @inline(__always)
+public static func unicodeTranscode(
+  _ input: StringTensor,
+  inputEncoding: String,
+  outputEncoding: OutputEncoding,
+  errors: Errors = .replace,
+  replacementChar: Int64 = 65533,
+  replaceControlCharacters: Bool = false
+) -> StringTensor {
+  let ret: TensorHandle<String> = #tfop("UnicodeTranscode",
+    input,
+    input_encoding: inputEncoding,
+    output_encoding: outputEncoding.cName,
+    errors: errors.cName,
+    replacement_char: replacementChar,
+    replace_control_characters: replaceControlCharacters)
+  return StringTensor(handle: ret)
 }
 
 /// Generates labels for candidate sampling with a uniform distribution.
@@ -23089,26 +23527,20 @@ public static func where_<T: TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
-/// A Reader that outputs the entire contents of a file as a value.
+/// Worker heartbeat op.
 ///
-/// To use, enqueue filenames in a Queue.  The output of ReaderRead will
-/// be a filename (key) and the contents of that file (value).
+/// Heartbeats may be sent periodically to indicate the coordinator is still active,
+/// to retrieve the current worker status and to expedite shutdown when necessary.
 ///
-/// - Attrs:
-///   - container: If non-empty, this reader is placed in the given container.
-///     Otherwise, a default container is used.
-///   - shared_name: If non-empty, this reader is named in the given bucket
-///     with this shared_name. Otherwise, the node name is used instead.
+/// - Parameter request: A string tensor containing a serialized WorkerHeartbeatRequest
 ///
-/// - Output reader_handle: The handle to reference the Reader.
+/// - Output response: A string tensor containing a serialized WorkerHeartbeatResponse
 @inlinable @inline(__always)
-public static func wholeFileReader(
-  container: String,
-  sharedName: String
+public static func workerHeartbeat(
+  request: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("WholeFileReader",
-    container: container,
-    shared_name: sharedName)
+  let ret: TensorHandle<String> = #tfop("WorkerHeartbeat",
+    request)
   return StringTensor(handle: ret)
 }
 
@@ -23138,282 +23570,6 @@ public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
   let ret: TensorHandle<T> = #tfop("Xdivy",
     x,
     y,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Helper operator for performing XLA-style broadcasts
-///
-/// Broadcasts `lhs` and `rhs` to the same rank, by adding size 1 dimensions to
-/// whichever of `lhs` and `rhs` has the lower rank, using XLA's broadcasting rules
-/// for binary operators.
-///
-/// - Parameters:
-///   - lhs: the LHS input tensor
-///   - rhs: the RHS input tensor
-///   - broadcast_dims: an XLA-style broadcast dimension specification
-///
-/// - Outputs:
-///   - lhs_output: the broadcasted LHS tensor
-///   - rhs_output: the broadcasted RHS tensor
-@inlinable @inline(__always)
-public static func xlaBroadcastHelper<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  lhs: Tensor<T>,
-  rhs: Tensor<T>,
-  broadcastDims: Tensor<Tindices>
-) -> (lhsOutput: Tensor<T>, rhsOutput: Tensor<T>) {
-  let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("XlaBroadcastHelper",
-    lhs,
-    rhs,
-    broadcastDims,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// Operator that connects the output of an XLA computation to other consumer graph nodes.
-@inlinable @inline(__always)
-public static func xlaClusterOutput<T: TensorFlowScalar>(
-  _ input: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaClusterOutput",
-    input,
-    T$dtype: T.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Wraps the XLA ConvGeneralDilated operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#conv_convolution
-/// .
-///
-/// - Parameters:
-///   - lhs: the input tensor
-///   - rhs: the kernel tensor
-///   - window_strides: the inter-window strides
-///   - padding: the padding to apply at the start and end of each input dimensions
-///   - lhs_dilation: dilation to apply between input elements
-///   - rhs_dilation: dilation to apply between kernel elements
-///   - feature_group_count: number of feature groups for grouped convolution.
-///
-/// - Attrs:
-///   - dimension_numbers: a serialized xla::ConvolutionDimensionNumbers proto.
-///   - precision_config: a serialized xla::PrecisionConfig proto.
-@inlinable @inline(__always)
-public static func xlaConv<T: Numeric & TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  lhs: Tensor<T>,
-  rhs: Tensor<T>,
-  windowStrides: Tensor<Tindices>,
-  padding: Tensor<Tindices>,
-  lhsDilation: Tensor<Tindices>,
-  rhsDilation: Tensor<Tindices>,
-  featureGroupCount: Tensor<Tindices>,
-  dimensionNumbers: String,
-  precisionConfig: String
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaConv",
-    lhs,
-    rhs,
-    windowStrides,
-    padding,
-    lhsDilation,
-    rhsDilation,
-    featureGroupCount,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType,
-    dimension_numbers: dimensionNumbers,
-    precision_config: precisionConfig)
-  return Tensor(handle: ret)
-}
-
-/// Wraps the XLA ConvGeneralDilated operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#dotgeneral
-/// .
-///
-/// - Parameters:
-///   - lhs: the LHS tensor
-///   - rhs: the RHS tensor
-///
-/// - Attrs:
-///   - dimension_numbers: a serialized xla::DotDimensionNumbers proto.
-///   - precision_config: a serialized xla::PrecisionConfig proto.
-@inlinable @inline(__always)
-public static func xlaDot<T: Numeric & TensorFlowScalar>(
-  lhs: Tensor<T>,
-  rhs: Tensor<T>,
-  dimensionNumbers: String,
-  precisionConfig: String
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDot",
-    lhs,
-    rhs,
-    T$dtype: T.tensorFlowDataType,
-    dimension_numbers: dimensionNumbers,
-    precision_config: precisionConfig)
-  return Tensor(handle: ret)
-}
-
-/// Wraps the XLA DynamicSlice operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#dynamicslice
-/// .
-///
-/// DynamicSlice extracts a sub-array from the input array at dynamic
-/// start_indices. The size of the slice in each dimension is passed in
-/// size_indices, which specify the end point of exclusive slice intervals in each
-/// dimension -- [start, start + size). The shape of start_indices must have rank 1,
-/// with dimension size equal to the rank of operand.
-///
-/// - Parameters:
-///   - input: A `Tensor` of type T.
-///   - start_indices: List of N integers containing the slice size for each
-///     dimension. Each value must be strictly greater than zero, and start + size
-///     must be less than or equal to the size of the dimension to avoid
-///     implementation defined behavior.
-@inlinable @inline(__always)
-public static func xlaDynamicSlice<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  _ input: Tensor<T>,
-  startIndices: Tensor<Tindices>,
-  sizeIndices: Tensor<Tindices>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDynamicSlice",
-    input,
-    startIndices,
-    sizeIndices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Wraps the XLA DynamicUpdateSlice operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#dynamicupdateslice
-/// .
-///
-/// XlaDynamicUpdateSlice generates a result which is the value of the `input`
-/// operand, with a slice update overwritten at `indices`. The shape of `update`
-/// determines the shape of the sub-array of the result which is updated. The shape
-/// of indices must be rank == 1, with dimension size equal to the rank of `input`.
-///
-/// Handling of out-of-bounds slice indices is implementation-defined.
-///
-/// - Parameters:
-///   - input: A `Tensor` of type T.
-///   - update: A `Tensor` of type T. Same rank as `input`.
-///   - indices: A vector of indices into `input`. Must have length equal to the rank of
-///     `input`.
-///
-/// - Output output: A `Tensor` of type T.
-@inlinable @inline(__always)
-public static func xlaDynamicUpdateSlice<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  _ input: Tensor<T>,
-  update: Tensor<T>,
-  indices: Tensor<Tindices>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaDynamicUpdateSlice",
-    input,
-    update,
-    indices,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Wraps the XLA Sort operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#sort
-/// .
-///
-/// Sorts a tensor. Currently only sorts in ascending order are supported.
-///
-/// - Parameters:
-///   - keys: A `Tensor` of type K.
-///   - values: A `Tensor` of type V.
-///
-/// - Outputs:
-///   - sorted_keys: A `Tensor` of type K.
-///   - sorted_values: A `Tensor` of type V.
-@inlinable @inline(__always)
-public static func xlaKeyValueSort<K: Numeric & TensorFlowScalar, V: TensorFlowScalar>(
-  keys: Tensor<K>,
-  _ values: Tensor<V>
-) -> (sortedKeys: Tensor<K>, sortedValues: Tensor<V>) {
-  let ret: (TensorHandle<K>, TensorHandle<V>) = #tfop("XlaKeyValueSort",
-    keys,
-    values,
-    K$dtype: K.tensorFlowDataType,
-    V$dtype: V.tensorFlowDataType)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-}
-
-/// Wraps the XLA Pad operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#pad
-/// .
-///
-/// - Parameters:
-///   - input: A `Tensor` of type T.
-///   - padding_value: A scalar `Tensor` of type T.
-///   - padding_low: the padding to apply at the start of each input dimensions
-///   - padding_high: the padding to apply at the end of each input dimension.
-///   - padding_interior: the padding to apply between each input element.
-///
-/// - Output output: A `Tensor` of type T.
-@inlinable @inline(__always)
-public static func xlaPad<T: TensorFlowScalar, Tindices: BinaryInteger & TensorFlowScalar>(
-  _ input: Tensor<T>,
-  paddingValue: Tensor<T>,
-  paddingLow: Tensor<Tindices>,
-  paddingHigh: Tensor<Tindices>,
-  paddingInterior: Tensor<Tindices>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaPad",
-    input,
-    paddingValue,
-    paddingLow,
-    paddingHigh,
-    paddingInterior,
-    T$dtype: T.tensorFlowDataType,
-    Tindices$dtype: Tindices.tensorFlowDataType)
-  return Tensor(handle: ret)
-}
-
-/// Sends the named tensor to another XLA computation. Wraps the XLA Send operator
-///
-/// documented at
-///  https://www.tensorflow.org/performance/xla/operation_semantics#send .
-///
-/// - Parameter tensor: The tensor to send.
-///
-/// - Attr tensor_name: A string key that identifies the channel.
-@inlinable @inline(__always)
-public static func xlaSend<T: TensorFlowScalar>(
-  _ tensor: Tensor<T>,
-  tensorName: String
-) {
-  return #tfop("XlaSend",
-    tensor,
-    T$dtype: T.tensorFlowDataType,
-    tensor_name: tensorName)
-}
-
-/// Wraps the XLA Sort operator, documented at
-///
-///  https://www.tensorflow.org/performance/xla/operation_semantics#sort
-/// .
-///
-/// Sorts a tensor. Currently only sorts in ascending order are supported.
-///
-/// - Parameter input: A `Tensor` of type T.
-///
-/// - Output output: A `Tensor` of type T.
-@inlinable @inline(__always)
-public static func xlaSort<T: TensorFlowScalar>(
-  _ input: Tensor<T>
-) -> Tensor<T> {
-  let ret: TensorHandle<T> = #tfop("XlaSort",
-    input,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
 }

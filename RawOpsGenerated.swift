@@ -311,18 +311,18 @@ public enum Mode5 {
 
 // @_frozen // SR-9739
 public enum OutputEncoding {
-  case utf-16-be
-  case utf-32-be
-  case utf-8
+  case utf16Be
+  case utf32Be
+  case utf8
 
   @inlinable
   var cName: String {
     @inline(__always)
     get {
       switch self {
-      case .utf-16-be: return "UTF-16-BE"
-      case .utf-32-be: return "UTF-32-BE"
-      case .utf-8: return "UTF-8"
+      case .utf16Be: return "UTF-16-BE"
+      case .utf32Be: return "UTF-32-BE"
+      case .utf8: return "UTF-8"
       }
     }
   }
@@ -22003,6 +22003,42 @@ public static func tensorScatterUpdate<T: TensorFlowScalar, Tindices: BinaryInte
     T$dtype: T.tensorFlowDataType,
     Tindices$dtype: Tindices.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Assign `value` to the sliced l-value reference of `input`.
+///
+/// The values of `value` are assigned to the positions in the tensor
+/// `input` that are selected by the slice parameters. The slice parameters
+/// `begin`, `end`, `strides`, etc. work exactly as in `StridedSlice`.
+///
+/// NOTE this op currently does not support broadcasting and so `value`'s
+/// shape must be exactly the shape produced by the slice of `input`.
+@inlinable @inline(__always)
+public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  begin: Tensor<Index>,
+  end: Tensor<Index>,
+  strides: Tensor<Index>,
+  value: Tensor<T>,
+  beginMask: Int64 = 0,
+  endMask: Int64 = 0,
+  ellipsisMask: Int64 = 0,
+  newAxisMask: Int64 = 0,
+  shrinkAxisMask: Int64 = 0
+) {
+  return #tfop("TensorStridedSliceUpdate",
+    input,
+    begin,
+    end,
+    strides,
+    value,
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType,
+    begin_mask: beginMask,
+    end_mask: endMask,
+    ellipsis_mask: ellipsisMask,
+    new_axis_mask: newAxisMask,
+    shrink_axis_mask: shrinkAxisMask)
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor.

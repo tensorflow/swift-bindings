@@ -1217,7 +1217,7 @@ public static func attrBoolList(
 
 @inlinable @inline(__always)
 public static func attrDefault(
-  _ a: String = "b'banana'"
+  _ a: String = "banana"
 ) {
   return #tfop("AttrDefault",
     a: a)
@@ -1451,7 +1451,7 @@ public static func avgPool<T: FloatingPoint & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPool",
     value,
@@ -1486,7 +1486,7 @@ public static func avgPool3D<T: FloatingPoint & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc'
+  dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPool3D",
     input,
@@ -1524,7 +1524,7 @@ public static func avgPool3DGrad<T: FloatingPoint & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc'
+  dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPool3DGrad",
     origInputShape,
@@ -1562,7 +1562,7 @@ public static func avgPoolGrad<T: FloatingPoint & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("AvgPoolGrad",
     origInputShape,
@@ -2269,7 +2269,7 @@ public static func betainc<T: FloatingPoint & TensorFlowScalar>(
 public static func biasAdd<T: Numeric & TensorFlowScalar>(
   value: Tensor<T>,
   bias: Tensor<T>,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BiasAdd",
     value,
@@ -2299,7 +2299,7 @@ public static func biasAdd<T: Numeric & TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func biasAddGrad<T: Numeric & TensorFlowScalar>(
   outBackprop: Tensor<T>,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("BiasAddGrad",
     outBackprop,
@@ -3403,7 +3403,7 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   useCudnnOnGpu: Bool = true,
   padding: Padding2,
   explicitPaddings: [Int32],
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv2D",
@@ -3461,7 +3461,7 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   useCudnnOnGpu: Bool = true,
   padding: Padding2,
   explicitPaddings: [Int32],
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv2DBackpropFilter",
@@ -3519,7 +3519,7 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   useCudnnOnGpu: Bool = true,
   padding: Padding2,
   explicitPaddings: [Int32],
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv2DBackpropInput",
@@ -3569,7 +3569,7 @@ public static func conv3D<T: FloatingPoint & TensorFlowScalar>(
   filter: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc',
+  dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv3D",
@@ -3648,7 +3648,7 @@ public static func conv3DBackpropFilterV2<T: FloatingPoint & TensorFlowScalar>(
   outBackprop: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc',
+  dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv3DBackpropFilterV2",
@@ -3728,7 +3728,7 @@ public static func conv3DBackpropInputV2<T: FloatingPoint & TensorFlowScalar, Ts
   outBackprop: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc',
+  dataFormat: DataFormat1 = .ndhwc,
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("Conv3DBackpropInputV2",
@@ -3897,7 +3897,7 @@ public static func cropAndResize<T: Numeric & TensorFlowScalar>(
   boxes: Tensor<Float>,
   boxInd: Tensor<Int32>,
   cropSize: Tensor<Int32>,
-  method: Method = .b'bilinear',
+  method: Method = .bilinear,
   extrapolationValue: Double = 0
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("CropAndResize",
@@ -3940,7 +3940,7 @@ public static func cropAndResizeGradBoxes<T: Numeric & TensorFlowScalar>(
   image: Tensor<T>,
   boxes: Tensor<Float>,
   boxInd: Tensor<Int32>,
-  method: Method3 = .b'bilinear'
+  method: Method3 = .bilinear
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("CropAndResizeGradBoxes",
     grads,
@@ -3982,7 +3982,7 @@ public static func cropAndResizeGradImage<T: FloatingPoint & TensorFlowScalar>(
   boxes: Tensor<Float>,
   boxInd: Tensor<Int32>,
   imageSize: Tensor<Int32>,
-  method: Method = .b'bilinear'
+  method: Method = .bilinear
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("CropAndResizeGradImage",
     grads,
@@ -4085,9 +4085,9 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   inputH: Tensor<T>,
   inputC: Tensor<T>,
   params: Tensor<T>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0,
@@ -4163,9 +4163,9 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   outputHBackprop: Tensor<T>,
   outputCBackprop: Tensor<T>,
   reserveSpace: Tensor<T>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
@@ -4250,9 +4250,9 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   outputCBackprop: Tensor<T>,
   reserveSpace: Tensor<T>,
   hostReserved: Tensor<Int8>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
@@ -4344,9 +4344,9 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   outputCBackprop: Tensor<T>,
   reserveSpace: Tensor<T>,
   hostReserved: Tensor<Int8>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0,
@@ -4415,9 +4415,9 @@ public static func cudnnRNNCanonicalToParams<T: FloatingPoint & TensorFlowScalar
   inputSize: Tensor<Int32>,
   weights: [Tensor<T>],
   biases: [Tensor<T>],
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0
@@ -4466,9 +4466,9 @@ public static func cudnnRNNParamsSize<T: FloatingPoint & TensorFlowScalar, S: Bi
   numLayers: Tensor<Int32>,
   numUnits: Tensor<Int32>,
   inputSize: Tensor<Int32>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0,
@@ -4530,9 +4530,9 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   inputH: Tensor<T>,
   inputC: Tensor<T>,
   params: Tensor<T>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0,
@@ -4600,9 +4600,9 @@ public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
   inputC: Tensor<T>,
   params: Tensor<T>,
   sequenceLengths: Tensor<Int32>,
-  rnnMode: RnnMode = .b'lstm',
-  inputMode: InputMode = .b'linearInput',
-  direction: Direction = .b'unidirectional',
+  rnnMode: RnnMode = .lstm,
+  inputMode: InputMode = .linearInput,
+  direction: Direction = .unidirectional,
   dropout: Double = 0,
   seed: Int64 = 0,
   seed2: Int64 = 0,
@@ -4758,8 +4758,8 @@ public static func cumsum<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
 @inlinable @inline(__always)
 public static func dataFormatDimMap<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
-  srcFormat: String = "b'NHWC'",
-  dstFormat: String = "b'NCHW'"
+  srcFormat: String = "NHWC",
+  dstFormat: String = "NCHW"
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DataFormatDimMap",
     x,
@@ -4783,8 +4783,8 @@ public static func dataFormatDimMap<T: BinaryInteger & TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func dataFormatVecPermute<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>,
-  srcFormat: String = "b'NHWC'",
-  dstFormat: String = "b'NCHW'"
+  srcFormat: String = "NHWC",
+  dstFormat: String = "NCHW"
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DataFormatVecPermute",
     x,
@@ -5511,7 +5511,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
 public static func depthToSpace<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat4 = .b'nhwc'
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthToSpace",
     input,
@@ -5562,7 +5562,7 @@ public static func depthwiseConv2dNative<T: FloatingPoint & TensorFlowScalar>(
   filter: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNative",
@@ -5615,7 +5615,7 @@ public static func depthwiseConv2dNativeBackpropFilter<T: FloatingPoint & Tensor
   outBackprop: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNativeBackpropFilter",
@@ -5669,7 +5669,7 @@ public static func depthwiseConv2dNativeBackpropInput<T: FloatingPoint & TensorF
   outBackprop: Tensor<T>,
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("DepthwiseConv2dNativeBackpropInput",
@@ -5768,7 +5768,7 @@ public static func dequantize<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   minRange: Tensor<Float>,
   maxRange: Tensor<Float>,
-  mode: Mode = .b'minCombined'
+  mode: Mode = .minCombined
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("Dequantize",
     input,
@@ -6449,7 +6449,7 @@ public static func encodeJpeg(
   progressive: Bool = false,
   optimizeSize: Bool = false,
   chromaDownsampling: Bool = true,
-  densityUnit: DensityUnit = .b'in',
+  densityUnit: DensityUnit = .in_,
   xDensity: Int64 = 300,
   yDensity: Int64 = 300,
   xmpMetadata: String
@@ -6577,7 +6577,7 @@ public static func encodeProto<TinputTypes: TensorFlowScalar>(
   _ values: [Tensor<TinputTypes>],
   fieldNames: [String],
   messageType: String,
-  descriptorSource: String = "b'local://'"
+  descriptorSource: String = "local://"
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("EncodeProto",
     sizes,
@@ -7003,7 +7003,7 @@ public static func extractGlimpse(
   centered: Bool = true,
   normalized: Bool = true,
   uniformNoise: Bool = true,
-  noise: String = "b'uniform'"
+  noise: String = "uniform"
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("ExtractGlimpse",
     input,
@@ -7945,7 +7945,7 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   mean: Tensor<T>,
   variance: Tensor<T>,
   epsilon: Double = 0.0001,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<T>, batchVariance: Tensor<T>, reserveSpace1: Tensor<T>, reserveSpace2: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNorm",
@@ -8003,7 +8003,7 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   reserveSpace1: Tensor<T>,
   reserveSpace2: Tensor<T>,
   epsilon: Double = 0.0001,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<T>, offsetBackprop: Tensor<T>, reserveSpace3: Tensor<T>, reserveSpace4: Tensor<T>) {
   let ret: (TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>, TensorHandle<T>) = #tfop("FusedBatchNormGrad",
@@ -8062,7 +8062,7 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   reserveSpace1: Tensor<U>,
   reserveSpace2: Tensor<U>,
   epsilon: Double = 0.0001,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<U>, offsetBackprop: Tensor<U>, reserveSpace3: Tensor<U>, reserveSpace4: Tensor<U>) {
   let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormGradV2",
@@ -8119,7 +8119,7 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   mean: Tensor<U>,
   variance: Tensor<U>,
   epsilon: Double = 0.0001,
-  dataFormat: DataFormat = .b'nhwc',
+  dataFormat: DataFormat = .nhwc,
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<U>, batchVariance: Tensor<U>, reserveSpace1: Tensor<U>, reserveSpace2: Tensor<U>) {
   let ret: (TensorHandle<T>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>, TensorHandle<U>) = #tfop("FusedBatchNormV2",
@@ -11572,7 +11572,7 @@ public static func maxPool<T: Numeric & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat4 = .b'nhwc'
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool",
     input,
@@ -11607,7 +11607,7 @@ public static func maxPool3D<T: FloatingPoint & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc'
+  dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool3D",
     input,
@@ -11645,7 +11645,7 @@ public static func maxPool3DGrad<T: FloatingPoint & TensorFlowScalar, Tinput: Fl
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc'
+  dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool3DGrad",
     origInput,
@@ -11688,7 +11688,7 @@ public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat1 = .b'ndhwc'
+  dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPool3DGradGrad",
     origInput,
@@ -11729,7 +11729,7 @@ public static func maxPoolGrad<T: Numeric & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGrad",
     origInput,
@@ -11770,7 +11770,7 @@ public static func maxPoolGradGrad<T: Numeric & TensorFlowScalar>(
   ksize: [Int32],
   strides: [Int32],
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGradGrad",
     origInput,
@@ -11811,7 +11811,7 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGradGradV2",
     origInput,
@@ -11891,7 +11891,7 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
-  dataFormat: DataFormat = .b'nhwc'
+  dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolGradV2",
     origInput,
@@ -11967,7 +11967,7 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
   ksize: Tensor<Int32>,
   strides: Tensor<Int32>,
   padding: Padding,
-  dataFormat: DataFormat4 = .b'nhwc'
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("MaxPoolV2",
     input,
@@ -13620,7 +13620,7 @@ public static func print<T: TensorFlowScalar, U: TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func printV2(
   _ input: StringTensor,
-  outputStream: String = "b'stderr'"
+  outputStream: String = "stderr"
 ) {
   return #tfop("PrintV2",
     input,
@@ -13800,7 +13800,7 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   signedInput: Bool = true,
   numBits: Int64 = 8,
   rangeGiven: Bool = false,
-  roundMode: RoundMode = .b'halfToEven'
+  roundMode: RoundMode = .halfToEven
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("QuantizeAndDequantizeV2",
     input,
@@ -14003,8 +14003,8 @@ public static func quantizeV2<T: TensorFlowScalar>(
   _ input: Tensor<Float>,
   minRange: Tensor<Float>,
   maxRange: Tensor<Float>,
-  mode: Mode = .b'minCombined',
-  roundMode: RoundMode6 = .b'halfAwayFromZero'
+  mode: Mode = .minCombined,
+  roundMode: RoundMode6 = .halfAwayFromZero
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let ret: (TensorHandle<T>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizeV2",
     input,
@@ -17480,7 +17480,7 @@ public static func scaleAndTranslate<T: Numeric & TensorFlowScalar>(
   size: Tensor<Int32>,
   scale: Tensor<Float>,
   translation: Tensor<Float>,
-  kernelType: String = "b'lanczos3'",
+  kernelType: String = "lanczos3",
   antialias: Bool = true
 ) -> Tensor<Float> {
   let ret: TensorHandle<Float> = #tfop("ScaleAndTranslate",
@@ -17500,7 +17500,7 @@ public static func scaleAndTranslateGrad<T: FloatingPoint & TensorFlowScalar>(
   originalImage: Tensor<T>,
   scale: Tensor<Float>,
   translation: Tensor<Float>,
-  kernelType: String = "b'lanczos3'",
+  kernelType: String = "lanczos3",
   antialias: Bool = true
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("ScaleAndTranslateGrad",
@@ -18888,7 +18888,7 @@ public static func spaceToBatchND<T: TensorFlowScalar, TblockShape: BinaryIntege
 public static func spaceToDepth<T: TensorFlowScalar>(
   _ input: Tensor<T>,
   blockSize: Int64,
-  dataFormat: DataFormat4 = .b'nhwc'
+  dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let ret: TensorHandle<T> = #tfop("SpaceToDepth",
     input,
@@ -20913,8 +20913,8 @@ public static func stridedSliceGrad<T: TensorFlowScalar, Index: BinaryInteger & 
 @inlinable @inline(__always)
 public static func stringFormat<T: TensorFlowScalar>(
   inputs: [Tensor<T>],
-  template: String = "b'%s'",
-  placeholder: String = "b'%s'",
+  template: String = "%s",
+  placeholder: String = "%s",
   summarize: Int64 = 3
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("StringFormat",
@@ -20962,7 +20962,7 @@ public static func stringJoin(
 @inlinable @inline(__always)
 public static func stringLength(
   _ input: StringTensor,
-  unit: Unit = .b'byte'
+  unit: Unit = .byte
 ) -> Tensor<Int32> {
   let ret: TensorHandle<Int32> = #tfop("StringLength",
     input,
@@ -21298,7 +21298,7 @@ public static func substr<T: BinaryInteger & TensorFlowScalar>(
   _ input: StringTensor,
   pos: Tensor<T>,
   len: Tensor<T>,
-  unit: Unit = .b'byte'
+  unit: Unit = .byte
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("Substr",
     input,
@@ -21485,7 +21485,7 @@ public static func tPUReplicateMetadata(
   computationShape: [Int32],
   hostComputeCore: [String],
   paddingMap: [String],
-  stepMarkerLocation: String = "b'STEP_MARK_AT_ENTRY'"
+  stepMarkerLocation: String = "STEP_MARK_AT_ENTRY"
 ) {
   return #tfop("TPUReplicateMetadata",
     num_replicas: numReplicas,
@@ -22685,7 +22685,7 @@ public static func unbatchGrad<T: TensorFlowScalar>(
 public static func unicodeDecode(
   _ input: StringTensor,
   inputEncoding: String,
-  errors: Errors = .b'replace',
+  errors: Errors = .replace,
   replacementChar: Int64 = 65533,
   replaceControlCharacters: Bool = false
 ) -> (rowSplits: Tensor<Int64>, charValues: Tensor<Int32>) {
@@ -22747,7 +22747,7 @@ public static func unicodeDecode(
 public static func unicodeDecodeWithOffsets(
   _ input: StringTensor,
   inputEncoding: String,
-  errors: Errors = .b'replace',
+  errors: Errors = .replace,
   replacementChar: Int64 = 65533,
   replaceControlCharacters: Bool = false
 ) -> (rowSplits: Tensor<Int64>, charValues: Tensor<Int32>, charToByteStarts: Tensor<Int64>) {
@@ -22804,7 +22804,7 @@ public static func unicodeDecodeWithOffsets(
 public static func unicodeEncode(
   inputValues: Tensor<Int32>,
   inputSplits: Tensor<Int64>,
-  errors: Errors = .b'replace',
+  errors: Errors = .replace,
   outputEncoding: OutputEncoding,
   replacementChar: Int64 = 65533
 ) -> StringTensor {
@@ -22896,7 +22896,7 @@ public static func unicodeTranscode(
   _ input: StringTensor,
   inputEncoding: String,
   outputEncoding: OutputEncoding,
-  errors: Errors = .b'replace',
+  errors: Errors = .replace,
   replacementChar: Int64 = 65533,
   replaceControlCharacters: Bool = false
 ) -> StringTensor {

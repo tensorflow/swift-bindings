@@ -255,7 +255,7 @@ def swift_default_value(attr_value, use_enum):
   if attr_value.HasField('f'):
     return swift_float(attr_value.f)
   if attr_value.HasField('s') and attr_value.s:
-    s = str(attr_value.s)
+    s = str(attr_value.s, encoding='utf-8')
     return '.' + swiftified_name_for_enums(s) if use_enum else '"' + s + '"'
   if attr_value.HasField('list'):
     if attr_value.list.i:

@@ -419,6 +419,13 @@ def generate_code(op, api_def, enum_store):
                 is_list=arg_def_type_is_list(a))
       for a in op.output_arg]
 
+  # Do not generate ops with output lists.
+  # TODO: We could support output lists by giving the outputs generic type that
+  # conforms to TensorGroup.
+  for output_arg in output_args:
+    if output_arg.is_list:
+      raise UnableToGenerateCodeError('output lists not supported')
+
   return_type = ''
   if len(output_args) == 1:
     return_type = ' -> ' + output_args[0].swift_type

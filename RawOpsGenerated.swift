@@ -22005,6 +22005,42 @@ public static func tensorScatterUpdate<T: TensorFlowScalar, Tindices: BinaryInte
   return Tensor(handle: ret)
 }
 
+/// Assign `value` to the sliced l-value reference of `input`.
+///
+/// The values of `value` are assigned to the positions in the tensor
+/// `input` that are selected by the slice parameters. The slice parameters
+/// `begin`, `end`, `strides`, etc. work exactly as in `StridedSlice`.
+///
+/// NOTE this op currently does not support broadcasting and so `value`'s
+/// shape must be exactly the shape produced by the slice of `input`.
+@inlinable @inline(__always)
+public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowScalar>(
+  _ input: Tensor<T>,
+  begin: Tensor<Index>,
+  end: Tensor<Index>,
+  strides: Tensor<Index>,
+  value: Tensor<T>,
+  beginMask: Int64 = 0,
+  endMask: Int64 = 0,
+  ellipsisMask: Int64 = 0,
+  newAxisMask: Int64 = 0,
+  shrinkAxisMask: Int64 = 0
+) {
+  return #tfop("TensorStridedSliceUpdate",
+    input,
+    begin,
+    end,
+    strides,
+    value,
+    T$dtype: T.tensorFlowDataType,
+    Index$dtype: Index.tensorFlowDataType,
+    begin_mask: beginMask,
+    end_mask: endMask,
+    ellipsis_mask: ellipsisMask,
+    new_axis_mask: newAxisMask,
+    shrink_axis_mask: shrinkAxisMask)
+}
+
 /// Outputs a `Summary` protocol buffer with a tensor.
 ///
 /// This op is being phased out in favor of TensorSummaryV2, which lets callers pass

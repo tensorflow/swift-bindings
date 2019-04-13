@@ -17,7 +17,7 @@
 public enum Raw {
 
 static let generatedTensorFlowVersion = "1.13.1"
-static let generatedTensorFlowGitVersion = "v1.12.0-11444-g8b2884c9cb"
+static let generatedTensorFlowGitVersion = "v1.12.0-12404-gd1db9860a2"
 
 // @_frozen // SR-9739
 public enum A {
@@ -435,6 +435,21 @@ public enum RoundMode6 {
       switch self {
       case .halfAwayFromZero: return "HALF_AWAY_FROM_ZERO"
       case .halfToEven: return "HALF_TO_EVEN"
+      }
+    }
+  }
+}
+
+// @_frozen // SR-9739
+public enum SplitType {
+  case inequality
+
+  @inlinable
+  var cName: String {
+    @inline(__always)
+    get {
+      switch self {
+      case .inequality: return "inequality"
       }
     }
   }
@@ -1990,7 +2005,7 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
 ///   (2) For the following input of shape `[4, 1, 1, 3]` and block_size of 2:
 ///
 ///   ```
-///   [[[1, 2, 3]], [[4, 5, 6]], [[7, 8, 9]], [[10, 11, 12]]]
+///   [[[[1, 2, 3]]], [[[4, 5, 6]]], [[[7, 8, 9]]], [[[10, 11, 12]]]]
 ///   ```
 ///
 ///   The output tensor has shape `[1, 2, 2, 3]` and value:
@@ -2012,10 +2027,10 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
 ///   The output tensor has shape `[1, 4, 4, 1]` and value:
 ///
 ///   ```
-///   x = [[[1],   [2],  [3],  [4]],
+///   x = [[[[1],   [2],  [3],  [4]],
 ///        [[5],   [6],  [7],  [8]],
 ///        [[9],  [10], [11],  [12]],
-///        [[13], [14], [15],  [16]]]
+///        [[13], [14], [15],  [16]]]]
 ///   ```
 ///
 ///   (4) For the following input of shape `[8, 1, 2, 1]` and block_size of 2:
@@ -2123,7 +2138,7 @@ public static func batchToSpace<T: TensorFlowScalar, Tidx: BinaryInteger & Tenso
 ///         `crops = [[0, 0], [0, 0]]`:
 ///
 ///     ```
-///     [[[1, 2, 3]], [[4, 5, 6]], [[7, 8, 9]], [[10, 11, 12]]]
+///     [[[[1, 2, 3]]], [[[4, 5, 6]]], [[[7, 8, 9]]], [[[10, 11, 12]]]]
 ///     ```
 ///
 ///     The output tensor has shape `[1, 2, 2, 3]` and value:
@@ -2146,10 +2161,10 @@ public static func batchToSpace<T: TensorFlowScalar, Tidx: BinaryInteger & Tenso
 ///     The output tensor has shape `[1, 4, 4, 1]` and value:
 ///
 ///     ```
-///     x = [[[1],   [2],  [3],  [4]],
+///     x = [[[[1],   [2],  [3],  [4]],
 ///          [[5],   [6],  [7],  [8]],
 ///          [[9],  [10], [11],  [12]],
-///          [[13], [14], [15],  [16]]]
+///          [[13], [14], [15],  [16]]]]
 ///     ```
 ///
 ///     (4) For the following input of shape `[8, 1, 3, 1]`, `block_shape = [2, 2]`, and
@@ -2389,6 +2404,43 @@ public static func bincount<T: Numeric & TensorFlowScalar>(
 /// dimension be equal to sizeof(`type`)/sizeof(`T`). The shape then goes from
 /// [..., sizeof(`type`)/sizeof(`T`)] to [...].
 ///
+/// tf.bitcast() and tf.cast() work differently when real dtype is casted as a complex dtype
+/// (e.g. tf.complex64 or tf.complex128) as tf.cast() make imaginary part 0 while tf.bitcast()
+/// gives module error.
+/// For example,
+///
+/// Example 1:
+/// ```python
+/// >>> a = [1., 2., 3.]
+/// >>> equality_bitcast = tf.bitcast(a,tf.complex128)
+/// tensorflow.python.framework.errors_impl.InvalidArgumentError: Cannot bitcast from float to complex128: shape [3] [Op:Bitcast]
+/// >>> equality_cast = tf.cast(a,tf.complex128)
+/// >>> print(equality_cast)
+/// tf.Tensor([1.+0.j 2.+0.j 3.+0.j], shape=(3,), dtype=complex128)
+/// ```
+/// Example 2:
+/// ```python
+/// >>> tf.bitcast(tf.constant(0xffffffff, dtype=tf.uint32), tf.uint8)
+/// <tf.Tensor: ... shape=(4,), dtype=uint8, numpy=array([255, 255, 255, 255], dtype=uint8)>
+/// ```
+/// Example 3:
+/// ```python
+/// >>> x = [1., 2., 3.]
+/// >>> y = [0., 2., 3.]
+/// >>> equality= tf.equal(x,y)
+/// >>> equality_cast = tf.cast(equality,tf.float32)
+/// >>> equality_bitcast = tf.bitcast(equality_cast,tf.uint8)
+/// >>> print(equality)
+/// tf.Tensor([False True True], shape=(3,), dtype=bool)
+/// >>> print(equality_cast)
+/// tf.Tensor([0. 1. 1.], shape=(3,), dtype=float32)
+/// >>> print(equality_bitcast)
+/// tf.Tensor(
+/// [[ 0 0 0 0]
+///  [ 0 0 128 63]
+///  [ 0 0 128 63]], shape=(3, 4), dtype=uint8)
+/// ```
+///
 /// *NOTE*: Bitcast is implemented as a low-level cast, so machines with different
 /// endian orderings will give different results.
 @inlinable @inline(__always)
@@ -2607,6 +2659,95 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     use_peephole: usePeephole)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), Tensor(handle: ret.6), Tensor(handle: ret.7))
+}
+
+/// Aggregates the summary of accumulated stats for the batch.
+///
+/// The summary stats contains gradients and hessians accumulated for each node, feature dimension id and bucket.
+///
+/// - Parameters:
+///   - node_ids: int32; Rank 1 Tensor containing node ids for each example, shape [batch_size].
+///   - gradients: float32; Rank 2 Tensor (shape=[batch_size, logits_dimension]) with gradients for each example.
+///   - hessians: float32; Rank 2 Tensor (shape=[batch_size, hessian_dimension]) with hessians for each example.
+///   - feature: int32; Rank 2 feature Tensors (shape=[batch_size, feature_dimension]).
+///
+/// - Attrs:
+///   - max_splits: int; the maximum number of splits possible in the whole tree.
+///   - num_buckets: int; equals to the maximum possible value of bucketized feature.
+///
+/// - Output stats_summary: output Rank 4 Tensor (shape=[splits, feature_dimension, buckets, logits_dimension + hessian_dimension])
+///   containing accumulated stats for each node, feature dimension and bucket.
+@inlinable @inline(__always)
+public static func boostedTreesAggregateStats(
+  nodeIds: Tensor<Int32>,
+  gradients: Tensor<Float>,
+  hessians: Tensor<Float>,
+  feature: Tensor<Int32>,
+  maxSplits: Int64,
+  numBuckets: Int64
+) -> Tensor<Float> {
+  let ret: TensorHandle<Float> = #tfop("BoostedTreesAggregateStats",
+    nodeIds,
+    gradients,
+    hessians,
+    feature,
+    max_splits: maxSplits,
+    num_buckets: numBuckets)
+  return Tensor(handle: ret)
+}
+
+/// Calculates gains for each feature and returns the best possible split information for the feature.
+///
+/// The split information is the best threshold (bucket id), gains and left/right node contributions per node for each feature.
+///
+/// It is possible that not all nodes can be split on each feature. Hence, the list of possible nodes can differ between the features. Therefore, we return `node_ids_list` for each feature, containing the list of nodes that this feature can be used to split.
+///
+/// In this manner, the output is the best split per features and per node, so that it needs to be combined later to produce the best split for each node (among all possible features).
+///
+/// The output shapes are compatible in a way that the first dimension of all tensors are the same and equal to the number of possible split nodes for each feature.
+///
+/// - Parameters:
+///   - node_id_range: A Rank 1 tensor (shape=[2]) to specify the range [first, last) of node ids to process within `stats_summary_list`. The nodes are iterated between the two nodes specified by the tensor, as like `for node_id in range(node_id_range[0], node_id_range[1])` (Note that the last index node_id_range[1] is exclusive).
+///   - stats_summary: A Rank 4 tensor (#shape=[max_splits, feature_dims, bucket, stats_dims]) for accumulated stats summary (gradient/hessian) per node, per dimension, per buckets for each feature.
+///     The first dimension of the tensor is the maximum number of splits, and thus not all elements of it will be used, but only the indexes specified by node_ids will be used.
+///   - l1: l1 regularization factor on leaf weights, per instance based.
+///   - l2: l2 regularization factor on leaf weights, per instance based.
+///   - tree_complexity: adjustment to the gain, per leaf based.
+///   - min_node_weight: mininum avg of hessians in a node before required for the node to be considered for splitting.
+///
+/// - Attrs:
+///   - logits_dimension: The dimension of logit, i.e., number of classes.
+///   - split_type: A string indicating if this Op should perform inequality split or equality split.
+///
+/// - Outputs:
+///   - node_ids: A Rank 1 tensors indicating possible split node ids for each feature. The length of the list is num_features, but each tensor has different size as each feature provides different possible nodes. See above for details like shapes and sizes.
+///   - gains: A Rank 1 tensors indicating the best gains for each feature to split for certain nodes. See above for details like shapes and sizes.
+///   - feature_dimensions: A Rank 1 tensors indicating the best feature dimension for each feature to split for certain nodes if the feature is multi-dimension. See above for details like shapes and sizes.
+///   - thresholds: A Rank 1 tensors indicating the bucket id to compare with (as a threshold) for split in each node. See above for details like shapes and sizes.
+///   - left_node_contribs: A Rank 2 tensors indicating the contribution of the left nodes when branching from parent nodes (given by the tensor element in the output node_ids_list) to the left direction by the given threshold for each feature. This value will be used to make the left node value by adding to the parent node value. Second dimension size is 1 for 1-dimensional logits, but would be larger for multi-class problems. See above for details like shapes and sizes.
+///   - right_node_contribs: A Rank 2 tensors, with the same shape/conditions as left_node_contribs_list, but just that the value is for the right node.
+///   - split_with_default_directions: A Rank 1 tensors indicating the which direction to go if data is missing. See above for details like shapes and sizes.
+@inlinable @inline(__always)
+public static func boostedTreesCalculateBestFeatureSplit(
+  nodeIdRange: Tensor<Int32>,
+  statsSummary: Tensor<Float>,
+  l1: Tensor<Float>,
+  l2: Tensor<Float>,
+  treeComplexity: Tensor<Float>,
+  minNodeWeight: Tensor<Float>,
+  logitsDimension: Int64,
+  splitType: SplitType = .inequality
+) -> (nodeIds: Tensor<Int32>, gains: Tensor<Float>, featureDimensions: Tensor<Int32>, thresholds: Tensor<Int32>, leftNodeContribs: Tensor<Float>, rightNodeContribs: Tensor<Float>, splitWithDefaultDirections: StringTensor) {
+  let ret: (TensorHandle<Int32>, TensorHandle<Float>, TensorHandle<Int32>, TensorHandle<Int32>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<String>) = #tfop("BoostedTreesCalculateBestFeatureSplit",
+    nodeIdRange,
+    statsSummary,
+    l1,
+    l2,
+    treeComplexity,
+    minNodeWeight,
+    logits_dimension: logitsDimension,
+    split_type: splitType.cName)
+  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3), Tensor(handle: ret.4), Tensor(handle: ret.5), StringTensor(handle: ret.6))
 }
 
 /// Makes the summary of accumulated stats for the batch.
@@ -3045,11 +3186,15 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
 ///   - score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
 ///     boxes based on score.
 ///
-/// - Attr pad_per_class: If false, the output nmsed boxes, scores and classes
-///   are padded/clipped to `max_total_size`. If true, the
-///   output nmsed boxes, scores and classes are padded to be of length
-///   `max_size_per_class`*`num_classes`, unless it exceeds `max_total_size` in
-///   which case it is clipped to `max_total_size`. Defaults to false.
+/// - Attrs:
+///   - pad_per_class: If false, the output nmsed boxes, scores and classes
+///     are padded/clipped to `max_total_size`. If true, the
+///     output nmsed boxes, scores and classes are padded to be of length
+///     `max_size_per_class`*`num_classes`, unless it exceeds `max_total_size` in
+///     which case it is clipped to `max_total_size`. Defaults to false.
+///   - clip_boxes: If true, assume the box coordinates are between [0, 1] and clip the output boxes
+///     if they fall beyond [0, 1]. If false, do not do clipping and output the box
+///     coordinates as it is.
 ///
 /// - Outputs:
 ///   - nmsed_boxes: A [batch_size, max_detections, 4] float32 tensor 
@@ -3070,7 +3215,8 @@ public static func combinedNonMaxSuppression(
   maxTotalSize: Tensor<Int32>,
   iouThreshold: Tensor<Float>,
   scoreThreshold: Tensor<Float>,
-  padPerClass: Bool = false
+  padPerClass: Bool = false,
+  clipBoxes: Bool = true
 ) -> (nmsedBoxes: Tensor<Float>, nmsedScores: Tensor<Float>, nmsedClasses: Tensor<Float>, validDetections: Tensor<Int32>) {
   let ret: (TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Float>, TensorHandle<Int32>) = #tfop("CombinedNonMaxSuppression",
     boxes,
@@ -3079,7 +3225,8 @@ public static func combinedNonMaxSuppression(
     maxTotalSize,
     iouThreshold,
     scoreThreshold,
-    pad_per_class: padPerClass)
+    pad_per_class: padPerClass,
+    clip_boxes: clipBoxes)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2), Tensor(handle: ret.3))
 }
 
@@ -6173,6 +6320,42 @@ public static func drawBoundingBoxes<T: FloatingPoint & TensorFlowScalar>(
   return Tensor(handle: ret)
 }
 
+/// Draw bounding boxes on a batch of images.
+///
+/// Outputs a copy of `images` but draws on top of the pixels zero or more bounding
+/// boxes specified by the locations in `boxes`. The coordinates of the each
+/// bounding box in `boxes` are encoded as `[y_min, x_min, y_max, x_max]`. The
+/// bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
+/// height of the underlying image.
+///
+/// For example, if an image is 100 x 200 pixels (height x width) and the bounding
+/// box is `[0.1, 0.2, 0.5, 0.9]`, the upper-left and bottom-right coordinates of
+/// the bounding box will be `(40, 10)` to `(100, 50)` (in (x,y) coordinates).
+///
+/// Parts of the bounding box may fall outside the image.
+///
+/// - Parameters:
+///   - images: 4-D with shape `[batch, height, width, depth]`. A batch of images.
+///   - boxes: 3-D with shape `[batch, num_bounding_boxes, 4]` containing bounding
+///     boxes.
+///   - colors: 2-D. A list of RGBA colors to cycle through for the boxes.
+///
+/// - Output output: 4-D with the same shape as `images`. The batch of input images with
+///   bounding boxes drawn on the images.
+@inlinable @inline(__always)
+public static func drawBoundingBoxesV2<T: FloatingPoint & TensorFlowScalar>(
+  images: Tensor<T>,
+  boxes: Tensor<Float>,
+  colors: Tensor<Float>
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("DrawBoundingBoxesV2",
+    images,
+    boxes,
+    colors,
+    T$dtype: T.tensorFlowDataType)
+  return Tensor(handle: ret)
+}
+
 /// Interleave the values from the `data` tensors into a single tensor.
 ///
 /// Builds a merged tensor such that
@@ -6741,7 +6924,8 @@ public static func enqueueTPUEmbeddingSparseTensorBatch<T1: BinaryInteger & Tens
   modeOverride: StringTensor,
   deviceOrdinal: Int64 = -1,
   combiners: [String],
-  tableIds: [Int32]
+  tableIds: [Int32],
+  maxSequenceLengths: [Int32]
 ) {
   return #tfop("EnqueueTPUEmbeddingSparseTensorBatch",
     sampleIndices,
@@ -6753,7 +6937,8 @@ public static func enqueueTPUEmbeddingSparseTensorBatch<T1: BinaryInteger & Tens
     T3$dtype: T3.tensorFlowDataType,
     device_ordinal: deviceOrdinal,
     combiners: combiners,
-    table_ids: tableIds)
+    table_ids: tableIds,
+    max_sequence_lengths: maxSequenceLengths)
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -18604,7 +18789,7 @@ public static func softsignGrad<T: FloatingPoint & TensorFlowScalar>(
 ///     The output tensor has shape `[4, 1, 1, 3]` and value:
 ///
 ///     ```
-///     [[[1, 2, 3]], [[4, 5, 6]], [[7, 8, 9]], [[10, 11, 12]]]
+///     [[[[1, 2, 3]]], [[[4, 5, 6]]], [[[7, 8, 9]]], [[[10, 11, 12]]]]
 ///     ```
 ///
 ///     (3) For the following input of shape `[1, 4, 4, 1]` and block_size of 2:
@@ -18738,7 +18923,7 @@ public static func spaceToBatch<T: TensorFlowScalar, Tpaddings: BinaryInteger & 
 ///     The output tensor has shape `[4, 1, 1, 3]` and value:
 ///
 ///     ```
-///     [[[1, 2, 3]], [[4, 5, 6]], [[7, 8, 9]], [[10, 11, 12]]]
+///     [[[[1, 2, 3]]], [[[4, 5, 6]]], [[[7, 8, 9]]], [[[10, 11, 12]]]]
 ///     ```
 ///
 ///     (3) For the following input of shape `[1, 4, 4, 1]`, `block_shape = [2, 2]`, and
@@ -22007,12 +22192,12 @@ public static func tensorScatterUpdate<T: TensorFlowScalar, Tindices: BinaryInte
 
 /// Assign `value` to the sliced l-value reference of `input`.
 ///
-/// The values of `value` are assigned to the positions in the tensor
-/// `input` that are selected by the slice parameters. The slice parameters
-/// `begin`, `end`, `strides`, etc. work exactly as in `StridedSlice`.
+/// The values of `value` are assigned to the positions in the tensor `input` that
+/// are selected by the slice parameters. The slice parameters `begin` `end`
+/// `strides` etc. work exactly as in `StridedSlice`.
 ///
-/// NOTE this op currently does not support broadcasting and so `value`'s
-/// shape must be exactly the shape produced by the slice of `input`.
+/// NOTE this op currently does not support broadcasting and so `value`'s shape
+/// must be exactly the shape produced by the slice of `input`.
 @inlinable @inline(__always)
 public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowScalar>(
   _ input: Tensor<T>,
@@ -22025,8 +22210,8 @@ public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryIn
   ellipsisMask: Int64 = 0,
   newAxisMask: Int64 = 0,
   shrinkAxisMask: Int64 = 0
-) {
-  return #tfop("TensorStridedSliceUpdate",
+) -> Tensor<T> {
+  let ret: TensorHandle<T> = #tfop("TensorStridedSliceUpdate",
     input,
     begin,
     end,
@@ -22039,6 +22224,7 @@ public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryIn
     ellipsis_mask: ellipsisMask,
     new_axis_mask: newAxisMask,
     shrink_axis_mask: shrinkAxisMask)
+  return Tensor(handle: ret)
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor.

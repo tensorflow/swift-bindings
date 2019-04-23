@@ -326,7 +326,7 @@ public static func {name}{generics}({input_args}
       for attr in self.attrs:
         setters.append(attr.swift_setter(mode, self.string_valued))
       body += '\n  '.join(setters)
-      counts = [str(arg.swift_count) for arg in self.output_args]
+      counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
       if len(self.output_args) == 0:
         return body + '\n  op.execute()'
       body += '\n  return op.execute({})'.format(', '.join(counts))
@@ -609,7 +609,7 @@ class Attribute(object):
           self.op.inferred_counts[self.name] = self.swift_name + '._typeList.count'
           return 'op.setAttr("{}", {}._typeList)'.format(self.name, self.swift_name)
         if string_valued and self.allows_string:
-          return 'op.setAttr("{}", TF_STRING)'
+          return 'op.setAttr("{}", TensorDataType(TF_STRING))'
         return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
       if self.attr_def.type == 'int':
@@ -618,7 +618,8 @@ class Attribute(object):
         self.op.inferred_counts[self.name] = self.swift_name
 
       # Remaining attributes.
-      return 'op.setAttr("{}", {})'.format(self.name, self.swift_name)
+      value = self.swift_name + '.cName' if self._use_enum else self.swift_name
+      return 'op.setAttr("{}", {})'.format(self.name, value)
 
     # `mode` was neither "tfop" nor "eager".
     raise UnableToGenerateCodeError(

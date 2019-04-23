@@ -247,8 +247,10 @@ public static func {name}{generics}({input_args}
       attr.generic_constraints(self.string_valued)
       for attr in self.attrs]
     constraints = [c for c in constraints if c is not None]
-    if constraints:
+    if len(constraints) == 1:
       return '<' + ', '.join(constraints) + '>'
+    if len(constraints) > 1:
+      return '<\n    ' + ',\n    '.join(constraints) + '\n>'
     return ''
 
   def _swift_input_args(self):
@@ -630,7 +632,7 @@ class Attribute(object):
     if self.is_func_attr:
       input_type = self.swift_name.capitalize() + 'In'
       output_type = self.swift_name.capitalize() + 'Out'
-      return '{}: TensorGroup, {}: TensorGroup'.format(
+      return '{}: TensorGroup,\n    {}: TensorGroup'.format(
         input_type, output_type)
     if not self.is_inferred_type_attr:
       return None

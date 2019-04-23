@@ -609,7 +609,7 @@ class Attribute(object):
           self.op.inferred_counts[self.name] = self.swift_name + '._typeList.count'
           return 'op.setAttr("{}", {}._typeList)'.format(self.name, self.swift_name)
         if string_valued and self.allows_string:
-          return 'op.setAttr("{}", TensorDataType(TF_STRING))'
+          return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
         return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
       if self.attr_def.type == 'int':

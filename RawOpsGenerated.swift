@@ -598,7 +598,7 @@ public static func add(
   let op = TFE_Op("Add")
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -6964,7 +6964,7 @@ public static func denseToDenseSetOperation(
   let _ = op.addInput(set2)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7074,7 +7074,7 @@ public static func denseToSparseSetOperation(
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7632,7 +7632,7 @@ public static func deserializeSparse<Dtype: TensorFlowScalar>(
   let op = TFE_Op("DeserializeSparse")
   let _ = op.addInput(serializedSparse)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("Tserialized", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -8741,7 +8741,7 @@ public static func equal(
   let op = TFE_Op("Equal")
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -16918,7 +16918,7 @@ public static func nPolymorphicRestrictIn(
   let op = TFE_Op("NPolymorphicRestrictIn")
   let aCount = op.addInput(a)
   op.setAttr("N", aCount)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   op.execute()
 }
 
@@ -16937,7 +16937,7 @@ public static func nPolymorphicRestrictOut(
   n: Int64
 ) -> StringTensor {
   let op = TFE_Op("NPolymorphicRestrictOut")
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   op.setAttr("N", n)
   return op.execute(Int(n))
 }
@@ -17414,7 +17414,7 @@ public static func notEqual(
   let op = TFE_Op("NotEqual")
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -24521,7 +24521,7 @@ public static func restrict(
 ) -> StringTensor {
   let op = TFE_Op("Restrict")
   let _ = op.addInput(a)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -25091,7 +25091,7 @@ public static func reverse(
   let op = TFE_Op("Reverse")
   let _ = op.addInput(tensor)
   let _ = op.addInput(dims)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -25311,7 +25311,7 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar>(
   let _ = op.addInput(tensor)
   let _ = op.addInput(axis)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -26798,7 +26798,7 @@ public static func serializeManySparse<T: TensorFlowScalar>(
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
   op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("out_type", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -26846,7 +26846,7 @@ public static func serializeSparse<T: TensorFlowScalar>(
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
   op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("out_type", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -26929,7 +26929,7 @@ public static func setSize(
   let _ = op.addInput(setValues)
   let _ = op.addInput(setShape)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -28083,7 +28083,7 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   op.setAttr("hash_key", hashKey)
   op.setAttr("sparse_types", SparseTypes._typeList)
   op.setAttr("dense_types", DenseTypes._typeList)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("out_type", TensorDataType(TF_STRING))
   op.setAttr("internal_type", internalType)
   return op.execute(Int(1), Int(1), Int(1))
 }
@@ -29403,7 +29403,7 @@ public static func sparseToSparseSetOperation(
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("{}", TensorDataType(TF_STRING))
+  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 

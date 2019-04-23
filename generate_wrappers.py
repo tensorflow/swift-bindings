@@ -154,7 +154,7 @@ class Op(object):
     self.api_def = api_def
     self.enum_store = enum_store
     self.string_valued = string_valued
-    self.inferred_numbers = dict()
+    self.inferred_counts = dict()
 
     # Collect all the attributes that need to be provided
     # as inputs. Note that we do not generate input
@@ -401,8 +401,8 @@ class Argument(object):
       return self.swift_name
     elif mode == 'eager':
       number_attr = self.arg_def.number_attr
-      if self.arg_def.number_attr and number_attr not in self.op.inferred_numbers:
-        self.op.inferred_numbers[number_attr] = self.swift_name + 'Count'
+      if self.arg_def.number_attr and number_attr not in self.op.inferred_counts:
+        self.op.inferred_counts[number_attr] = self.swift_name + 'Count'
         return ('let {name}Count = _TFCOpAddInputFromTensorGroup(op, {name}, s)\n  ' +
                 'TFE_OpSetAttrInt(op, "{number_attr}", Int64({name}Count))'
                 ).format(name=self.swift_name, number_attr=self.arg_def.number_attr)
@@ -417,10 +417,12 @@ class Argument(object):
   @property
   def swift_count(self):
     number_attr = self.arg_def.number_attr
-    if number_attr and number_attr in self.op.inferred_numbers:
-      return self.op.inferred_numbers[number_attr]
+    if number_attr and number_attr in self.op.inferred_counts:
+      return self.op.inferred_counts[number_attr]
     if number_attr:
       return self.swift_name + 'Count'
+    if self.arg_def.type_list_attr:
+      return self.op.inferred_counts[self.arg_def.type_list_attr]
     return '1'
 
   @property
@@ -630,6 +632,7 @@ class Attribute(object):
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
+          self.op.inferred_counts[self.name] = self.swift_name + '._typeList.count'
           return '_TFCOpSetAttrTypeArray(op, "' + self.name + '", ' + self.swift_name + '._typeList)'
         if string_valued and self.allows_string:
           return 'TFE_OpSetAttrType(op, "' + self.name + '", TF_STRING)'
@@ -648,7 +651,7 @@ class Attribute(object):
         setter_fn = 'TFE_OpSetAttrInt'
         # The following is used for inferring the lengths
         # of output lists.
-        self.op.inferred_numbers[self.name] = value
+        self.op.inferred_counts[self.name] = value
       elif self.attr_def.type == 'float':
         setter_fn = 'TFE_OpSetAttrFloat'
         value = 'Float(' + value + ')'

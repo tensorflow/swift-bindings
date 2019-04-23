@@ -77,7 +77,7 @@ _TYPE_PROTOCOLS = [
   ({types_pb2.DT_UINT8,
     types_pb2.DT_UINT16,
     types_pb2.DT_UINT32,
-    types_pb2.DT_UINT64}, 'TensorFlowUnsignedInteger'),
+    types_pb2.DT_UINT64}, 'UnsignedInteger & TensorFlowScalar'),
   ({types_pb2.DT_UINT8,
     types_pb2.DT_UINT16,
     types_pb2.DT_UINT32,
@@ -85,11 +85,11 @@ _TYPE_PROTOCOLS = [
     types_pb2.DT_INT8,
     types_pb2.DT_INT16,
     types_pb2.DT_INT32,
-    types_pb2.DT_INT64}, 'TensorFlowInteger'),
+    types_pb2.DT_INT64}, 'BinaryInteger & TensorFlowScalar'),
   ({types_pb2.DT_FLOAT,
     types_pb2.DT_DOUBLE,
     types_pb2.DT_HALF,
-    types_pb2.DT_BFLOAT16}, 'TensorFlowFloatingPoint'),
+    types_pb2.DT_BFLOAT16}, 'FloatingPoint & TensorFlowScalar'),
   ({types_pb2.DT_UINT8,
     types_pb2.DT_UINT16,
     types_pb2.DT_UINT32,
@@ -101,7 +101,7 @@ _TYPE_PROTOCOLS = [
     types_pb2.DT_FLOAT,
     types_pb2.DT_DOUBLE,
     types_pb2.DT_HALF,
-    types_pb2.DT_BFLOAT16}, 'TensorFlowNumeric')]
+    types_pb2.DT_BFLOAT16}, 'Numeric & TensorFlowScalar')]
 
 _SWIFTIFIED_TYPES = {
   types_pb2.DT_FLOAT: 'Float',

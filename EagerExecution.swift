@@ -32,7 +32,7 @@ internal struct TFE_Op {
   }
 
   @inlinable
-  internal func addInput<T: TensorArrayProtocol>(input: T) -> Int {
+  internal func addInput<T: TensorArrayProtocol>(_ input: T) -> Int {
     let count = input._tensorHandleCount
     let buffer = UnsafeMutableBufferPointer<CTensorHandle>.allocate(capacity: Int(count))
     t._unpackTensorHandles(into: buffer.baseAddress)
@@ -261,7 +261,7 @@ internal struct TFE_Op {
   /// NOTE: Any of the following functions can only be executed once.
   @inlinable
   internal func execute<T0 : TensorArrayProtocol>(
-    count0: Int
+    _ count0: Int
   ) -> (T0) {
     var count = Int32(count0)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -279,8 +279,8 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int
+    _ count0: Int,
+    _ count1: Int
   ) -> (T0, T1) {
     var count = Int32(count0) + Int32(count1)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -300,9 +300,9 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int
   ) -> (T0, T1, T2) {
     var count = Int32(count0) + Int32(count1) + Int32(count2)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -324,10 +324,10 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int
   ) -> (T0, T1, T2, T3) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -351,11 +351,11 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int
   ) -> (T0, T1, T2, T3, T4) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -381,12 +381,12 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int,
-    count5: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int
   ) -> (T0, T1, T2, T3, T4, T5) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -414,13 +414,13 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int,
-    count5: Int,
-    count6: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -450,14 +450,14 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int,
-    count5: Int,
-    count6: Int,
-    count7: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -489,15 +489,15 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int,
-    count5: Int,
-    count6: Int,
-    count7: Int,
-    count8: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int,
+    _ count8: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7) + Int32(count8)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -531,16 +531,16 @@ internal struct TFE_Op {
 
   @inlinable
   internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
-    count0: Int,
-    count1: Int,
-    count2: Int,
-    count3: Int,
-    count4: Int,
-    count5: Int,
-    count6: Int,
-    count7: Int,
-    count8: Int,
-    count9: Int
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int,
+    _ count8: Int,
+    _ count9: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7) + Int32(count8) + Int32(count9)
     let buffer: UnsafeMutablePointer<CTensorHandle> =

@@ -2450,6 +2450,111 @@ public static func batchDatasetV2(
   return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
+/// Batches all the inputs tensors to the computation done by the function.
+///
+/// So, for example, in the following code
+///
+///   ```python
+///
+///   # This input will be captured.
+///   y = tf.placeholder_with_default(1.0, shape=[])
+///
+///   @tf.Defun(tf.float32)
+///   def computation(a):
+///     return tf.matmul(a, a) + y
+///
+///   b = gen_batch_ops.batch_function(
+///           f=computation
+///           in_tensors=[a],
+///           captured_tensors=computation.captured_inputs,
+///           Tout=[o.type for o in computation.definition.signature.output_arg],
+///           num_batch_threads=1,
+///           max_batch_size=10,
+///           batch_timeout_micros=100000,  # 100ms
+///           allowed_batch_sizes=[3, 10],
+///           batching_queue="")
+///
+/// If more than one session.run call is simultaneously trying to compute `b`
+/// the values of `a` will be gathered, non-deterministically concatenated
+/// along the first axis, and only one thread will run the computation.
+///
+/// Assumes that all arguments of the function are Tensors which will be batched
+/// along their first dimension.
+///
+/// Arguments that are captured, are not batched. The session.run call which does
+/// the concatenation, will use the values of the captured tensors available to it.
+/// Therefore, typical uses of captured tensors should involve values which remain
+/// unchanged across session.run calls. Inference is a good example of this.
+///
+/// SparseTensor is not supported. The return value of the decorated function
+/// must be a Tensor or a list/tuple of Tensors.
+///
+/// - Parameters:
+///   - in_tensors: The tensors to be batched.
+///   - captured_tensors: The tensors which are captured in the function, and don't need
+///     to be batched.
+///
+/// - Attrs:
+///   - num_batch_threads: Number of scheduling threads for processing batches of work.
+///     Determines the number of batches processed in parallel.
+///   - max_batch_size: Batch sizes will never be bigger than this.
+///   - batch_timeout_micros: Maximum number of microseconds to wait before outputting
+///     an incomplete batch.
+///   - max_enqueued_batches: Maximum number of batches enqueued. Default: 10.
+///   - allowed_batch_sizes: Optional list of allowed batch sizes. If left empty, does
+///     nothing. Otherwise, supplies a list of batch sizes, causing the op to pad
+///     batches up to one of those sizes. The entries must increase monotonically, and
+///     the final entry must equal max_batch_size.
+///   - container: Controls the scope of sharing of this batch.
+///   - shared_name: Concurrently running instances of batch in the same device with the
+///     same container and shared_name will batch their elements together. If left
+///     empty, the op name will be used as the shared name.
+///   - Tin: the types of tensors to be batched.
+///   - Tcaptured: the types of the captured tensors.
+///   - Tout: the types of the output tensors.
+///
+/// - Output out_tensors: The output tensors.
+@inlinable @inline(__always)
+public static func batchFunction<FIn: TensorGroup, FOut: TensorGroup, Tin: TensorGroup, Tcaptured: TensorGroup, Tout: TensorGroup>(
+  inTensors: Tin,
+  capturedTensors: Tcaptured,
+  f: (FIn) -> FOut,
+  numBatchThreads: Int64,
+  maxBatchSize: Int64,
+  batchTimeoutMicros: Int64,
+  maxEnqueuedBatches: Int64 = 10,
+  allowedBatchSizes: [Int32],
+  container: String,
+  sharedName: String,
+  batchingQueue: String
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BatchFunction", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inTensors, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, capturedTensors, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  TFE_OpSetAttrInt(op, "num_batch_threads", numBatchThreads)
+  TFE_OpSetAttrInt(op, "max_batch_size", maxBatchSize)
+  TFE_OpSetAttrInt(op, "batch_timeout_micros", batchTimeoutMicros)
+  TFE_OpSetAttrInt(op, "max_enqueued_batches", maxEnqueuedBatches)
+  _TFCOpSetAttrInt32Array(op, "allowed_batch_sizes", allowedBatchSizes)
+  _TFCOpSetAttrString(op, "container", container)
+  _TFCOpSetAttrString(op, "shared_name", sharedName)
+  _TFCOpSetAttrString(op, "batching_queue", batchingQueue)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tcaptured", Tcaptured._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
+}
+
 /// Multiplies slices of two tensors in batches.
 ///
 /// Multiplies all slices of `Tensor` `x` and `y` (each slice can be
@@ -11186,6 +11291,114 @@ public static func experimentalDirectedInterleaveDataset(
   return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
+/// Creates a dataset that computes a group-by on `input_dataset`.
+///
+/// Creates a dataset that computes a group-by on `input_dataset`.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - key_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `key_func`.
+///   - init_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `init_func`.
+///   - reduce_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `reduce_func`.
+///   - finalize_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `finalize_func`.
+///
+/// - Attrs:
+///   - key_func: A function mapping an element of `input_dataset`, concatenated
+///     with `key_func_other_arguments` to a scalar value of type DT_INT64.
+///   - init_func: A function mapping a key of type DT_INT64, concatenated with
+///     `init_func_other_arguments` to the initial reducer state.
+///   - reduce_func: A function mapping the current reducer state and an element of `input_dataset`,
+///     concatenated with `reduce_func_other_arguments` to a new reducer state.
+///   - finalize_func: A function mapping the final reducer state to an output element.
+@inlinable @inline(__always)
+public static func experimentalGroupByReducerDataset<KeyfuncIn: TensorGroup, KeyfuncOut: TensorGroup, InitfuncIn: TensorGroup, InitfuncOut: TensorGroup, ReducefuncIn: TensorGroup, ReducefuncOut: TensorGroup, FinalizefuncIn: TensorGroup, FinalizefuncOut: TensorGroup, TkeyFuncOtherArguments: TensorGroup, TinitFuncOtherArguments: TensorGroup, TreduceFuncOtherArguments: TensorGroup, TfinalizeFuncOtherArguments: TensorGroup>(
+  inputDataset: VariantHandle,
+  keyFuncOtherArguments: TkeyFuncOtherArguments,
+  initFuncOtherArguments: TinitFuncOtherArguments,
+  reduceFuncOtherArguments: TreduceFuncOtherArguments,
+  finalizeFuncOtherArguments: TfinalizeFuncOtherArguments,
+  keyFunc: (KeyfuncIn) -> KeyfuncOut,
+  initFunc: (InitfuncIn) -> InitfuncOut,
+  reduceFunc: (ReducefuncIn) -> ReducefuncOut,
+  finalizeFunc: (FinalizefuncIn) -> FinalizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalGroupByReducerDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keyFuncOtherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, initFuncOtherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reduceFuncOtherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, finalizeFuncOtherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "key_func", _tffunc(keyFunc))
+  _TFCOpSetAttrFunctionName(op, "init_func", _tffunc(initFunc))
+  _TFCOpSetAttrFunctionName(op, "reduce_func", _tffunc(reduceFunc))
+  _TFCOpSetAttrFunctionName(op, "finalize_func", _tffunc(finalizeFunc))
+  _TFCOpSetAttrTypeArray(op, "Tkey_func_other_arguments", TkeyFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tinit_func_other_arguments", TinitFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Treduce_func_other_arguments", TreduceFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tfinalize_func_other_arguments", TfinalizeFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that computes a windowed group-by on `input_dataset`.
+///
+/// // TODO(mrry): Support non-int64 keys.
+///
+/// - Attr key_func: A function mapping an element of `input_dataset`, concatenated
+///   with `key_func_other_arguments` to a scalar value of type DT_INT64.
+@inlinable @inline(__always)
+public static func experimentalGroupByWindowDataset<KeyfuncIn: TensorGroup, KeyfuncOut: TensorGroup, ReducefuncIn: TensorGroup, ReducefuncOut: TensorGroup, WindowsizefuncIn: TensorGroup, WindowsizefuncOut: TensorGroup, TkeyFuncOtherArguments: TensorGroup, TreduceFuncOtherArguments: TensorGroup, TwindowSizeFuncOtherArguments: TensorGroup>(
+  inputDataset: VariantHandle,
+  keyFuncOtherArguments: TkeyFuncOtherArguments,
+  reduceFuncOtherArguments: TreduceFuncOtherArguments,
+  windowSizeFuncOtherArguments: TwindowSizeFuncOtherArguments,
+  keyFunc: (KeyfuncIn) -> KeyfuncOut,
+  reduceFunc: (ReducefuncIn) -> ReducefuncOut,
+  windowSizeFunc: (WindowsizefuncIn) -> WindowsizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalGroupByWindowDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, keyFuncOtherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, reduceFuncOtherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, windowSizeFuncOtherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "key_func", _tffunc(keyFunc))
+  _TFCOpSetAttrFunctionName(op, "reduce_func", _tffunc(reduceFunc))
+  _TFCOpSetAttrFunctionName(op, "window_size_func", _tffunc(windowSizeFunc))
+  _TFCOpSetAttrTypeArray(op, "Tkey_func_other_arguments", TkeyFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Treduce_func_other_arguments", TreduceFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Twindow_size_func_other_arguments", TwindowSizeFuncOtherArguments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func experimentalIdentityIndexedDataset(
   size: Tensor<UInt64>
@@ -11333,6 +11546,95 @@ public static func experimentalLatencyStatsDataset(
   return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
+/// Creates a dataset that fuses mapping with batching.
+///
+/// Creates a dataset that applies `f` to the outputs of `input_dataset` and then
+/// batches `batch_size` of them.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `batch_size * num_parallel_batches` copies of `f` in parallel.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - other_arguments: A list of tensors, typically values that were captured when building a closure
+///     for `f`.
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch. It determines the number of concurrent invocations of `f` that process
+///     elements from `input_dataset` in parallel.
+///   - num_parallel_calls: A scalar representing the maximum number of parallel invocations of the `map_fn`
+///     function. Applying the `map_fn` on consecutive input elements in parallel has
+///     the potential to improve input pipeline throughput.
+///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
+///     is smaller than desired.
+///
+/// - Attr f: A function to apply to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalMapAndBatchDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  batchSize: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  dropRemainder: Tensor<Bool>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalMapAndBatchDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, batchSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numParallelCalls, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dropRemainder, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalMapDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalMapDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "use_inter_op_parallelism", (useInterOpParallelism) ? 1 : 0)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func experimentalMatchingFilesDataset(
   patterns: StringTensor
@@ -11413,6 +11715,117 @@ public static func experimentalNonSerializableDataset(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalNonSerializableDataset", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that fuses mapping with batching.
+///
+/// Creates a dataset that applies `f` to the outputs of `input_dataset` and then
+/// batches `batch_size` of them.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `batch_size * num_parallel_batches` copies of `f` in parallel.
+///
+/// Unlike "MapAndBatchDatasetV2", this dataset uses a NUMA-aware thread scheduling
+/// policy. Because it uses the single-threaded executor, it only supports the
+/// function-based control flow ops.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - other_arguments: A list of tensors, typically values that were captured when building a closure
+///     for `f`.
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch. It determines the number of concurrent invocations of `f` that process
+///     elements from `input_dataset` in parallel.
+///   - num_parallel_calls: A scalar representing the maximum number of parallel invocations of the `map_fn`
+///     function. Applying the `map_fn` on consecutive input elements in parallel has
+///     the potential to improve input pipeline throughput.
+///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
+///     is smaller than desired.
+///
+/// - Attr f: A function to apply to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalNumaMapAndBatchDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  batchSize: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  dropRemainder: Tensor<Bool>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalNumaMapAndBatchDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, batchSize, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numParallelCalls, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dropRemainder, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// The resulting dataset is similar to the `InterleaveDataset`, with the exception
+/// that if retrieving the next value from a dataset would cause the requester to
+/// block, it will skip that input dataset. This dataset is especially useful
+/// when loading data from a variable-latency datastores (e.g. HDFS, GCS), as it
+/// allows the training step to proceed so long as some data is available.
+///
+/// !! WARNING !! This dataset is not deterministic!
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func experimentalParallelInterleaveDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  sloppy: Tensor<Bool>,
+  bufferOutputElements: Tensor<Int64>,
+  prefetchInputElements: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalParallelInterleaveDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cycleLength, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockLength, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sloppy, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, bufferOutputElements, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, prefetchInputElements, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
@@ -11581,6 +11994,39 @@ public static func experimentalRebatchDataset(
   return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
+/// Creates a dataset successively reduces `f` over the elements of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalScanDataset<FIn: TensorGroup, FOut: TensorGroup, Tstate: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  initialState: Tstate,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalScanDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, initialState, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Tstate", Tstate._typeList)
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func experimentalSetStatsAggregatorDataset(
   inputDataset: VariantHandle,
@@ -11740,6 +12186,45 @@ public static func experimentalStatsAggregatorSummary(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return StringTensor.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that stops iteration when predicate` is false.
+///
+/// The `predicate` function must return a scalar boolean and accept the
+/// following arguments:
+///
+/// * One tensor for each component of an element of `input_dataset`.
+/// * One tensor for each value in `other_arguments`.
+///
+/// - Parameter other_arguments: A list of tensors, typically values that were captured when
+///   building a closure for `predicate`.
+///
+/// - Attr predicate: A function returning a scalar boolean.
+@inlinable @inline(__always)
+public static func experimentalTakeWhileDataset<PredicateIn: TensorGroup, PredicateOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  predicate: (PredicateIn) -> PredicateOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalTakeWhileDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "predicate", _tffunc(predicate))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -12618,6 +13103,45 @@ public static func filterByLastComponentDataset(
   return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
+/// Creates a dataset containing elements of `input_dataset` matching `predicate`.
+///
+/// The `predicate` function must return a scalar boolean and accept the
+/// following arguments:
+///
+/// * One tensor for each component of an element of `input_dataset`.
+/// * One tensor for each value in `other_arguments`.
+///
+/// - Parameter other_arguments: A list of tensors, typically values that were captured when
+///   building a closure for `predicate`.
+///
+/// - Attr predicate: A function returning a scalar boolean.
+@inlinable @inline(__always)
+public static func filterDataset<PredicateIn: TensorGroup, PredicateOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  predicate: (PredicateIn) -> PredicateOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FilterDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "predicate", _tffunc(predicate))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func fiveFloatOutputs(
 ) -> (a: Tensor<Float>, b: Tensor<Float>, c: Tensor<Float>, d: Tensor<Float>, e: Tensor<Float>) {
@@ -12861,6 +13385,42 @@ public static func fixedUnigramCandidateSampler(
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike MapDataset, the `f` in FlatMapDataset is expected to return a
+/// Dataset variant, and FlatMapDataset will flatten successive results
+/// into a single Dataset.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func flatMapDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FlatMapDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func floatInput(
   _ a: Tensor<Float>
@@ -13070,6 +13630,51 @@ public static func foo3(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+}
+
+///   ```python
+///    output = input;
+///    for i in range(start, limit, delta)
+///      output = body(i, output);
+///   ```
+///
+/// - Parameters:
+///   - start: The lower bound. An int32
+///   - limit: The upper bound. An int32
+///   - delta: The increment. An int32
+///   - input: A list of input tensors whose types are T.
+///
+/// - Attrs:
+///   - T: A list of dtypes.
+///   - body:     A function that takes a list of tensors (int32, T) and returns another
+///         list of tensors (T).
+///
+/// - Output output: A list of output tensors whose types are T.
+@inlinable @inline(__always)
+public static func for_<T: TensorGroup, BodyIn: TensorGroup, BodyOut: TensorGroup>(
+  start: Tensor<Int32>,
+  limit: Tensor<Int32>,
+  delta: Tensor<Int32>,
+  _ input: T,
+  body: (BodyIn) -> BodyOut
+) -> T {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "For", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, start, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, limit, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  _TFCOpSetAttrTypeArray(op, "T", T._typeList)
+  _TFCOpSetAttrFunctionName(op, "body", _tffunc(body))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs fractional average pooling on the input.
@@ -13351,6 +13956,21 @@ public static func fractionalMaxPoolGrad<T: Numeric & TensorFlowScalar>(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<T>.init(_owning: buffer, count: Int(1))
+}
+
+@inlinable @inline(__always)
+public static func funcAttr<FIn: TensorGroup, FOut: TensorGroup>(
+  f: (FIn) -> FOut
+) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FuncAttr", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  var count: Int32 = 0
+  var unused: CTensorHandle?
+  _TFCEagerExecute(op, &unused, &count, s)
+  checkOk(s)
 }
 
 /// Batch normalization.
@@ -14395,6 +15015,42 @@ public static func generateVocabRemapping(
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
+/// Creates a dataset that invokes a function to generate elements.
+@inlinable @inline(__always)
+public static func generatorDataset<InitfuncIn: TensorGroup, InitfuncOut: TensorGroup, NextfuncIn: TensorGroup, NextfuncOut: TensorGroup, FinalizefuncIn: TensorGroup, FinalizefuncOut: TensorGroup, TinitFuncArgs: TensorGroup, TnextFuncArgs: TensorGroup, TfinalizeFuncArgs: TensorGroup>(
+  initFuncOtherArgs: TinitFuncArgs,
+  nextFuncOtherArgs: TnextFuncArgs,
+  finalizeFuncOtherArgs: TfinalizeFuncArgs,
+  initFunc: (InitfuncIn) -> InitfuncOut,
+  nextFunc: (NextfuncIn) -> NextfuncOut,
+  finalizeFunc: (FinalizefuncIn) -> FinalizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GeneratorDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, initFuncOtherArgs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, nextFuncOtherArgs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, finalizeFuncOtherArgs, s)
+  _TFCOpSetAttrFunctionName(op, "init_func", _tffunc(initFunc))
+  _TFCOpSetAttrFunctionName(op, "next_func", _tffunc(nextFunc))
+  _TFCOpSetAttrFunctionName(op, "finalize_func", _tffunc(finalizeFunc))
+  _TFCOpSetAttrTypeArray(op, "Tinit_func_args", TinitFuncArgs._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tnext_func_args", TnextFuncArgs._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tfinalize_func_args", TfinalizeFuncArgs._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 /// Store the input tensor in the state of the current session.
 ///
 /// - Parameter value: The tensor to be stored.
@@ -14904,6 +15560,55 @@ public static func identityReaderV2(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return ResourceHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// output = cond ? then_branch(input) : else_branch(input)
+///
+/// - Parameters:
+///   - cond:       A Tensor. If the tensor is a scalar of non-boolean type, the
+///           scalar is converted to a boolean according to the
+///           following rule: if the scalar is a numerical value, non-zero means
+///           `True` and zero means False; if the scalar is a string, non-empty
+///           means `True` and empty means `False`. If the tensor is not a scalar,
+///           being empty means False and being non-empty means True.
+///   - input: A list of input tensors.
+///
+/// - Attrs:
+///   - Tin: A list of input types.
+///   - Tout: A list of output types.
+///   - then_branch:       A function that takes 'inputs' and returns a list of tensors, whose
+///           types are the same as what else_branch returns.
+///   - else_branch:     A function that takes 'inputs' and returns a list of tensors, whose
+///         types are the same as what then_branch returns.
+///
+/// - Output output: A list of return values.
+@inlinable @inline(__always)
+public static func if_<Tcond: TensorFlowScalar, Tin: TensorGroup, Tout: TensorGroup, ThenbranchIn: TensorGroup, ThenbranchOut: TensorGroup, ElsebranchIn: TensorGroup, ElsebranchOut: TensorGroup>(
+  cond: Tensor<Tcond>,
+  _ input: Tin,
+  thenBranch: (ThenbranchIn) -> ThenbranchOut,
+  elseBranch: (ElsebranchIn) -> ElsebranchOut,
+  outputShapes: [TensorShape?]
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "If", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, cond, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcond", Tcond.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "then_branch", _tffunc(thenBranch))
+  _TFCOpSetAttrFunctionName(op, "else_branch", _tffunc(elseBranch))
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -15631,6 +16336,48 @@ public static func intOutputFloatOutput(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike MapDataset, the `f` in InterleaveDataset is expected to return
+/// a Dataset variant, and InterleaveDataset will flatten successive
+/// results into a single Dataset. Unlike FlatMapDataset,
+/// InterleaveDataset will interleave sequences of up to `block_length`
+/// consecutive elements from `cycle_length` input elements.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func interleaveDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InterleaveDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cycleLength, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockLength, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the reciprocal of x element-wise.
@@ -18184,6 +18931,95 @@ public static func mapClear(
   var unused: CTensorHandle?
   _TFCEagerExecute(op, &unused, &count, s)
   checkOk(s)
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func mapDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "use_inter_op_parallelism", (useInterOpParallelism) ? 1 : 0)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+///   Maps a function on the list of tensors unpacked from arguments on dimension 0.
+///   The function given by `f` is assumed to be stateless, and is executed
+///   concurrently on all the slices; up to batch_size (i.e. the size of the 0th
+///   dimension of each argument) functions will be scheduled at once.
+///
+///   The `max_intra_op_parallelism` attr, which defaults to 1, can be used to
+///   limit the intra op parallelism. To limit inter-op parallelism, a user can
+///   set a private threadpool on the dataset using `tf.data.Options`'s
+///   `ThreadingOptions`.
+///
+///   Note that this op is not exposed to users directly, but is invoked in tf.data
+///   rewrites.
+///
+/// - Parameters:
+///   - arguments:     A list of tensors whose types are `Targuments`, corresponding to the inputs
+///         the function should be mapped over.
+///   - captured_inputs:     A list of tensors whose types are `Tcaptured`, corresponding to the captured
+///         inputs of the defun.
+///
+/// - Attrs:
+///   - Targuments: A list of types.
+///   - Tcaptured: A list of types.
+///   - output_types: A list of types.
+///   - output_shapes: A list of shapes.
+///
+/// - Output output:     A list of output tensors whose types are `output_types` and whose dimensions
+///       0 are the same as the dimensions 0 of the tensors in `arguments`, and whose
+///       remaining dimensions correspond to those in `output_shapes`.
+@inlinable @inline(__always)
+public static func mapDefun<Targuments: TensorGroup, Tcaptured: TensorGroup, OutputTypes: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  arguments: Targuments,
+  capturedInputs: Tcaptured,
+  outputShapes: [TensorShape?],
+  f: (FIn) -> FOut,
+  maxIntraOpParallelism: Int64 = 1
+) -> OutputTypes {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapDefun", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, arguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, capturedInputs, s)
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tcaptured", Tcaptured._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  TFE_OpSetAttrInt(op, "max_intra_op_parallelism", maxIntraOpParallelism)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of incomplete elements in the underlying container.
@@ -21586,6 +22422,57 @@ public static func oneHot<T: TensorFlowScalar, Ti: BinaryInteger & TensorFlowSca
   return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
+/// Makes a "one-shot" iterator that can be iterated only once.
+///
+/// A one-shot iterator bundles the logic for defining the dataset and
+/// the state of the iterator in a single op, which allows simple input
+/// pipelines to be defined without an additional initialization
+/// ("MakeIterator") step.
+///
+/// One-shot iterators have the following limitations:
+///
+/// * They do not support parameterization: all logic for creating the underlying
+///   dataset must be bundled in the `dataset_factory` function.
+/// * They are not resettable. Once a one-shot iterator reaches the end of its
+///   underlying dataset, subsequent "IteratorGetNext" operations on that
+///   iterator will always produce an `OutOfRange` error.
+///
+/// For greater flexibility, use "Iterator" and "MakeIterator" to define
+/// an iterator using an arbitrary subgraph, which may capture tensors
+/// (including fed values) as parameters, and which may be reset multiple
+/// times by rerunning "MakeIterator".
+///
+/// - Attr dataset_factory: A function of type `() -> DT_VARIANT`, where the returned
+///   DT_VARIANT is a dataset.
+///
+/// - Output handle: A handle to the iterator that can be passed to an "IteratorGetNext"
+///   op.
+@inlinable @inline(__always)
+public static func oneShotIterator<DatasetfactoryIn: TensorGroup, DatasetfactoryOut: TensorGroup>(
+  datasetFactory: (DatasetfactoryIn) -> DatasetfactoryOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  container: String,
+  sharedName: String
+) -> ResourceHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OneShotIterator", s)
+  defer { TFE_DeleteOp(op) }
+  _TFCOpSetAttrFunctionName(op, "dataset_factory", _tffunc(datasetFactory))
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  _TFCOpSetAttrString(op, "container", container)
+  _TFCOpSetAttrString(op, "shared_name", sharedName)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
+}
+
 /// Returns a tensor of ones with the same shape and type as x.
 ///
 /// - Parameter x: a tensor of type T.
@@ -22548,6 +23435,88 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
   return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func parallelInterleaveDatasetV2<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  sloppy: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParallelInterleaveDatasetV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, cycleLength, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, blockLength, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numParallelCalls, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "sloppy", (sloppy) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `num_parallel_calls` copies of `f` in parallel.
+///
+/// - Parameter num_parallel_calls: The number of concurrent invocations of `f` that process
+///   elements from `input_dataset` in parallel.
+@inlinable @inline(__always)
+public static func parallelMapDataset<FIn: TensorGroup, FOut: TensorGroup, Targuments: TensorGroup>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  numParallelCalls: Tensor<Int32>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  sloppy: Bool = false,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParallelMapDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, numParallelCalls, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "use_inter_op_parallelism", (useInterOpParallelism) ? 1 : 0)
+  TFE_OpSetAttrBool(op, "sloppy", (sloppy) ? 1 : 0)
+  TFE_OpSetAttrBool(op, "preserve_cardinality", (preserveCardinality) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
+}
+
 /// Outputs random values from a normal distribution. The parameters may each be a
 ///
 /// scalar which applies to the entire output, or a vector of length shape[0] which
@@ -22995,6 +23964,47 @@ public static func parseTensor<OutType: TensorFlowScalar>(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<OutType>.init(_owning: buffer, count: Int(1))
+}
+
+/// returns `f(inputs)`, where `f`'s body is placed and partitioned.
+///
+/// - Parameter args: A list of input tensors.
+///
+/// - Attrs:
+///   - Tin: A list of input types.
+///   - Tout: A list of output types.
+///   - f:       A function that takes 'args', a list of tensors, and returns 'output',
+///           another list of tensors. Input and output types are specified by 'Tin'
+///           and 'Tout'. The function body of f will be placed and partitioned across
+///           devices, setting this op apart from the regular Call op.
+///
+/// - Output output: A list of return values.
+@inlinable @inline(__always)
+public static func partitionedCall<Tin: TensorGroup, Tout: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  args: Tin,
+  f: (FIn) -> FOut,
+  config: String,
+  configProto: String,
+  executorType: String
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PartitionedCall", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, args, s)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrString(op, "config", config)
+  _TFCOpSetAttrString(op, "config_proto", configProto)
+  _TFCOpSetAttrString(op, "executor_type", executorType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// A placeholder op for a value that will be fed into the computation.
@@ -26920,6 +27930,47 @@ public static func recvTPUEmbeddingActivations(
   return [Tensor<Float>].init(_owning: buffer, count: Int(numOutputs))
 }
 
+/// Reduces the input dataset to a singleton using a reduce function.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - initial_state: A nested structure of tensors, representing the initial state of the
+///     transformation.
+///
+/// - Attr f: A function that maps `(old_state, input_element)` to `new_state`. It must take
+///   two arguments and return a nested structures of tensors. The structure of
+///   `new_state` must match the structure of `initial_state`.
+@inlinable @inline(__always)
+public static func reduceDataset<FIn: TensorGroup, FOut: TensorGroup, Tstate: TensorGroup, Targuments: TensorGroup, OutputTypes: TensorGroup>(
+  inputDataset: VariantHandle,
+  initialState: Tstate,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true
+) -> OutputTypes {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReduceDataset", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, initialState, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, otherArguments, s)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrTypeArray(op, "Tstate", Tstate._typeList)
+  _TFCOpSetAttrTypeArray(op, "Targuments", Targuments._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrBool(op, "use_inter_op_parallelism", (useInterOpParallelism) ? 1 : 0)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return OutputTypes.init(_owning: buffer, count: Int(1))
+}
+
 /// Joins a string Tensor across the given dimensions.
 ///
 /// Computes the string join across dimensions in the given string Tensor of shape
@@ -27153,6 +28204,42 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<T>.init(_owning: buffer, count: Int(1))
+}
+
+/// Runs function `f` on a remote device indicated by `target`.
+///
+/// - Parameters:
+///   - target: A fully specified device name where we want to run the function.
+///   - args: A list of arguments for the function.
+///
+/// - Attrs:
+///   - Tin: The type list for the arguments.
+///   - Tout: The type list for the return values.
+///   - f: The function to run remotely.
+///
+/// - Output output: A list of return values.
+@inlinable @inline(__always)
+public static func remoteCall<Tin: TensorGroup, Tout: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  target: StringTensor,
+  args: Tin,
+  f: (FIn) -> FOut
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RemoteCall", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, target, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, args, s)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Execute a sub graph on a remote processor.
@@ -36301,6 +37388,48 @@ public static func stageSize(
   return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
+/// returns `f(inputs)`, where `f`'s body is placed and partitioned.
+///
+/// - Parameter args: A list of input tensors.
+///
+/// - Attrs:
+///   - Tin: A list of input types.
+///   - Tout: A list of output types.
+///   - f:       A function that takes 'args', a list of tensors, and returns 'output',
+///           another list of tensors. Input and output types are specified by 'Tin'
+///           and 'Tout'. The function body of f will be placed and partitioned across
+///           devices, setting this op apart from the regular Call op. This op is
+///           stateful.
+///
+/// - Output output: A list of return values.
+@inlinable @inline(__always)
+public static func statefulPartitionedCall<Tin: TensorGroup, Tout: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  args: Tin,
+  f: (FIn) -> FOut,
+  config: String,
+  configProto: String,
+  executorType: String
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatefulPartitionedCall", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, args, s)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  _TFCOpSetAttrString(op, "config", config)
+  _TFCOpSetAttrString(op, "config_proto", configProto)
+  _TFCOpSetAttrString(op, "executor_type", executorType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
+}
+
 @inlinable @inline(__always)
 public static func statefulRandomBinomial<S: BinaryInteger & TensorFlowScalar, T: Numeric & TensorFlowScalar, Dtype: Numeric & TensorFlowScalar>(
   resource: ResourceHandle,
@@ -36558,6 +37687,56 @@ public static func statefulUniformInt<Dtype: TensorFlowScalar, ShapeDtype: Tenso
   return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
+/// output = cond ? then_branch(input) : else_branch(input)
+///
+/// - Parameters:
+///   - cond:       A Tensor. If the tensor is a scalar of non-boolean type, the
+///           scalar is converted to a boolean according to the
+///           following rule: if the scalar is a numerical value, non-zero means
+///           `True` and zero means False; if the scalar is a string, non-empty
+///           means `True` and empty means `False`. If the tensor is not a scalar,
+///           being empty means False and being non-empty means True.
+///
+///           This should only be used when the if then/else body functions do not
+///           have stateful ops.
+///   - input: A list of input tensors.
+///
+/// - Attrs:
+///   - Tin: A list of input types.
+///   - Tout: A list of output types.
+///   - then_branch:       A function that takes 'inputs' and returns a list of tensors, whose
+///           types are the same as what else_branch returns.
+///   - else_branch:     A function that takes 'inputs' and returns a list of tensors, whose
+///         types are the same as what then_branch returns.
+///
+/// - Output output: A list of return values.
+@inlinable @inline(__always)
+public static func statelessIf<Tcond: TensorFlowScalar, Tin: TensorGroup, Tout: TensorGroup, ThenbranchIn: TensorGroup, ThenbranchOut: TensorGroup, ElsebranchIn: TensorGroup, ElsebranchOut: TensorGroup>(
+  cond: Tensor<Tcond>,
+  _ input: Tin,
+  thenBranch: (ThenbranchIn) -> ThenbranchOut,
+  elseBranch: (ElsebranchIn) -> ElsebranchOut
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessIf", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, cond, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  TFE_OpSetAttrType(op, "Tcond", Tcond.tensorFlowDataType._cDataType)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "then_branch", _tffunc(thenBranch))
+  _TFCOpSetAttrFunctionName(op, "else_branch", _tffunc(elseBranch))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
+}
+
 /// Draws samples from a multinomial distribution.
 ///
 /// - Parameters:
@@ -36744,6 +37923,50 @@ public static func statelessTruncatedNormal<Dtype: FloatingPoint & TensorFlowSca
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
+}
+
+/// output = input; While (Cond(output)) { output = Body(output) }
+///
+/// - Parameter input: A list of input tensors whose types are T.
+///
+/// - Attrs:
+///   - T: dtype in use.
+///   - cond:       A function takes 'input' and returns a tensor.  If the tensor is
+///           a scalar of non-boolean, the scalar is converted to a boolean
+///           according to the following rule: if the scalar is a numerical
+///           value, non-zero means True and zero means False; if the scalar is
+///           a string, non-empty means True and empty means False. If the
+///           tensor is not a scalar, non-emptiness means True and False
+///           otherwise.
+///
+///           This should only be used when the while condition and body functions
+///           do not have stateful ops.
+///   - body:       A function that takes a list of tensors and returns another
+///           list of tensors. Both lists have the same types as specified
+///           by T.
+///
+/// - Output output: A list of output tensors whose types are T.
+@inlinable @inline(__always)
+public static func statelessWhile<T: TensorGroup, CondIn: TensorGroup, CondOut: TensorGroup, BodyIn: TensorGroup, BodyOut: TensorGroup>(
+  _ input: T,
+  cond: (CondIn) -> CondOut,
+  body: (BodyIn) -> BodyOut
+) -> T {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StatelessWhile", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  _TFCOpSetAttrTypeArray(op, "T", T._typeList)
+  _TFCOpSetAttrFunctionName(op, "cond", _tffunc(cond))
+  _TFCOpSetAttrFunctionName(op, "body", _tffunc(body))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// Check if the input matches the regex pattern.
@@ -37815,6 +39038,55 @@ public static func switch_<T: TensorFlowScalar>(
   return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
+/// Computes the gradient function for function f via backpropagation.
+///
+/// - Parameter input: a list of input tensors of size N + M;
+///
+/// - Attrs:
+///   - Tin: the type list for the input list.
+///   - Tout: the type list for the input list.
+///   - f: The function we want to compute the gradient for.
+///
+///     The function 'f' must be a numerical function which takes N inputs and
+///     produces M outputs. Its gradient function 'g', which is computed by
+///     this SymbolicGradient op is a function taking N + M inputs and
+///     produces N outputs.
+///
+///     I.e. if we have
+///        (y1, y2, ..., y_M) = f(x1, x2, ..., x_N),
+///     then, g is
+///        (dL/dx1, dL/dx2, ..., dL/dx_N) = g(x1, x2, ..., x_N,
+///                                          dL/dy1, dL/dy2, ..., dL/dy_M),
+///
+///     where L is a scalar-value function of (x1, x2, ..., xN) (e.g., the
+///     loss function). dL/dx_i is the partial derivative of L with respect
+///     to x_i.
+///
+///     (Needs some math expert to say the comment above better.)
+///
+/// - Output output: a list of output tensors of size N;
+@inlinable @inline(__always)
+public static func symbolicGradient<Tin: TensorGroup, Tout: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  _ input: Tin,
+  f: (FIn) -> FOut
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SymbolicGradient", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
+}
+
 /// Creates a dataset that emits the records from one or more TFRecord files.
 ///
 /// - Parameters:
@@ -37958,6 +39230,120 @@ public static func tPUOrdinalSelector(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<Int32>.init(_owning: buffer, count: Int(1))
+}
+
+/// Calls a function placed on a specified TPU device.
+///
+/// - Parameters:
+///   - args: The arguments to the function.
+///   - device_ordinal: The TPU device ordinal to run the function on.
+///
+/// - Attrs:
+///   - Tin: The types of the arguments to the function.
+///   - Tout: The types of the outputs of the function.
+///   - f: The function to call.
+///
+/// - Output output: The output of the function call.
+@inlinable @inline(__always)
+public static func tPUPartitionedCall<Tin: TensorGroup, Tout: TensorGroup, FIn: TensorGroup, FOut: TensorGroup>(
+  args: Tin,
+  deviceOrdinal: Tensor<Int32>,
+  f: (FIn) -> FOut
+) -> Tout {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TPUPartitionedCall", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, args, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, deviceOrdinal, s)
+  _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
+  _TFCOpSetAttrFunctionName(op, "f", _tffunc(f))
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tout.init(_owning: buffer, count: Int(1))
+}
+
+/// Runs replicated computations on a distributed TPU system.
+///
+/// - Parameters:
+///   - inputs: the inputs to 'computation', flattened, in replica-major order.
+///   - broadcast_inputs: additional arguments to broadcast to all replicas. The
+///     broadcast inputs are appended to the per-replica inputs when calling
+///     computation.
+///   - guaranteed_constants: arguments which have been guaranteed to not
+///     change their values during the session lifetime. These contain tensors marked as
+///     constant using the GuaranteeConstOp.
+///
+/// - Attrs:
+///   - computation: a function containing the computation to run.
+///   - num_replicas: the number of replicas of the computation to run.
+///   - num_cores_per_replica: the number of logical cores in each replica.
+///   - topology: A serialized tensorflow.tpu.TopologyProto that describes the TPU
+///     topology.
+///   - use_tpu: a bool indicating if this computation will run on TPU or CPU/GPU.
+///     Currently, only supports a default placement (computation is placed on GPU
+///     if one is available, and on CPU if not).
+///   - device_assignment: a flattened array with shape
+///     [replica, num_cores_per_replica, mesh_dimension] that maps the coordinates
+///     of logical cores in each replica of a computation to physical coordinates in
+///     the TPU topology.
+///   - Tinputs: the types of the arguments to 'computation'.
+///   - Tbroadcast_inputs: the types of the additional arguments to broadcast to all
+///     replicas.
+///   - Tguaranteed_constants: the types of the arguments to 'guaranteed_constants'.
+///   - output_types: the types of the outputs of 'computation'.
+///
+/// - Output outputs: the outputs of 'computation'.
+@inlinable @inline(__always)
+public static func tPUReplicate<ComputationIn: TensorGroup, ComputationOut: TensorGroup, Tinputs: TensorGroup, TbroadcastInputs: TensorGroup, TguaranteedConstants: TensorGroup, OutputTypes: TensorGroup>(
+  inputs: Tinputs,
+  broadcastInputs: TbroadcastInputs,
+  variables: [ResourceHandle],
+  guaranteedConstants: TguaranteedConstants,
+  computation: (ComputationIn) -> ComputationOut,
+  numReplicas: Int64,
+  numCoresPerReplica: Int64 = 1,
+  topology: String,
+  useTpu: Bool = true,
+  deviceAssignment: [Int32],
+  hostComputeCore: [String],
+  paddingMap: [String],
+  stepMarkerLocation: String = "STEP_MARK_AT_ENTRY"
+) -> OutputTypes {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TPUReplicate", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, broadcastInputs, s)
+  let variablesCount = _TFCOpAddInputFromTensorGroup(op, variables, s)
+  TFE_OpSetAttrInt(op, "NumVariables", Int64(variablesCount))
+  let _ = _TFCOpAddInputFromTensorGroup(op, guaranteedConstants, s)
+  _TFCOpSetAttrFunctionName(op, "computation", _tffunc(computation))
+  TFE_OpSetAttrInt(op, "num_replicas", numReplicas)
+  TFE_OpSetAttrInt(op, "num_cores_per_replica", numCoresPerReplica)
+  _TFCOpSetAttrString(op, "topology", topology)
+  TFE_OpSetAttrBool(op, "use_tpu", (useTpu) ? 1 : 0)
+  _TFCOpSetAttrInt32Array(op, "device_assignment", deviceAssignment)
+  _TFCOpSetAttrStringArray(op, "host_compute_core", hostComputeCore)
+  _TFCOpSetAttrTypeArray(op, "Tinputs", Tinputs._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tbroadcast_inputs", TbroadcastInputs._typeList)
+  _TFCOpSetAttrTypeArray(op, "Tguaranteed_constants", TguaranteedConstants._typeList)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
+  _TFCOpSetAttrStringArray(op, "padding_map", paddingMap)
+  _TFCOpSetAttrString(op, "step_marker_location", stepMarkerLocation)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Metadata indicaitng how the TPU computation should be replicated.
@@ -42243,6 +43629,51 @@ public static func where_<T: TensorFlowScalar>(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<Int64>.init(_owning: buffer, count: Int(1))
+}
+
+/// output = input; While (Cond(output)) { output = Body(output) }
+///
+/// - Parameter input: A list of input tensors whose types are T.
+///
+/// - Attrs:
+///   - T: dtype in use.
+///   - cond:       A function takes 'input' and returns a tensor.  If the tensor is
+///           a scalar of non-boolean, the scalar is converted to a boolean
+///           according to the following rule: if the scalar is a numerical
+///           value, non-zero means True and zero means False; if the scalar is
+///           a string, non-empty means True and empty means False. If the
+///           tensor is not a scalar, non-emptiness means True and False
+///           otherwise.
+///   - body:       A function that takes a list of tensors and returns another
+///           list of tensors. Both lists have the same types as specified
+///           by T.
+///
+/// - Output output: A list of output tensors whose types are T.
+@inlinable @inline(__always)
+public static func while_<T: TensorGroup, CondIn: TensorGroup, CondOut: TensorGroup, BodyIn: TensorGroup, BodyOut: TensorGroup>(
+  _ input: T,
+  cond: (CondIn) -> CondOut,
+  body: (BodyIn) -> BodyOut,
+  outputShapes: [TensorShape?],
+  parallelIterations: Int64 = 10
+) -> T {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "While", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
+  _TFCOpSetAttrTypeArray(op, "T", T._typeList)
+  _TFCOpSetAttrFunctionName(op, "cond", _tffunc(cond))
+  _TFCOpSetAttrFunctionName(op, "body", _tffunc(body))
+  _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
+  TFE_OpSetAttrInt(op, "parallel_iterations", parallelIterations)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs the entire contents of a file as a value.

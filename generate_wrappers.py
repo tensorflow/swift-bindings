@@ -68,6 +68,9 @@ _RENAMED_KEYWORDS = {
   'in': 'in_',
   'var': 'var_',
   'where': 'where_',
+  'if': 'if_',
+  'for': 'for_',
+  'while': 'while_',
   'switch': 'switch_',
   'protocol': 'protocol_',
   'init': 'init_'}
@@ -238,13 +241,12 @@ public static func {name}{generics}({input_args}
       self.op_def.name[0].lower() + self.op_def.name[1:])
 
   def _swift_generics(self):
-    arg_type_attrs = [
-      attr for attr in self.type_attrs
-      if attr.is_inferred_type_attr]
-    if arg_type_attrs:
-      return '<' + ', '.join([
-        attr.swift_name + ': ' + attr.protocol
-        for attr in arg_type_attrs]) + '>'
+    constraints = [
+      attr.generic_constraints
+      for attr in self.attrs]
+    constraints = [c for c in constraints if c is not None]
+    if constraints:
+      return '<' + ', '.join(constraints) + '>'
     return ''
 
   def _swift_input_args(self):
@@ -522,12 +524,13 @@ class Attribute(object):
     arg_type_attrs = input_arg_type_attrs.union(output_arg_type_attrs)
     self.is_inferred_type_attr = attr_def.name in arg_type_attrs
     self.is_output_type_attr = attr_def.name in output_arg_type_attrs
+    self.is_func_attr = self.attr_def.type == 'func'
 
     # The following properties are only relevant for
     # non-inferred-type-valued attributes.
     self._swift_type = ''
     self._use_enum = False
-    if not self.is_inferred_type_attr:
+    if not self.is_inferred_type_attr and not self.is_func_attr:
       if self.attr_def.type not in _SWIFTIFIED_ATTR_TYPES:
         raise UnableToGenerateCodeError(
           'Unsupported type for attribute "%s".'
@@ -544,6 +547,10 @@ class Attribute(object):
           self._swift_type = self.op.enum_store.maybe_add(
             allowed_values, self.attr_def.name)
           self._use_enum = True
+    if self.is_func_attr:
+      input_type = self.swift_name.capitalize() + 'In'
+      output_type = self.swift_name.capitalize() + 'Out'
+      self._swift_type = '({}) -> {}'.format(input_type, output_type)
 
   @property
   def name(self):
@@ -566,8 +573,6 @@ class Attribute(object):
 
   @property
   def swift_type(self):
-    if self.is_inferred_type_attr:
-      return ''
     return self._swift_type
 
   @property
@@ -607,24 +612,32 @@ class Attribute(object):
 
   def swift_setter(self, mode):
     if mode == 'tfop':
-      # First, we handle inferred-type-valued attributes.
+      # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
           # TODO: [tfop]
           raise UnableToGenerateCodeError('Unsupported type for attribute "%s" in "tfop" mode.' % self.attr_def.name)
         return self.name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
 
-      # The following is for non-inferred-type-valued attributes.
+      # Function-valued attributes.
+      if self.is_func_attr:
+        return self.name + '$func: _tffunc(' + self.swift_name + ')'
+
+      # Remaining attributes.
       value = self.swift_name + '.cName' if self._use_enum else self.swift_name
       return '{name}: {value}'.format(name=self.name, value=value)
     elif mode == 'eager':
-      # First, we handle inferred-type-valued attributes.
+      # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
           return '_TFCOpSetAttrTypeArray(op, "' + self.name + '", ' + self.swift_name + '._typeList)'
         return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + self.swift_name + '.tensorFlowDataType._cDataType)'
 
-      # The following is for non-inferred-type-valued attributes.
+      # Function-valued attributes.
+      if self.is_func_attr:
+        return '_TFCOpSetAttrFunctionName(op, "' + self.name + '", _tffunc(' + self.swift_name + '))'
+
+      # Remaining attributes.
       value = self.swift_name + '.cName' if self._use_enum else self.swift_name
       if self.attr_def.type == 'bool':
         setter_fn = 'TFE_OpSetAttrBool'
@@ -670,7 +683,14 @@ class Attribute(object):
       % mode)
 
   @property
-  def protocol(self):
+  def generic_constraints(self):
+    if self.is_func_attr:
+      input_type = self.swift_name.capitalize() + 'In'
+      output_type = self.swift_name.capitalize() + 'Out'
+      return '{}: TensorGroup, {}: TensorGroup'.format(
+        input_type, output_type)
+    if not self.is_inferred_type_attr:
+      return None
     protocol = None
     if self.attr_def.type == 'list(type)' \
         and self.is_output_type_attr \
@@ -686,7 +706,9 @@ class Attribute(object):
         if allowed_types.issubset(types):
           protocol = protocol_name
           break
-    return protocol
+    if protocol is not None:
+      return self.swift_name + ': ' + protocol
+    return None
 
 
 def swift_compatible_identifier(s, capitalize=False):

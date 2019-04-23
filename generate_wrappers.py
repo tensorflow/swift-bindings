@@ -176,14 +176,23 @@ class Op(object):
       Argument(arg_def, op=self)
       for arg_def in self.op_def.output_arg]
 
+    # A type attribute that only appears as the type of an
+    # output argument is not inferrable and should thus be
+    # added as input.
+    input_args = list(op_def.input_arg)
+    input_arg_type_attrs = set(
+      [arg.type_attr for arg in input_args] +
+      [arg.type_list_attr for arg in input_args])
     for arg in self.output_args:
       if arg.arg_def.number_attr is not '':
         for attr in self.type_attrs:
-          if attr.name == arg.arg_def.type_attr:
+          if attr.name not in input_arg_type_attrs \
+              and attr.name == arg.arg_def.type_attr:
             attr.set_as_not_inferred()
       if arg.arg_def.type_list_attr is not '':
         for attr in self.type_attrs:
-          if attr.name == arg.arg_def.type_list_attr:
+          if attr.name not in input_arg_type_attrs \
+              and attr.name == arg.arg_def.type_list_attr:
             attr.set_as_not_inferred()
 
   def swift_function(self, mode):
@@ -646,6 +655,9 @@ class Attribute(object):
         value = '(' + value + ') ? 1 : 0'
       elif self.attr_def.type == 'int':
         setter_fn = 'TFE_OpSetAttrInt'
+        # The following is used for inferring the lengths
+        # of output lists.
+        self.op.inferred_numbers[self.name] = value
       elif self.attr_def.type == 'float':
         setter_fn = 'TFE_OpSetAttrFloat'
         value = 'Float(' + value + ')'

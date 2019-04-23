@@ -380,7 +380,7 @@ public static func {name}{generics}({input_args}
         if i == 0:
           body += '0'
         else:
-          body += 'offset{} + {}'.format(i - 1, self.output_args[i-1].type.count)
+          body += 'offset{} + Int({})'.format(i - 1, self.output_args[i-1].swift_count)
       body += '\n  return (' + ', '.join([
         '{}.init(_owning: buffer.advanced(by: offset{}), count: Int({}))'.format(
           arg.swift_type, i, arg.swift_count)
@@ -696,7 +696,9 @@ class Attribute(object):
   @property
   def protocol(self):
     protocol = None
-    if self.attr_def.type == 'list(type)' and self.is_output_type_attr:
+    if self.attr_def.type == 'list(type)' \
+        and self.is_output_type_attr \
+        and not self.is_inferred_type_attr:
       protocol = 'TensorArrayProtocol'
     elif self.attr_def.type == 'list(type)':
       protocol = 'TensorGroup'

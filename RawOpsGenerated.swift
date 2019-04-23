@@ -16,11 +16,8 @@
 import CTensorFlow
 
 #if !COMPILING_TENSORFLOW_MODULE
-
 import TensorFlow
-
 #endif
-
 
 public enum Raw {
 
@@ -1079,7 +1076,10 @@ public static func allCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// An Op to exchange data across TPU replicas.
@@ -1234,7 +1234,9 @@ public static func anonymousIteratorV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), VariantHandle.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    VariantHandle.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the "logical or" of elements across dimensions of a tensor.
@@ -2370,7 +2372,10 @@ public static func batch<T: TensorGroup>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(T._typeList.count)
   let offset2: Int = offset1 + Int(1)
-  return (T.init(_owning: buffer.advanced(by: offset0), count: Int(T._typeList.count)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    T.init(_owning: buffer.advanced(by: offset0), count: Int(T._typeList.count)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -3004,7 +3009,12 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & TensorFlowS
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -3046,7 +3056,9 @@ public static func batchSelfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -3072,7 +3084,10 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// BatchToSpace for 4-D tensors of type T.
@@ -3833,7 +3848,14 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   let offset4: Int = offset3 + Int(1)
   let offset5: Int = offset4 + Int(1)
   let offset6: Int = offset5 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Computes the LSTM cell backward propagation for the entire time sequence.
@@ -3932,7 +3954,15 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset5: Int = offset4 + Int(1)
   let offset6: Int = offset5 + Int(1)
   let offset7: Int = offset6 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
 }
 
 /// Aggregates the summary of accumulated stats for the batch.
@@ -4080,7 +4110,14 @@ public static func boostedTreesCalculateBestFeatureSplit(
   let offset4: Int = offset3 + Int(1)
   let offset5: Int = offset4 + Int(1)
   let offset6: Int = offset5 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Calculates gains for each feature and returns the best possible split information for the feature.
@@ -4145,7 +4182,12 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   let offset2: Int = offset1 + Int(statsSummaryListCount)
   let offset3: Int = offset2 + Int(statsSummaryListCount)
   let offset4: Int = offset3 + Int(statsSummaryListCount)
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(statsSummaryListCount)), [Tensor<Int32>].init(_owning: buffer.advanced(by: offset2), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset3), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset4), count: Int(statsSummaryListCount)))
+  return (
+    [Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(statsSummaryListCount)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(statsSummaryListCount)), 
+    [Tensor<Int32>].init(_owning: buffer.advanced(by: offset2), count: Int(statsSummaryListCount)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset3), count: Int(statsSummaryListCount)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset4), count: Int(statsSummaryListCount)))
 }
 
 /// Calculates the prior from the training data (the bias) and fills in the first node with the logits' prior. Returns a boolean indicating whether to continue centering.
@@ -4355,7 +4397,12 @@ public static func boostedTreesGetEnsembleStates(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Makes the summary of quantiles for the batch.
@@ -4640,7 +4687,9 @@ public static func boostedTreesSerializeEnsemble(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Runs multiple additive regression ensemble predictors on input instances and
@@ -4694,7 +4743,10 @@ public static func boostedTreesTrainingPredict(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Updates the tree ensemble by either adding a layer to the last tree being grown
@@ -4805,7 +4857,9 @@ public static func broadcastGradientArgs<T: BinaryInteger & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Broadcast an array for a compatible shape.
@@ -4954,7 +5008,11 @@ public static func cTCBeamSearchDecoder(
   let offset1: Int = offset0 + Int(topPaths)
   let offset2: Int = offset1 + Int(topPaths)
   let offset3: Int = offset2 + Int(topPaths)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(topPaths)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(topPaths)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(topPaths)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(topPaths)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(topPaths)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(topPaths)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Performs greedy decoding on the logits given in inputs.
@@ -5007,7 +5065,11 @@ public static func cTCGreedyDecoder(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Calculates the CTC Loss (log probability) for each batch entry.  Also calculates
@@ -5066,7 +5128,9 @@ public static func cTCLoss(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that caches elements from `input_dataset`.
@@ -5535,7 +5599,11 @@ public static func combinedNonMaxSuppression(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Compare values of `input` to `threshold` and pack resulting bits into a `uint8`.
@@ -5677,7 +5745,10 @@ public static func complexStruct<TC: TensorGroup>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(nA)
   let offset2: Int = offset1 + Int(nB)
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(nB)), TC.init(_owning: buffer.advanced(by: offset2), count: Int(TC._typeList.count)))
+  return (
+    [Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(nB)), 
+    TC.init(_owning: buffer.advanced(by: offset2), count: Int(TC._typeList.count)))
 }
 
 /// Computes the ids of the positions in sampled_candidates that match true_labels.
@@ -5730,7 +5801,10 @@ public static func computeAccidentalHits(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Concatenates tensors along one dimension.
@@ -6999,7 +7073,11 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNN.
@@ -7095,7 +7173,11 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNN.
@@ -7196,7 +7278,11 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNNV3.
@@ -7306,7 +7392,11 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Converts CudnnRNN params from canonical form to usable form.
@@ -7509,7 +7599,9 @@ public static func cudnnRNNParamsToCanonical<T: FloatingPoint & TensorFlowScalar
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(numParams)
-  return ([Tensor<T>].init(_owning: buffer.advanced(by: offset0), count: Int(numParams)), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numParams)))
+  return (
+    [Tensor<T>].init(_owning: buffer.advanced(by: offset0), count: Int(numParams)), 
+    [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numParams)))
 }
 
 /// A RNN backed by cuDNN.
@@ -7588,7 +7680,12 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// A RNN backed by cuDNN.
@@ -7675,7 +7772,12 @@ public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Compute the cumulative product of the tensor `x` along `axis`.
@@ -8650,7 +8752,9 @@ public static func decodeProtoV2<OutputTypes: TensorGroup>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), OutputTypes.init(_owning: buffer.advanced(by: offset1), count: Int(OutputTypes._typeList.count)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    OutputTypes.init(_owning: buffer.advanced(by: offset1), count: Int(OutputTypes._typeList.count)))
 }
 
 /// Reinterpret the bytes of a string as a vector of numbers.
@@ -8732,7 +8836,9 @@ public static func decodeWav(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Makes a copy of `x`.
@@ -8847,7 +8953,10 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Applies set operation along last dimension of 2 `Tensor` inputs.
@@ -8897,7 +9006,10 @@ public static func denseToDenseSetOperation(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
@@ -8964,7 +9076,10 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
@@ -9031,7 +9146,10 @@ public static func denseToSparseSetOperation(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// DepthToSpace for tensors of type T.
@@ -9534,7 +9652,10 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -9605,7 +9726,10 @@ public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: Tenso
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -9676,7 +9800,10 @@ public static func deserializeSparse<Dtype: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Deletes the resource specified by the handle.
@@ -13164,7 +13291,10 @@ public static func fakeQuantWithMinMaxVarsGradient(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Fake-quantize the 'inputs' tensor of type float and one of the shapes: `[d]`,
@@ -13264,7 +13394,10 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Creates a tensor filled with a scalar value.
@@ -13399,7 +13532,12 @@ public static func fiveFloatOutputs(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Creates a dataset that emits the records from one or more binary files.
@@ -13620,7 +13758,10 @@ public static func fixedUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Creates a dataset that applies `f` to the outputs of `input_dataset`.
@@ -13707,7 +13848,9 @@ public static func floatOutputStringOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns element-wise largest integer not greater than x.
@@ -13819,7 +13962,9 @@ public static func foo1(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -13843,7 +13988,9 @@ public static func foo2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -13867,7 +14014,9 @@ public static func foo3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 ///   ```python
@@ -13987,7 +14136,10 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes gradient of the FractionalAvgPool function.
@@ -14141,7 +14293,10 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes gradient of the FractionalMaxPool function.
@@ -14277,7 +14432,12 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Gradient for batch normalization.
@@ -14349,7 +14509,12 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Gradient for batch normalization.
@@ -14423,7 +14588,12 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Batch normalization.
@@ -14494,7 +14664,12 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Performs a padding as a preprocess during a convolution.
@@ -14688,7 +14863,11 @@ public static func gRUBlockCell<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Computes the GRU cell back-propagation for 1 time step.
@@ -14811,7 +14990,11 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Gather slices from `params` according to `indices`.
@@ -15250,7 +15433,9 @@ public static func generateVocabRemapping(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that invokes a function to generate elements.
@@ -16573,7 +16758,9 @@ public static func intOutputFloatOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that applies `f` to the outputs of `input_dataset`.
@@ -17373,7 +17560,14 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   let offset4: Int = offset3 + Int(1)
   let offset5: Int = offset4 + Int(1)
   let offset6: Int = offset5 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Computes the LSTM cell backward propagation for 1 timestep.
@@ -17459,7 +17653,12 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
   let offset4: Int = offset3 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Computes rectified linear: `max(features, features * alpha)`.
@@ -17582,7 +17781,10 @@ public static func learnedUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Elementwise computes the bitwise left-shift of `x` and `y`.
@@ -17774,7 +17976,9 @@ public static func listDiff<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorF
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -18649,7 +18853,9 @@ public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes log softmax activations.
@@ -18747,7 +18953,10 @@ public static func logUniformCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns the truth value of x AND y element-wise.
@@ -18843,7 +19052,9 @@ public static func lookupTableExportV2<Tkeys: TensorFlowScalar, Tvalues: TensorF
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Tkeys>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Tkeys>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Looks up keys in a table, outputs the corresponding values.
@@ -19123,7 +19334,9 @@ public static func lu<T: FloatingPoint & TensorFlowScalar, OutputIdxType: Binary
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutputIdxType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutputIdxType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Makes a new iterator from the given `dataset` and stores it in `iterator`.
@@ -19453,7 +19666,9 @@ public static func mapUnstageNoKey<Dtypes: TensorGroup>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(Dtypes._typeList.count)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(Dtypes._typeList.count)))
 }
 
 /// Multiply the matrix "a" by the matrix "b".
@@ -20707,7 +20922,9 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Targmax>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Targmax>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the max of x and y (i.e. x > y ? x : y) element-wise.
@@ -20806,7 +21023,9 @@ public static func merge<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Merges summaries.
@@ -21125,7 +21344,9 @@ public static func mixedStruct(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(nA)
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    [Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns element-wise remainder of division. This emulates C semantics in that
@@ -22052,7 +22273,9 @@ public static func nearestNeighbors(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes numerical negative value element-wise.
@@ -22414,7 +22637,9 @@ public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -23160,7 +23385,9 @@ public static func orderedMapUnstageNoKey<Dtypes: TensorGroup>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(Dtypes._typeList.count)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(Dtypes._typeList.count)))
 }
 
 @inlinable @inline(__always)
@@ -23947,7 +24174,11 @@ public static func parseExample<SparseTypes: TensorGroup, Tdense: TensorGroup>(
   let offset1: Int = offset0 + Int(sparseKeysCount)
   let offset2: Int = offset1 + Int(SparseTypes._typeList.count)
   let offset3: Int = offset2 + Int(sparseKeysCount)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(sparseKeysCount)), SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(SparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(sparseKeysCount)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(Tdense._typeList.count)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(sparseKeysCount)), 
+    SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(SparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(sparseKeysCount)), 
+    Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(Tdense._typeList.count)))
 }
 
 /// Transforms a vector of brain.SequenceExample protos (as strings) into typed tensors.
@@ -24057,7 +24288,16 @@ public static func parseSequenceExample<ContextSparseTypes: TensorGroup, Tcontex
   let offset6: Int = offset5 + Int(FeatureListSparseTypes._typeList.count)
   let offset7: Int = offset6 + Int(nfeatureListSparse)
   let offset8: Int = offset7 + Int(FeatureListDenseTypes._typeList.count)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(ncontextSparse)), ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(ContextSparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(ncontextSparse)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(TcontextDense._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(nfeatureListSparse)), FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(FeatureListSparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(nfeatureListSparse)), FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(FeatureListDenseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: Int(nfeatureListDense)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(ncontextSparse)), 
+    ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(ContextSparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(ncontextSparse)), 
+    TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(TcontextDense._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(nfeatureListSparse)), 
+    FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(FeatureListSparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(nfeatureListSparse)), 
+    FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(FeatureListDenseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: Int(nfeatureListDense)))
 }
 
 /// Transforms a tf.Example proto (as a string) into typed tensors.
@@ -24130,7 +24370,11 @@ public static func parseSingleExample<SparseTypes: TensorGroup, Tdense: TensorGr
   let offset1: Int = offset0 + Int(numSparse)
   let offset2: Int = offset1 + Int(SparseTypes._typeList.count)
   let offset3: Int = offset2 + Int(numSparse)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSparse)), SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(SparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSparse)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(Tdense._typeList.count)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSparse)), 
+    SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(SparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSparse)), 
+    Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(Tdense._typeList.count)))
 }
 
 /// Transforms a scalar brain.SequenceExample proto (as strings) into typed tensors.
@@ -24235,7 +24479,15 @@ public static func parseSingleSequenceExample<ContextSparseTypes: TensorGroup, T
   let offset5: Int = offset4 + Int(featureListSparseKeysCount)
   let offset6: Int = offset5 + Int(FeatureListSparseTypes._typeList.count)
   let offset7: Int = offset6 + Int(featureListSparseKeysCount)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(contextSparseKeysCount)), ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(ContextSparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(contextSparseKeysCount)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(TcontextDense._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(featureListSparseKeysCount)), FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(FeatureListSparseTypes._typeList.count)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(featureListSparseKeysCount)), FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(FeatureListDenseTypes._typeList.count)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(contextSparseKeysCount)), 
+    ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(ContextSparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(contextSparseKeysCount)), 
+    TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(TcontextDense._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(featureListSparseKeysCount)), 
+    FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(FeatureListSparseTypes._typeList.count)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(featureListSparseKeysCount)), 
+    FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(FeatureListDenseTypes._typeList.count)))
 }
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
@@ -24928,7 +25180,9 @@ public static func qr<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Use QuantizeAndDequantizeV2 instead.
@@ -25162,7 +25416,10 @@ public static func quantizeDownAndShrinkRange<Tinput: TensorFlowScalar, OutType:
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantize the 'input' tensor of type float to 'output' tensor of type 'T'.
@@ -25301,7 +25558,10 @@ public static func quantizeV2<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns x + y element-wise, working on quantized buffers.
@@ -25349,7 +25609,10 @@ public static func quantizedAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Produces the average pool of the input tensor for quantized types.
@@ -25398,7 +25661,10 @@ public static func quantizedAvgPool<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantized Batch normalization.
@@ -25486,7 +25752,10 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Adds Tensor 'bias' to Tensor 'input' for Quantized types.
@@ -25534,7 +25803,10 @@ public static func quantizedBiasAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, 
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Concatenates quantized tensors along one dimension.
@@ -25579,7 +25851,10 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes a 2D convolution given quantized 4D input and filter tensors.
@@ -25646,7 +25921,10 @@ public static func quantizedConv2D<Tinput: TensorFlowScalar, Tfilter: TensorFlow
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25688,7 +25966,10 @@ public static func quantizedConv2DAndRelu<Tinput: TensorFlowScalar, Tfilter: Ten
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25734,7 +26015,10 @@ public static func quantizedConv2DAndReluAndRequantize<Tinput: TensorFlowScalar,
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25780,7 +26064,10 @@ public static func quantizedConv2DAndRequantize<Tinput: TensorFlowScalar, Tfilte
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes QuantizedConv2D per channel.
@@ -25841,7 +26128,10 @@ public static func quantizedConv2DPerChannel<Tinput: TensorFlowScalar, Tfilter: 
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25885,7 +26175,10 @@ public static func quantizedConv2DWithBias<Tinput: TensorFlowScalar, Tfilter: Te
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25929,7 +26222,10 @@ public static func quantizedConv2DWithBiasAndRelu<Tinput: TensorFlowScalar, Tfil
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25978,7 +26274,10 @@ public static func quantizedConv2DWithBiasAndReluAndRequantize<Tinput: TensorFlo
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26027,7 +26326,10 @@ public static func quantizedConv2DWithBiasAndRequantize<Tinput: TensorFlowScalar
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26083,7 +26385,10 @@ public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<Tinput: 
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26129,7 +26434,10 @@ public static func quantizedConv2DWithBiasSumAndRelu<Tinput: TensorFlowScalar, T
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26185,7 +26493,10 @@ public static func quantizedConv2DWithBiasSumAndReluAndRequantize<Tinput: Tensor
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26225,7 +26536,10 @@ public static func quantizedDepthwiseConv2D<Tinput: TensorFlowScalar, Tfilter: T
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26267,7 +26581,10 @@ public static func quantizedDepthwiseConv2DWithBias<Tinput: TensorFlowScalar, Tf
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26309,7 +26626,10 @@ public static func quantizedDepthwiseConv2DWithBiasAndRelu<Tinput: TensorFlowSca
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -26356,7 +26676,10 @@ public static func quantizedDepthwiseConv2DWithBiasAndReluAndRequantize<Tinput: 
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantized Instance normalization.
@@ -26412,7 +26735,10 @@ public static func quantizedInstanceNorm<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Perform a quantized matrix multiplication of  `a` by the matrix `b`.
@@ -26476,7 +26802,10 @@ public static func quantizedMatMul<T1: TensorFlowScalar, T2: TensorFlowScalar, T
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Produces the max pool of the input tensor for quantized types.
@@ -26525,7 +26854,10 @@ public static func quantizedMaxPool<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns x * y element-wise, working on quantized buffers.
@@ -26573,7 +26905,10 @@ public static func quantizedMul<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear: `max(features, 0)`
@@ -26610,7 +26945,10 @@ public static func quantizedRelu<Tinput: TensorFlowScalar, OutType: TensorFlowSc
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear 6: `min(max(features, 0), 6)`
@@ -26647,7 +26985,10 @@ public static func quantizedRelu6<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear X: `min(max(features, 0), max_value)`
@@ -26686,7 +27027,10 @@ public static func quantizedReluX<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Reshapes a quantized tensor as per the Reshape op.
@@ -26727,7 +27071,10 @@ public static func quantizedReshape<T: TensorFlowScalar, Tshape: BinaryInteger &
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Resize quantized `images` to `size` using quantized bilinear interpolation.
@@ -26773,7 +27120,10 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Closes the given queue.
@@ -27175,7 +27525,9 @@ public static func raggedGather<Tvalues: TensorFlowScalar, Tindices: BinaryInteg
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(oUTPUTRAGGEDRANK)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(oUTPUTRAGGEDRANK)), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(oUTPUTRAGGEDRANK)), 
+    Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns a `RaggedTensor` containing the specified sequences of numbers.
@@ -27229,7 +27581,9 @@ public static func raggedRange<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Converts a `RaggedTensor` into a `SparseTensor` with the same values.
@@ -27272,7 +27626,10 @@ public static func raggedTensorToSparse<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Randomly crop `image`.
@@ -27936,7 +28293,9 @@ public static func readerReadUpToV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the next record (key, value pair) produced by a Reader.
@@ -27971,7 +28330,9 @@ public static func readerReadV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Restore a Reader to its initial clean state.
@@ -28645,7 +29006,9 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes requantization range per channel.
@@ -28687,7 +29050,9 @@ public static func requantizationRangePerChannel<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Converts the quantized `input` tensor into a lower-precision `output`.
@@ -28741,7 +29106,10 @@ public static func requantize<Tinput: TensorFlowScalar, OutType: TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Requantizes input with min and max values known per channel.
@@ -28789,7 +29157,10 @@ public static func requantizePerChannel<T: TensorFlowScalar, OutType: TensorFlow
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -31587,7 +31958,10 @@ public static func retrieveTPUEmbeddingADAMParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve ADAM embedding parameters with debug support.
@@ -31627,7 +32001,11 @@ public static func retrieveTPUEmbeddingADAMParametersGradAccumDebug(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Adadelta embedding parameters.
@@ -31665,7 +32043,10 @@ public static func retrieveTPUEmbeddingAdadeltaParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve Adadelta embedding parameters with debug support.
@@ -31705,7 +32086,11 @@ public static func retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Adagrad embedding parameters.
@@ -31741,7 +32126,9 @@ public static func retrieveTPUEmbeddingAdagradParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve Adagrad embedding parameters with debug support.
@@ -31779,7 +32166,10 @@ public static func retrieveTPUEmbeddingAdagradParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve centered RMSProp embedding parameters.
@@ -31819,7 +32209,11 @@ public static func retrieveTPUEmbeddingCenteredRMSPropParameters(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve FTRL embedding parameters.
@@ -31857,7 +32251,10 @@ public static func retrieveTPUEmbeddingFTRLParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve FTRL embedding parameters with debug support.
@@ -31897,7 +32294,11 @@ public static func retrieveTPUEmbeddingFTRLParametersGradAccumDebug(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve MDL Adagrad Light embedding parameters.
@@ -31937,7 +32338,11 @@ public static func retrieveTPUEmbeddingMDLAdagradLightParameters(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Momentum embedding parameters.
@@ -31973,7 +32378,9 @@ public static func retrieveTPUEmbeddingMomentumParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve Momentum embedding parameters with debug support.
@@ -32011,7 +32418,10 @@ public static func retrieveTPUEmbeddingMomentumParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve proximal Adagrad embedding parameters.
@@ -32047,7 +32457,9 @@ public static func retrieveTPUEmbeddingProximalAdagradParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve proximal Adagrad embedding parameters with debug support.
@@ -32085,7 +32497,10 @@ public static func retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve RMSProp embedding parameters.
@@ -32123,7 +32538,10 @@ public static func retrieveTPUEmbeddingRMSPropParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve RMSProp embedding parameters with debug support.
@@ -32163,7 +32581,11 @@ public static func retrieveTPUEmbeddingRMSPropParametersGradAccumDebug(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve SGD embedding parameters.
@@ -32988,7 +33410,10 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Generate a single randomly distorted bounding box for an image.
@@ -33099,7 +33524,10 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Creates a dataset that contains `rate` elements from the `input_dataset`.
@@ -33665,7 +34093,10 @@ public static func sdcaOptimizer(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(sparseExampleIndicesCount)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
 }
 
 /// Distributed version of Stochastic Dual Coordinate Ascent (SDCA) optimizer for
@@ -33778,7 +34209,10 @@ public static func sdcaOptimizerV2(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(sparseExampleIndicesCount)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), 
+    [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -34191,7 +34625,9 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes scaled exponential linear: `scale * alpha * (exp(features) - 1)`
@@ -35064,7 +35500,14 @@ public static func skipgram(
   let offset4: Int = offset3 + Int(1)
   let offset5: Int = offset4 + Int(1)
   let offset6: Int = offset5 + Int(1)
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
+  return (
+    StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Return a slice from 'input'.
@@ -35188,7 +35631,9 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes softplus: `log(exp(features) + 1)`.
@@ -35723,7 +36168,10 @@ public static func sparseAdd<T: Numeric & TensorFlowScalar, Treal: Numeric & Ten
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// The gradient operator for the SparseAdd op.
@@ -35770,7 +36218,9 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Concatenates a list of `SparseTensor` along the specified dimension.
@@ -35855,7 +36305,10 @@ public static func sparseConcat<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Generates sparse cross from a list of sparse and dense tensors.
@@ -35952,7 +36405,10 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Generates sparse cross from a list of sparse and dense tensors.
@@ -36049,7 +36505,10 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
@@ -36254,7 +36713,11 @@ public static func sparseFillEmptyRows<T: TensorFlowScalar>(
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Bool>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Bool>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// The gradient of SparseFillEmptyRows.
@@ -36295,7 +36758,9 @@ public static func sparseFillEmptyRowsGrad<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Multiply matrix "a" by matrix "b".
@@ -36441,7 +36906,10 @@ public static func sparseReduceMaxSparse<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes the sum of elements across dimensions of a SparseTensor.
@@ -36546,7 +37014,10 @@ public static func sparseReduceSumSparse<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Reorders a SparseTensor into the canonical, row-major ordering.
@@ -36592,7 +37063,9 @@ public static func sparseReorder<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Reshapes a SparseTensor to represent values in a new dense shape.
@@ -36646,7 +37119,9 @@ public static func sparseReshape(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the mean along sparse segments of a tensor.
@@ -37068,7 +37543,10 @@ public static func sparseSlice<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// The gradient operator for the SparseSlice op.
@@ -37196,7 +37674,9 @@ public static func sparseSoftmaxCrossEntropyWithLogits<T: FloatingPoint & Tensor
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the element-wise max of two SparseTensors.
@@ -37243,7 +37723,9 @@ public static func sparseSparseMaximum<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the element-wise min of two SparseTensors.
@@ -37290,7 +37772,9 @@ public static func sparseSparseMinimum<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Split a `SparseTensor` into `num_split` tensors along one dimension.
@@ -37356,7 +37840,10 @@ public static func sparseSplit<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(numSplit)
   let offset2: Int = offset1 + Int(numSplit)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSplit)), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numSplit)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSplit)))
+  return (
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSplit)), 
+    [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numSplit)), 
+    [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSplit)))
 }
 
 /// Adds up a `SparseTensor` and a dense `Tensor`, producing a dense `Tensor`.
@@ -37615,7 +38102,10 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Applies set operation along last dimension of 2 `SparseTensor` inputs.
@@ -37699,7 +38189,10 @@ public static func sparseToSparseSetOperation(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Splits a tensor into `num_split` tensors along one dimension.
@@ -39269,7 +39762,10 @@ public static func stringSplit(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Split elements of `source` based on `sep` into a `SparseTensor`.
@@ -39326,7 +39822,10 @@ public static func stringSplitV2(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Strip leading and trailing whitespaces from the Tensor.
@@ -39763,7 +40262,10 @@ public static func svd<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Forwards `data` to the output port determined by `pred`.
@@ -39800,7 +40302,9 @@ public static func switch_<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the gradient function for function f via backpropagation.
@@ -40312,7 +40816,10 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes tan of x element-wise.
@@ -40440,7 +40947,9 @@ public static func tensorArrayConcatV2<Dtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Concat the elements from the TensorArray into value `value`.
@@ -40496,7 +41005,9 @@ public static func tensorArrayConcatV3<Dtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayGatherV3
@@ -40656,7 +41167,9 @@ public static func tensorArrayGradV3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a TensorArray for storing multiple gradients of values in the given handle.
@@ -40698,7 +41211,9 @@ public static func tensorArrayGradWithShape(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayReadV3
@@ -41033,7 +41548,9 @@ public static func tensorArrayV3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -41311,7 +41828,9 @@ public static func tensorListConcat<ElementDtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -41373,7 +41892,9 @@ public static func tensorListConcatV2<ElementDtype: TensorFlowScalar, ShapeType:
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// The shape of the elements of the given list, as a tensor.
@@ -41531,7 +42052,9 @@ public static func tensorListPopBack<ElementDtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (VariantHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    VariantHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns a list list which has the passed-in `Tensor` as last element and the other elements of the given list in `input_handle`.
@@ -42302,7 +42825,9 @@ public static func testStringOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that emits the lines of one or more text files.
@@ -42434,7 +42959,10 @@ public static func threadUnsafeUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Constructs a tensor by tiling a given tensor.
@@ -42567,7 +43095,9 @@ public static func topK<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds values and indices of the `k` largest elements for the last dimension.
@@ -42616,7 +43146,9 @@ public static func topKV2<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Shuffle dimensions of x according to a permutation.
@@ -42886,7 +43418,10 @@ public static func tryRpc(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    StringTensor.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -42962,7 +43497,9 @@ public static func twoFloatOutputs(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -42998,7 +43535,9 @@ public static func twoIntOutputs(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -43228,7 +43767,9 @@ public static func unicodeDecode(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Decodes each string in `input` into a sequence of Unicode code points.
@@ -43302,7 +43843,10 @@ public static func unicodeDecodeWithOffsets(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Encode a tensor of ints into unicode strings.
@@ -43549,7 +44093,10 @@ public static func uniformCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -43594,7 +44141,9 @@ public static func unique<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorFlo
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -43674,7 +44223,9 @@ public static func uniqueV2<T: TensorFlowScalar, Taxis: BinaryInteger & TensorFl
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -43723,7 +44274,10 @@ public static func uniqueWithCounts<T: TensorFlowScalar, OutIdx: BinaryInteger &
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -43809,7 +44363,10 @@ public static func uniqueWithCountsV2<T: TensorFlowScalar, Taxis: BinaryInteger 
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return (
+    Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), 
+    Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Unpacks a given dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors.

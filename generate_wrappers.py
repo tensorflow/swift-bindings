@@ -352,7 +352,7 @@ public static func {name}{generics}({input_args}
           body += '0'
         else:
           body += 'offset{} + Int({})'.format(i - 1, self.output_args[i-1].swift_count)
-      body += '\n  return (' + ', '.join([
+      body += '\n  return (\n    ' + ', \n    '.join([
         '{}.init(_owning: buffer.advanced(by: offset{}), count: Int({}))'.format(
           arg.swift_type(self.string_valued), i, arg.swift_count)
         for i, arg in enumerate(self.output_args)]) + ')'
@@ -846,9 +846,9 @@ def main(argv):
       _WARNING +
       _HEADER +
       ('import CTensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
-      ('#if !COMPILING_TENSORFLOW_MODULE\n\n' if FLAGS.mode == 'eager' else '') +
-      ('import TensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
-      ('#endif\n\n' if FLAGS.mode == 'eager' else '') +
+      ('#if !COMPILING_TENSORFLOW_MODULE\n' if FLAGS.mode == 'eager' else '') +
+      ('import TensorFlow\n' if FLAGS.mode == 'eager' else '') +
+      ('#endif\n' if FLAGS.mode == 'eager' else '') +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

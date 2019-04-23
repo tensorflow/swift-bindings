@@ -60,6 +60,7 @@ _HEADER = """// Copyright 2018-19 Google LLC
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 """
 
 _OUTPUT_FILE = 'RawOpsGenerated.swift'
@@ -318,44 +319,17 @@ public static func {name}{generics}({input_args}
           body += convert_for_return(self.output_args[0], 'ret')
         return body
     elif mode == 'eager':
-      body = '''let s: CTFStatus = TF_NewStatus()
-  defer { TF_DeleteStatus(s) }
-  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "%s", s)
-  defer { TFE_DeleteOp(op) }\n  ''' % self.op_def.name
+      body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
       setters = []
       for arg in self.input_args:
         setters.append(arg.swift_setter(mode))
       for attr in self.attrs:
         setters.append(attr.swift_setter(mode, self.string_valued))
       body += '\n  '.join(setters)
+      counts = [str(arg.swift_count) for arg in self.output_args]
       if len(self.output_args) == 0:
-        body += '\n  var count: Int32 = 0'
-        body += '\n  var unused: CTensorHandle?'
-        body += '\n  _TFCEagerExecute(op, &unused, &count, s)'
-        body += '\n  checkOk(s)'
-        return body
-      counts = ['Int32({})'.format(arg.swift_count) for arg in self.output_args]
-      body += '\n  var count: Int32 = ' + ' + '.join(counts)
-      body += '\n  let buffer: UnsafeMutablePointer<CTensorHandle> ='
-      body += '\n    UnsafeMutablePointer.allocate(capacity: Int(count))'
-      body += '\n  defer { buffer.deallocate() }'
-      body += '\n  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)'
-      body += '\n  checkOk(s)'
-      if len(self.output_args) == 1:
-        arg = self.output_args[0]
-        body += '\n  return {}.init(_owning: buffer, count: Int({}))'.format(
-          arg.swift_type(self.string_valued), arg.swift_count)
-        return body
-      for i, arg in enumerate(self.output_args):
-        body += '\n  let offset{}: Int = '.format(i)
-        if i == 0:
-          body += '0'
-        else:
-          body += 'offset{} + Int({})'.format(i - 1, self.output_args[i-1].swift_count)
-      body += '\n  return (\n    ' + ', \n    '.join([
-        '{}.init(_owning: buffer.advanced(by: offset{}), count: Int({}))'.format(
-          arg.swift_type(self.string_valued), i, arg.swift_count)
-        for i, arg in enumerate(self.output_args)]) + ')'
+        return body + '\n  op.execute()'
+      body += '\n  return op.execute({})'.format(', '.join(counts))
       return body
 
     # `mode` was neither "tfop" nor "eager".
@@ -403,11 +377,11 @@ class Argument(object):
       number_attr = self.arg_def.number_attr
       if self.arg_def.number_attr and number_attr not in self.op.inferred_counts:
         self.op.inferred_counts[number_attr] = self.swift_name + 'Count'
-        return ('let {name}Count = _TFCOpAddInputFromTensorGroup(op, {name}, s)\n  ' +
-                'TFE_OpSetAttrInt(op, "{number_attr}", Int64({name}Count))'
+        return ('let {name}Count = op.addInput({name})\n  ' +
+                'op.setAttr("{number_attr}", {name}Count)'
                 ).format(name=self.swift_name, number_attr=self.arg_def.number_attr)
       else:
-        return 'let _ = _TFCOpAddInputFromTensorGroup(op, {name}, s)'.format(name=self.swift_name)
+        return 'let _ = op.addInput({})'.format(self.swift_name)
 
     # `mode` was neither "tfop" nor "eager".
     raise UnableToGenerateCodeError(
@@ -633,54 +607,18 @@ class Attribute(object):
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
           self.op.inferred_counts[self.name] = self.swift_name + '._typeList.count'
-          return '_TFCOpSetAttrTypeArray(op, "' + self.name + '", ' + self.swift_name + '._typeList)'
+          return 'op.setAttr("{}", {}._typeList)'.format(self.name, self.swift_name)
         if string_valued and self.allows_string:
-          return 'TFE_OpSetAttrType(op, "' + self.name + '", TF_STRING)'
-        return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + self.swift_name + '.tensorFlowDataType._cDataType)'
+          return 'op.setAttr("{}", TF_STRING)'
+        return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
-      # Function-valued attributes.
-      if self.is_func_attr:
-        return '_TFCOpSetAttrFunctionName(op, "' + self.name + '", _tffunc(' + self.swift_name + '))'
-
-      # Remaining attributes.
-      value = self.swift_name + '.cName' if self._use_enum else self.swift_name
-      if self.attr_def.type == 'bool':
-        setter_fn = 'TFE_OpSetAttrBool'
-        value = '(' + value + ') ? 1 : 0'
-      elif self.attr_def.type == 'int':
-        setter_fn = 'TFE_OpSetAttrInt'
+      if self.attr_def.type == 'int':
         # The following is used for inferring the lengths
         # of output lists.
-        self.op.inferred_counts[self.name] = value
-      elif self.attr_def.type == 'float':
-        setter_fn = 'TFE_OpSetAttrFloat'
-        value = 'Float(' + value + ')'
-      elif self.attr_def.type == 'string':
-        setter_fn = '_TFCOpSetAttrString'
-      elif self.attr_def.type == 'type':
-        setter_fn = 'TFE_OpSetAttrType'
-        value = value + '._cDataType'
-      elif self.attr_def.type == 'shape':
-        setter_fn = '_TFCOpSetAttrOptionalTensorShape'
-        value = value + ', s'
-      elif self.attr_def.type == 'list(float)':
-        setter_fn = '_TFCOpSetAttrDoubleArray'
-      elif self.attr_def.type == 'list(string)':
-        setter_fn = '_TFCOpSetAttrStringArray'
-      elif self.attr_def.type == 'list(bool)':
-        setter_fn = '_TFCOpSetAttrBoolArray'
-      elif self.attr_def.type == 'list(int)':
-        setter_fn = '_TFCOpSetAttrInt32Array'
-      elif self.attr_def.type == 'list(type)':
-        setter_fn = '_TFCOpSetAttrTypeArray'
-      elif self.attr_def.type == 'list(shape)':
-        setter_fn = '_TFCOpSetAttrOptionalTensorShapeArray'
-        value = value + ', s'
-      else:
-        raise UnableToGenerateCodeError(
-          'Unsupported type "%s" for attribute "%s".'
-          % (self.attr_def.type, self.name))
-      return setter_fn + '(op, "' + self.name + '", ' + value + ')'
+        self.op.inferred_counts[self.name] = self.swift_name
+
+      # Remaining attributes.
+      return 'op.setAttr("{}", {})'.format(self.name, self.swift_name)
 
     # `mode` was neither "tfop" nor "eager".
     raise UnableToGenerateCodeError(

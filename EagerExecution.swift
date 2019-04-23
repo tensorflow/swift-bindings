@@ -20,6 +20,7 @@ import CTensorFlow
 import TensorFlow
 #endif
 
+@usableFromInline
 internal struct TFE_Op {
   internal let status: CTFStatus
   internal let op: CTFEOp

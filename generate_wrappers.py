@@ -47,7 +47,7 @@ _WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !
 //
 """
 
-_HEADER = """// Copyright 2018 Google LLC
+_HEADER = """// Copyright 2018-19 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -150,6 +150,7 @@ class Op(object):
     self.op_def = op_def
     self.api_def = api_def
     self.enum_store = enum_store
+    self.inferred_numbers = dict()
 
     # Collect all the attributes that need to be provided
     # as inputs. Note that we do not generate input
@@ -186,7 +187,7 @@ public static func {name}{generics}({input_args}
       name=self._swift_name(),
       generics=self._swift_generics(),
       input_args=self._swift_input_args(),
-      return_type=self._swift_return_type(),
+      return_type=self._swift_return_type(mode),
       body=self._swift_body(mode))
 
   def _swift_documentation(self):
@@ -257,13 +258,13 @@ public static func {name}{generics}({input_args}
       args = args[:-1]
     return args
 
-  def _swift_return_type(self):
+  def _swift_return_type(self, mode):
     # Do not generate ops with output lists.
     # TODO: We could support output lists by giving the outputs generic type that
     # conforms to TensorGroup.
     for output_arg in self.output_args:
-      if output_arg.is_list:
-        raise UnableToGenerateCodeError('Output lists not supported.')
+      if output_arg.is_list and mode == "tfop":
+        raise UnableToGenerateCodeError('Output lists are not supported when using the "tfop" mode.')
 
     return_type = ''
     if len(self.output_args) == 1:
@@ -330,14 +331,42 @@ public static func {name}{generics}({input_args}
       body = '''let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "%s", s)
-  defer { TFE_DeleteOp(op) }''' % self.op_def.name
+  defer { TFE_DeleteOp(op) }\n  ''' % self.op_def.name
       setters = []
       for arg in self.input_args:
         setters.append(arg.swift_setter(mode))
       for attr in self.attrs:
         setters.append(attr.swift_setter(mode))
       body += '\n  '.join(setters)
-      return body + '\n  return TensorGroupExecuteOp(op, s)'
+      if len(self.output_args) == 0:
+        body += '\n  var count: Int32 = 0'
+        body += '\n  var unused: CTensorHandle?'
+        body += '\n  _TFCEagerExecute(op, &unused, &count, s)'
+        body += '\n  checkOk(s)'
+        return body
+      counts = [arg.swift_count for arg in self.output_args]
+      body += '\n  var count: Int32 = ' + ' + '.join(counts)
+      body += '\n  let buffer: UnsafeMutablePointer<CTensorHandle> ='
+      body += '\n    UnsafeMutablePointer.allocate(capacity: Int(count))'
+      body += '\n  defer { buffer.deallocate() }'
+      body += '\n  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)'
+      body += '\n  checkOk(s)'
+      if len(self.output_args) == 1:
+        arg = self.output_args[0]
+        body += '\n  return {}.init(_owning: buffer), count: {})'.format(
+          arg.swift_type, arg.swift_count)
+        return body
+      for i, arg in enumerate(self.output_args):
+        body += '\n  let offset{}: Int = '.format(i)
+        if i == 0:
+          body += '0'
+        else:
+          body += 'offset{} + {}'.format(i - 1, self.output_args[i-1].type.count)
+      body += '\n  return (' + ', '.join([
+        '{}.init(_owning: buffer.advanced(by: offset{}), count: {})'.format(
+          arg.swift_type, i, arg.swift_count)
+        for i, arg in enumerate(self.output_args)]) + ')'
+      return body
 
     # `mode` was neither "tfop" nor "eager".
     raise UnableToGenerateCodeError(
@@ -379,8 +408,10 @@ class Argument(object):
     if mode == 'tfop':
       return self.swift_name
     elif mode == 'eager':
-      if self.arg_def.number_attr:
-        return ('let {name}Count = _TFCOpAddInputFromTensorGroup(op, {name}, s)' +
+      number_attr = self.arg_def.number_attr
+      if self.arg_def.number_attr and number_attr not in self.op.inferred_numbers:
+        self.op.inferred_numbers[number_attr] = self.swift_name + 'Count'
+        return ('let {name}Count = _TFCOpAddInputFromTensorGroup(op, {name}, s)\n  ' +
                 'TFE_OpSetAttrInt(op, "{number_attr}", Int64({name}Count))'
                 ).format(name=self.swift_name, number_attr=self.arg_def.number_attr)
       else:
@@ -392,13 +423,22 @@ class Argument(object):
       % mode)
 
   @property
+  def swift_count(self):
+    number_attr = self.arg_def.number_attr
+    if number_attr and number_attr in self.op.inferred_numbers:
+      return self.op.inferred_numbers[number_attr]
+    if number_attr:
+      return self.swift_name + 'Count'
+    return '1'
+
+  @property
   def type(self):
-    array = self.arg_def.number_attr
+    number = self.arg_def.number_attr
     if self.arg_def.type_attr:
       type_attr = next(
         attr for attr in self.op.type_attrs
         if attr.name == self.arg_def.type_attr)
-      return Type('Tensor', base_type=type_attr.swift_name, array=array)
+      return Type('Tensor', base_type=type_attr.swift_name, number=number)
     if self.arg_def.type_list_attr:
       type_attr = next(
         attr for attr in self.op.type_attrs
@@ -407,22 +447,26 @@ class Argument(object):
       return Type(type_attr.swift_name)
     if self.arg_def.type in _SWIFTIFIED_TYPES:
       base_type = _SWIFTIFIED_TYPES[self.arg_def.type]
-      return Type('Tensor', base_type=base_type, array=array)
+      return Type('Tensor', base_type=base_type, number=number)
     if self.arg_def.type == types_pb2.DT_STRING:
-      return Type('Tensor', base_type='String', array=array)
+      return Type('Tensor', base_type='String', number=number)
     if self.arg_def.type == types_pb2.DT_RESOURCE:
-      return Type('ResourceHandle', array=array)
+      return Type('ResourceHandle', number=number)
     if self.arg_def.type == types_pb2.DT_VARIANT:
-      return Type('VariantHandle', array=array)
+      return Type('VariantHandle', number=number)
     raise UnableToGenerateCodeError(
       'Unsupported type for argument "%s".' % self.name)
 
 
 class Type(object):
-  def __init__(self, kind, base_type=None, array=False):
+  def __init__(self, kind, base_type=None, number=None):
     self.kind = kind
     self.base_type = base_type
-    self.array = array
+    self.number = number
+
+  @property
+  def count(self):
+    return self.number if self.number else 1
 
   @property
   def swift_type(self):
@@ -439,7 +483,7 @@ class Type(object):
       name = 'VariantHandle'
     else:
       name = self.kind
-    return ('[%s]' % name) if self.array else name
+    return ('[%s]' % name) if self.number else name
 
   @property
   def swift_handle_type(self):
@@ -452,7 +496,7 @@ class Type(object):
     else:
       # TODO: [tfop]
       raise UnableToGenerateCodeError('Unsupported handle type "%s".' % self.kind)
-    return ('[%s]' % name) if self.array else name
+    return ('[%s]' % name) if self.number else name
 
 
 class Attribute(object):
@@ -466,11 +510,17 @@ class Attribute(object):
     # Check whether the value of this attribute can be
     # inferred automatically (this only applies to
     # type-valued attributes).
-    args = list(op.op_def.input_arg) + list(op.op_def.output_arg)
-    arg_type_attrs = set(
-      [arg.type_attr for arg in args] +
-      [arg.type_list_attr for arg in args])
-    self.is_inferred_type_attr = self.is_type_attr and attr_def.name in arg_type_attrs
+    input_args = list(op.op_def.input_arg)
+    output_args = list(op.op_def.output_arg)
+    input_arg_type_attrs = set(
+      [arg.type_attr for arg in input_args] +
+      [arg.type_list_attr for arg in input_args])
+    output_arg_type_attrs = set(
+      [arg.type_attr for arg in output_args] +
+      [arg.type_list_attr for arg in output_args])
+    arg_type_attrs = input_arg_type_attrs.union(output_arg_type_attrs)
+    self.is_inferred_type_attr = attr_def.name in arg_type_attrs
+    self.is_output_type_attr = attr_def.name in output_arg_type_attrs
 
     # The following properties are only relevant for
     # non-inferred-type-valued attributes.
@@ -618,7 +668,9 @@ class Attribute(object):
   @property
   def protocol(self):
     protocol = None
-    if self.attr_def.type == 'list(type)':
+    if self.attr_def.type == 'list(type)' and self.is_output_type_attr:
+      protocol = 'TensorArrayProtocol'
+    elif self.attr_def.type == 'list(type)':
       protocol = 'TensorGroup'
     elif self.attr_def.type == 'type':
       protocol = 'TensorFlowScalar'
@@ -746,6 +798,7 @@ def main(argv):
       _WARNING +
       _HEADER +
       ('import CTensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
+      ('import TensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

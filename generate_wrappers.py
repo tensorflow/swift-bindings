@@ -310,13 +310,21 @@ public static func {name}{generics}({input_args}
         body = 'let ret: {} = #tfop({})'.format(
           return_handle_type, tfop_args)
         body += '\n  return '
+
+        def convert_for_return(arg, value):
+          if arg.type.kind == 'Tensor' and arg.type.base_type == 'String':
+            return 'StringTensor(handle: ' + value + ')'
+          elif arg.type.kind == 'Tensor':
+            return 'Tensor(handle: ' + value + ')'
+          return value
+
         if len(self.output_args) > 1:
           returned_tuple = [
-            arg.swift_return('ret.' + str(i), mode)
+            convert_for_return(arg, 'ret.' + str(i))
             for i, arg in enumerate(self.output_args)]
           body += '(' + ', '.join(returned_tuple) + ')'
         else:
-          body += self.output_args[0].swift_return('ret', mode)
+          body += convert_for_return(self.output_args[0], 'ret')
         return body
     elif mode == 'eager':
       body = '''let s: CTFStatus = TF_NewStatus()
@@ -329,7 +337,6 @@ public static func {name}{generics}({input_args}
       for attr in self.attrs:
         setters.append(attr.swift_setter(mode))
       body += '\n  '.join(setters)
-      # TODO: Use "self.output_args[0...].swift_return(value, mode).
       return body + '\n  return TensorGroupExecuteOp(op, s)'
 
     # `mode` was neither "tfop" nor "eager".
@@ -383,9 +390,6 @@ class Argument(object):
     raise UnableToGenerateCodeError(
       'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
       % mode)
-
-  def swift_return(self, value, mode):
-    return self.type.swift_return(value, mode)
 
   @property
   def type(self):
@@ -449,20 +453,6 @@ class Type(object):
       # TODO: [tfop]
       raise UnableToGenerateCodeError('Unsupported handle type "%s".' % self.kind)
     return ('[%s]' % name) if self.array else name
-
-  def swift_return(self, value, mode):
-    if mode == 'tfop':
-      if self.kind == 'Tensor' and self.base_type == 'String':
-        return 'StringTensor(handle: ' + value + ')'
-      elif self.kind == 'Tensor':
-        return 'Tensor(handle: ' + value + ')'
-      return value
-    elif mode == 'eager':
-      return value
-    # `mode` was neither "tfop" nor "eager".
-    raise UnableToGenerateCodeError(
-      'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
-      % mode)
 
 
 class Attribute(object):

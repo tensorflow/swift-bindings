@@ -353,7 +353,7 @@ public static func {name}{generics}({input_args}
       body += '\n  checkOk(s)'
       if len(self.output_args) == 1:
         arg = self.output_args[0]
-        body += '\n  return {}.init(_owning: buffer), count: {})'.format(
+        body += '\n  return {}.init(_owning: buffer, count: {})'.format(
           arg.swift_type, arg.swift_count)
         return body
       for i, arg in enumerate(self.output_args):

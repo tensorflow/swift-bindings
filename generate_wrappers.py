@@ -363,7 +363,7 @@ public static func {name}{generics}({input_args}
         body += '\n  _TFCEagerExecute(op, &unused, &count, s)'
         body += '\n  checkOk(s)'
         return body
-      counts = [arg.swift_count for arg in self.output_args]
+      counts = ['Int32({})'.format(arg.swift_count) for arg in self.output_args]
       body += '\n  var count: Int32 = ' + ' + '.join(counts)
       body += '\n  let buffer: UnsafeMutablePointer<CTensorHandle> ='
       body += '\n    UnsafeMutablePointer.allocate(capacity: Int(count))'
@@ -372,7 +372,7 @@ public static func {name}{generics}({input_args}
       body += '\n  checkOk(s)'
       if len(self.output_args) == 1:
         arg = self.output_args[0]
-        body += '\n  return {}.init(_owning: buffer, count: {})'.format(
+        body += '\n  return {}.init(_owning: buffer, count: Int({}))'.format(
           arg.swift_type, arg.swift_count)
         return body
       for i, arg in enumerate(self.output_args):
@@ -382,7 +382,7 @@ public static func {name}{generics}({input_args}
         else:
           body += 'offset{} + {}'.format(i - 1, self.output_args[i-1].type.count)
       body += '\n  return (' + ', '.join([
-        '{}.init(_owning: buffer.advanced(by: offset{}), count: {})'.format(
+        '{}.init(_owning: buffer.advanced(by: offset{}), count: Int({}))'.format(
           arg.swift_type, i, arg.swift_count)
         for i, arg in enumerate(self.output_args)]) + ')'
       return body

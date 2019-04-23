@@ -485,13 +485,13 @@ public static func a(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "A", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Raise a exception to abort the process when called.
@@ -534,13 +534,13 @@ public static func abs<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the element-wise sum of a list of tensors.
@@ -570,13 +570,13 @@ public static func accumulateNV2<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes acos of x element-wise.
@@ -590,13 +590,13 @@ public static func acos<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes inverse hyperbolic cosine of x element-wise.
@@ -610,13 +610,13 @@ public static func acosh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x + y element-wise.
@@ -635,13 +635,13 @@ public static func add<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Add an `N`-minibatch `SparseTensor` to a `SparseTensorsMap`, return `N` handles.
@@ -701,13 +701,13 @@ public static func addManySparseToTensorsMap<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Add all input tensors element wise.
@@ -724,13 +724,13 @@ public static func addN<T: Numeric & TensorFlowScalar>(
   let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Add a `SparseTensor` to a `SparseTensorsMap` return its handle.
@@ -780,13 +780,13 @@ public static func addSparseToTensorsMap<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x + y element-wise.
@@ -805,13 +805,13 @@ public static func addV2<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Disallowed in GraphDef version >= 2.
@@ -831,13 +831,13 @@ public static func adjustContrast<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, minValue, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, maxValue, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adjust the contrast of one or more images.
@@ -869,13 +869,13 @@ public static func adjustContrastv2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, contrastFactor, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adjust the hue of one or more images.
@@ -904,13 +904,13 @@ public static func adjustHue<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adjust the saturation of one or more images.
@@ -939,13 +939,13 @@ public static func adjustSaturation<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, scale, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the "logical and" of elements across dimensions of a tensor.
@@ -977,13 +977,13 @@ public static func all<Tidx: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -1041,7 +1041,7 @@ public static func allCandidateSampler(
   TFE_OpSetAttrBool(op, "unique", (unique) ? 1 : 0)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -1050,7 +1050,7 @@ public static func allCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// An Op to exchange data across TPU replicas.
@@ -1104,13 +1104,13 @@ public static func allToAll<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "concat_dimension", concatDimension)
   TFE_OpSetAttrInt(op, "split_dimension", splitDimension)
   TFE_OpSetAttrInt(op, "split_count", splitCount)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the argument of a complex number.
@@ -1143,13 +1143,13 @@ public static func angle<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowSc
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// A container for an iterator resource.
@@ -1169,13 +1169,13 @@ public static func anonymousIterator(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A container for an iterator resource.
@@ -1197,7 +1197,7 @@ public static func anonymousIteratorV2(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -1205,7 +1205,7 @@ public static func anonymousIteratorV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: 1), VariantHandle.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), VariantHandle.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the "logical or" of elements across dimensions of a tensor.
@@ -1237,13 +1237,13 @@ public static func any<Tidx: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of abs(x-y) < tolerance element-wise.
@@ -1261,13 +1261,13 @@ public static func approximateEqual<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrFloat(op, "tolerance", Float(tolerance))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the index with the largest value across dimensions of a tensor.
@@ -1301,13 +1301,13 @@ public static func argMax<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutputType>.init(_owning: buffer, count: 1)
+  return Tensor<OutputType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the index with the smallest value across dimensions of a tensor.
@@ -1341,13 +1341,13 @@ public static func argMin<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutputType>.init(_owning: buffer, count: 1)
+  return Tensor<OutputType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts each entry in the given tensor to strings.  Supports many numeric
@@ -1385,13 +1385,13 @@ public static func asString<T: TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "shortest", (shortest) ? 1 : 0)
   TFE_OpSetAttrInt(op, "width", width)
   _TFCOpSetAttrString(op, "fill", fill)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the trignometric inverse sine of x element-wise.
@@ -1422,13 +1422,13 @@ public static func asin<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes inverse hyperbolic sine of x element-wise.
@@ -1442,13 +1442,13 @@ public static func asinh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Asserts that the given condition is true.
@@ -1593,13 +1593,13 @@ public static func atan<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes arctangent of `y/x` element-wise, respecting signs of the arguments.
@@ -1621,13 +1621,13 @@ public static func atan2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes inverse hyperbolic tangent of x element-wise.
@@ -1641,13 +1641,13 @@ public static func atanh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -1963,13 +1963,13 @@ public static func audioSpectrogram(
   TFE_OpSetAttrInt(op, "window_size", windowSize)
   TFE_OpSetAttrInt(op, "stride", stride)
   TFE_OpSetAttrBool(op, "magnitude_squared", (magnitudeSquared) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs a `Summary` protocol buffer with audio.
@@ -2010,13 +2010,13 @@ public static func audioSummary(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   TFE_OpSetAttrFloat(op, "sample_rate", Float(sampleRate))
   TFE_OpSetAttrInt(op, "max_outputs", maxOutputs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs a `Summary` protocol buffer with audio.
@@ -2056,13 +2056,13 @@ public static func audioSummaryV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sampleRate, s)
   TFE_OpSetAttrInt(op, "max_outputs", maxOutputs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs average pooling on the input.
@@ -2101,13 +2101,13 @@ public static func avgPool<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs 3D average pooling on the input.
@@ -2145,13 +2145,13 @@ public static func avgPool3D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of average pooling function.
@@ -2193,13 +2193,13 @@ public static func avgPool3DGrad<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of the average pooling function.
@@ -2240,13 +2240,13 @@ public static func avgPoolGrad<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2257,13 +2257,13 @@ public static func b(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "B", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Batches all input tensors nondeterministically.
@@ -2332,7 +2332,7 @@ public static func batch<T: TensorArrayProtocol>(
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   _TFCOpSetAttrString(op, "batching_queue", batchingQueue)
   _TFCOpSetAttrTypeArray(op, "T", T._typeList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -2341,7 +2341,7 @@ public static func batch<T: TensorArrayProtocol>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (T.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (T.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -2354,13 +2354,13 @@ public static func batchCholesky<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2375,13 +2375,13 @@ public static func batchCholeskyGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, l, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that batches `batch_size` elements from `input_dataset`.
@@ -2403,13 +2403,13 @@ public static func batchDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, batchSize, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that batches `batch_size` elements from `input_dataset`.
@@ -2437,13 +2437,13 @@ public static func batchDatasetV2(
   TFE_OpSetAttrBool(op, "parallel_copy", (parallelCopy) ? 1 : 0)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Multiplies slices of two tensors in batches.
@@ -2492,13 +2492,13 @@ public static func batchMatMul<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "adj_x", (adjX) ? 1 : 0)
   TFE_OpSetAttrBool(op, "adj_y", (adjY) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Multiplies slices of two tensors in batches.
@@ -2552,13 +2552,13 @@ public static func batchMatMulV2<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "adj_x", (adjX) ? 1 : 0)
   TFE_OpSetAttrBool(op, "adj_y", (adjY) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2575,13 +2575,13 @@ public static func batchMatrixBandPart<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, numLower, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, numUpper, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2594,13 +2594,13 @@ public static func batchMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2613,13 +2613,13 @@ public static func batchMatrixDiag<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2632,13 +2632,13 @@ public static func batchMatrixDiagPart<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2653,13 +2653,13 @@ public static func batchMatrixInverse<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2674,13 +2674,13 @@ public static func batchMatrixSetDiag<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2697,13 +2697,13 @@ public static func batchMatrixSolve<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2722,13 +2722,13 @@ public static func batchMatrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, l2Regularizer, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "fast", (fast) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2747,13 +2747,13 @@ public static func batchMatrixTriangularSolve<T: FloatingPoint & TensorFlowScala
   TFE_OpSetAttrBool(op, "lower", (lower) ? 1 : 0)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Batch normalization.
@@ -2800,13 +2800,13 @@ public static func batchNormWithGlobalNormalization<T: Numeric & TensorFlowScala
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
   TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gradients for batch normalization.
@@ -2859,7 +2859,7 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & TensorFlowS
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
   TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -2870,7 +2870,7 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & TensorFlowS
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -2883,13 +2883,13 @@ public static func batchSelfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -2904,7 +2904,7 @@ public static func batchSelfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "compute_v", (computeV) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -2912,7 +2912,7 @@ public static func batchSelfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -2929,7 +2929,7 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "compute_uv", (computeUv) ? 1 : 0)
   TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -2938,7 +2938,7 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// BatchToSpace for 4-D tensors of type T.
@@ -3044,13 +3044,13 @@ public static func batchToSpace<T: TensorFlowScalar, Tidx: BinaryInteger & Tenso
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "block_size", blockSize)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// BatchToSpace for N-D tensors of type T.
@@ -3191,13 +3191,13 @@ public static func batchToSpaceND<T: TensorFlowScalar, TblockShape: BinaryIntege
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tblock_shape", TblockShape.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tcrops", Tcrops.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the Bessel i0e function of `x` element-wise.
@@ -3216,13 +3216,13 @@ public static func besselI0e<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the Bessel i1e function of `x` element-wise.
@@ -3241,13 +3241,13 @@ public static func besselI1e<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the regularized incomplete beta integral \\(I_x(a, b)\\).
@@ -3279,13 +3279,13 @@ public static func betainc<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adds `bias` to `value`.
@@ -3320,13 +3320,13 @@ public static func biasAdd<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bias, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// The backward operation for "BiasAdd" on the "bias" tensor.
@@ -3358,13 +3358,13 @@ public static func biasAddGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, outBackprop, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adds `bias` to `value`.
@@ -3391,13 +3391,13 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bias, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -3412,13 +3412,13 @@ public static func binary<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Counts the number of occurrences of each value in an integer array.
@@ -3454,13 +3454,13 @@ public static func bincount<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, weights, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Bitcasts a tensor from one type to another without copying data.
@@ -3525,13 +3525,13 @@ public static func bitcast<T: Numeric & TensorFlowScalar, Type: Numeric & Tensor
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "type", Type.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Type>.init(_owning: buffer, count: 1)
+  return Tensor<Type>.init(_owning: buffer, count: Int(1))
 }
 
 /// Elementwise computes the bitwise AND of `x` and `y`.
@@ -3550,13 +3550,13 @@ public static func bitwiseAnd<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Elementwise computes the bitwise OR of `x` and `y`.
@@ -3575,13 +3575,13 @@ public static func bitwiseOr<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Elementwise computes the bitwise XOR of `x` and `y`.
@@ -3600,13 +3600,13 @@ public static func bitwiseXor<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the LSTM cell forward propagation for all the time steps.
@@ -3686,7 +3686,7 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "cell_clip", Float(cellClip))
   TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -3699,7 +3699,7 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   let offset4: Int = offset3 + 1
   let offset5: Int = offset4 + 1
   let offset6: Int = offset5 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Computes the LSTM cell backward propagation for the entire time sequence.
@@ -3784,7 +3784,7 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, hGrad, s)
   TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -3798,7 +3798,7 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset5: Int = offset4 + 1
   let offset6: Int = offset5 + 1
   let offset7: Int = offset6 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset7), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
 }
 
 /// Aggregates the summary of accumulated stats for the batch.
@@ -3836,13 +3836,13 @@ public static func boostedTreesAggregateStats(
   let _ = _TFCOpAddInputFromTensorGroup(op, feature, s)
   TFE_OpSetAttrInt(op, "max_splits", maxSplits)
   TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Bucketize each feature based on bucket boundaries.
@@ -3870,13 +3870,13 @@ public static func boostedTreesBucketize(
   let floatValuesCount = _TFCOpAddInputFromTensorGroup(op, floatValues, s)
   TFE_OpSetAttrInt(op, "num_features", Int64(floatValuesCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, bucketBoundaries, s)
-  var count: Int32 = floatValuesCount
+  var count: Int32 = Int32(floatValuesCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Int32>].init(_owning: buffer, count: floatValuesCount)
+  return [Tensor<Int32>].init(_owning: buffer, count: Int(floatValuesCount))
 }
 
 /// Calculates gains for each feature and returns the best possible split information for the feature.
@@ -3933,7 +3933,7 @@ public static func boostedTreesCalculateBestFeatureSplit(
   let _ = _TFCOpAddInputFromTensorGroup(op, minNodeWeight, s)
   TFE_OpSetAttrInt(op, "logits_dimension", logitsDimension)
   _TFCOpSetAttrString(op, "split_type", splitType.cName)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -3946,7 +3946,7 @@ public static func boostedTreesCalculateBestFeatureSplit(
   let offset4: Int = offset3 + 1
   let offset5: Int = offset4 + 1
   let offset6: Int = offset5 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset5), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset6), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Calculates gains for each feature and returns the best possible split information for the feature.
@@ -4000,7 +4000,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   let _ = _TFCOpAddInputFromTensorGroup(op, treeComplexity, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, minNodeWeight, s)
   TFE_OpSetAttrInt(op, "max_splits", maxSplits)
-  var count: Int32 = statsSummaryListCount + statsSummaryListCount + statsSummaryListCount + statsSummaryListCount + statsSummaryListCount
+  var count: Int32 = Int32(statsSummaryListCount) + Int32(statsSummaryListCount) + Int32(statsSummaryListCount) + Int32(statsSummaryListCount) + Int32(statsSummaryListCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4011,7 +4011,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   let offset2: Int = offset1 + num_features
   let offset3: Int = offset2 + num_features
   let offset4: Int = offset3 + num_features
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: statsSummaryListCount), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: statsSummaryListCount), [Tensor<Int32>].init(_owning: buffer.advanced(by: offset2), count: statsSummaryListCount), [Tensor<Float>].init(_owning: buffer.advanced(by: offset3), count: statsSummaryListCount), [Tensor<Float>].init(_owning: buffer.advanced(by: offset4), count: statsSummaryListCount))
+  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(statsSummaryListCount)), [Tensor<Int32>].init(_owning: buffer.advanced(by: offset2), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset3), count: Int(statsSummaryListCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset4), count: Int(statsSummaryListCount)))
 }
 
 /// Calculates the prior from the training data (the bias) and fills in the first node with the logits' prior. Returns a boolean indicating whether to continue centering.
@@ -4041,13 +4041,13 @@ public static func boostedTreesCenterBias(
   let _ = _TFCOpAddInputFromTensorGroup(op, meanHessians, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, l1, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, l2, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a tree ensemble model and returns a handle to it.
@@ -4143,13 +4143,13 @@ public static func boostedTreesEnsembleResourceHandleOp(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Debugging/model interpretability outputs for each example.
@@ -4181,13 +4181,13 @@ public static func boostedTreesExampleDebugOutputs(
   let bucketizedFeaturesCount = _TFCOpAddInputFromTensorGroup(op, bucketizedFeatures, s)
   TFE_OpSetAttrInt(op, "num_bucketized_features", Int64(bucketizedFeaturesCount))
   TFE_OpSetAttrInt(op, "logits_dimension", logitsDimension)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieves the tree ensemble resource stamp token, number of trees and growing statistics.
@@ -4210,7 +4210,7 @@ public static func boostedTreesGetEnsembleStates(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BoostedTreesGetEnsembleStates", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeEnsembleHandle, s)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4221,7 +4221,7 @@ public static func boostedTreesGetEnsembleStates(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Makes the summary of quantiles for the batch.
@@ -4253,13 +4253,13 @@ public static func boostedTreesMakeQuantileSummaries(
   TFE_OpSetAttrInt(op, "num_features", Int64(floatValuesCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, exampleWeights, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, epsilon, s)
-  var count: Int32 = floatValuesCount
+  var count: Int32 = Int32(floatValuesCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Float>].init(_owning: buffer, count: floatValuesCount)
+  return [Tensor<Float>].init(_owning: buffer, count: Int(floatValuesCount))
 }
 
 /// Makes the summary of accumulated stats for the batch.
@@ -4298,13 +4298,13 @@ public static func boostedTreesMakeStatsSummary(
   TFE_OpSetAttrInt(op, "num_features", Int64(bucketizedFeaturesListCount))
   TFE_OpSetAttrInt(op, "max_splits", maxSplits)
   TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Runs multiple additive regression ensemble predictors on input instances and
@@ -4335,13 +4335,13 @@ public static func boostedTreesPredict(
   let bucketizedFeaturesCount = _TFCOpAddInputFromTensorGroup(op, bucketizedFeatures, s)
   TFE_OpSetAttrInt(op, "num_bucketized_features", Int64(bucketizedFeaturesCount))
   TFE_OpSetAttrInt(op, "logits_dimension", logitsDimension)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Add the quantile summaries to each quantile stream resource.
@@ -4452,13 +4452,13 @@ public static func boostedTreesQuantileStreamResourceGetBucketBoundaries(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, quantileStreamResourceHandle, s)
   TFE_OpSetAttrInt(op, "num_features", numFeatures)
-  var count: Int32 = numFeatures
+  var count: Int32 = Int32(numFeatures)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Float>].init(_owning: buffer, count: numFeatures)
+  return [Tensor<Float>].init(_owning: buffer, count: Int(numFeatures))
 }
 
 /// Creates a handle to a BoostedTreesQuantileStreamResource.
@@ -4473,13 +4473,13 @@ public static func boostedTreesQuantileStreamResourceHandleOp(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Serializes the tree ensemble to a proto.
@@ -4498,7 +4498,7 @@ public static func boostedTreesSerializeEnsemble(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "BoostedTreesSerializeEnsemble", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeEnsembleHandle, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4506,7 +4506,7 @@ public static func boostedTreesSerializeEnsemble(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Runs multiple additive regression ensemble predictors on input instances and
@@ -4551,7 +4551,7 @@ public static func boostedTreesTrainingPredict(
   let bucketizedFeaturesCount = _TFCOpAddInputFromTensorGroup(op, bucketizedFeatures, s)
   TFE_OpSetAttrInt(op, "num_bucketized_features", Int64(bucketizedFeaturesCount))
   TFE_OpSetAttrInt(op, "logits_dimension", logitsDimension)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4560,7 +4560,7 @@ public static func boostedTreesTrainingPredict(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Updates the tree ensemble by either adding a layer to the last tree being grown
@@ -4639,13 +4639,13 @@ public static func broadcastArgs<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, s0, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, s1, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Return the reduction indices for computing gradients of s0 op s1 with broadcast.
@@ -4663,7 +4663,7 @@ public static func broadcastGradientArgs<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, s0, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, s1, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4671,7 +4671,7 @@ public static func broadcastGradientArgs<T: BinaryInteger & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Broadcast an array for a compatible shape.
@@ -4712,13 +4712,13 @@ public static func broadcastTo<T: TensorFlowScalar, Tidx: BinaryInteger & Tensor
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Bucketizes 'input' based on 'boundaries'.
@@ -4755,13 +4755,13 @@ public static func bucketize<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrDoubleArray(op, "boundaries", boundaries)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs beam search decoding on the logits given in input.
@@ -4810,7 +4810,7 @@ public static func cTCBeamSearchDecoder(
   TFE_OpSetAttrInt(op, "beam_width", beamWidth)
   TFE_OpSetAttrInt(op, "top_paths", topPaths)
   TFE_OpSetAttrBool(op, "merge_repeated", (mergeRepeated) ? 1 : 0)
-  var count: Int32 = topPaths + topPaths + topPaths + 1
+  var count: Int32 = Int32(topPaths) + Int32(topPaths) + Int32(topPaths) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4820,7 +4820,7 @@ public static func cTCBeamSearchDecoder(
   let offset1: Int = offset0 + top_paths
   let offset2: Int = offset1 + top_paths
   let offset3: Int = offset2 + top_paths
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: topPaths), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: topPaths), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: topPaths), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(topPaths)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(topPaths)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(topPaths)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Performs greedy decoding on the logits given in inputs.
@@ -4863,7 +4863,7 @@ public static func cTCGreedyDecoder(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sequenceLength, s)
   TFE_OpSetAttrBool(op, "merge_repeated", (mergeRepeated) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4873,7 +4873,7 @@ public static func cTCGreedyDecoder(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Calculates the CTC Loss (log probability) for each batch entry.  Also calculates
@@ -4924,7 +4924,7 @@ public static func cTCLoss(
   TFE_OpSetAttrBool(op, "preprocess_collapse_repeated", (preprocessCollapseRepeated) ? 1 : 0)
   TFE_OpSetAttrBool(op, "ctc_merge_repeated", (ctcMergeRepeated) ? 1 : 0)
   TFE_OpSetAttrBool(op, "ignore_longer_outputs_than_inputs", (ignoreLongerOutputsThanInputs) ? 1 : 0)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -4932,7 +4932,7 @@ public static func cTCLoss(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that caches elements from `input_dataset`.
@@ -4959,13 +4959,13 @@ public static func cacheDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Cast x of type SrcT to y of DstT.
@@ -4982,13 +4982,13 @@ public static func cast<Srct: TensorFlowScalar, Dstt: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "SrcT", Srct.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "DstT", Dstt.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "Truncate", (truncate) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dstt>.init(_owning: buffer, count: 1)
+  return Tensor<Dstt>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns element-wise smallest integer not less than x.
@@ -5002,13 +5002,13 @@ public static func ceil<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Checks a tensor for NaN and Inf values.
@@ -5029,13 +5029,13 @@ public static func checkNumerics<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "message", message)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the Cholesky decomposition of one or more square matrices.
@@ -5067,13 +5067,13 @@ public static func cholesky<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the reverse mode backpropagated gradient of the Cholesky algorithm.
@@ -5102,13 +5102,13 @@ public static func choleskyGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, l, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, grad, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Clips tensor values to a specified min and max.
@@ -5140,13 +5140,13 @@ public static func clipByValue<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, clipValueMin, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, clipValueMax, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -5181,13 +5181,13 @@ public static func collectiveBcastRecv<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "group_key", groupKey)
   TFE_OpSetAttrInt(op, "instance_key", instanceKey)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Broadcasts a tensor value to one or more other devices.
@@ -5209,13 +5209,13 @@ public static func collectiveBcastSend<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "group_key", groupKey)
   TFE_OpSetAttrInt(op, "instance_key", instanceKey)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Mutually accumulates multiple tensors of identical type and shape.
@@ -5237,13 +5237,13 @@ public static func collectiveGather<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "group_key", groupKey)
   TFE_OpSetAttrInt(op, "instance_key", instanceKey)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// An Op to permute tensors across replicated TPU instances.
@@ -5274,13 +5274,13 @@ public static func collectivePermute<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sourceTargetPairs, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Mutually reduces multiple tensors of identical type and shape.
@@ -5308,13 +5308,13 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "final_op", finalOp.cName)
   _TFCOpSetAttrInt32Array(op, "subdiv_offsets", subdivOffsets)
   _TFCOpSetAttrInt32Array(op, "wait_for", waitFor)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -5391,7 +5391,7 @@ public static func combinedNonMaxSuppression(
   let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
   TFE_OpSetAttrBool(op, "pad_per_class", (padPerClass) ? 1 : 0)
   TFE_OpSetAttrBool(op, "clip_boxes", (clipBoxes) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -5401,7 +5401,7 @@ public static func combinedNonMaxSuppression(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Compare values of `input` to `threshold` and pack resulting bits into a `uint8`.
@@ -5449,13 +5449,13 @@ public static func compareAndBitpack<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, threshold, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts two real numbers to a complex number.
@@ -5487,13 +5487,13 @@ public static func complex<T: FloatingPoint & TensorFlowScalar, Tout: TensorFlow
   let _ = _TFCOpAddInputFromTensorGroup(op, imag, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the complex absolute value of a tensor.
@@ -5513,13 +5513,13 @@ public static func complexAbs<T: TensorFlowScalar, Tout: FloatingPoint & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -5535,7 +5535,7 @@ public static func complexStruct(
   TFE_OpSetAttrInt(op, "n_a", nA)
   TFE_OpSetAttrInt(op, "n_b", nB)
   _TFCOpSetAttrTypeArray(op, "t_c", tC)
-  var count: Int32 = nA + nB + 1
+  var count: Int32 = Int32(nA) + Int32(nB) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -5544,7 +5544,7 @@ public static func complexStruct(
   let offset0: Int = 0
   let offset1: Int = offset0 + n_a
   let offset2: Int = offset1 + n_b
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: nA), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: nB), tC.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(nB)), tC.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes the ids of the positions in sampled_candidates that match true_labels.
@@ -5588,7 +5588,7 @@ public static func computeAccidentalHits(
   TFE_OpSetAttrInt(op, "num_true", numTrue)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -5597,7 +5597,7 @@ public static func computeAccidentalHits(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Concatenates tensors along one dimension.
@@ -5624,13 +5624,13 @@ public static func concat<T: TensorFlowScalar>(
   let valuesCount = _TFCOpAddInputFromTensorGroup(op, values, s)
   TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes offsets of concat inputs within its output.
@@ -5664,13 +5664,13 @@ public static func concatOffset(
   let _ = _TFCOpAddInputFromTensorGroup(op, concatDim, s)
   let shapeCount = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrInt(op, "N", Int64(shapeCount))
-  var count: Int32 = shapeCount
+  var count: Int32 = Int32(shapeCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Int32>].init(_owning: buffer, count: shapeCount)
+  return [Tensor<Int32>].init(_owning: buffer, count: Int(shapeCount))
 }
 
 /// Concatenates tensors along one dimension.
@@ -5698,13 +5698,13 @@ public static func concatV2<T: TensorFlowScalar, Tidx: BinaryInteger & TensorFlo
   let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that concatenates `input_dataset` with `another_dataset`.
@@ -5723,13 +5723,13 @@ public static func concatenateDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, anotherDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Sets up the centralized structures for a distributed TPU system.
@@ -5755,13 +5755,13 @@ public static func configureDistributedTPU(
   _TFCOpSetAttrString(op, "embedding_config", embeddingConfig)
   _TFCOpSetAttrString(op, "tpu_embedding_config", tpuEmbeddingConfig)
   TFE_OpSetAttrBool(op, "is_global_init", (isGlobalInit) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the complex conjugate of a complex number.
@@ -5789,13 +5789,13 @@ public static func conj<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Shuffle dimensions of x according to a permutation and conjugate the result.
@@ -5816,13 +5816,13 @@ public static func conjugateTranspose<T: TensorFlowScalar, Tperm: BinaryInteger 
   let _ = _TFCOpAddInputFromTensorGroup(op, perm, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tperm", Tperm.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -5958,13 +5958,13 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "explicit_paddings", explicitPaddings)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of convolution with respect to the filter.
@@ -6026,13 +6026,13 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "explicit_paddings", explicitPaddings)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of convolution with respect to the input.
@@ -6093,13 +6093,13 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "explicit_paddings", explicitPaddings)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes a 3-D convolution given 5-D `input` and `filter` tensors.
@@ -6149,13 +6149,13 @@ public static func conv3D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
@@ -6191,13 +6191,13 @@ public static func conv3DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
@@ -6247,13 +6247,13 @@ public static func conv3DBackpropFilterV2<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of 3-D convolution with respect to the input.
@@ -6289,13 +6289,13 @@ public static func conv3DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of 3-D convolution with respect to the input.
@@ -6346,13 +6346,13 @@ public static func conv3DBackpropInputV2<T: FloatingPoint & TensorFlowScalar, Ts
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Copy Op.
@@ -6391,13 +6391,13 @@ public static func copy<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "tensor_name", tensorName)
   _TFCOpSetAttrStringArray(op, "debug_ops_spec", debugOpsSpec)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Copy Host Op.
@@ -6434,13 +6434,13 @@ public static func copyHost<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "tensor_name", tensorName)
   _TFCOpSetAttrStringArray(op, "debug_ops_spec", debugOpsSpec)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -6453,13 +6453,13 @@ public static func copyOp<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes cos of x element-wise.
@@ -6473,13 +6473,13 @@ public static func cos<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes hyperbolic cosine of x element-wise.
@@ -6493,13 +6493,13 @@ public static func cosh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -6613,13 +6613,13 @@ public static func cropAndResize<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "method", method.cName)
   TFE_OpSetAttrFloat(op, "extrapolation_value", Float(extrapolationValue))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of the crop_and_resize op wrt the input boxes tensor.
@@ -6663,13 +6663,13 @@ public static func cropAndResizeGradBoxes<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, boxInd, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "method", method.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of the crop_and_resize op wrt the input image tensor.
@@ -6714,13 +6714,13 @@ public static func cropAndResizeGradImage<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, imageSize, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "method", method.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the pairwise cross product.
@@ -6746,13 +6746,13 @@ public static func cross<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// An Op to sum inputs across replicated TPU instances.
@@ -6785,13 +6785,13 @@ public static func crossReplicaSum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, groupAssignment, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// A RNN backed by cuDNN.
@@ -6856,7 +6856,7 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -6866,7 +6866,7 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNN.
@@ -6952,7 +6952,7 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -6962,7 +6962,7 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNN.
@@ -7053,7 +7053,7 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -7063,7 +7063,7 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Backprop step of CudnnRNNV3.
@@ -7163,7 +7163,7 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrBool(op, "time_major", (timeMajor) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -7173,7 +7173,7 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Converts CudnnRNN params from canonical form to usable form.
@@ -7238,13 +7238,13 @@ public static func cudnnRNNCanonicalToParams<T: FloatingPoint & TensorFlowScalar
   TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes size of weights that can be used by a Cudnn RNN model.
@@ -7298,13 +7298,13 @@ public static func cudnnRNNParamsSize<S: BinaryInteger & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<S>.init(_owning: buffer, count: 1)
+  return Tensor<S>.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieves CudnnRNN params in canonical form.
@@ -7368,7 +7368,7 @@ public static func cudnnRNNParamsToCanonical<T: FloatingPoint & TensorFlowScalar
   TFE_OpSetAttrFloat(op, "dropout", Float(dropout))
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = numParams + numParams
+  var count: Int32 = Int32(numParams) + Int32(numParams)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -7376,7 +7376,7 @@ public static func cudnnRNNParamsToCanonical<T: FloatingPoint & TensorFlowScalar
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + num_params
-  return ([Tensor<T>].init(_owning: buffer.advanced(by: offset0), count: numParams), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: numParams))
+  return ([Tensor<T>].init(_owning: buffer.advanced(by: offset0), count: Int(numParams)), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numParams)))
 }
 
 /// A RNN backed by cuDNN.
@@ -7444,7 +7444,7 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -7455,7 +7455,7 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// A RNN backed by cuDNN.
@@ -7531,7 +7531,7 @@ public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
   TFE_OpSetAttrBool(op, "time_major", (timeMajor) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -7542,7 +7542,7 @@ public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int8>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Compute the cumulative product of the tensor `x` along `axis`.
@@ -7603,13 +7603,13 @@ public static func cumprod<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & 
   TFE_OpSetAttrBool(op, "reverse", (reverse) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the cumulative sum of the tensor `x` along `axis`.
@@ -7670,13 +7670,13 @@ public static func cumsum<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & T
   TFE_OpSetAttrBool(op, "reverse", (reverse) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the dimension index in the destination data format given the one in
@@ -7705,13 +7705,13 @@ public static func dataFormatDimMap<T: BinaryInteger & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "src_format", srcFormat)
   _TFCOpSetAttrString(op, "dst_format", dstFormat)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the permuted vector/tensor in the destination data format given the
@@ -7739,13 +7739,13 @@ public static func dataFormatVecPermute<T: BinaryInteger & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "src_format", srcFormat)
   _TFCOpSetAttrString(op, "dst_format", dstFormat)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a serialized GraphDef representing `input_dataset`.
@@ -7764,13 +7764,13 @@ public static func datasetToGraph(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DatasetToGraph", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs the single element from the given dataset.
@@ -7791,13 +7791,13 @@ public static func datasetToSingleElement(
   let _ = _TFCOpAddInputFromTensorGroup(op, dataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Identity op for gradient debugging.
@@ -7815,13 +7815,13 @@ public static func debugGradientIdentity<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Debug Identity Op.
@@ -7860,13 +7860,13 @@ public static func debugIdentity<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "tensor_name", tensorName)
   _TFCOpSetAttrStringArray(op, "debug_urls", debugUrls)
   TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Debug NaN Value Counter Op
@@ -7905,13 +7905,13 @@ public static func debugNanCount<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "tensor_name", tensorName)
   _TFCOpSetAttrStringArray(op, "debug_urls", debugUrls)
   TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Debug Numeric Summary Op.
@@ -7989,13 +7989,13 @@ public static func debugNumericSummary<T: TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "upper_bound", Float(upperBound))
   TFE_OpSetAttrBool(op, "mute_if_healthy", (muteIfHealthy) ? 1 : 0)
   TFE_OpSetAttrBool(op, "gated_grpc", (gatedGrpc) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Double>.init(_owning: buffer, count: 1)
+  return Tensor<Double>.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode and Crop a JPEG-encoded image to a uint8 tensor.
@@ -8063,13 +8063,13 @@ public static func decodeAndCropJpeg(
   TFE_OpSetAttrBool(op, "try_recover_truncated", (tryRecoverTruncated) ? 1 : 0)
   TFE_OpSetAttrFloat(op, "acceptable_fraction", Float(acceptableFraction))
   _TFCOpSetAttrString(op, "dct_method", dctMethod)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode web-safe base64-encoded strings.
@@ -8089,13 +8089,13 @@ public static func decodeBase64(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeBase64", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode the first frame of a BMP-encoded image to a uint8 tensor.
@@ -8123,13 +8123,13 @@ public static func decodeBmp(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
   TFE_OpSetAttrInt(op, "channels", channels)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 /// Convert CSV records to tensors. Each column maps to one tensor.
@@ -8173,13 +8173,13 @@ public static func decodeCSV<OutType: TensorArrayProtocol>(
   TFE_OpSetAttrBool(op, "use_quote_delim", (useQuoteDelim) ? 1 : 0)
   _TFCOpSetAttrString(op, "na_value", naValue)
   _TFCOpSetAttrInt32Array(op, "select_cols", selectCols)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return OutType.init(_owning: buffer, count: 1)
+  return OutType.init(_owning: buffer, count: Int(1))
 }
 
 /// Decompress strings.
@@ -8209,13 +8209,13 @@ public static func decodeCompressed(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, bytes, s)
   _TFCOpSetAttrString(op, "compression_type", compressionType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode the frame(s) of a GIF-encoded image to a uint8 tensor.
@@ -8241,13 +8241,13 @@ public static func decodeGif(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeGif", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 /// Convert JSON-encoded Example records to binary protocol buffer strings.
@@ -8273,13 +8273,13 @@ public static func decodeJSONExample(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeJSONExample", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, jsonExamples, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode a JPEG-encoded image to a uint8 tensor.
@@ -8343,13 +8343,13 @@ public static func decodeJpeg(
   TFE_OpSetAttrBool(op, "try_recover_truncated", (tryRecoverTruncated) ? 1 : 0)
   TFE_OpSetAttrFloat(op, "acceptable_fraction", Float(acceptableFraction))
   _TFCOpSetAttrString(op, "dct_method", dctMethod)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -8366,13 +8366,13 @@ public static func decodePaddedRaw<OutType: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, fixedLength, s)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "little_endian", (littleEndian) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode a PNG-encoded image to a uint8 or uint16 tensor.
@@ -8410,13 +8410,13 @@ public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
   TFE_OpSetAttrInt(op, "channels", channels)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// The op extracts fields from a serialized protocol buffers message into tensors.
@@ -8511,7 +8511,7 @@ public static func decodeProtoV2(
   _TFCOpSetAttrString(op, "descriptor_source", descriptorSource)
   _TFCOpSetAttrString(op, "message_format", messageFormat)
   TFE_OpSetAttrBool(op, "sanitize", (sanitize) ? 1 : 0)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -8519,7 +8519,7 @@ public static func decodeProtoV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), outputTypes.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), outputTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Reinterpret the bytes of a string as a vector of numbers.
@@ -8545,13 +8545,13 @@ public static func decodeRaw<OutType: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bytes, s)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "little_endian", (littleEndian) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Decode a 16-bit PCM WAV file to a float tensor.
@@ -8593,7 +8593,7 @@ public static func decodeWav(
   let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
   TFE_OpSetAttrInt(op, "desired_channels", desiredChannels)
   TFE_OpSetAttrInt(op, "desired_samples", desiredSamples)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -8601,7 +8601,7 @@ public static func decodeWav(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Makes a copy of `x`.
@@ -8620,13 +8620,13 @@ public static func deepCopy<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// A container for an iterator resource.
@@ -8707,7 +8707,7 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -8716,7 +8716,7 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
@@ -8774,7 +8774,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -8783,7 +8783,7 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// DepthToSpace for tensors of type T.
@@ -8893,13 +8893,13 @@ public static func depthToSpace<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "block_size", blockSize)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes a 2-D depthwise convolution given 4-D `input` and `filter` tensors.
@@ -8957,13 +8957,13 @@ public static func depthwiseConv2dNative<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of depthwise convolution with respect to the filter.
@@ -9020,13 +9020,13 @@ public static func depthwiseConv2dNativeBackpropFilter<T: FloatingPoint & Tensor
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradients of depthwise convolution with respect to the input.
@@ -9083,13 +9083,13 @@ public static func depthwiseConv2dNativeBackpropInput<T: FloatingPoint & TensorF
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Dequantize the 'input' tensor into a float Tensor.
@@ -9187,13 +9187,13 @@ public static func dequantize<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxRange, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "mode", mode.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts the given variant tensor to an iterator and stores it in the given resource.
@@ -9277,7 +9277,7 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -9286,7 +9286,7 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Deserialize `SparseTensor` objects.
@@ -9348,7 +9348,7 @@ public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: Tenso
   let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tserialized", Tserialized.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -9357,7 +9357,7 @@ public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: Tenso
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Deletes the resource specified by the handle.
@@ -9394,13 +9394,13 @@ public static func devicePlacementOp(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DevicePlacementOp", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a diagonal tensor with a given diagonal values.
@@ -9434,13 +9434,13 @@ public static func diag<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the diagonal part of the tensor.
@@ -9477,13 +9477,13 @@ public static func diagPart<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes Psi, the derivative of Lgamma (the log of the absolute value of
@@ -9499,13 +9499,13 @@ public static func digamma<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the grayscale dilation of 4-D `input` and 3-D `filter` tensors.
@@ -9564,13 +9564,13 @@ public static func dilation2D<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrInt32Array(op, "rates", rates)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the filter.
@@ -9608,13 +9608,13 @@ public static func dilation2DBackpropFilter<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrInt32Array(op, "rates", rates)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of morphological 2-D dilation with respect to the input.
@@ -9652,13 +9652,13 @@ public static func dilation2DBackpropInput<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrInt32Array(op, "rates", rates)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x / y element-wise.
@@ -9677,13 +9677,13 @@ public static func div<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns 0 if the denominator is zero.
@@ -9703,13 +9703,13 @@ public static func divNoNan<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Draw bounding boxes on a batch of images.
@@ -9745,13 +9745,13 @@ public static func drawBoundingBoxes<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Draw bounding boxes on a batch of images.
@@ -9790,13 +9790,13 @@ public static func drawBoundingBoxesV2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, boxes, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, colors, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Partitions `data` into `num_partitions` tensors using indices from `partitions`.
@@ -9856,13 +9856,13 @@ public static func dynamicPartition<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, partitions, s)
   TFE_OpSetAttrInt(op, "num_partitions", numPartitions)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = numPartitions
+  var count: Int32 = Int32(numPartitions)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<T>].init(_owning: buffer, count: numPartitions)
+  return [Tensor<T>].init(_owning: buffer, count: Int(numPartitions))
 }
 
 /// Interleave the values from the `data` tensors into a single tensor.
@@ -9942,13 +9942,13 @@ public static func dynamicStitch<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Eagerly executes a python function to compute func(input)->output. The
@@ -9969,13 +9969,13 @@ public static func eagerPyFunc<Tin: TensorGroup>(
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
   _TFCOpSetAttrTypeArray(op, "Tout", tout)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: 1)
+  return tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the (possibly normalized) Levenshtein Edit Distance.
@@ -10056,13 +10056,13 @@ public static func editDistance<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, truthShape, s)
   TFE_OpSetAttrBool(op, "normalize", (normalize) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes exponential linear: `exp(features) - 1` if < 0, `features` otherwise.
@@ -10079,13 +10079,13 @@ public static func elu<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients for the exponential linear (Elu) operation.
@@ -10108,13 +10108,13 @@ public static func eluGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, outputs, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a tensor with the given shape.
@@ -10138,13 +10138,13 @@ public static func empty<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "init", (init_) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates and returns an empty tensor list.
@@ -10169,13 +10169,13 @@ public static func emptyTensorList<ShapeType: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxNumElements, s)
   TFE_OpSetAttrType(op, "element_dtype", elementDtype._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Encode strings into web-safe base64 format.
@@ -10203,13 +10203,13 @@ public static func encodeBase64(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "pad", (pad) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// JPEG-encode an image.
@@ -10273,13 +10273,13 @@ public static func encodeJpeg(
   TFE_OpSetAttrInt(op, "x_density", xDensity)
   TFE_OpSetAttrInt(op, "y_density", yDensity)
   _TFCOpSetAttrString(op, "xmp_metadata", xmpMetadata)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// JPEG encode input image with provided compression quality.
@@ -10304,13 +10304,13 @@ public static func encodeJpegVariableQuality(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, quality, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// PNG-encode an image.
@@ -10344,13 +10344,13 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, image, s)
   TFE_OpSetAttrInt(op, "compression", compression)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// The op serializes protobuf messages provided in the input tensors.
@@ -10421,13 +10421,13 @@ public static func encodeProto<TinputTypes: TensorGroup>(
   _TFCOpSetAttrString(op, "message_type", messageType)
   _TFCOpSetAttrString(op, "descriptor_source", descriptorSource)
   _TFCOpSetAttrTypeArray(op, "Tinput_types", TinputTypes._typeList)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Encode audio data using the WAV file format.
@@ -10456,13 +10456,13 @@ public static func encodeWav(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, audio, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sampleRate, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// An op that enqueues a list of input batch tensors to TPUEmbedding.
@@ -10655,13 +10655,13 @@ public static func ensureShape<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates or finds a child frame, and makes `data` available to the child frame.
@@ -10696,13 +10696,13 @@ public static func enter<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "frame_name", frameName)
   TFE_OpSetAttrBool(op, "is_constant", (isConstant) ? 1 : 0)
   TFE_OpSetAttrInt(op, "parallel_iterations", parallelIterations)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of (x == y) element-wise.
@@ -10721,13 +10721,13 @@ public static func equal<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the Gauss error function of `x` element-wise.
@@ -10741,13 +10741,13 @@ public static func erf<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the complementary error function of `x` element-wise.
@@ -10761,13 +10761,13 @@ public static func erfc<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the euclidean norm of elements across dimensions of a tensor.
@@ -10800,13 +10800,13 @@ public static func euclideanNorm<T: Numeric & TensorFlowScalar, Tidx: BinaryInte
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Exits the current frame to its parent frame.
@@ -10826,13 +10826,13 @@ public static func exit<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes exponential of x element-wise.  \\(y = e^x\\).
@@ -10846,13 +10846,13 @@ public static func exp<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Inserts a dimension of 1 into a tensor's shape.
@@ -10907,13 +10907,13 @@ public static func expandDims<T: TensorFlowScalar, Tdim: BinaryInteger & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, dim, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tdim", Tdim.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -10931,13 +10931,13 @@ public static func experimentalAssertNextDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, transformations, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that shards the input dataset.
@@ -10971,13 +10971,13 @@ public static func experimentalAutoShardDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Records the bytes size of each element of `input_dataset` in a StatsAggregator.
@@ -10996,13 +10996,13 @@ public static func experimentalBytesProducedStatsDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11033,13 +11033,13 @@ public static func experimentalCSVDataset<OutputTypes: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, recordDefaults, s)
   _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11058,13 +11058,13 @@ public static func experimentalChooseFastestDataset(
   TFE_OpSetAttrInt(op, "num_experiments", numExperiments)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the cardinality of `input_dataset`.
@@ -11084,13 +11084,13 @@ public static func experimentalDatasetCardinality(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalDatasetCardinality", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Writes the given dataset to the given file using the TFRecord format.
@@ -11145,13 +11145,13 @@ public static func experimentalDenseToSparseBatchDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, rowShape, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A substitute for `InterleaveDataset` on a fixed list of `N` datasets.
@@ -11177,13 +11177,13 @@ public static func experimentalDirectedInterleaveDataset(
   TFE_OpSetAttrInt(op, "N", Int64(dataInputDatasetsCount))
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11195,13 +11195,13 @@ public static func experimentalIdentityIndexedDataset(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalIdentityIndexedDataset", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that contains the elements of `input_dataset` ignoring errors.
@@ -11218,13 +11218,13 @@ public static func experimentalIgnoreErrorsDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11242,13 +11242,13 @@ public static func experimentalIndexedDatasetGet(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11278,13 +11278,13 @@ public static func experimentalIteratorGetDevice(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalIteratorGetDevice", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resource, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11300,13 +11300,13 @@ public static func experimentalLMDBDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, filenames, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Records the latency of producing `input_dataset` elements in a StatsAggregator.
@@ -11325,13 +11325,13 @@ public static func experimentalLatencyStatsDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11343,13 +11343,13 @@ public static func experimentalMatchingFilesDataset(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalMatchingFilesDataset", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, patterns, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11367,13 +11367,13 @@ public static func experimentalMaterializedIndexDatasetHandle(
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that overrides the maximum intra-op parallelism.
@@ -11394,13 +11394,13 @@ public static func experimentalMaxIntraOpParallelismDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxIntraOpParallelism, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11416,13 +11416,13 @@ public static func experimentalNonSerializableDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Transforms `input_dataset` containing `Example` protos as vectors of DT_STRING into a dataset of `Tensor` or `SparseTensor` objects representing the parsed features.
@@ -11481,13 +11481,13 @@ public static func experimentalParseExampleDataset<Tdense: TensorGroup>(
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   TFE_OpSetAttrBool(op, "sloppy", (sloppy) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -11508,13 +11508,13 @@ public static func experimentalPrivateThreadPoolDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, numThreads, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a Dataset that returns pseudorandom numbers.
@@ -11539,13 +11539,13 @@ public static func experimentalRandomDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, seed2, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that changes the batch size.
@@ -11573,13 +11573,13 @@ public static func experimentalRebatchDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, numWorkers, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11601,13 +11601,13 @@ public static func experimentalSetStatsAggregatorDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, counterPrefix, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11625,13 +11625,13 @@ public static func experimentalSleepDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, sleepMicroseconds, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that passes a sliding window over `input_dataset`.
@@ -11662,13 +11662,13 @@ public static func experimentalSlidingWindowDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, windowStride, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that executes a SQL query and emits rows of the result set.
@@ -11694,13 +11694,13 @@ public static func experimentalSqlDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, query, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a statistics manager resource.
@@ -11715,13 +11715,13 @@ public static func experimentalStatsAggregatorHandle(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Produces a summary of any statistics recorded by the given statistics manager.
@@ -11734,13 +11734,13 @@ public static func experimentalStatsAggregatorSummary(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalStatsAggregatorSummary", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -11761,13 +11761,13 @@ public static func experimentalThreadPoolDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, threadPool, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -11799,13 +11799,13 @@ public static func experimentalThreadPoolHandle(
   _TFCOpSetAttrString(op, "display_name", displayName)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A dataset that splits the elements of its input into multiple elements.
@@ -11822,13 +11822,13 @@ public static func experimentalUnbatchDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that contains the unique elements of `input_dataset`.
@@ -11845,13 +11845,13 @@ public static func experimentalUniqueDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes exponential of x - 1 element-wise.
@@ -11867,13 +11867,13 @@ public static func expm1<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Extracts a glimpse from the input tensor.
@@ -11943,13 +11943,13 @@ public static func extractGlimpse(
   TFE_OpSetAttrBool(op, "normalized", (normalized) ? 1 : 0)
   TFE_OpSetAttrBool(op, "uniform_noise", (uniformNoise) ? 1 : 0)
   _TFCOpSetAttrString(op, "noise", noise)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Extract `patches` from `images` and put them in the "depth" output dimension.
@@ -11998,13 +11998,13 @@ public static func extractImagePatches<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "rates", rates)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Extract the shape information of a JPEG-encoded image.
@@ -12027,13 +12027,13 @@ public static func extractJpegShape<OutputType: BinaryInteger & TensorFlowScalar
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, contents, s)
   TFE_OpSetAttrType(op, "output_type", OutputType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutputType>.init(_owning: buffer, count: 1)
+  return Tensor<OutputType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Extract `patches` from `input` and put them in the "depth" output dimension. 3D extension of `extract_image_patches`.
@@ -12074,13 +12074,13 @@ public static func extractVolumePatches<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Fast Fourier transform.
@@ -12106,13 +12106,13 @@ public static func fFT<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// 2D fast Fourier transform.
@@ -12138,13 +12138,13 @@ public static func fFT2D<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// 3D fast Fourier transform.
@@ -12170,13 +12170,13 @@ public static func fFT3D<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// A queue that produces elements in first-in first-out order.
@@ -12212,13 +12212,13 @@ public static func fIFOQueueV2(
   TFE_OpSetAttrInt(op, "capacity", capacity)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Output a fact about factorials.
@@ -12230,13 +12230,13 @@ public static func fact(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Fact", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 ///   This op is used as a placeholder in If branch functions. It doesn't provide a
@@ -12260,13 +12260,13 @@ public static func fakeParam<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Fake-quantize the 'inputs' tensor, type float to 'outputs' tensor of same type.
@@ -12304,13 +12304,13 @@ public static func fakeQuantWithMinMaxArgs(
   TFE_OpSetAttrFloat(op, "max", Float(max))
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxArgs operation.
@@ -12340,13 +12340,13 @@ public static func fakeQuantWithMinMaxArgsGradient(
   TFE_OpSetAttrFloat(op, "max", Float(max))
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Fake-quantize the 'inputs' tensor of type float via global float scalars `min`
@@ -12387,13 +12387,13 @@ public static func fakeQuantWithMinMaxVars(
   let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxVars operation.
@@ -12433,7 +12433,7 @@ public static func fakeQuantWithMinMaxVarsGradient(
   let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -12442,7 +12442,7 @@ public static func fakeQuantWithMinMaxVarsGradient(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Fake-quantize the 'inputs' tensor of type float and one of the shapes: `[d]`,
@@ -12484,13 +12484,13 @@ public static func fakeQuantWithMinMaxVarsPerChannel(
   let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute gradients for a FakeQuantWithMinMaxVarsPerChannel operation.
@@ -12533,7 +12533,7 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   let _ = _TFCOpAddInputFromTensorGroup(op, max, s)
   TFE_OpSetAttrInt(op, "num_bits", numBits)
   TFE_OpSetAttrBool(op, "narrow_range", (narrowRange) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -12542,7 +12542,7 @@ public static func fakeQuantWithMinMaxVarsPerChannelGradient(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Creates a tensor filled with a scalar value.
@@ -12587,13 +12587,13 @@ public static func fill<T: TensorFlowScalar, IndexType: BinaryInteger & TensorFl
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "index_type", IndexType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset containing elements of first component of `input_dataset` having true in the last component.
@@ -12610,13 +12610,13 @@ public static func filterByLastComponentDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputDataset, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -12627,7 +12627,7 @@ public static func fiveFloatOutputs(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FiveFloatOutputs", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -12638,7 +12638,7 @@ public static func fiveFloatOutputs(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Creates a dataset that emits the records from one or more binary files.
@@ -12669,13 +12669,13 @@ public static func fixedLengthRecordDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, recordBytes, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, footerBytes, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bufferSize, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -12697,13 +12697,13 @@ public static func fixedLengthRecordDatasetV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, footerBytes, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bufferSize, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, compressionType, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs fixed-length records from a file.
@@ -12743,13 +12743,13 @@ public static func fixedLengthRecordReaderV2(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   _TFCOpSetAttrString(op, "encoding", encoding)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -12850,7 +12850,7 @@ public static func fixedUnigramCandidateSampler(
   _TFCOpSetAttrDoubleArray(op, "unigrams", unigrams)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -12859,7 +12859,7 @@ public static func fixedUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -12885,13 +12885,13 @@ public static func floatOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloatOutput", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -12902,7 +12902,7 @@ public static func floatOutputStringOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "FloatOutputStringOutput", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -12910,7 +12910,7 @@ public static func floatOutputStringOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns element-wise largest integer not greater than x.
@@ -12924,13 +12924,13 @@ public static func floor<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x // y element-wise.
@@ -12949,13 +12949,13 @@ public static func floorDiv<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns element-wise remainder of division. When `x < 0` xor `y < 0` is
@@ -12977,13 +12977,13 @@ public static func floorMod<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -13014,7 +13014,7 @@ public static func foo1(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13022,7 +13022,7 @@ public static func foo1(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -13038,7 +13038,7 @@ public static func foo2(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13046,7 +13046,7 @@ public static func foo2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -13062,7 +13062,7 @@ public static func foo3(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13070,7 +13070,7 @@ public static func foo3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Performs fractional average pooling on the input.
@@ -13136,7 +13136,7 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13145,7 +13145,7 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes gradient of the FractionalAvgPool function.
@@ -13194,13 +13194,13 @@ public static func fractionalAvgPoolGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, colPoolingSequence, s)
   TFE_OpSetAttrBool(op, "overlapping", (overlapping) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs fractional max pooling on the input.
@@ -13290,7 +13290,7 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13299,7 +13299,7 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes gradient of the FractionalMaxPool function.
@@ -13345,13 +13345,13 @@ public static func fractionalMaxPoolGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, colPoolingSequence, s)
   TFE_OpSetAttrBool(op, "overlapping", (overlapping) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Batch normalization.
@@ -13409,7 +13409,7 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13420,7 +13420,7 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Gradient for batch normalization.
@@ -13481,7 +13481,7 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13492,7 +13492,7 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Gradient for batch normalization.
@@ -13555,7 +13555,7 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13566,7 +13566,7 @@ public static func fusedBatchNormGradV2<T: FloatingPoint & TensorFlowScalar, U: 
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Batch normalization.
@@ -13626,7 +13626,7 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   TFE_OpSetAttrFloat(op, "epsilon", Float(epsilon))
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrBool(op, "is_training", (isTraining) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13637,7 +13637,7 @@ public static func fusedBatchNormV2<T: FloatingPoint & TensorFlowScalar, U: Floa
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<U>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Performs a padding as a preprocess during a convolution.
@@ -13685,13 +13685,13 @@ public static func fusedPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "mode", mode.cName)
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs a resize and padding as a preprocess during a convolution.
@@ -13746,13 +13746,13 @@ public static func fusedResizeAndPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "mode", mode.cName)
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the GRU cell forward propagation for 1 time step.
@@ -13821,7 +13821,7 @@ public static func gRUBlockCell<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bRu, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bC, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13831,7 +13831,7 @@ public static func gRUBlockCell<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Computes the GRU cell back-propagation for 1 time step.
@@ -13944,7 +13944,7 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, c, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dH, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -13954,7 +13954,7 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Gather slices from `params` according to `indices`.
@@ -13999,13 +13999,13 @@ public static func gather<Tparams: TensorFlowScalar, Tindices: BinaryInteger & T
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tparams>.init(_owning: buffer, count: 1)
+  return Tensor<Tparams>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gather slices from `params` into a Tensor with shape specified by `indices`.
@@ -14134,13 +14134,13 @@ public static func gatherNd<Tparams: TensorFlowScalar, Tindices: BinaryInteger &
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tparams>.init(_owning: buffer, count: 1)
+  return Tensor<Tparams>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gather slices from `params` axis `axis` according to `indices`.
@@ -14198,13 +14198,13 @@ public static func gatherV2<Tparams: TensorFlowScalar, Tindices: BinaryInteger &
   TFE_OpSetAttrType(op, "Tparams", Tparams.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tparams>.init(_owning: buffer, count: 1)
+  return Tensor<Tparams>.init(_owning: buffer, count: Int(1))
 }
 
 /// Re-configures the GCS block cache with the new configuration values.
@@ -14313,13 +14313,13 @@ public static func generateBigQueryReaderPartitions(
   TFE_OpSetAttrInt(op, "timestamp_millis", timestampMillis)
   TFE_OpSetAttrInt(op, "num_partitions", numPartitions)
   _TFCOpSetAttrString(op, "test_end_point", testEndPoint)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Given a path to new and old vocabulary files, returns a remapping Tensor of
@@ -14385,7 +14385,7 @@ public static func generateVocabRemapping(
   TFE_OpSetAttrInt(op, "new_vocab_offset", newVocabOffset)
   TFE_OpSetAttrInt(op, "num_new_vocab", numNewVocab)
   TFE_OpSetAttrInt(op, "old_vocab_size", oldVocabSize)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -14393,7 +14393,7 @@ public static func generateVocabRemapping(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Store the input tensor in the state of the current session.
@@ -14412,13 +14412,13 @@ public static func getSessionHandle<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Store the input tensor in the state of the current session.
@@ -14437,13 +14437,13 @@ public static func getSessionHandleV2<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Get the value of the tensor specified by its handle.
@@ -14463,13 +14463,13 @@ public static func getSessionTensor<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -14480,13 +14480,13 @@ public static func graphDefVersion(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "GraphDefVersion", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of (x > y) element-wise.
@@ -14505,13 +14505,13 @@ public static func greater<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of (x >= y) element-wise.
@@ -14530,13 +14530,13 @@ public static func greaterEqual<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gives a guarantee to the TF runtime that the input tensor is a constant.
@@ -14557,13 +14557,13 @@ public static func guaranteeConst<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Convert one or more images from HSV to RGB.
@@ -14587,13 +14587,13 @@ public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a non-initialized hash table.
@@ -14630,13 +14630,13 @@ public static func hashTableV2(
   TFE_OpSetAttrBool(op, "use_node_name_sharing", (useNodeNameSharing) ? 1 : 0)
   TFE_OpSetAttrType(op, "key_dtype", keyDtype._cDataType)
   TFE_OpSetAttrType(op, "value_dtype", valueDtype._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Return histogram of values.
@@ -14680,13 +14680,13 @@ public static func histogramFixedWidth<T: Numeric & TensorFlowScalar, Dtype: Bin
   let _ = _TFCOpAddInputFromTensorGroup(op, nbins, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs a `Summary` protocol buffer with a histogram.
@@ -14714,13 +14714,13 @@ public static func histogramSummary<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tag, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Inverse fast Fourier transform.
@@ -14746,13 +14746,13 @@ public static func iFFT<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// Inverse 2D fast Fourier transform.
@@ -14778,13 +14778,13 @@ public static func iFFT2D<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// Inverse 3D fast Fourier transform.
@@ -14810,13 +14810,13 @@ public static func iFFT3D<Tcomplex: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "Tcomplex", Tcomplex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tcomplex>.init(_owning: buffer, count: 1)
+  return Tensor<Tcomplex>.init(_owning: buffer, count: Int(1))
 }
 
 /// Return a tensor with the same shape and contents as the input tensor or value.
@@ -14830,13 +14830,13 @@ public static func identity<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a list of tensors with the same shapes and contents as the input
@@ -14866,13 +14866,13 @@ public static func identityN<T: TensorArrayProtocol>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrTypeArray(op, "T", T._typeList)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return T.init(_owning: buffer, count: 1)
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs the queued work as both the key and value.
@@ -14898,13 +14898,13 @@ public static func identityReaderV2(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the lower regularized incomplete Gamma function `P(a, x)`.
@@ -14934,13 +14934,13 @@ public static func igamma<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of `igamma(a, x)` wrt `a`.
@@ -14956,13 +14956,13 @@ public static func igammaGradA<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the upper regularized incomplete Gamma function `Q(a, x)`.
@@ -14991,13 +14991,13 @@ public static func igammac<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the imaginary part of a complex number.
@@ -15024,13 +15024,13 @@ public static func imag<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowSca
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns immutable tensor from memory region.
@@ -15054,13 +15054,13 @@ public static func immutableConst<Dtype: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
   _TFCOpSetAttrString(op, "memory_region_name", memoryRegionName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15138,13 +15138,13 @@ public static func inTopK<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, targets, s)
   TFE_OpSetAttrInt(op, "k", k)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Says whether the targets are in the top `K` predictions.
@@ -15184,13 +15184,13 @@ public static func inTopKV2<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, targets, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, k, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// A placeholder op for a value that will be fed into the computation.
@@ -15210,13 +15210,13 @@ public static func infeedDequeue<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Fetches multiple values from infeed as an XLA tuple.
@@ -15237,13 +15237,13 @@ public static func infeedDequeueTuple(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "shapes", shapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// An op which feeds a single Tensor value into the computation.
@@ -15439,13 +15439,13 @@ public static func inplaceAdd<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 ///     Subtracts `v` into specified rows of `x`.
@@ -15472,13 +15472,13 @@ public static func inplaceSub<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 ///     Updates specified rows with values in `v`.
@@ -15505,13 +15505,13 @@ public static func inplaceUpdate<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, i, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, v, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15522,13 +15522,13 @@ public static func int64Output(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Int64Output", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15540,13 +15540,13 @@ public static func intAttr(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntAttr", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "foo", foo)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15590,13 +15590,13 @@ public static func intInputIntOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntInputIntOutput", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15607,13 +15607,13 @@ public static func intOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntOutput", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15624,7 +15624,7 @@ public static func intOutputFloatOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IntOutputFloatOutput", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -15632,7 +15632,7 @@ public static func intOutputFloatOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the reciprocal of x element-wise.
@@ -15648,13 +15648,13 @@ public static func inv<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient for the inverse of `x` wrt its input.
@@ -15673,13 +15673,13 @@ public static func invGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Flips all bits elementwise.
@@ -15696,13 +15696,13 @@ public static func invert<T: BinaryInteger & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the inverse permutation of a tensor.
@@ -15736,13 +15736,13 @@ public static func invertPermutation<T: BinaryInteger & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Checks whether a tree ensemble has been initialized.
@@ -15759,13 +15759,13 @@ public static func isBoostedTreesEnsembleInitialized(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsBoostedTreesEnsembleInitialized", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeEnsembleHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Checks whether a quantile stream has been initialized.
@@ -15784,13 +15784,13 @@ public static func isBoostedTreesQuantileStreamResourceInitialized(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IsBoostedTreesQuantileStreamResourceInitialized", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, quantileStreamResourceHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns which elements of x are finite.
@@ -15808,13 +15808,13 @@ public static func isFinite<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns which elements of x are Inf.
@@ -15832,13 +15832,13 @@ public static func isInf<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns which elements of x are NaN.
@@ -15856,13 +15856,13 @@ public static func isNan<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// A container for an iterator resource.
@@ -15884,13 +15884,13 @@ public static func iterator(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts the given string representing a handle to an iterator to a resource.
@@ -15917,13 +15917,13 @@ public static func iteratorFromStringHandle(
   let _ = _TFCOpAddInputFromTensorGroup(op, stringHandle, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15939,13 +15939,13 @@ public static func iteratorFromStringHandleV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, stringHandle, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Gets the next output from the given iterator .
@@ -15962,13 +15962,13 @@ public static func iteratorGetNext(
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Gets the next output from the given iterator as an Optional variant.
@@ -15985,13 +15985,13 @@ public static func iteratorGetNextAsOptional(
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Gets the next output from the given iterator.
@@ -16013,13 +16013,13 @@ public static func iteratorGetNextSync(
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts the given `resource_handle` representing an iterator to a string.
@@ -16036,13 +16036,13 @@ public static func iteratorToStringHandle(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IteratorToStringHandle", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resourceHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -16060,13 +16060,13 @@ public static func iteratorV2(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the index of a data point that should be added to the seed set.
@@ -16093,13 +16093,13 @@ public static func kMC2ChainInitialization(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, distances, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -16110,13 +16110,13 @@ public static func kernelLabel(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "KernelLabel", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -16128,13 +16128,13 @@ public static func kernelLabelRequired(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "KernelLabelRequired", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Selects num_to_sample rows of input using the KMeans++ criterion.
@@ -16169,13 +16169,13 @@ public static func kmeansPlusPlusInitialization(
   let _ = _TFCOpAddInputFromTensorGroup(op, numToSample, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, seed, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, numRetriesPerSample, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// L2 Loss.
@@ -16197,13 +16197,13 @@ public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Local Response Normalization.
@@ -16245,13 +16245,13 @@ public static func lRN<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
   TFE_OpSetAttrFloat(op, "beta", Float(beta))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gradients for Local Response Normalization.
@@ -16290,13 +16290,13 @@ public static func lRNGrad<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
   TFE_OpSetAttrFloat(op, "beta", Float(beta))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the LSTM cell forward propagation for 1 time step.
@@ -16379,7 +16379,7 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "cell_clip", Float(cellClip))
   TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -16392,7 +16392,7 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   let offset4: Int = offset3 + 1
   let offset5: Int = offset4 + 1
   let offset6: Int = offset5 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Computes the LSTM cell backward propagation for 1 timestep.
@@ -16467,7 +16467,7 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, hGrad, s)
   TFE_OpSetAttrBool(op, "use_peephole", (usePeephole) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -16478,7 +16478,7 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
   let offset4: Int = offset3 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset4), count: Int(1)))
 }
 
 /// Computes rectified linear: `max(features, features * alpha)`.
@@ -16494,13 +16494,13 @@ public static func leakyRelu<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes rectified linear gradients for a LeakyRelu operation.
@@ -16525,13 +16525,13 @@ public static func leakyReluGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrFloat(op, "alpha", Float(alpha))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -16592,7 +16592,7 @@ public static func learnedUnigramCandidateSampler(
   TFE_OpSetAttrInt(op, "range_max", rangeMax)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -16601,7 +16601,7 @@ public static func learnedUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Elementwise computes the bitwise left-shift of `x` and `y`.
@@ -16620,13 +16620,13 @@ public static func leftShift<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of (x < y) element-wise.
@@ -16645,13 +16645,13 @@ public static func less<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of (x <= y) element-wise.
@@ -16670,13 +16670,13 @@ public static func lessEqual<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the log of the absolute value of `Gamma(x)` element-wise.
@@ -16690,13 +16690,13 @@ public static func lgamma<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates values in an interval.
@@ -16732,13 +16732,13 @@ public static func linSpace<T: FloatingPoint & TensorFlowScalar, Tidx: BinaryInt
   let _ = _TFCOpAddInputFromTensorGroup(op, num, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the difference between two lists of numbers or strings.
@@ -16785,7 +16785,7 @@ public static func listDiff<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -16793,7 +16793,7 @@ public static func listDiff<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorF
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -16822,13 +16822,13 @@ public static func listOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ListOutput", s)
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "T", t)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: 1)
+  return t.init(_owning: buffer, count: Int(1))
 }
 
 /// Loads a 2-D (matrix) `Tensor` with name `old_tensor_name` from the checkpoint
@@ -16915,13 +16915,13 @@ public static func loadAndRemapMatrix(
   TFE_OpSetAttrInt(op, "num_rows", numRows)
   TFE_OpSetAttrInt(op, "num_cols", numCols)
   TFE_OpSetAttrInt(op, "max_rows_in_memory", maxRowsInMemory)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Load ADAM embedding parameters.
@@ -17602,13 +17602,13 @@ public static func log<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes natural logarithm of (1 + x) element-wise.
@@ -17624,13 +17624,13 @@ public static func log1p<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sign and the log of the absolute value of the determinant of
@@ -17661,7 +17661,7 @@ public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -17669,7 +17669,7 @@ public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes log softmax activations.
@@ -17691,13 +17691,13 @@ public static func logSoftmax<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a log-uniform distribution.
@@ -17758,7 +17758,7 @@ public static func logUniformCandidateSampler(
   TFE_OpSetAttrInt(op, "range_max", rangeMax)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -17767,7 +17767,7 @@ public static func logUniformCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns the truth value of x AND y element-wise.
@@ -17785,13 +17785,13 @@ public static func logicalAnd(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of NOT x element-wise.
@@ -17804,13 +17804,13 @@ public static func logicalNot(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LogicalNot", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the truth value of x OR y element-wise.
@@ -17828,13 +17828,13 @@ public static func logicalOr(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs all keys and values in the table.
@@ -17855,7 +17855,7 @@ public static func lookupTableExportV2<Tkeys: TensorFlowScalar, Tvalues: TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
   TFE_OpSetAttrType(op, "Tkeys", Tkeys.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tvalues", Tvalues.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -17863,7 +17863,7 @@ public static func lookupTableExportV2<Tkeys: TensorFlowScalar, Tvalues: TensorF
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Tkeys>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Tkeys>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Looks up keys in a table, outputs the corresponding values.
@@ -17895,13 +17895,13 @@ public static func lookupTableFindV2<Tin: TensorFlowScalar, Tout: TensorFlowScal
   let _ = _TFCOpAddInputFromTensorGroup(op, defaultValue, s)
   TFE_OpSetAttrType(op, "Tin", Tin.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// Replaces the contents of the table with the specified keys and values.
@@ -18004,13 +18004,13 @@ public static func lookupTableSizeV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LookupTableSizeV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, tableHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Forwards the input to the output.
@@ -18030,13 +18030,13 @@ public static func loopCond(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "LoopCond", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Applies lower_bound(sorted_search_values, values) along each row.
@@ -18080,13 +18080,13 @@ public static func lowerBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
   let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the LU decomposition of one or more square matrices.
@@ -18135,7 +18135,7 @@ public static func lu<T: FloatingPoint & TensorFlowScalar, OutputIdxType: Binary
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "output_idx_type", OutputIdxType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -18143,7 +18143,7 @@ public static func lu<T: FloatingPoint & TensorFlowScalar, OutputIdxType: Binary
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutputIdxType>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutputIdxType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Makes a new iterator from the given `dataset` and stores it in `iterator`.
@@ -18209,13 +18209,13 @@ public static func mapIncompleteSize(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Op peeks at the values at the specified key.  If the
@@ -18243,13 +18243,13 @@ public static func mapPeek(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -18270,13 +18270,13 @@ public static func mapSize(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Stage (key, values) in the underlying container which behaves like a hashtable.
@@ -18347,13 +18347,13 @@ public static func mapUnstage(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op removes and returns a random (key, value)
@@ -18379,7 +18379,7 @@ public static func mapUnstageNoKey(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -18387,7 +18387,7 @@ public static func mapUnstageNoKey(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), dtypes.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Multiply the matrix "a" by the matrix "b".
@@ -18419,13 +18419,13 @@ public static func matMul<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "transpose_a", (transposeA) ? 1 : 0)
   TFE_OpSetAttrBool(op, "transpose_b", (transposeB) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the set of files matching one or more glob patterns.
@@ -18446,13 +18446,13 @@ public static func matchingFiles(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MatchingFiles", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Copy a tensor setting everything outside a central band in each innermost matrix
@@ -18520,13 +18520,13 @@ public static func matrixBandPart<T: TensorFlowScalar, Tindex: BinaryInteger & T
   let _ = _TFCOpAddInputFromTensorGroup(op, numUpper, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindex", Tindex.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the determinant of one or more square matrices.
@@ -18548,13 +18548,13 @@ public static func matrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a batched diagonal tensor with a given batched diagonal values.
@@ -18599,13 +18599,13 @@ public static func matrixDiag<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the batched diagonal part of a batched tensor.
@@ -18653,13 +18653,13 @@ public static func matrixDiagPart<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated, use python implementation tf.linalg.matrix_exponential.
@@ -18673,13 +18673,13 @@ public static func matrixExponential<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the inverse of one or more square invertible matrices or their
@@ -18715,13 +18715,13 @@ public static func matrixInverse<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the matrix logarithm of one or more square matrices:
@@ -18759,13 +18759,13 @@ public static func matrixLogarithm<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a batched matrix tensor with new batched diagonal values.
@@ -18800,13 +18800,13 @@ public static func matrixSetDiag<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonal, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Solves systems of linear equations.
@@ -18840,13 +18840,13 @@ public static func matrixSolve<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Solves one or more linear least-squares problems.
@@ -18912,13 +18912,13 @@ public static func matrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, l2Regularizer, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "fast", (fast) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the matrix square root of one or more square matrices:
@@ -18956,13 +18956,13 @@ public static func matrixSquareRoot<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Solves systems of linear equations with upper or lower triangular matrices by
@@ -19014,13 +19014,13 @@ public static func matrixTriangularSolve<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "lower", (lower) ? 1 : 0)
   TFE_OpSetAttrBool(op, "adjoint", (adjoint) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the maximum of elements across dimensions of a tensor.
@@ -19053,13 +19053,13 @@ public static func max<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs max pooling on the input.
@@ -19096,13 +19096,13 @@ public static func maxPool<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs 3D max pooling on the input.
@@ -19140,13 +19140,13 @@ public static func maxPool3D<T: FloatingPoint & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of max pooling function.
@@ -19190,13 +19190,13 @@ public static func maxPool3DGrad<T: FloatingPoint & TensorFlowScalar, Tinput: Fl
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "TInput", Tinput.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -19241,13 +19241,13 @@ public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of the maxpooling function.
@@ -19291,13 +19291,13 @@ public static func maxPoolGrad<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -19341,13 +19341,13 @@ public static func maxPoolGradGrad<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -19391,13 +19391,13 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes second-order gradients of the maxpooling function.
@@ -19439,13 +19439,13 @@ public static func maxPoolGradGradWithArgmax<Targmax: BinaryInteger & TensorFlow
   TFE_OpSetAttrBool(op, "include_batch_in_index", (includeBatchInIndex) ? 1 : 0)
   TFE_OpSetAttrType(op, "Targmax", Targmax.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of the maxpooling function.
@@ -19489,13 +19489,13 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients of the maxpooling function.
@@ -19537,13 +19537,13 @@ public static func maxPoolGradWithArgmax<Targmax: BinaryInteger & TensorFlowScal
   TFE_OpSetAttrBool(op, "include_batch_in_index", (includeBatchInIndex) ? 1 : 0)
   TFE_OpSetAttrType(op, "Targmax", Targmax.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs max pooling on the input.
@@ -19581,13 +19581,13 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs max pooling on the input and outputs both max values and indices.
@@ -19633,7 +19633,7 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
   _TFCOpSetAttrString(op, "padding", padding.cName)
   TFE_OpSetAttrBool(op, "include_batch_in_index", (includeBatchInIndex) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -19641,7 +19641,7 @@ public static func maxPoolWithArgmax<Targmax: BinaryInteger & TensorFlowScalar, 
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Targmax>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Targmax>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the max of x and y (i.e. x > y ? x : y) element-wise.
@@ -19660,13 +19660,13 @@ public static func maximum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the mean of elements across dimensions of a tensor.
@@ -19699,13 +19699,13 @@ public static func mean<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Forwards the value of an available tensor from `inputs` to `output`.
@@ -19732,7 +19732,7 @@ public static func merge<T: TensorFlowScalar>(
   let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -19740,7 +19740,7 @@ public static func merge<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Merges summaries.
@@ -19767,13 +19767,13 @@ public static func mergeSummary(
   defer { TFE_DeleteOp(op) }
   let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// V2 format specific: merges the metadata files of sharded checkpoints.  The
@@ -19852,13 +19852,13 @@ public static func mfcc(
   TFE_OpSetAttrFloat(op, "lower_frequency_limit", Float(lowerFrequencyLimit))
   TFE_OpSetAttrInt(op, "filterbank_channel_count", filterbankChannelCount)
   TFE_OpSetAttrInt(op, "dct_coefficient_count", dctCoefficientCount)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the minimum of elements across dimensions of a tensor.
@@ -19891,13 +19891,13 @@ public static func min<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the min of x and y (i.e. x < y ? x : y) element-wise.
@@ -19916,13 +19916,13 @@ public static func minimum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Pads a tensor with mirrored values.
@@ -19980,13 +19980,13 @@ public static func mirrorPad<T: TensorFlowScalar, Tpaddings: BinaryInteger & Ten
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "mode", mode.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gradient op for `MirrorPad` op. This op folds a mirror-padded tensor.
@@ -20033,13 +20033,13 @@ public static func mirrorPadGrad<T: TensorFlowScalar, Tpaddings: BinaryInteger &
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "mode", mode.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -20051,7 +20051,7 @@ public static func mixedStruct(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MixedStruct", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "n_a", nA)
-  var count: Int32 = nA + 1
+  var count: Int32 = Int32(nA) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -20059,7 +20059,7 @@ public static func mixedStruct(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + n_a
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: nA), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns element-wise remainder of division. This emulates C semantics in that
@@ -20081,13 +20081,13 @@ public static func mod<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Identity transformation that models performance.
@@ -20110,13 +20110,13 @@ public static func modelDataset(
   TFE_OpSetAttrInt(op, "cpu_budget", cpuBudget)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x * y element-wise.
@@ -20135,13 +20135,13 @@ public static func mul<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x * y element-wise. Returns zero if y is zero, even if x if infinite or NaN.
@@ -20160,13 +20160,13 @@ public static func mulNoNan<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a MultiDeviceIterator resource.
@@ -20198,13 +20198,13 @@ public static func multiDeviceIterator(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates a MultiDeviceIterator resource from its provided string handle.
@@ -20229,13 +20229,13 @@ public static func multiDeviceIteratorFromStringHandle(
   let _ = _TFCOpAddInputFromTensorGroup(op, stringHandle, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Gets next element for the provided shard number.
@@ -20267,13 +20267,13 @@ public static func multiDeviceIteratorGetNextFromShard(
   let _ = _TFCOpAddInputFromTensorGroup(op, incarnationId, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Initializes the multi device iterator with the given dataset.
@@ -20298,13 +20298,13 @@ public static func multiDeviceIteratorInit(
   let _ = _TFCOpAddInputFromTensorGroup(op, dataset, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, multiDeviceIterator, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, maxBufferSize, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Produces a string handle for the given MultiDeviceIterator.
@@ -20321,13 +20321,13 @@ public static func multiDeviceIteratorToStringHandle(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MultiDeviceIteratorToStringHandle", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, multiDeviceIterator, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Draws samples from a multinomial distribution.
@@ -20361,13 +20361,13 @@ public static func multinomial<T: Numeric & TensorFlowScalar, OutputDtype: Binar
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "output_dtype", OutputDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutputDtype>.init(_owning: buffer, count: 1)
+  return Tensor<OutputDtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates an empty hash table that uses tensors as the backing store.
@@ -20422,13 +20422,13 @@ public static func mutableDenseHashTableV2<KeyDtype: TensorFlowScalar>(
   _TFCOpSetAttrOptionalTensorShape(op, "value_shape", valueShape, s)
   TFE_OpSetAttrInt(op, "initial_num_buckets", initialNumBuckets)
   TFE_OpSetAttrFloat(op, "max_load_factor", Float(maxLoadFactor))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates an empty hash table.
@@ -20465,13 +20465,13 @@ public static func mutableHashTableOfTensorsV2(
   TFE_OpSetAttrType(op, "key_dtype", keyDtype._cDataType)
   TFE_OpSetAttrType(op, "value_dtype", valueDtype._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "value_shape", valueShape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates an empty hash table.
@@ -20508,13 +20508,13 @@ public static func mutableHashTableV2(
   TFE_OpSetAttrBool(op, "use_node_name_sharing", (useNodeNameSharing) ? 1 : 0)
   TFE_OpSetAttrType(op, "key_dtype", keyDtype._cDataType)
   TFE_OpSetAttrType(op, "value_dtype", valueDtype._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Locks a mutex resource.  The output is the lock.  So long as the lock tensor
@@ -20572,13 +20572,13 @@ public static func mutexLock(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MutexLock", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, mutex, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a Mutex resource that can be locked by `MutexLock`.
@@ -20601,13 +20601,13 @@ public static func mutexV2(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -20692,13 +20692,13 @@ public static func nIntsOut(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NIntsOut", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "N", n)
-  var count: Int32 = n
+  var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Int32>].init(_owning: buffer, count: n)
+  return [Tensor<Int32>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
@@ -20710,13 +20710,13 @@ public static func nIntsOutDefault(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NIntsOutDefault", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "N", n)
-  var count: Int32 = n
+  var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Int32>].init(_owning: buffer, count: n)
+  return [Tensor<Int32>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
@@ -20747,13 +20747,13 @@ public static func nPolymorphicOut(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", t._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
-  var count: Int32 = n
+  var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: n)
+  return [Tensor<t>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
@@ -20767,13 +20767,13 @@ public static func nPolymorphicOutDefault(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", t._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
-  var count: Int32 = n
+  var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: n)
+  return [Tensor<t>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
@@ -20804,13 +20804,13 @@ public static func nPolymorphicRestrictOut(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", t._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
-  var count: Int32 = n
+  var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: n)
+  return [Tensor<t>].init(_owning: buffer, count: Int(n))
 }
 
 /// Outputs a tensor containing the reduction across all input tensors.
@@ -20843,13 +20843,13 @@ public static func ncclAllReduce<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "num_devices", numDevices)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Sends `input` to all devices that are connected to the output.
@@ -20875,13 +20875,13 @@ public static func ncclBroadcast<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reduces `input` from `num_devices` using `reduction` to a single device.
@@ -20907,13 +20907,13 @@ public static func ncclReduce<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "num_devices", Int64(inputCount))
   _TFCOpSetAttrString(op, "reduction", reduction.cName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Selects the k nearest centers for each point.
@@ -20946,7 +20946,7 @@ public static func nearestNeighbors(
   let _ = _TFCOpAddInputFromTensorGroup(op, points, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, centers, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, k, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -20954,7 +20954,7 @@ public static func nearestNeighbors(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes numerical negative value element-wise.
@@ -20970,13 +20970,13 @@ public static func neg<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the next representable value of `x1` in the direction of `x2`, element-wise.
@@ -21000,13 +21000,13 @@ public static func nextAfter<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x1, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x2, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Makes its input available to the next iteration.
@@ -21024,13 +21024,13 @@ public static func nextIteration<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Does nothing. Only useful as a placeholder for control edges.
@@ -21068,13 +21068,13 @@ public static func nonDeterministicInts<Dtype: TensorFlowScalar, ShapeDtype: Ten
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -21123,13 +21123,13 @@ public static func nonMaxSuppression(
   let _ = _TFCOpAddInputFromTensorGroup(op, scores, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
   TFE_OpSetAttrFloat(op, "iou_threshold", Float(iouThreshold))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -21180,13 +21180,13 @@ public static func nonMaxSuppressionV2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, iouThreshold, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -21240,13 +21240,13 @@ public static func nonMaxSuppressionV3<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, iouThreshold, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -21308,7 +21308,7 @@ public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "pad_to_max_output_size", (padToMaxOutputSize) ? 1 : 0)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -21316,7 +21316,7 @@ public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Greedily selects a subset of bounding boxes in descending order of score,
@@ -21367,13 +21367,13 @@ public static func nonMaxSuppressionWithOverlaps(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxOutputSize, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, overlapThreshold, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, scoreThreshold, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -21406,13 +21406,13 @@ public static func notEqual<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Finds values of the `n`-th order statistic for the last dimension.
@@ -21448,13 +21448,13 @@ public static func nthElement<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
   TFE_OpSetAttrBool(op, "reverse", (reverse) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -21589,13 +21589,13 @@ public static func oneHot<T: TensorFlowScalar, Ti: BinaryInteger & TensorFlowSca
   TFE_OpSetAttrInt(op, "axis", axis)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "TI", Ti.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a tensor of ones with the same shape and type as x.
@@ -21613,13 +21613,13 @@ public static func onesLike<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -21631,13 +21631,13 @@ public static func opWithDefaultAttr(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OpWithDefaultAttr", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrFloat(op, "default_float", Float(defaultFloat))
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -21678,13 +21678,13 @@ public static func optimizeDataset(
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   _TFCOpSetAttrStringArray(op, "optimization_configs", optimizationConfigs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Constructs an Optional variant from a tuple of tensors.
@@ -21698,13 +21698,13 @@ public static func optionalFromValue<ToutputTypes: TensorGroup>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, components, s)
   _TFCOpSetAttrTypeArray(op, "Toutput_types", ToutputTypes._typeList)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the value stored in an Optional variant or raises an error if none exists.
@@ -21721,13 +21721,13 @@ public static func optionalGetValue(
   let _ = _TFCOpAddInputFromTensorGroup(op, optional, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: 1)
+  return outputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns true if and only if the given Optional variant has a value.
@@ -21740,13 +21740,13 @@ public static func optionalHasValue(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OptionalHasValue", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, optional, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates an Optional variant with no value.
@@ -21758,13 +21758,13 @@ public static func optionalNone(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OptionalNone", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Op removes all elements in the underlying container.
@@ -21809,13 +21809,13 @@ public static func orderedMapIncompleteSize(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Op peeks at the values at the specified key.  If the
@@ -21844,13 +21844,13 @@ public static func orderedMapPeek(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -21871,13 +21871,13 @@ public static func orderedMapSize(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Stage (key, values) in the underlying container which behaves like a ordered
@@ -21950,13 +21950,13 @@ public static func orderedMapUnstage(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op removes and returns the (key, value) element with the smallest
@@ -21982,7 +21982,7 @@ public static func orderedMapUnstageNoKey(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -21990,7 +21990,7 @@ public static func orderedMapUnstageNoKey(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), dtypes.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -22001,13 +22001,13 @@ public static func outT<T: TensorFlowScalar>(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutT", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -22019,13 +22019,13 @@ public static func outTypeList(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutTypeList", s)
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "T", t)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: 1)
+  return t.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -22037,13 +22037,13 @@ public static func outTypeListRestrict(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutTypeListRestrict", s)
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrTypeArray(op, "t", t)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: 1)
+  return t.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieves a single tensor from the computation outfeed.
@@ -22070,13 +22070,13 @@ public static func outfeedDequeue<Dtype: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
   TFE_OpSetAttrInt(op, "device_ordinal", deviceOrdinal)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieve multiple values from the computation outfeed.
@@ -22105,13 +22105,13 @@ public static func outfeedDequeueTuple(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "shapes", shapes, s)
   TFE_OpSetAttrInt(op, "device_ordinal", deviceOrdinal)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Enqueue a Tensor on the computation outfeed.
@@ -22194,13 +22194,13 @@ public static func pack<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "axis", axis)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Pads a tensor with zeros.
@@ -22241,13 +22241,13 @@ public static func pad<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorFlo
   let _ = _TFCOpAddInputFromTensorGroup(op, paddings, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Pads a tensor.
@@ -22291,13 +22291,13 @@ public static func padV2<T: TensorFlowScalar, Tpaddings: BinaryInteger & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, constantValues, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that batches and pads `batch_size` elements from the input.
@@ -22330,13 +22330,13 @@ public static func paddedBatchDataset<ToutputTypes: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, paddingValues, s)
   _TFCOpSetAttrTypeArray(op, "Toutput_types", ToutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that batches and pads `batch_size` elements from the input.
@@ -22375,13 +22375,13 @@ public static func paddedBatchDatasetV2<ToutputTypes: TensorGroup>(
   TFE_OpSetAttrBool(op, "parallel_copy", (parallelCopy) ? 1 : 0)
   _TFCOpSetAttrTypeArray(op, "Toutput_types", ToutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A queue that produces elements in first-in first-out order.
@@ -22425,13 +22425,13 @@ public static func paddingFIFOQueueV2(
   TFE_OpSetAttrInt(op, "capacity", capacity)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Concatenates a list of `N` tensors along the first dimension.
@@ -22473,13 +22473,13 @@ public static func parallelConcat<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(valuesCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Interleave the values from the `data` tensors into a single tensor.
@@ -22558,13 +22558,13 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a normal distribution. The parameters may each be a
@@ -22612,13 +22612,13 @@ public static func parameterizedTruncatedNormal<Dtype: FloatingPoint & TensorFlo
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Transforms a vector of brain.Example protos (as strings) into typed tensors.
@@ -22689,7 +22689,7 @@ public static func parseExample<Tdense: TensorArrayProtocol>(
   _TFCOpSetAttrTypeArray(op, "sparse_types", sparseTypes)
   _TFCOpSetAttrTypeArray(op, "Tdense", Tdense._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "dense_shapes", denseShapes, s)
-  var count: Int32 = sparseKeysCount + 1 + sparseKeysCount + 1
+  var count: Int32 = Int32(sparseKeysCount) + Int32(1) + Int32(sparseKeysCount) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -22699,7 +22699,7 @@ public static func parseExample<Tdense: TensorArrayProtocol>(
   let offset1: Int = offset0 + Nsparse
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + Nsparse
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: sparseKeysCount), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: sparseKeysCount), Tdense.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(sparseKeysCount)), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(sparseKeysCount)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Transforms a vector of brain.SequenceExample protos (as strings) into typed tensors.
@@ -22797,7 +22797,7 @@ public static func parseSequenceExample<TcontextDense: TensorArrayProtocol>(
   _TFCOpSetAttrOptionalTensorShapeArray(op, "context_dense_shapes", contextDenseShapes, s)
   _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", featureListSparseTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "feature_list_dense_shapes", featureListDenseShapes, s)
-  var count: Int32 = ncontextSparse + 1 + ncontextSparse + 1 + nfeatureListSparse + 1 + nfeatureListSparse + 1 + nfeatureListDense
+  var count: Int32 = Int32(ncontextSparse) + Int32(1) + Int32(ncontextSparse) + Int32(1) + Int32(nfeatureListSparse) + Int32(1) + Int32(nfeatureListSparse) + Int32(1) + Int32(nfeatureListDense)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -22812,7 +22812,7 @@ public static func parseSequenceExample<TcontextDense: TensorArrayProtocol>(
   let offset6: Int = offset5 + 1
   let offset7: Int = offset6 + Nfeature_list_sparse
   let offset8: Int = offset7 + 1
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: ncontextSparse), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: ncontextSparse), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: nfeatureListSparse), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: nfeatureListSparse), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: nfeatureListDense))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(ncontextSparse)), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(ncontextSparse)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(nfeatureListSparse)), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(nfeatureListSparse)), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: Int(nfeatureListDense)))
 }
 
 /// Transforms a tf.Example proto (as a string) into typed tensors.
@@ -22876,7 +22876,7 @@ public static func parseSingleExample<Tdense: TensorArrayProtocol>(
   _TFCOpSetAttrTypeArray(op, "sparse_types", sparseTypes)
   _TFCOpSetAttrTypeArray(op, "Tdense", Tdense._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "dense_shapes", denseShapes, s)
-  var count: Int32 = numSparse + 1 + numSparse + 1
+  var count: Int32 = Int32(numSparse) + Int32(1) + Int32(numSparse) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -22886,7 +22886,7 @@ public static func parseSingleExample<Tdense: TensorArrayProtocol>(
   let offset1: Int = offset0 + num_sparse
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + num_sparse
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: numSparse), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: numSparse), Tdense.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSparse)), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSparse)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Transforms a scalar brain.SequenceExample proto (as strings) into typed tensors.
@@ -22980,7 +22980,7 @@ public static func parseSingleSequenceExample<TcontextDense: TensorArrayProtocol
   _TFCOpSetAttrOptionalTensorShapeArray(op, "context_dense_shapes", contextDenseShapes, s)
   _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", featureListSparseTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "feature_list_dense_shapes", featureListDenseShapes, s)
-  var count: Int32 = contextSparseKeysCount + 1 + contextSparseKeysCount + 1 + featureListSparseKeysCount + 1 + featureListSparseKeysCount + 1
+  var count: Int32 = Int32(contextSparseKeysCount) + Int32(1) + Int32(contextSparseKeysCount) + Int32(1) + Int32(featureListSparseKeysCount) + Int32(1) + Int32(featureListSparseKeysCount) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -22994,7 +22994,7 @@ public static func parseSingleSequenceExample<TcontextDense: TensorArrayProtocol
   let offset5: Int = offset4 + Nfeature_list_sparse
   let offset6: Int = offset5 + 1
   let offset7: Int = offset6 + Nfeature_list_sparse
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: contextSparseKeysCount), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: contextSparseKeysCount), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: featureListSparseKeysCount), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: 1), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: featureListSparseKeysCount), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: 1))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(contextSparseKeysCount)), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(contextSparseKeysCount)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(featureListSparseKeysCount)), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(featureListSparseKeysCount)), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
 }
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
@@ -23015,13 +23015,13 @@ public static func parseTensor<OutType: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, serialized, s)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// A placeholder op for a value that will be fed into the computation.
@@ -23046,13 +23046,13 @@ public static func placeholder<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// A placeholder op for a value that will be fed into the computation.
@@ -23077,13 +23077,13 @@ public static func placeholderV2<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// A placeholder op that passes through `input` when its output is not fed.
@@ -23107,13 +23107,13 @@ public static func placeholderWithDefault<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the polygamma function \\(\psi^{(n)}(x)\\).
@@ -23137,13 +23137,13 @@ public static func polygamma<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -23156,13 +23156,13 @@ public static func polymorphic<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -23173,13 +23173,13 @@ public static func polymorphicDefaultOut<T: TensorFlowScalar>(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PolymorphicDefaultOut", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -23190,13 +23190,13 @@ public static func polymorphicOut<T: TensorFlowScalar>(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PolymorphicOut", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes element-wise population count (a.k.a. popcount, bitsum, bitcount).
@@ -23217,13 +23217,13 @@ public static func populationCount<T: BinaryInteger & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<UInt8>.init(_owning: buffer, count: 1)
+  return Tensor<UInt8>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the power of one value to another.
@@ -23248,13 +23248,13 @@ public static func pow<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that asynchronously prefetches elements from `input_dataset`.
@@ -23276,13 +23276,13 @@ public static func prefetchDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, bufferSize, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// An op which linearizes one Tensor value to an opaque variant tensor.
@@ -23309,13 +23309,13 @@ public static func prelinearize<Dtype: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
   _TFCOpSetAttrInt32Array(op, "layout", layout)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// An op which linearizes multiple Tensor values to an opaque variant tensor.
@@ -23343,13 +23343,13 @@ public static func prelinearizeTuple<Dtypes: TensorGroup>(
   _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "shapes", shapes, s)
   _TFCOpSetAttrInt32Array(op, "layouts", layouts)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// An identity op that triggers an error if a gradient is requested.
@@ -23380,13 +23380,13 @@ public static func preventGradient<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "message", message)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Prints a list of tensors.
@@ -23422,13 +23422,13 @@ public static func print<T: TensorFlowScalar, U: TensorGroup>(
   _TFCOpSetAttrString(op, "message", message)
   TFE_OpSetAttrInt(op, "first_n", firstN)
   TFE_OpSetAttrInt(op, "summarize", summarize)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Prints a string scalar.
@@ -23494,13 +23494,13 @@ public static func priorityQueueV2(
   TFE_OpSetAttrInt(op, "capacity", capacity)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the product of elements across dimensions of a tensor.
@@ -23533,13 +23533,13 @@ public static func prod<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Invokes a python function to compute func(input)->output.
@@ -23570,13 +23570,13 @@ public static func pyFunc<Tin: TensorGroup>(
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
   _TFCOpSetAttrTypeArray(op, "Tout", tout)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: 1)
+  return tout.init(_owning: buffer, count: Int(1))
 }
 
 /// A stateless version of PyFunc.
@@ -23594,13 +23594,13 @@ public static func pyFuncStateless<Tin: TensorGroup>(
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
   _TFCOpSetAttrTypeArray(op, "Tout", tout)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: 1)
+  return tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the QR decompositions of one or more matrices.
@@ -23640,7 +23640,7 @@ public static func qr<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -23648,7 +23648,7 @@ public static func qr<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Use QuantizeAndDequantizeV2 instead.
@@ -23672,13 +23672,13 @@ public static func quantizeAndDequantize<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "input_min", Float(inputMin))
   TFE_OpSetAttrFloat(op, "input_max", Float(inputMax))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Quantizes then dequantizes a tensor.
@@ -23780,13 +23780,13 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "range_given", (rangeGiven) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "round_mode", roundMode.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Quantizes then dequantizes a tensor.
@@ -23813,13 +23813,13 @@ public static func quantizeAndDequantizeV3<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "signed_input", (signedInput) ? 1 : 0)
   TFE_OpSetAttrBool(op, "range_given", (rangeGiven) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Convert the quantized 'input' tensor into a lower-precision 'output', using the
@@ -23873,7 +23873,7 @@ public static func quantizeDownAndShrinkRange<Tinput: TensorFlowScalar, OutType:
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -23882,7 +23882,7 @@ public static func quantizeDownAndShrinkRange<Tinput: TensorFlowScalar, OutType:
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantize the 'input' tensor of type float to 'output' tensor of type 'T'.
@@ -24012,7 +24012,7 @@ public static func quantizeV2<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "mode", mode.cName)
   _TFCOpSetAttrString(op, "round_mode", roundMode.cName)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24021,7 +24021,7 @@ public static func quantizeV2<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns x + y element-wise, working on quantized buffers.
@@ -24060,7 +24060,7 @@ public static func quantizedAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Toutput", Toutput.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24069,7 +24069,7 @@ public static func quantizedAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Produces the average pool of the input tensor for quantized types.
@@ -24109,7 +24109,7 @@ public static func quantizedAvgPool<T: TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "ksize", ksize)
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24118,7 +24118,7 @@ public static func quantizedAvgPool<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantized Batch normalization.
@@ -24197,7 +24197,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: TensorFlowS
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
   TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
   TFE_OpSetAttrBool(op, "scale_after_normalization", (scaleAfterNormalization) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24206,7 +24206,7 @@ public static func quantizedBatchNormWithGlobalNormalization<Tinput: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Adds Tensor 'bias' to Tensor 'input' for Quantized types.
@@ -24245,7 +24245,7 @@ public static func quantizedBiasAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, 
   TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24254,7 +24254,7 @@ public static func quantizedBiasAdd<T1: TensorFlowScalar, T2: TensorFlowScalar, 
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Concatenates quantized tensors along one dimension.
@@ -24290,7 +24290,7 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMins, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMaxes, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24299,7 +24299,7 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes a 2D convolution given quantized 4D input and filter tensors.
@@ -24357,7 +24357,7 @@ public static func quantizedConv2D<Tinput: TensorFlowScalar, Tfilter: TensorFlow
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24366,7 +24366,7 @@ public static func quantizedConv2D<Tinput: TensorFlowScalar, Tfilter: TensorFlow
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24399,7 +24399,7 @@ public static func quantizedConv2DAndRelu<Tinput: TensorFlowScalar, Tfilter: Ten
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24408,7 +24408,7 @@ public static func quantizedConv2DAndRelu<Tinput: TensorFlowScalar, Tfilter: Ten
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24445,7 +24445,7 @@ public static func quantizedConv2DAndReluAndRequantize<Tinput: TensorFlowScalar,
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24454,7 +24454,7 @@ public static func quantizedConv2DAndReluAndRequantize<Tinput: TensorFlowScalar,
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24491,7 +24491,7 @@ public static func quantizedConv2DAndRequantize<Tinput: TensorFlowScalar, Tfilte
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24500,7 +24500,7 @@ public static func quantizedConv2DAndRequantize<Tinput: TensorFlowScalar, Tfilte
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes QuantizedConv2D per channel.
@@ -24552,7 +24552,7 @@ public static func quantizedConv2DPerChannel<Tinput: TensorFlowScalar, Tfilter: 
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24561,7 +24561,7 @@ public static func quantizedConv2DPerChannel<Tinput: TensorFlowScalar, Tfilter: 
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24596,7 +24596,7 @@ public static func quantizedConv2DWithBias<Tinput: TensorFlowScalar, Tfilter: Te
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24605,7 +24605,7 @@ public static func quantizedConv2DWithBias<Tinput: TensorFlowScalar, Tfilter: Te
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24640,7 +24640,7 @@ public static func quantizedConv2DWithBiasAndRelu<Tinput: TensorFlowScalar, Tfil
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24649,7 +24649,7 @@ public static func quantizedConv2DWithBiasAndRelu<Tinput: TensorFlowScalar, Tfil
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24689,7 +24689,7 @@ public static func quantizedConv2DWithBiasAndReluAndRequantize<Tinput: TensorFlo
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24698,7 +24698,7 @@ public static func quantizedConv2DWithBiasAndReluAndRequantize<Tinput: TensorFlo
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24738,7 +24738,7 @@ public static func quantizedConv2DWithBiasAndRequantize<Tinput: TensorFlowScalar
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24747,7 +24747,7 @@ public static func quantizedConv2DWithBiasAndRequantize<Tinput: TensorFlowScalar
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24794,7 +24794,7 @@ public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<Tinput: 
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24803,7 +24803,7 @@ public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<Tinput: 
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24840,7 +24840,7 @@ public static func quantizedConv2DWithBiasSumAndRelu<Tinput: TensorFlowScalar, T
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24849,7 +24849,7 @@ public static func quantizedConv2DWithBiasSumAndRelu<Tinput: TensorFlowScalar, T
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24896,7 +24896,7 @@ public static func quantizedConv2DWithBiasSumAndReluAndRequantize<Tinput: Tensor
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
   _TFCOpSetAttrInt32Array(op, "padding_list", paddingList)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24905,7 +24905,7 @@ public static func quantizedConv2DWithBiasSumAndReluAndRequantize<Tinput: Tensor
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24936,7 +24936,7 @@ public static func quantizedDepthwiseConv2D<Tinput: TensorFlowScalar, Tfilter: T
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24945,7 +24945,7 @@ public static func quantizedDepthwiseConv2D<Tinput: TensorFlowScalar, Tfilter: T
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -24978,7 +24978,7 @@ public static func quantizedDepthwiseConv2DWithBias<Tinput: TensorFlowScalar, Tf
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -24987,7 +24987,7 @@ public static func quantizedDepthwiseConv2DWithBias<Tinput: TensorFlowScalar, Tf
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25020,7 +25020,7 @@ public static func quantizedDepthwiseConv2DWithBiasAndRelu<Tinput: TensorFlowSca
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25029,7 +25029,7 @@ public static func quantizedDepthwiseConv2DWithBiasAndRelu<Tinput: TensorFlowSca
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -25067,7 +25067,7 @@ public static func quantizedDepthwiseConv2DWithBiasAndReluAndRequantize<Tinput: 
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
   _TFCOpSetAttrInt32Array(op, "dilations", dilations)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25076,7 +25076,7 @@ public static func quantizedDepthwiseConv2DWithBiasAndReluAndRequantize<Tinput: 
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Quantized Instance normalization.
@@ -25123,7 +25123,7 @@ public static func quantizedInstanceNorm<T: TensorFlowScalar>(
   TFE_OpSetAttrFloat(op, "given_y_max", Float(givenYMax))
   TFE_OpSetAttrFloat(op, "variance_epsilon", Float(varianceEpsilon))
   TFE_OpSetAttrFloat(op, "min_separation", Float(minSeparation))
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25132,7 +25132,7 @@ public static func quantizedInstanceNorm<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Perform a quantized matrix multiplication of  `a` by the matrix `b`.
@@ -25187,7 +25187,7 @@ public static func quantizedMatMul<T1: TensorFlowScalar, T2: TensorFlowScalar, T
   TFE_OpSetAttrBool(op, "transpose_a", (transposeA) ? 1 : 0)
   TFE_OpSetAttrBool(op, "transpose_b", (transposeB) ? 1 : 0)
   TFE_OpSetAttrType(op, "Tactivation", tactivation._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25196,7 +25196,7 @@ public static func quantizedMatMul<T1: TensorFlowScalar, T2: TensorFlowScalar, T
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Produces the max pool of the input tensor for quantized types.
@@ -25236,7 +25236,7 @@ public static func quantizedMaxPool<T: TensorFlowScalar>(
   _TFCOpSetAttrInt32Array(op, "ksize", ksize)
   _TFCOpSetAttrInt32Array(op, "strides", strides)
   _TFCOpSetAttrString(op, "padding", padding.cName)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25245,7 +25245,7 @@ public static func quantizedMaxPool<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Returns x * y element-wise, working on quantized buffers.
@@ -25284,7 +25284,7 @@ public static func quantizedMul<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   TFE_OpSetAttrType(op, "T1", T1.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T2", T2.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Toutput", Toutput.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25293,7 +25293,7 @@ public static func quantizedMul<T1: TensorFlowScalar, T2: TensorFlowScalar, Tout
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Toutput>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear: `max(features, 0)`
@@ -25321,7 +25321,7 @@ public static func quantizedRelu<Tinput: TensorFlowScalar, OutType: TensorFlowSc
   let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25330,7 +25330,7 @@ public static func quantizedRelu<Tinput: TensorFlowScalar, OutType: TensorFlowSc
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear 6: `min(max(features, 0), 6)`
@@ -25358,7 +25358,7 @@ public static func quantizedRelu6<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25367,7 +25367,7 @@ public static func quantizedRelu6<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes Quantized Rectified Linear X: `min(max(features, 0), max_value)`
@@ -25397,7 +25397,7 @@ public static func quantizedReluX<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let _ = _TFCOpAddInputFromTensorGroup(op, maxFeatures, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25406,7 +25406,7 @@ public static func quantizedReluX<Tinput: TensorFlowScalar, OutType: TensorFlowS
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Reshapes a quantized tensor as per the Reshape op.
@@ -25438,7 +25438,7 @@ public static func quantizedReshape<T: TensorFlowScalar, Tshape: BinaryInteger &
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25447,7 +25447,7 @@ public static func quantizedReshape<T: TensorFlowScalar, Tshape: BinaryInteger &
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Resize quantized `images` to `size` using quantized bilinear interpolation.
@@ -25484,7 +25484,7 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25493,7 +25493,7 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Closes the given queue.
@@ -25567,13 +25567,13 @@ public static func queueDequeueManyV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
   _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: 1)
+  return componentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Dequeues `n` tuples of one or more tensors from the given queue.
@@ -25622,13 +25622,13 @@ public static func queueDequeueUpToV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
   _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: 1)
+  return componentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Dequeues a tuple of one or more tensors from the given queue.
@@ -25662,13 +25662,13 @@ public static func queueDequeueV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: 1)
+  return componentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Enqueues zero or more tuples of one or more tensors in the given queue.
@@ -25761,13 +25761,13 @@ public static func queueIsClosedV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueIsClosedV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the number of elements in the given queue.
@@ -25784,13 +25784,13 @@ public static func queueSizeV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueSizeV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts one or more images from RGB to HSV.
@@ -25816,13 +25816,13 @@ public static func rGBToHSV<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, images, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gather ragged slices from `params` axis `0` according to `indices`.
@@ -25890,7 +25890,7 @@ public static func raggedGather<Tvalues: TensorFlowScalar, Tindices: BinaryInteg
   TFE_OpSetAttrType(op, "Tvalues", Tvalues.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "OUTPUT_RAGGED_RANK", oUTPUTRAGGEDRANK)
-  var count: Int32 = oUTPUTRAGGEDRANK + 1
+  var count: Int32 = Int32(oUTPUTRAGGEDRANK) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25898,7 +25898,7 @@ public static func raggedGather<Tvalues: TensorFlowScalar, Tindices: BinaryInteg
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + OUTPUT_RAGGED_RANK
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: oUTPUTRAGGEDRANK), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(oUTPUTRAGGEDRANK)), Tensor<Tvalues>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns a `RaggedTensor` containing the specified sequences of numbers.
@@ -25944,7 +25944,7 @@ public static func raggedRange<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, limits, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, deltas, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25952,7 +25952,7 @@ public static func raggedRange<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Converts a `RaggedTensor` into a `SparseTensor` with the same values.
@@ -25986,7 +25986,7 @@ public static func raggedTensorToSparse<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "RAGGED_RANK", Int64(rtNestedSplitsCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, rtDenseValues, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -25995,7 +25995,7 @@ public static func raggedTensorToSparse<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Randomly crop `image`.
@@ -26034,13 +26034,13 @@ public static func randomCrop<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from the Gamma distribution(s) described by alpha.
@@ -26081,13 +26081,13 @@ public static func randomGamma<S: BinaryInteger & TensorFlowScalar, T: FloatingP
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the derivative of a Gamma random sample w.r.t. `alpha`.
@@ -26103,13 +26103,13 @@ public static func randomGammaGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, alpha, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sample, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Use RandomPoissonV2 instead.
@@ -26130,13 +26130,13 @@ public static func randomPoisson<S: BinaryInteger & TensorFlowScalar, Dtype: Flo
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from the Poisson distribution(s) described by rate.
@@ -26184,13 +26184,13 @@ public static func randomPoissonV2<S: BinaryInteger & TensorFlowScalar, R: Numer
   TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "R", R.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Randomly shuffles a tensor along its first dimension.
@@ -26229,13 +26229,13 @@ public static func randomShuffle<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// A queue that randomizes the order of elements.
@@ -26283,13 +26283,13 @@ public static func randomShuffleQueueV2(
   TFE_OpSetAttrInt(op, "seed2", seed2)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a normal distribution.
@@ -26321,13 +26321,13 @@ public static func randomStandardNormal<Dtype: FloatingPoint & TensorFlowScalar,
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a uniform distribution.
@@ -26360,13 +26360,13 @@ public static func randomUniform<Dtype: FloatingPoint & TensorFlowScalar, T: Bin
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random integers from a uniform distribution.
@@ -26410,13 +26410,13 @@ public static func randomUniformInt<Tout: BinaryInteger & TensorFlowScalar, T: B
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a sequence of numbers.
@@ -26453,13 +26453,13 @@ public static func range<Tidx: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, limit, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, delta, s)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tidx>.init(_owning: buffer, count: 1)
+  return Tensor<Tidx>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset with a range of values. Corresponds to python's xrange.
@@ -26485,13 +26485,13 @@ public static func rangeDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, step, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the rank of a tensor.
@@ -26519,13 +26519,13 @@ public static func rank<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reads and outputs the entire contents of the input filename.
@@ -26538,13 +26538,13 @@ public static func readFile(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReadFile", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, filename, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Reads the value of a variable.
@@ -26569,13 +26569,13 @@ public static func readVariableOp<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resource, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the number of records this Reader has produced.
@@ -26593,13 +26593,13 @@ public static func readerNumRecordsProducedV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderNumRecordsProducedV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the number of work units this Reader has finished processing.
@@ -26614,13 +26614,13 @@ public static func readerNumWorkUnitsCompletedV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderNumWorkUnitsCompletedV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns up to `num_records` (key, value) pairs produced by a Reader.
@@ -26651,7 +26651,7 @@ public static func readerReadUpToV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, queueHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, numRecords, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -26659,7 +26659,7 @@ public static func readerReadUpToV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the next record (key, value pair) produced by a Reader.
@@ -26686,7 +26686,7 @@ public static func readerReadV2(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, queueHandle, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -26694,7 +26694,7 @@ public static func readerReadV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Restore a Reader to its initial clean state.
@@ -26756,13 +26756,13 @@ public static func readerSerializeStateV2(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReaderSerializeStateV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, readerHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the real part of a complex number.
@@ -26789,13 +26789,13 @@ public static func real<T: TensorFlowScalar, Tout: FloatingPoint & TensorFlowSca
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tout", Tout.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tout>.init(_owning: buffer, count: 1)
+  return Tensor<Tout>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x / y element-wise for real types.
@@ -26816,13 +26816,13 @@ public static func realDiv<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the reciprocal of x element-wise.
@@ -26838,13 +26838,13 @@ public static func reciprocal<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient for the inverse of `x` wrt its input.
@@ -26863,13 +26863,13 @@ public static func reciprocalGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Emits randomized records.
@@ -26907,13 +26907,13 @@ public static func recordInput(
   TFE_OpSetAttrInt(op, "file_parallelism", fileParallelism)
   TFE_OpSetAttrInt(op, "batch_size", batchSize)
   _TFCOpSetAttrString(op, "compression_type", compressionType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// An op that receives embedding activations on the TPU.
@@ -26943,13 +26943,13 @@ public static func recvTPUEmbeddingActivations(
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "num_outputs", numOutputs)
   _TFCOpSetAttrString(op, "config", config)
-  var count: Int32 = numOutputs
+  var count: Int32 = Int32(numOutputs)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Float>].init(_owning: buffer, count: numOutputs)
+  return [Tensor<Float>].init(_owning: buffer, count: Int(numOutputs))
 }
 
 /// Joins a string Tensor across the given dimensions.
@@ -27005,13 +27005,13 @@ public static func reduceJoin(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionIndices, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   _TFCOpSetAttrString(op, "separator", separator)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Check if the input matches the regex pattern.
@@ -27039,13 +27039,13 @@ public static func regexFullMatch(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Replaces matches of the `pattern` regular expression in `input` with the
@@ -27079,13 +27079,13 @@ public static func regexReplace(
   let _ = _TFCOpAddInputFromTensorGroup(op, pattern, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, rewrite, s)
   TFE_OpSetAttrBool(op, "replace_global", (replaceGlobal) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes rectified linear: `max(features, 0)`.
@@ -27099,13 +27099,13 @@ public static func relu<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes rectified linear 6: `min(max(features, 0), 6)`.
@@ -27119,13 +27119,13 @@ public static func relu6<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes rectified linear 6 gradients for a Relu6 operation.
@@ -27149,13 +27149,13 @@ public static func relu6Grad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes rectified linear gradients for a Relu operation.
@@ -27178,13 +27178,13 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Execute a sub graph on a remote processor.
@@ -27217,13 +27217,13 @@ public static func remoteFusedGraphExecute<Tinputs: TensorGroup>(
   _TFCOpSetAttrTypeArray(op, "Tinputs", Tinputs._typeList)
   _TFCOpSetAttrTypeArray(op, "Toutputs", toutputs)
   _TFCOpSetAttrString(op, "serialized_remote_fused_graph_execute_info", serializedRemoteFusedGraphExecuteInfo)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return toutputs.init(_owning: buffer, count: 1)
+  return toutputs.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that emits the outputs of `input_dataset` `count` times.
@@ -27245,13 +27245,13 @@ public static func repeatDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, count, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes a range that covers the actual values present in a quantized tensor.
@@ -27284,7 +27284,7 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMin, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -27292,7 +27292,7 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes requantization range per channel.
@@ -27326,7 +27326,7 @@ public static func requantizationRangePerChannel<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputMax, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrFloat(op, "clip_value_max", Float(clipValueMax))
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -27334,7 +27334,7 @@ public static func requantizationRangePerChannel<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Converts the quantized `input` tensor into a lower-precision `output`.
@@ -27379,7 +27379,7 @@ public static func requantize<Tinput: TensorFlowScalar, OutType: TensorFlowScala
   let _ = _TFCOpAddInputFromTensorGroup(op, requestedOutputMax, s)
   TFE_OpSetAttrType(op, "Tinput", Tinput.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -27388,7 +27388,7 @@ public static func requantize<Tinput: TensorFlowScalar, OutType: TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Requantizes input with min and max values known per channel.
@@ -27427,7 +27427,7 @@ public static func requantizePerChannel<T: TensorFlowScalar, OutType: TensorFlow
   let _ = _TFCOpAddInputFromTensorGroup(op, requestedOutputMax, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -27436,7 +27436,7 @@ public static func requantizePerChannel<T: TensorFlowScalar, OutType: TensorFlow
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<OutType>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -27447,13 +27447,13 @@ public static func requiresOlderGraphVersion(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RequiresOlderGraphVersion", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -27559,13 +27559,13 @@ public static func reshape<T: TensorFlowScalar, Tshape: BinaryInteger & TensorFl
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tshape", Tshape.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Resize `images` to `size` using area interpolation.
@@ -27606,13 +27606,13 @@ public static func resizeArea<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Resize `images` to `size` using bicubic interpolation.
@@ -27645,13 +27645,13 @@ public static func resizeBicubic<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of bicubic interpolation.
@@ -27683,13 +27683,13 @@ public static func resizeBicubicGrad<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Resize `images` to `size` using bilinear interpolation.
@@ -27722,13 +27722,13 @@ public static func resizeBilinear<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of bilinear interpolation.
@@ -27760,13 +27760,13 @@ public static func resizeBilinearGrad<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Resize `images` to `size` using nearest neighbor interpolation.
@@ -27797,13 +27797,13 @@ public static func resizeNearestNeighbor<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of nearest neighbor interpolation.
@@ -27834,13 +27834,13 @@ public static func resizeNearestNeighborGrad<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "align_corners", (alignCorners) ? 1 : 0)
   TFE_OpSetAttrBool(op, "half_pixel_centers", (halfPixelCenters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Update '*var' according to the AdaMax algorithm.
@@ -28720,13 +28720,13 @@ public static func resourceCountUpTo<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, resource, s)
   TFE_OpSetAttrInt(op, "limit", limit)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -28776,13 +28776,13 @@ public static func resourceGather<Dtype: TensorFlowScalar, Tindices: BinaryInteg
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -28798,13 +28798,13 @@ public static func resourceGatherNd<Dtype: TensorFlowScalar, Tindices: BinaryInt
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -28816,13 +28816,13 @@ public static func resourceInitializedOp(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ResourceInitializedOp", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resource, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adds sparse updates to the variable referenced by `resource`.
@@ -30054,13 +30054,13 @@ public static func restore<Dt: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensorName, s)
   TFE_OpSetAttrType(op, "dt", Dt.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "preferred_shard", preferredShard)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dt>.init(_owning: buffer, count: 1)
+  return Tensor<Dt>.init(_owning: buffer, count: Int(1))
 }
 
 /// Restores a tensor from checkpoint files.
@@ -30102,13 +30102,13 @@ public static func restoreSlice<Dt: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, shapeAndSlice, s)
   TFE_OpSetAttrType(op, "dt", Dt.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "preferred_shard", preferredShard)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dt>.init(_owning: buffer, count: 1)
+  return Tensor<Dt>.init(_owning: buffer, count: Int(1))
 }
 
 /// Restores tensors from a V2 checkpoint.
@@ -30153,13 +30153,13 @@ public static func restoreV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensorNames, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, shapeAndSlices, s)
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -30172,13 +30172,13 @@ public static func restrict<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieve ADAM embedding parameters.
@@ -30207,7 +30207,7 @@ public static func retrieveTPUEmbeddingADAMParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30216,7 +30216,7 @@ public static func retrieveTPUEmbeddingADAMParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve ADAM embedding parameters with debug support.
@@ -30246,7 +30246,7 @@ public static func retrieveTPUEmbeddingADAMParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30256,7 +30256,7 @@ public static func retrieveTPUEmbeddingADAMParametersGradAccumDebug(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Adadelta embedding parameters.
@@ -30285,7 +30285,7 @@ public static func retrieveTPUEmbeddingAdadeltaParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30294,7 +30294,7 @@ public static func retrieveTPUEmbeddingAdadeltaParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve Adadelta embedding parameters with debug support.
@@ -30324,7 +30324,7 @@ public static func retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30334,7 +30334,7 @@ public static func retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Adagrad embedding parameters.
@@ -30362,7 +30362,7 @@ public static func retrieveTPUEmbeddingAdagradParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30370,7 +30370,7 @@ public static func retrieveTPUEmbeddingAdagradParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve Adagrad embedding parameters with debug support.
@@ -30399,7 +30399,7 @@ public static func retrieveTPUEmbeddingAdagradParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30408,7 +30408,7 @@ public static func retrieveTPUEmbeddingAdagradParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve centered RMSProp embedding parameters.
@@ -30438,7 +30438,7 @@ public static func retrieveTPUEmbeddingCenteredRMSPropParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30448,7 +30448,7 @@ public static func retrieveTPUEmbeddingCenteredRMSPropParameters(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve FTRL embedding parameters.
@@ -30477,7 +30477,7 @@ public static func retrieveTPUEmbeddingFTRLParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30486,7 +30486,7 @@ public static func retrieveTPUEmbeddingFTRLParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve FTRL embedding parameters with debug support.
@@ -30516,7 +30516,7 @@ public static func retrieveTPUEmbeddingFTRLParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30526,7 +30526,7 @@ public static func retrieveTPUEmbeddingFTRLParametersGradAccumDebug(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve MDL Adagrad Light embedding parameters.
@@ -30556,7 +30556,7 @@ public static func retrieveTPUEmbeddingMDLAdagradLightParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30566,7 +30566,7 @@ public static func retrieveTPUEmbeddingMDLAdagradLightParameters(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve Momentum embedding parameters.
@@ -30594,7 +30594,7 @@ public static func retrieveTPUEmbeddingMomentumParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30602,7 +30602,7 @@ public static func retrieveTPUEmbeddingMomentumParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve Momentum embedding parameters with debug support.
@@ -30631,7 +30631,7 @@ public static func retrieveTPUEmbeddingMomentumParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30640,7 +30640,7 @@ public static func retrieveTPUEmbeddingMomentumParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve proximal Adagrad embedding parameters.
@@ -30668,7 +30668,7 @@ public static func retrieveTPUEmbeddingProximalAdagradParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30676,7 +30676,7 @@ public static func retrieveTPUEmbeddingProximalAdagradParameters(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Retrieve proximal Adagrad embedding parameters with debug support.
@@ -30705,7 +30705,7 @@ public static func retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30714,7 +30714,7 @@ public static func retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve RMSProp embedding parameters.
@@ -30743,7 +30743,7 @@ public static func retrieveTPUEmbeddingRMSPropParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30752,7 +30752,7 @@ public static func retrieveTPUEmbeddingRMSPropParameters(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Retrieve RMSProp embedding parameters with debug support.
@@ -30782,7 +30782,7 @@ public static func retrieveTPUEmbeddingRMSPropParametersGradAccumDebug(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -30792,7 +30792,7 @@ public static func retrieveTPUEmbeddingRMSPropParametersGradAccumDebug(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Retrieve SGD embedding parameters.
@@ -30818,13 +30818,13 @@ public static func retrieveTPUEmbeddingStochasticGradientDescentParameters(
   _TFCOpSetAttrString(op, "table_name", tableName)
   TFE_OpSetAttrInt(op, "num_shards", numShards)
   TFE_OpSetAttrInt(op, "shard_id", shardId)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reverses specific dimensions of a tensor.
@@ -30891,13 +30891,13 @@ public static func reverse<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reverses variable length slices.
@@ -30984,13 +30984,13 @@ public static func reverseSequence<T: TensorFlowScalar, Tlen: BinaryInteger & Te
   TFE_OpSetAttrInt(op, "batch_dim", batchDim)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tlen", Tlen.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reverses specific dimensions of a tensor.
@@ -31061,13 +31061,13 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar, T: TensorFl
   let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Elementwise computes the bitwise right-shift of `x` and `y`.
@@ -31089,13 +31089,13 @@ public static func rightShift<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns element-wise integer closest to x.
@@ -31119,13 +31119,13 @@ public static func rint<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Rolls the elements of a tensor along an axis.
@@ -31180,13 +31180,13 @@ public static func roll<T: TensorFlowScalar, Tshift: BinaryInteger & TensorFlowS
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tshift", Tshift.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Rounds the values of a tensor to the nearest integer, element-wise.
@@ -31203,13 +31203,13 @@ public static func round<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Perform batches of RPC requests.
@@ -31303,13 +31303,13 @@ public static func rpc(
   _TFCOpSetAttrString(op, "protocol", protocol_)
   TFE_OpSetAttrBool(op, "fail_fast", (failFast) ? 1 : 0)
   TFE_OpSetAttrInt(op, "timeout_in_ms", timeoutInMs)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes reciprocal of square root of x element-wise.
@@ -31325,13 +31325,13 @@ public static func rsqrt<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient for the rsqrt of `x` wrt its input.
@@ -31350,13 +31350,13 @@ public static func rsqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Generate a single randomly distorted bounding box for an image.
@@ -31458,7 +31458,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & TensorFlowScala
   _TFCOpSetAttrDoubleArray(op, "area_range", areaRange)
   TFE_OpSetAttrInt(op, "max_attempts", maxAttempts)
   TFE_OpSetAttrBool(op, "use_image_if_no_bounding_boxes", (useImageIfNoBoundingBoxes) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -31467,7 +31467,7 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Generate a single randomly distorted bounding box for an image.
@@ -31569,7 +31569,7 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
   _TFCOpSetAttrDoubleArray(op, "area_range", areaRange)
   TFE_OpSetAttrInt(op, "max_attempts", maxAttempts)
   TFE_OpSetAttrBool(op, "use_image_if_no_bounding_boxes", (useImageIfNoBoundingBoxes) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -31578,7 +31578,7 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Creates a dataset that contains `rate` elements from the `input_dataset`.
@@ -31607,13 +31607,13 @@ public static func samplingDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, seed2, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Saves the input tensors to disk.
@@ -31758,13 +31758,13 @@ public static func scalarSummary<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tags, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -31787,13 +31787,13 @@ public static func scaleAndTranslate<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "kernel_type", kernelType)
   TFE_OpSetAttrBool(op, "antialias", (antialias) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -31816,13 +31816,13 @@ public static func scaleAndTranslateGrad<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "kernel_type", kernelType)
   TFE_OpSetAttrBool(op, "antialias", (antialias) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Scatter `updates` into a new tensor according to `indices`.
@@ -31932,13 +31932,13 @@ public static func scatterNd<T: TensorFlowScalar, Tindices: BinaryInteger & Tens
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Applies sparse addition to `input` using individual values or slices
@@ -32001,13 +32001,13 @@ public static func scatterNdNonAliasingAdd<T: TensorFlowScalar, Tindices: Binary
   let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes fingerprints of the input strings.
@@ -32025,13 +32025,13 @@ public static func sdcaFprint(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SdcaFprint", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Distributed version of Stochastic Dual Coordinate Ascent (SDCA) optimizer for
@@ -32135,7 +32135,7 @@ public static func sdcaOptimizer(
   TFE_OpSetAttrFloat(op, "l2", Float(l2))
   TFE_OpSetAttrInt(op, "num_loss_partitions", numLossPartitions)
   TFE_OpSetAttrInt(op, "num_inner_iterations", numInnerIterations)
-  var count: Int32 = 1 + sparseExampleIndicesCount + denseFeaturesCount
+  var count: Int32 = Int32(1) + Int32(sparseExampleIndicesCount) + Int32(denseFeaturesCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -32144,7 +32144,7 @@ public static func sdcaOptimizer(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + num_sparse_features
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: sparseExampleIndicesCount), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: denseFeaturesCount))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
 }
 
 /// Distributed version of Stochastic Dual Coordinate Ascent (SDCA) optimizer for
@@ -32248,7 +32248,7 @@ public static func sdcaOptimizerV2(
   TFE_OpSetAttrFloat(op, "l2", Float(l2))
   TFE_OpSetAttrInt(op, "num_loss_partitions", numLossPartitions)
   TFE_OpSetAttrInt(op, "num_inner_iterations", numInnerIterations)
-  var count: Int32 = 1 + sparseExampleIndicesCount + denseFeaturesCount
+  var count: Int32 = Int32(1) + Int32(sparseExampleIndicesCount) + Int32(denseFeaturesCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -32257,7 +32257,7 @@ public static func sdcaOptimizerV2(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + num_sparse_features
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: sparseExampleIndicesCount), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: denseFeaturesCount))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset1), count: Int(sparseExampleIndicesCount)), [Tensor<Float>].init(_owning: buffer.advanced(by: offset2), count: Int(denseFeaturesCount)))
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -32304,13 +32304,13 @@ public static func segmentMax<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the mean along segments of a tensor.
@@ -32358,13 +32358,13 @@ public static func segmentMean<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the minimum along segments of a tensor.
@@ -32410,13 +32410,13 @@ public static func segmentMin<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the product along segments of a tensor.
@@ -32463,13 +32463,13 @@ public static func segmentProd<T: Numeric & TensorFlowScalar, Tindices: BinaryIn
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along segments of a tensor.
@@ -32516,13 +32516,13 @@ public static func segmentSum<T: Numeric & TensorFlowScalar, Tindices: BinaryInt
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Selects elements from `x` or `y`, depending on `condition`.
@@ -32587,13 +32587,13 @@ public static func select<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, t, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, e, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the Eigen Decomposition of a batch of square self-adjoint matrices.
@@ -32619,13 +32619,13 @@ public static func selfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the eigen decomposition of one or more square self-adjoint matrices.
@@ -32662,7 +32662,7 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrBool(op, "compute_v", (computeV) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -32670,7 +32670,7 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes scaled exponential linear: `scale * alpha * (exp(features) - 1)`
@@ -32692,13 +32692,13 @@ public static func selu<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients for the scaled exponential linear (Selu) operation.
@@ -32721,13 +32721,13 @@ public static func seluGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, outputs, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Performs gradient updates of embedding tables.
@@ -32783,13 +32783,13 @@ public static func serializeIterator(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeIterator", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resourceHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Serialize an `N`-minibatch `SparseTensor` into an `[N, 3]` `Tensor` object.
@@ -32824,13 +32824,13 @@ public static func serializeManySparse<T: TensorFlowScalar, OutType: TensorFlowS
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
@@ -32857,13 +32857,13 @@ public static func serializeSparse<T: TensorFlowScalar, OutType: TensorFlowScala
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Transforms a Tensor into a serialized TensorProto proto.
@@ -32883,13 +32883,13 @@ public static func serializeTensor<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Number of unique elements along last dimension of input `set`.
@@ -32925,13 +32925,13 @@ public static func setSize<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, setShape, s)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the shape of a tensor.
@@ -32955,13 +32955,13 @@ public static func shape<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlo
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns shape of tensors.
@@ -32980,13 +32980,13 @@ public static func shapeN<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "N", Int64(inputCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", outType._cDataType)
-  var count: Int32 = inputCount
+  var count: Int32 = Int32(inputCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<outType>].init(_owning: buffer, count: inputCount)
+  return [Tensor<outType>].init(_owning: buffer, count: Int(inputCount))
 }
 
 /// Creates a `Dataset` that includes only 1/`num_shards` of this dataset.
@@ -33011,13 +33011,13 @@ public static func shardDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Generate a sharded filename. The filename is printf formatted as
@@ -33036,13 +33036,13 @@ public static func shardedFilename(
   let _ = _TFCOpAddInputFromTensorGroup(op, basename, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, shard, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, numShards, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Generate a glob pattern matching all sharded file names.
@@ -33057,13 +33057,13 @@ public static func shardedFilespec(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, basename, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, numShards, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that shuffles and repeats elements from `input_dataset`
@@ -33101,13 +33101,13 @@ public static func shuffleAndRepeatDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, count, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that shuffles elements from `input_dataset` pseudorandomly.
@@ -33147,13 +33147,13 @@ public static func shuffleDataset(
   TFE_OpSetAttrBool(op, "reshuffle_each_iteration", (reshuffleEachIteration) ? 1 : 0)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Shuts down a running distributed TPU system.
@@ -33186,13 +33186,13 @@ public static func sigmoid<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient of the sigmoid of `x` wrt its input.
@@ -33211,13 +33211,13 @@ public static func sigmoidGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns an element-wise indication of the sign of a number.
@@ -33235,13 +33235,13 @@ public static func sign<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -33253,13 +33253,13 @@ public static func simple(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Simple", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -33271,13 +33271,13 @@ public static func simpleStruct(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SimpleStruct", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "n_a", nA)
-  var count: Int32 = nA
+  var count: Int32 = Int32(nA)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<Int32>].init(_owning: buffer, count: nA)
+  return [Tensor<Int32>].init(_owning: buffer, count: Int(nA))
 }
 
 /// Computes sin of x element-wise.
@@ -33291,13 +33291,13 @@ public static func sin<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes hyperbolic sine of x element-wise.
@@ -33311,13 +33311,13 @@ public static func sinh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the size of a tensor.
@@ -33342,13 +33342,13 @@ public static func size<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlow
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that skips `count` elements from the `input_dataset`.
@@ -33370,13 +33370,13 @@ public static func skipDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, count, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Parses a text file and creates a batch of examples.
@@ -33415,7 +33415,7 @@ public static func skipgram(
   TFE_OpSetAttrInt(op, "window_size", windowSize)
   TFE_OpSetAttrInt(op, "min_count", minCount)
   TFE_OpSetAttrFloat(op, "subsample", Float(subsample))
-  var count: Int32 = 1 + 1 + 1 + 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -33428,7 +33428,7 @@ public static func skipgram(
   let offset4: Int = offset3 + 1
   let offset5: Int = offset4 + 1
   let offset6: Int = offset5 + 1
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset4), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset5), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset6), count: 1))
+  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset3), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset4), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset5), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset6), count: Int(1)))
 }
 
 /// Return a slice from 'input'.
@@ -33462,13 +33462,13 @@ public static func slice<T: TensorFlowScalar, Index: BinaryInteger & TensorFlowS
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Index", Index.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a copy of the input tensor.
@@ -33482,13 +33482,13 @@ public static func snapshot<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softmax activations.
@@ -33510,13 +33510,13 @@ public static func softmax<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, logits, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softmax cross entropy cost and gradients to backpropagate.
@@ -33544,7 +33544,7 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, labels, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -33552,7 +33552,7 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes softplus: `log(exp(features) + 1)`.
@@ -33566,13 +33566,13 @@ public static func softplus<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softplus gradients for a softplus operation.
@@ -33594,13 +33594,13 @@ public static func softplusGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softsign: `features / (abs(features) + 1)`.
@@ -33614,13 +33614,13 @@ public static func softsign<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softsign gradients for a softsign operation.
@@ -33642,13 +33642,13 @@ public static func softsignGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, gradients, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, features, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// SpaceToBatch for 4-D tensors of type T.
@@ -33763,13 +33763,13 @@ public static func spaceToBatch<T: TensorFlowScalar, Tpaddings: BinaryInteger & 
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "block_size", blockSize)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// SpaceToBatch for N-D tensors of type T.
@@ -33911,13 +33911,13 @@ public static func spaceToBatchND<T: TensorFlowScalar, TblockShape: BinaryIntege
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tblock_shape", TblockShape.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tpaddings", Tpaddings.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// SpaceToDepth for tensors of type T.
@@ -34021,13 +34021,13 @@ public static func spaceToDepth<T: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "block_size", blockSize)
   _TFCOpSetAttrString(op, "data_format", dataFormat.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adds two `SparseTensor` objects to produce another `SparseTensor`.
@@ -34078,7 +34078,7 @@ public static func sparseAdd<T: Numeric & TensorFlowScalar, Treal: Numeric & Ten
   let _ = _TFCOpAddInputFromTensorGroup(op, thresh, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Treal", Treal.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34087,7 +34087,7 @@ public static func sparseAdd<T: Numeric & TensorFlowScalar, Treal: Numeric & Ten
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// The gradient operator for the SparseAdd op.
@@ -34126,7 +34126,7 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bIndices, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sumIndices, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34134,7 +34134,7 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Concatenates a list of `SparseTensor` along the specified dimension.
@@ -34210,7 +34210,7 @@ public static func sparseConcat<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, shapes, s)
   TFE_OpSetAttrInt(op, "concat_dim", concatDim)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34219,7 +34219,7 @@ public static func sparseConcat<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Generates sparse cross from a list of sparse and dense tensors.
@@ -34307,7 +34307,7 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   _TFCOpSetAttrTypeArray(op, "dense_types", DenseTypes._typeList)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "internal_type", internalType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34316,7 +34316,7 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutType>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
@@ -34354,13 +34354,13 @@ public static func sparseDenseCwiseAdd<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Component-wise divides a SparseTensor by a dense Tensor.
@@ -34392,13 +34392,13 @@ public static func sparseDenseCwiseDiv<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Component-wise multiplies a SparseTensor by a dense Tensor.
@@ -34434,13 +34434,13 @@ public static func sparseDenseCwiseMul<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dense, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Fills empty rows in the input 2-D `SparseTensor` with a default value.
@@ -34511,7 +34511,7 @@ public static func sparseFillEmptyRows<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, denseShape, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, defaultValue, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34521,7 +34521,7 @@ public static func sparseFillEmptyRows<T: TensorFlowScalar>(
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
   let offset3: Int = offset2 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Bool>.init(_owning: buffer.advanced(by: offset2), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset3), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Bool>.init(_owning: buffer.advanced(by: offset2), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// The gradient of SparseFillEmptyRows.
@@ -34554,7 +34554,7 @@ public static func sparseFillEmptyRowsGrad<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reverseIndexMap, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, gradValues, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34562,7 +34562,7 @@ public static func sparseFillEmptyRowsGrad<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Multiply matrix "a" by matrix "b".
@@ -34597,13 +34597,13 @@ public static func sparseMatMul<Ta: FloatingPoint & TensorFlowScalar, Tb: Floati
   TFE_OpSetAttrBool(op, "b_is_sparse", (bIsSparse) ? 1 : 0)
   TFE_OpSetAttrType(op, "Ta", Ta.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tb", Tb.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the max of elements across dimensions of a SparseTensor.
@@ -34649,13 +34649,13 @@ public static func sparseReduceMax<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the max of elements across dimensions of a SparseTensor.
@@ -34699,7 +34699,7 @@ public static func sparseReduceMaxSparse<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34708,7 +34708,7 @@ public static func sparseReduceMaxSparse<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes the sum of elements across dimensions of a SparseTensor.
@@ -34754,13 +34754,13 @@ public static func sparseReduceSum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum of elements across dimensions of a SparseTensor.
@@ -34804,7 +34804,7 @@ public static func sparseReduceSumSparse<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, reductionAxes, s)
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34813,7 +34813,7 @@ public static func sparseReduceSumSparse<T: Numeric & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Reorders a SparseTensor into the canonical, row-major ordering.
@@ -34851,7 +34851,7 @@ public static func sparseReorder<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34859,7 +34859,7 @@ public static func sparseReorder<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Reshapes a SparseTensor to represent values in a new dense shape.
@@ -34905,7 +34905,7 @@ public static func sparseReshape(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputIndices, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, inputShape, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, newShape, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -34913,7 +34913,7 @@ public static func sparseReshape(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Computes the mean along sparse segments of a tensor.
@@ -34944,13 +34944,13 @@ public static func sparseSegmentMean<T: FloatingPoint & TensorFlowScalar, Tidx: 
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients for SparseSegmentMean.
@@ -34980,13 +34980,13 @@ public static func sparseSegmentMeanGrad<T: FloatingPoint & TensorFlowScalar, Ti
   let _ = _TFCOpAddInputFromTensorGroup(op, outputDim0, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the mean along sparse segments of a tensor.
@@ -35023,13 +35023,13 @@ public static func sparseSegmentMeanWithNumSegments<T: FloatingPoint & TensorFlo
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along sparse segments of a tensor divided by the sqrt of N.
@@ -35060,13 +35060,13 @@ public static func sparseSegmentSqrtN<T: FloatingPoint & TensorFlowScalar, Tidx:
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes gradients for SparseSegmentSqrtN.
@@ -35096,13 +35096,13 @@ public static func sparseSegmentSqrtNGrad<T: FloatingPoint & TensorFlowScalar, T
   let _ = _TFCOpAddInputFromTensorGroup(op, outputDim0, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along sparse segments of a tensor divided by the sqrt of N.
@@ -35141,13 +35141,13 @@ public static func sparseSegmentSqrtNWithNumSegments<T: FloatingPoint & TensorFl
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along sparse segments of a tensor.
@@ -35203,13 +35203,13 @@ public static func sparseSegmentSum<T: Numeric & TensorFlowScalar, Tidx: BinaryI
   let _ = _TFCOpAddInputFromTensorGroup(op, segmentIds, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along sparse segments of a tensor.
@@ -35267,13 +35267,13 @@ public static func sparseSegmentSumWithNumSegments<T: Numeric & TensorFlowScalar
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Slice a `SparseTensor` based on the `start` and `size`.
@@ -35326,7 +35326,7 @@ public static func sparseSlice<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, start, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35335,7 +35335,7 @@ public static func sparseSlice<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// The gradient operator for the SparseSlice op.
@@ -35368,13 +35368,13 @@ public static func sparseSliceGrad<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputStart, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, outputIndices, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Applies softmax to a batched N-D `SparseTensor`.
@@ -35416,13 +35416,13 @@ public static func sparseSoftmax<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, spValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, spShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes softmax cross entropy cost and gradients to backpropagate.
@@ -35455,7 +35455,7 @@ public static func sparseSoftmaxCrossEntropyWithLogits<T: FloatingPoint & Tensor
   let _ = _TFCOpAddInputFromTensorGroup(op, labels, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tlabels", Tlabels.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35463,7 +35463,7 @@ public static func sparseSoftmaxCrossEntropyWithLogits<T: FloatingPoint & Tensor
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the element-wise max of two SparseTensors.
@@ -35502,7 +35502,7 @@ public static func sparseSparseMaximum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35510,7 +35510,7 @@ public static func sparseSparseMaximum<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns the element-wise min of two SparseTensors.
@@ -35549,7 +35549,7 @@ public static func sparseSparseMinimum<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, bValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35557,7 +35557,7 @@ public static func sparseSparseMinimum<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Split a `SparseTensor` into `num_split` tensors along one dimension.
@@ -35614,7 +35614,7 @@ public static func sparseSplit<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrInt(op, "num_split", numSplit)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = numSplit + numSplit + numSplit
+  var count: Int32 = Int32(numSplit) + Int32(numSplit) + Int32(numSplit)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35623,7 +35623,7 @@ public static func sparseSplit<T: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + num_split
   let offset2: Int = offset1 + num_split
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: numSplit), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: numSplit), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: numSplit))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSplit)), [Tensor<T>].init(_owning: buffer.advanced(by: offset1), count: Int(numSplit)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSplit)))
 }
 
 /// Adds up a `SparseTensor` and a dense `Tensor`, producing a dense `Tensor`.
@@ -35652,13 +35652,13 @@ public static func sparseTensorDenseAdd<T: Numeric & TensorFlowScalar, Tindices:
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Multiply SparseTensor (of rank 2) "A" by dense matrix "B".
@@ -35705,13 +35705,13 @@ public static func sparseTensorDenseMatMul<T: TensorFlowScalar, Tindices: Binary
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "adjoint_a", (adjointA) ? 1 : 0)
   TFE_OpSetAttrBool(op, "adjoint_b", (adjointB) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that splits a SparseTensor into elements row-wise.
@@ -35729,13 +35729,13 @@ public static func sparseTensorSliceDataset<Tvalues: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, denseShape, s)
   TFE_OpSetAttrType(op, "Tvalues", Tvalues.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts a sparse representation into a dense tensor.
@@ -35792,13 +35792,13 @@ public static func sparseToDense<T: TensorFlowScalar, Tindices: BinaryInteger & 
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Applies set operation along last dimension of 2 `SparseTensor` inputs.
@@ -35873,7 +35873,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -35882,7 +35882,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Splits a tensor into `num_split` tensors along one dimension.
@@ -35912,13 +35912,13 @@ public static func split<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   TFE_OpSetAttrInt(op, "num_split", numSplit)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = numSplit
+  var count: Int32 = Int32(numSplit)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<T>].init(_owning: buffer, count: numSplit)
+  return [Tensor<T>].init(_owning: buffer, count: Int(numSplit))
 }
 
 /// Splits a tensor into `num_split` tensors along one dimension.
@@ -35951,13 +35951,13 @@ public static func splitV<T: TensorFlowScalar, Tlen: BinaryInteger & TensorFlowS
   TFE_OpSetAttrInt(op, "num_split", numSplit)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tlen", Tlen.tensorFlowDataType._cDataType)
-  var count: Int32 = numSplit
+  var count: Int32 = Int32(numSplit)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<T>].init(_owning: buffer, count: numSplit)
+  return [Tensor<T>].init(_owning: buffer, count: Int(numSplit))
 }
 
 /// Computes square root of x element-wise.
@@ -35973,13 +35973,13 @@ public static func sqrt<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient for the sqrt of `x` wrt its input.
@@ -35998,13 +35998,13 @@ public static func sqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes square of x element-wise.
@@ -36020,13 +36020,13 @@ public static func square<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns (x - y)(x - y) element-wise.
@@ -36045,13 +36045,13 @@ public static func squaredDifference<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Removes dimensions of size 1 from the shape of a tensor.
@@ -36095,13 +36095,13 @@ public static func squeeze<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrInt32Array(op, "squeeze_dims", squeezeDims)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Delete the stack from its resource container.
@@ -36139,13 +36139,13 @@ public static func stackPopV2<ElemType: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   TFE_OpSetAttrType(op, "elem_type", ElemType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<ElemType>.init(_owning: buffer, count: 1)
+  return Tensor<ElemType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Push an element onto the stack.
@@ -36171,13 +36171,13 @@ public static func stackPushV2<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, elem, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrBool(op, "swap_memory", (swapMemory) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// A stack that produces elements in first-in last-out order.
@@ -36204,13 +36204,13 @@ public static func stackV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, maxSize, s)
   TFE_OpSetAttrType(op, "elem_type", elemType._cDataType)
   _TFCOpSetAttrString(op, "stack_name", stackName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Stage values similar to a lightweight Enqueue.
@@ -36301,13 +36301,13 @@ public static func stagePeek(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -36328,13 +36328,13 @@ public static func stageSize(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -36357,13 +36357,13 @@ public static func statefulRandomBinomial<S: BinaryInteger & TensorFlowScalar, T
   TFE_OpSetAttrType(op, "S", S.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a normal distribution. This op is deprecated in favor of op 'StatefulStandardNormalV2'
@@ -36390,13 +36390,13 @@ public static func statefulStandardNormal<Dtype: TensorFlowScalar, ShapeDtype: T
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a normal distribution.
@@ -36426,13 +36426,13 @@ public static func statefulStandardNormalV2<Dtype: TensorFlowScalar, ShapeDtype:
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a truncated normal distribution.
@@ -36464,13 +36464,13 @@ public static func statefulTruncatedNormal<Dtype: TensorFlowScalar, ShapeDtype: 
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a uniform distribution.
@@ -36501,13 +36501,13 @@ public static func statefulUniform<Dtype: TensorFlowScalar, ShapeDtype: TensorFl
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random integers from a uniform distribution.
@@ -36537,13 +36537,13 @@ public static func statefulUniformFullInt<Dtype: TensorFlowScalar, ShapeDtype: T
   let _ = _TFCOpAddInputFromTensorGroup(op, shape, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random integers from a uniform distribution.
@@ -36585,13 +36585,13 @@ public static func statefulUniformInt<Dtype: TensorFlowScalar, ShapeDtype: Tenso
   let _ = _TFCOpAddInputFromTensorGroup(op, maxval, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_dtype", ShapeDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Draws samples from a multinomial distribution.
@@ -36620,13 +36620,13 @@ public static func statelessMultinomial<T: Numeric & TensorFlowScalar, Tseed: Bi
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "output_dtype", OutputDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutputDtype>.init(_owning: buffer, count: 1)
+  return Tensor<OutputDtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs deterministic pseudorandom values from a normal distribution.
@@ -36656,13 +36656,13 @@ public static func statelessRandomNormal<Dtype: FloatingPoint & TensorFlowScalar
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs deterministic pseudorandom random values from a uniform distribution.
@@ -36693,13 +36693,13 @@ public static func statelessRandomUniform<Dtype: FloatingPoint & TensorFlowScala
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs deterministic pseudorandom random integers from a uniform distribution.
@@ -36735,13 +36735,13 @@ public static func statelessRandomUniformInt<Dtype: BinaryInteger & TensorFlowSc
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs deterministic pseudorandom values from a truncated normal distribution.
@@ -36773,13 +36773,13 @@ public static func statelessTruncatedNormal<Dtype: FloatingPoint & TensorFlowSca
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tseed", Tseed.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Check if the input matches the regex pattern.
@@ -36807,13 +36807,13 @@ public static func staticRegexFullMatch(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrString(op, "pattern", pattern)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Replaces the match of pattern in input with rewrite.
@@ -36844,13 +36844,13 @@ public static func staticRegexReplace(
   _TFCOpSetAttrString(op, "pattern", pattern)
   _TFCOpSetAttrString(op, "rewrite", rewrite)
   TFE_OpSetAttrBool(op, "replace_global", (replaceGlobal) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -36864,13 +36864,13 @@ public static func statsAggregatorHandleV2(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Set a summary_writer_interface to record statistics using given stats_aggregator.
@@ -36922,13 +36922,13 @@ public static func stopGradient<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Return a strided slice from `input`.
@@ -37085,13 +37085,13 @@ public static func stridedSlice<T: TensorFlowScalar, Index: BinaryInteger & Tens
   TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
   TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
   TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the gradient of `StridedSlice`.
@@ -37133,13 +37133,13 @@ public static func stridedSliceGrad<T: TensorFlowScalar, Index: BinaryInteger & 
   TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
   TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
   TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Formats a string template using a list of tensors.
@@ -37170,13 +37170,13 @@ public static func stringFormat<T: TensorGroup>(
   _TFCOpSetAttrString(op, "template", template)
   _TFCOpSetAttrString(op, "placeholder", placeholder)
   TFE_OpSetAttrInt(op, "summarize", summarize)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Joins the strings in the given list of string tensors into one tensor;
@@ -37200,13 +37200,13 @@ public static func stringJoin(
   let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
   _TFCOpSetAttrString(op, "separator", separator)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// String lengths of `input`.
@@ -37234,13 +37234,13 @@ public static func stringLength(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrString(op, "unit", unit.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -37308,7 +37308,7 @@ public static func stringSplit(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, delimiter, s)
   TFE_OpSetAttrBool(op, "skip_empty", (skipEmpty) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -37317,7 +37317,7 @@ public static func stringSplit(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Split elements of `source` based on `sep` into a `SparseTensor`.
@@ -37365,7 +37365,7 @@ public static func stringSplitV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sep, s)
   TFE_OpSetAttrInt(op, "maxsplit", maxsplit)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -37374,7 +37374,7 @@ public static func stringSplitV2(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Strip leading and trailing whitespaces from the Tensor.
@@ -37391,13 +37391,13 @@ public static func stringStrip(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StringStrip", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -37423,13 +37423,13 @@ public static func stringToHashBucket(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, stringTensor, s)
   TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -37457,13 +37457,13 @@ public static func stringToHashBucketFast(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts each string in the input Tensor to its hash mod by a number of buckets.
@@ -37500,13 +37500,13 @@ public static func stringToHashBucketStrong(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
   _TFCOpSetAttrInt32Array(op, "key", key)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts each string in the input Tensor to the specified numeric type.
@@ -37527,13 +37527,13 @@ public static func stringToNumber<OutType: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, stringTensor, s)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -37547,13 +37547,13 @@ public static func stubResourceHandleOp(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x - y element-wise.
@@ -37572,13 +37572,13 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Return substrings from `Tensor` of strings.
@@ -37687,13 +37687,13 @@ public static func substr<T: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, len, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "unit", unit.cName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum of elements across dimensions of a tensor.
@@ -37726,13 +37726,13 @@ public static func sum<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Tens
   TFE_OpSetAttrBool(op, "keep_dims", (keepDims) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -37746,13 +37746,13 @@ public static func summaryWriter(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   _TFCOpSetAttrString(op, "container", container)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the singular value decompositions of one or more matrices.
@@ -37802,7 +37802,7 @@ public static func svd<T: FloatingPoint & TensorFlowScalar>(
   TFE_OpSetAttrBool(op, "compute_uv", (computeUv) ? 1 : 0)
   TFE_OpSetAttrBool(op, "full_matrices", (fullMatrices) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -37811,7 +37811,7 @@ public static func svd<T: FloatingPoint & TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Forwards `data` to the output port determined by `pred`.
@@ -37840,7 +37840,7 @@ public static func switch_<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, data, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, pred, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -37848,7 +37848,7 @@ public static func switch_<T: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that emits the records from one or more TFRecord files.
@@ -37873,13 +37873,13 @@ public static func tFRecordDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, filenames, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, compressionType, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bufferSize, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs the records from a TensorFlow Records file.
@@ -37904,13 +37904,13 @@ public static func tFRecordReaderV2(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   _TFCOpSetAttrString(op, "compression_type", compressionType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// CompilationResultProto indicating the status of the TPU compilation.
@@ -37922,13 +37922,13 @@ public static func tPUCompilationResult(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TPUCompilationResult", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// An op enabling differentiation of TPU Embeddings.
@@ -37963,13 +37963,13 @@ public static func tPUEmbeddingActivations(
   let _ = _TFCOpAddInputFromTensorGroup(op, slicedActivations, s)
   TFE_OpSetAttrInt(op, "table_id", tableId)
   TFE_OpSetAttrInt(op, "lookup_id", lookupId)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// A TPU core selector Op.
@@ -37987,13 +37987,13 @@ public static func tPUOrdinalSelector(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TPUOrdinalSelector", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Metadata indicaitng how the TPU computation should be replicated.
@@ -38048,13 +38048,13 @@ public static func tPUReplicatedInput<T: TensorFlowScalar>(
   let inputsCount = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputsCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Connects outputs of an N-way replicated computation to N outputs.
@@ -38070,13 +38070,13 @@ public static func tPUReplicatedOutput<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrInt(op, "num_replicas", numReplicas)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = numReplicas
+  var count: Int32 = Int32(numReplicas)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<T>].init(_owning: buffer, count: numReplicas)
+  return [Tensor<T>].init(_owning: buffer, count: Int(numReplicas))
 }
 
 /// Creates a dataset that contains `count` elements from the `input_dataset`.
@@ -38099,13 +38099,13 @@ public static func takeDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, count, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -38188,7 +38188,7 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38197,7 +38197,7 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes tan of x element-wise.
@@ -38211,13 +38211,13 @@ public static func tan<T: Numeric & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes hyperbolic tangent of `x` element-wise.
@@ -38231,13 +38231,13 @@ public static func tanh<T: FloatingPoint & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the gradient for the tanh of `x` wrt its input.
@@ -38256,13 +38256,13 @@ public static func tanhGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dy, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArrayCloseV3
@@ -38317,7 +38317,7 @@ public static func tensorArrayConcatV2<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "element_shape_except0", elementShapeExcept0, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38325,7 +38325,7 @@ public static func tensorArrayConcatV2<Dtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Concat the elements from the TensorArray into value `value`.
@@ -38373,7 +38373,7 @@ public static func tensorArrayConcatV3<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "element_shape_except0", elementShapeExcept0, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38381,7 +38381,7 @@ public static func tensorArrayConcatV3<Dtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Dtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayGatherV3
@@ -38401,13 +38401,13 @@ public static func tensorArrayGatherV2<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "element_shape", elementShape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gather specific elements from the TensorArray into output `value`.
@@ -38443,13 +38443,13 @@ public static func tensorArrayGatherV3<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "element_shape", elementShape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -38466,13 +38466,13 @@ public static func tensorArrayGradV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   _TFCOpSetAttrString(op, "source", source)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a TensorArray for storing the gradients of values in the given handle.
@@ -38533,7 +38533,7 @@ public static func tensorArrayGradV3(
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   _TFCOpSetAttrString(op, "source", source)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38541,7 +38541,7 @@ public static func tensorArrayGradV3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a TensorArray for storing multiple gradients of values in the given handle.
@@ -38575,7 +38575,7 @@ public static func tensorArrayGradWithShape(
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, shapeToPrepend, s)
   _TFCOpSetAttrString(op, "source", source)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38583,7 +38583,7 @@ public static func tensorArrayGradWithShape(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayReadV3
@@ -38601,13 +38601,13 @@ public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Read an element from the TensorArray into output `value`.
@@ -38633,13 +38633,13 @@ public static func tensorArrayReadV3<Dtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArrayScatterV3
@@ -38659,13 +38659,13 @@ public static func tensorArrayScatterV2<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Scatter the data from the input value into specific TensorArray elements.
@@ -38695,13 +38695,13 @@ public static func tensorArrayScatterV3<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArraySizeV3
@@ -38716,13 +38716,13 @@ public static func tensorArraySizeV2(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Get the current size of the TensorArray.
@@ -38743,13 +38743,13 @@ public static func tensorArraySizeV3(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArraySplitV3
@@ -38769,13 +38769,13 @@ public static func tensorArraySplitV2<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, lengths, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Split the data from the input value into TensorArray elements.
@@ -38822,13 +38822,13 @@ public static func tensorArraySplitV3<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, lengths, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Deprecated. Use TensorArrayV3
@@ -38851,13 +38851,13 @@ public static func tensorArrayV2(
   TFE_OpSetAttrBool(op, "dynamic_size", (dynamicSize) ? 1 : 0)
   TFE_OpSetAttrBool(op, "clear_after_read", (clearAfterRead) ? 1 : 0)
   _TFCOpSetAttrString(op, "tensor_array_name", tensorArrayName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// An array of Tensors of given size.
@@ -38910,7 +38910,7 @@ public static func tensorArrayV3(
   TFE_OpSetAttrBool(op, "clear_after_read", (clearAfterRead) ? 1 : 0)
   TFE_OpSetAttrBool(op, "identical_element_shapes", (identicalElementShapes) ? 1 : 0)
   _TFCOpSetAttrString(op, "tensor_array_name", tensorArrayName)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -38918,7 +38918,7 @@ public static func tensorArrayV3(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (ResourceHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -38938,13 +38938,13 @@ public static func tensorArrayWriteV2<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Push an element onto the tensor_array.
@@ -38972,13 +38972,13 @@ public static func tensorArrayWriteV3<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, value, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, flowIn, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that emits `components` as a tuple of tensors once.
@@ -38994,13 +38994,13 @@ public static func tensorDataset<ToutputTypes: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, components, s)
   _TFCOpSetAttrTypeArray(op, "Toutput_types", ToutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a tree resource and returns a handle to it.
@@ -39061,13 +39061,13 @@ public static func tensorForestTreeIsInitializedOp(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorForestTreeIsInitializedOp", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Output the logits for the given input data
@@ -39092,13 +39092,13 @@ public static func tensorForestTreePredict(
   let _ = _TFCOpAddInputFromTensorGroup(op, treeHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, denseFeatures, s)
   TFE_OpSetAttrInt(op, "logits_dimension", logitsDimension)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a handle to a TensorForestTreeResource
@@ -39113,13 +39113,13 @@ public static func tensorForestTreeResourceHandleOp(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Serializes the tree handle to a proto
@@ -39136,13 +39136,13 @@ public static func tensorForestTreeSerialize(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorForestTreeSerialize", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Get the number of nodes in a tree
@@ -39159,13 +39159,13 @@ public static func tensorForestTreeSize(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorForestTreeSize", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, treeHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Concats all tensors in the list along the 0th dimension.
@@ -39188,7 +39188,7 @@ public static func tensorListConcat<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "element_shape", elementShape, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -39196,7 +39196,7 @@ public static func tensorListConcat<ElementDtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -39212,13 +39212,13 @@ public static func tensorListConcatLists(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputA, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, inputB, s)
   TFE_OpSetAttrType(op, "element_dtype", elementDtype._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Concats all tensors in the list along the 0th dimension.
@@ -39250,7 +39250,7 @@ public static func tensorListConcatV2<ElementDtype: TensorFlowScalar, ShapeType:
   let _ = _TFCOpAddInputFromTensorGroup(op, leadingDims, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -39258,7 +39258,7 @@ public static func tensorListConcatV2<ElementDtype: TensorFlowScalar, ShapeType:
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// The shape of the elements of the given list, as a tensor.
@@ -39275,13 +39275,13 @@ public static func tensorListElementShape<ShapeType: BinaryInteger & TensorFlowS
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<ShapeType>.init(_owning: buffer, count: 1)
+  return Tensor<ShapeType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a TensorList which, when stacked, has the value of `tensor`.
@@ -39303,13 +39303,13 @@ public static func tensorListFromTensor<ElementDtype: TensorFlowScalar, ShapeTyp
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a Tensor by indexing into the TensorList.
@@ -39334,13 +39334,13 @@ public static func tensorListGather<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<ElementDtype>.init(_owning: buffer, count: 1)
+  return Tensor<ElementDtype>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -39357,13 +39357,13 @@ public static func tensorListGetItem<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<ElementDtype>.init(_owning: buffer, count: 1)
+  return Tensor<ElementDtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the number of tensors in the input tensor list.
@@ -39379,13 +39379,13 @@ public static func tensorListLength(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TensorListLength", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the last element of the input list as well as a list with all but that element.
@@ -39408,7 +39408,7 @@ public static func tensorListPopBack<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -39416,7 +39416,7 @@ public static func tensorListPopBack<ElementDtype: TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (VariantHandle.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (VariantHandle.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<ElementDtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Returns a list list which has the passed-in `Tensor` as last element and the other elements of the given list in `input_handle`.
@@ -39438,13 +39438,13 @@ public static func tensorListPushBack<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -39459,13 +39459,13 @@ public static func tensorListPushBackBatch<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandles, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// List of the given size with empty elements.
@@ -39488,13 +39488,13 @@ public static func tensorListReserve<ShapeType: BinaryInteger & TensorFlowScalar
   let _ = _TFCOpAddInputFromTensorGroup(op, numElements, s)
   TFE_OpSetAttrType(op, "element_dtype", elementDtype._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Resizes the list.
@@ -39514,13 +39514,13 @@ public static func tensorListResize(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, size, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a TensorList by indexing into a Tensor.
@@ -39548,13 +39548,13 @@ public static func tensorListScatter<ElementDtype: TensorFlowScalar, ShapeType: 
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Scatters tensor at indices in an input list.
@@ -39580,13 +39580,13 @@ public static func tensorListScatterIntoExistingList<ElementDtype: TensorFlowSca
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a TensorList by indexing into a Tensor.
@@ -39619,13 +39619,13 @@ public static func tensorListScatterV2<ElementDtype: TensorFlowScalar, ShapeType
   let _ = _TFCOpAddInputFromTensorGroup(op, numElements, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -39642,13 +39642,13 @@ public static func tensorListSetItem<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, item, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Splits a tensor into a list.
@@ -39675,13 +39675,13 @@ public static func tensorListSplit<ElementDtype: TensorFlowScalar, ShapeType: Bi
   let _ = _TFCOpAddInputFromTensorGroup(op, lengths, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "shape_type", ShapeType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Stacks all tensors in the list.
@@ -39706,13 +39706,13 @@ public static func tensorListStack<ElementDtype: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, elementShape, s)
   TFE_OpSetAttrType(op, "element_dtype", ElementDtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "num_elements", numElements)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<ElementDtype>.init(_owning: buffer, count: 1)
+  return Tensor<ElementDtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Adds sparse `updates` to an existing tensor according to `indices`.
@@ -39803,13 +39803,13 @@ public static func tensorScatterAdd<T: TensorFlowScalar, Tindices: BinaryInteger
   let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Subtracts sparse `updates` from an existing tensor according to `indices`.
@@ -39900,13 +39900,13 @@ public static func tensorScatterSub<T: TensorFlowScalar, Tindices: BinaryInteger
   let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Scatter `updates` into an existing tensor according to `indices`.
@@ -40009,13 +40009,13 @@ public static func tensorScatterUpdate<T: TensorFlowScalar, Tindices: BinaryInte
   let _ = _TFCOpAddInputFromTensorGroup(op, updates, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that emits each dim-0 slice of `components` once.
@@ -40031,13 +40031,13 @@ public static func tensorSliceDataset<ToutputTypes: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, components, s)
   _TFCOpSetAttrTypeArray(op, "Toutput_types", ToutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Assign `value` to the sliced l-value reference of `input`.
@@ -40077,13 +40077,13 @@ public static func tensorStridedSliceUpdate<T: TensorFlowScalar, Index: BinaryIn
   TFE_OpSetAttrInt(op, "ellipsis_mask", ellipsisMask)
   TFE_OpSetAttrInt(op, "new_axis_mask", newAxisMask)
   TFE_OpSetAttrInt(op, "shrink_axis_mask", shrinkAxisMask)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor.
@@ -40114,13 +40114,13 @@ public static func tensorSummary<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "description", description)
   _TFCOpSetAttrStringArray(op, "labels", labels)
   _TFCOpSetAttrString(op, "display_name", displayName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs a `Summary` protocol buffer with a tensor and per-plugin data.
@@ -40144,13 +40144,13 @@ public static func tensorSummaryV2<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, serializedSummaryMetadata, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -40161,13 +40161,13 @@ public static func testAttr<T: FloatingPoint & TensorFlowScalar>(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TestAttr", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -40179,7 +40179,7 @@ public static func testStringOutput(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TestStringOutput", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40187,7 +40187,7 @@ public static func testStringOutput(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Creates a dataset that emits the lines of one or more text files.
@@ -40211,13 +40211,13 @@ public static func textLineDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, filenames, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, compressionType, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, bufferSize, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs the lines of a file delimited by '\n'.
@@ -40243,13 +40243,13 @@ public static func textLineReaderV2(
   TFE_OpSetAttrInt(op, "skip_header_lines", skipHeaderLines)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a learned unigram distribution.
@@ -40310,7 +40310,7 @@ public static func threadUnsafeUnigramCandidateSampler(
   TFE_OpSetAttrInt(op, "range_max", rangeMax)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40319,7 +40319,7 @@ public static func threadUnsafeUnigramCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Constructs a tensor by tiling a given tensor.
@@ -40346,13 +40346,13 @@ public static func tile<T: TensorFlowScalar, Tmultiples: BinaryInteger & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, multiples, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tmultiples", Tmultiples.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the gradient of `Tile`.
@@ -40372,13 +40372,13 @@ public static func tileGrad<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, multiples, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Provides the time since epoch in seconds.
@@ -40395,13 +40395,13 @@ public static func timestamp(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Timestamp", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Double>.init(_owning: buffer, count: 1)
+  return Tensor<Double>.init(_owning: buffer, count: Int(1))
 }
 
 /// Finds values and indices of the `k` largest elements for the last dimension.
@@ -40444,7 +40444,7 @@ public static func topK<T: Numeric & TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "k", k)
   TFE_OpSetAttrBool(op, "sorted", (sorted) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40452,7 +40452,7 @@ public static func topK<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds values and indices of the `k` largest elements for the last dimension.
@@ -40493,7 +40493,7 @@ public static func topKV2<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, k, s)
   TFE_OpSetAttrBool(op, "sorted", (sorted) ? 1 : 0)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40501,7 +40501,7 @@ public static func topKV2<T: Numeric & TensorFlowScalar>(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Shuffle dimensions of x according to a permutation.
@@ -40521,13 +40521,13 @@ public static func transpose<T: TensorFlowScalar, Tperm: BinaryInteger & TensorF
   let _ = _TFCOpAddInputFromTensorGroup(op, perm, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tperm", Tperm.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Solves tridiagonal systems of equations.
@@ -40557,13 +40557,13 @@ public static func tridiagonalSolve<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, diagonals, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, rhs, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns x / y element-wise for integer types.
@@ -40587,13 +40587,13 @@ public static func truncateDiv<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns element-wise remainder of division. This emulates C semantics in that
@@ -40615,13 +40615,13 @@ public static func truncateMod<T: Numeric & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Outputs random values from a truncated normal distribution.
@@ -40656,13 +40656,13 @@ public static func truncatedNormal<Dtype: FloatingPoint & TensorFlowScalar, T: B
   TFE_OpSetAttrInt(op, "seed2", seed2)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Dtype>.init(_owning: buffer, count: 1)
+  return Tensor<Dtype>.init(_owning: buffer, count: Int(1))
 }
 
 /// Perform batches of RPC requests.
@@ -40762,7 +40762,7 @@ public static func tryRpc(
   _TFCOpSetAttrString(op, "protocol", protocol_)
   TFE_OpSetAttrBool(op, "fail_fast", (failFast) ? 1 : 0)
   TFE_OpSetAttrInt(op, "timeout_in_ms", timeoutInMs)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40771,7 +40771,7 @@ public static func tryRpc(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1), StringTensor.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (StringTensor.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -40802,13 +40802,13 @@ public static func twoFloatInputsFloatOutput(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Float>.init(_owning: buffer, count: 1)
+  return Tensor<Float>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -40822,13 +40822,13 @@ public static func twoFloatInputsIntOutput(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, b, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -40839,7 +40839,7 @@ public static func twoFloatOutputs(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoFloatOutputs", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40847,7 +40847,7 @@ public static func twoFloatOutputs(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Float>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -40875,7 +40875,7 @@ public static func twoIntOutputs(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "TwoIntOutputs", s)
   defer { TFE_DeleteOp(op) }
   
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -40883,7 +40883,7 @@ public static func twoIntOutputs(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -40946,13 +40946,13 @@ public static func unary<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Reverses the operation of Batch for a single output Tensor.
@@ -40995,13 +40995,13 @@ public static func unbatch<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Gradient of Unbatch.
@@ -41040,13 +41040,13 @@ public static func unbatchGrad<T: TensorFlowScalar>(
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Decodes each string in `input` into a sequence of Unicode code points.
@@ -41105,7 +41105,7 @@ public static func unicodeDecode(
   _TFCOpSetAttrString(op, "errors", errors.cName)
   TFE_OpSetAttrInt(op, "replacement_char", replacementChar)
   TFE_OpSetAttrBool(op, "replace_control_characters", (replaceControlCharacters) ? 1 : 0)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41113,7 +41113,7 @@ public static func unicodeDecode(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Decodes each string in `input` into a sequence of Unicode code points.
@@ -41178,7 +41178,7 @@ public static func unicodeDecodeWithOffsets(
   _TFCOpSetAttrString(op, "errors", errors.cName)
   TFE_OpSetAttrInt(op, "replacement_char", replacementChar)
   TFE_OpSetAttrBool(op, "replace_control_characters", (replaceControlCharacters) ? 1 : 0)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41187,7 +41187,7 @@ public static func unicodeDecodeWithOffsets(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Int32>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Encode a tensor of ints into unicode strings.
@@ -41247,13 +41247,13 @@ public static func unicodeEncode(
   _TFCOpSetAttrString(op, "errors", errors.cName)
   _TFCOpSetAttrString(op, "output_encoding", outputEncoding.cName)
   TFE_OpSetAttrInt(op, "replacement_char", replacementChar)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Determine the script codes of a given tensor of Unicode integer code points.
@@ -41276,13 +41276,13 @@ public static func unicodeScript(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnicodeScript", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int32>.init(_owning: buffer, count: 1)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
 }
 
 /// Transcode the input text from a source encoding to a destination encoding.
@@ -41358,13 +41358,13 @@ public static func unicodeTranscode(
   _TFCOpSetAttrString(op, "errors", errors.cName)
   TFE_OpSetAttrInt(op, "replacement_char", replacementChar)
   TFE_OpSetAttrBool(op, "replace_control_characters", (replaceControlCharacters) ? 1 : 0)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Generates labels for candidate sampling with a uniform distribution.
@@ -41425,7 +41425,7 @@ public static func uniformCandidateSampler(
   TFE_OpSetAttrInt(op, "range_max", rangeMax)
   TFE_OpSetAttrInt(op, "seed", seed)
   TFE_OpSetAttrInt(op, "seed2", seed2)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41434,7 +41434,7 @@ public static func uniformCandidateSampler(
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Float>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -41471,7 +41471,7 @@ public static func unique<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorFlo
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41479,7 +41479,7 @@ public static func unique<T: TensorFlowScalar, OutIdx: BinaryInteger & TensorFlo
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -41551,7 +41551,7 @@ public static func uniqueV2<T: TensorFlowScalar, Taxis: BinaryInteger & TensorFl
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1
+  var count: Int32 = Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41559,7 +41559,7 @@ public static func uniqueV2<T: TensorFlowScalar, Taxis: BinaryInteger & TensorFl
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Finds unique elements in a 1-D tensor.
@@ -41599,7 +41599,7 @@ public static func uniqueWithCounts<T: TensorFlowScalar, OutIdx: BinaryInteger &
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41608,7 +41608,7 @@ public static func uniqueWithCounts<T: TensorFlowScalar, OutIdx: BinaryInteger &
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Finds unique elements along an axis of a tensor.
@@ -41685,7 +41685,7 @@ public static func uniqueWithCountsV2<T: TensorFlowScalar, Taxis: BinaryInteger 
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Taxis", Taxis.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_idx", OutIdx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1 + 1 + 1
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
@@ -41694,7 +41694,7 @@ public static func uniqueWithCountsV2<T: TensorFlowScalar, Taxis: BinaryInteger 
   let offset0: Int = 0
   let offset1: Int = offset0 + 1
   let offset2: Int = offset1 + 1
-  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: 1), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: 1))
+  return (Tensor<T>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<OutIdx>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Unpacks a given dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors.
@@ -41732,13 +41732,13 @@ public static func unpack<T: TensorFlowScalar>(
   TFE_OpSetAttrInt(op, "num", num)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "axis", axis)
-  var count: Int32 = num
+  var count: Int32 = Int32(num)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<T>].init(_owning: buffer, count: num)
+  return [Tensor<T>].init(_owning: buffer, count: Int(num))
 }
 
 /// Converts a flat index or array of flat indices into a tuple of
@@ -41769,13 +41769,13 @@ public static func unravelIndex<Tidx: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Tidx>.init(_owning: buffer, count: 1)
+  return Tensor<Tidx>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the maximum along segments of a tensor.
@@ -41833,13 +41833,13 @@ public static func unsortedSegmentMax<T: Numeric & TensorFlowScalar, Tindices: B
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the minimum along segments of a tensor.
@@ -41892,13 +41892,13 @@ public static func unsortedSegmentMin<T: Numeric & TensorFlowScalar, Tindices: B
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the product along segments of a tensor.
@@ -41950,13 +41950,13 @@ public static func unsortedSegmentProd<T: Numeric & TensorFlowScalar, Tindices: 
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the sum along segments of a tensor.
@@ -42010,13 +42010,13 @@ public static func unsortedSegmentSum<T: Numeric & TensorFlowScalar, Tindices: B
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tindices", Tindices.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "Tnumsegments", Tnumsegments.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Op is similar to a lightweight Dequeue.
@@ -42040,13 +42040,13 @@ public static func unstage(
   _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: 1)
+  return dtypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -42058,13 +42058,13 @@ public static func unwrapDatasetVariant(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "UnwrapDatasetVariant", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Applies upper_bound(sorted_search_values, values) along each row.
@@ -42108,13 +42108,13 @@ public static func upperBound<T: TensorFlowScalar, OutType: BinaryInteger & Tens
   let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a handle to a Variable resource.
@@ -42140,13 +42140,13 @@ public static func varHandleOp(
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   TFE_OpSetAttrType(op, "dtype", dtype._cDataType)
   _TFCOpSetAttrOptionalTensorShape(op, "shape", shape, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Checks whether a resource handle-based variable has been initialized.
@@ -42164,13 +42164,13 @@ public static func varIsInitializedOp(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "VarIsInitializedOp", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, resource, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Bool>.init(_owning: buffer, count: 1)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns the shape of the variable pointed to by `resource`.
@@ -42193,13 +42193,13 @@ public static func variableShape<OutType: BinaryInteger & TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<OutType>.init(_owning: buffer, count: 1)
+  return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns locations of nonzero / true values in a tensor.
@@ -42273,13 +42273,13 @@ public static func where_<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<Int64>.init(_owning: buffer, count: 1)
+  return Tensor<Int64>.init(_owning: buffer, count: Int(1))
 }
 
 /// A Reader that outputs the entire contents of a file as a value.
@@ -42305,13 +42305,13 @@ public static func wholeFileReaderV2(
   defer { TFE_DeleteOp(op) }
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return ResourceHandle.init(_owning: buffer, count: 1)
+  return ResourceHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// A dataset that creates window datasets from the input dataset.
@@ -42345,13 +42345,13 @@ public static func windowDataset(
   let _ = _TFCOpAddInputFromTensorGroup(op, dropRemainder, s)
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 /// Worker heartbeat op.
@@ -42371,13 +42371,13 @@ public static func workerHeartbeat(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "WorkerHeartbeat", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, request, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return StringTensor.init(_owning: buffer, count: 1)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -42389,13 +42389,13 @@ public static func wrapDatasetVariant(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "WrapDatasetVariant", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputHandle, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -42592,13 +42592,13 @@ public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns 0 if x == 0, and x * log(y) otherwise, elementwise.
@@ -42614,13 +42614,13 @@ public static func xlogy<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns a tensor of zeros with the same shape and type as x.
@@ -42638,13 +42638,13 @@ public static func zerosLike<T: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Compute the Hurwitz zeta function \\(\zeta(x, q)\\).
@@ -42665,13 +42665,13 @@ public static func zeta<T: FloatingPoint & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, q, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return Tensor<T>.init(_owning: buffer, count: 1)
+  return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that zips together `input_datasets`.
@@ -42689,13 +42689,13 @@ public static func zipDataset(
   TFE_OpSetAttrInt(op, "N", Int64(inputDatasetsCount))
   _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
-  var count: Int32 = 1
+  var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return VariantHandle.init(_owning: buffer, count: 1)
+  return VariantHandle.init(_owning: buffer, count: Int(1))
 }
 
 }

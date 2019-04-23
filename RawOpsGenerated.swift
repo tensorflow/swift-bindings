@@ -663,7 +663,7 @@ public static func add(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -8887,7 +8887,7 @@ public static func denseToDenseSetOperation(
   let _ = _TFCOpAddInputFromTensorGroup(op, set2, s)
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -9021,7 +9021,7 @@ public static func denseToSparseSetOperation(
   let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -9666,7 +9666,7 @@ public static func deserializeSparse<Dtype: TensorFlowScalar>(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
   TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
-  TFE_OpSetAttrType(op, "Tserialized", Tserialized.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tserialized", 7)
   var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -11063,7 +11063,7 @@ public static func equal(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -21866,7 +21866,7 @@ public static func nPolymorphicRestrictIn(
   defer { TFE_DeleteOp(op) }
   let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
   TFE_OpSetAttrInt(op, "N", Int64(aCount))
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = 0
   var unused: CTensorHandle?
   _TFCEagerExecute(op, &unused, &count, s)
@@ -21900,7 +21900,7 @@ public static func nPolymorphicRestrictOut(
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicRestrictOut", s)
   defer { TFE_DeleteOp(op) }
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   TFE_OpSetAttrInt(op, "N", n)
   var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -22528,7 +22528,7 @@ public static func notEqual(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -31542,7 +31542,7 @@ public static func restrict(
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Restrict", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -32334,7 +32334,7 @@ public static func reverse(
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -32581,7 +32581,7 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
   TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -34385,7 +34385,7 @@ public static func serializeManySparse<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -34451,7 +34451,7 @@ public static func serializeSparse<T: TensorFlowScalar>(
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -34561,7 +34561,7 @@ public static func setSize(
   let _ = _TFCOpAddInputFromTensorGroup(op, setValues, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, setShape, s)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -36038,7 +36038,7 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   TFE_OpSetAttrInt(op, "hash_key", hashKey)
   _TFCOpSetAttrTypeArray(op, "sparse_types", SparseTypes._typeList)
   _TFCOpSetAttrTypeArray(op, "dense_types", DenseTypes._typeList)
-  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", 7)
   TFE_OpSetAttrType(op, "internal_type", internalType._cDataType)
   var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -37689,7 +37689,7 @@ public static func sparseToSparseSetOperation(
   let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
   _TFCOpSetAttrString(op, "set_operation", setOperation)
   TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
-  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", 7)
   var count: Int32 = Int32(1) + Int32(1) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))

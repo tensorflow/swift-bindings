@@ -285,7 +285,7 @@ public static func {name}{generics}({input_args}
       for arg in self.input_args:
         tfop_args.append(arg.swift_setter(mode))
       for attr in self.attrs:
-        setter = attr.swift_setter(mode)
+        setter = attr.swift_setter(mode, self.string_valued)
         if setter != '':
           tfop_args.append(setter)
       tfop_args = ',\n    '.join(tfop_args)
@@ -326,7 +326,7 @@ public static func {name}{generics}({input_args}
       for arg in self.input_args:
         setters.append(arg.swift_setter(mode))
       for attr in self.attrs:
-        setters.append(attr.swift_setter(mode))
+        setters.append(attr.swift_setter(mode, self.string_valued))
       body += '\n  '.join(setters)
       if len(self.output_args) == 0:
         body += '\n  var count: Int32 = 0'
@@ -608,13 +608,15 @@ class Attribute(object):
         return ' = ' + default_value
     return ''
 
-  def swift_setter(self, mode):
+  def swift_setter(self, mode, string_valued=False):
     if mode == 'tfop':
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
           # TODO: [tfop]
           raise UnableToGenerateCodeError('Unsupported type for attribute "%s" in "tfop" mode.' % self.attr_def.name)
+        if string_valued and self.allows_string:
+          return self.name + '$dtype: TensorDataType(TF_STRING)'
         return self.name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
 
       # Function-valued attributes.
@@ -629,6 +631,8 @@ class Attribute(object):
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
           return '_TFCOpSetAttrTypeArray(op, "' + self.name + '", ' + self.swift_name + '._typeList)'
+        if string_valued and self.allows_string:
+          return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + str(types_pb2.DT_STRING) + ')'
         return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + self.swift_name + '.tensorFlowDataType._cDataType)'
 
       # Function-valued attributes.

@@ -149,10 +149,11 @@ class UnableToGenerateCodeError(Exception):
 
 
 class Op(object):
-  def __init__(self, op_def, api_def, enum_store):
+  def __init__(self, op_def, api_def, enum_store, string_valued=False):
     self.op_def = op_def
     self.api_def = api_def
     self.enum_store = enum_store
+    self.string_valued = string_valued
     self.inferred_numbers = dict()
 
     # Collect all the attributes that need to be provided
@@ -242,7 +243,7 @@ public static func {name}{generics}({input_args}
 
   def _swift_generics(self):
     constraints = [
-      attr.generic_constraints
+      attr.generic_constraints(self.string_valued)
       for attr in self.attrs]
     constraints = [c for c in constraints if c is not None]
     if constraints:
@@ -252,7 +253,7 @@ public static func {name}{generics}({input_args}
   def _swift_input_args(self):
     args = ''
     for arg in self.input_args:
-      args += '\n  %s: %s,' % (arg.swift_arg_name, str(arg.swift_type))
+      args += '\n  %s: %s,' % (arg.swift_arg_name, str(arg.swift_type(self.string_valued)))
     for attr in self.attrs:
       if not attr.is_inferred_type_attr:
         args += '\n  %s: %s%s,' % (attr.swift_arg_name, attr.swift_type, attr.swift_default)
@@ -270,10 +271,10 @@ public static func {name}{generics}({input_args}
 
     return_type = ''
     if len(self.output_args) == 1:
-      return_type = ' -> ' + str(self.output_args[0].swift_type)
+      return_type = ' -> ' + str(self.output_args[0].swift_type(self.string_valued))
     elif len(self.output_args) > 1:
       named_types = [
-        arg.swift_name + ': ' + str(arg.swift_type)
+        arg.swift_name + ': ' + str(arg.swift_type(self.string_valued))
         for arg in self.output_args]
       return_type = ' -> (' + ', '.join(named_types) + ')'
     return return_type
@@ -291,20 +292,6 @@ public static func {name}{generics}({input_args}
       if not self.output_args:
         return 'return #tfop({})'.format(tfop_args)
       else:
-        # Example body with 1 return tensor:
-        # let ret: [TensorHandle<Int32>] = #tfop("ConcatOffset",
-        #   concatDim,
-        #   shape)
-        # return ret.0.map(Tensor.init)
-        #
-        # Example body with 2 return tensors:
-        # let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntr...",
-        #   features,
-        #   labels,
-        #   T: T.self)
-        # return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-        # if ret.0 is [TensorHandle<T>], then we construct ret.0.map(Tensor.init) to
-        # convert it to [Tensor<T>]
         handle_types = [arg.swift_handle_type for arg in self.output_args]
         if len(self.output_args) > 1:
           return_handle_type = '(' + ', '.join(handle_types) + ')'
@@ -315,7 +302,8 @@ public static func {name}{generics}({input_args}
         body += '\n  return '
 
         def convert_for_return(arg, value):
-          if arg.type.kind == 'Tensor' and arg.type.base_type == 'String':
+          if (self.string_valued and arg.allows_string) or \
+              (arg.type.kind == 'Tensor' and arg.type.base_type == 'String'):
             return 'StringTensor(handle: ' + value + ')'
           elif arg.type.kind == 'Tensor':
             return 'Tensor(handle: ' + value + ')'
@@ -356,7 +344,7 @@ public static func {name}{generics}({input_args}
       if len(self.output_args) == 1:
         arg = self.output_args[0]
         body += '\n  return {}.init(_owning: buffer, count: Int({}))'.format(
-          arg.swift_type, arg.swift_count)
+          arg.swift_type(self.string_valued), arg.swift_count)
         return body
       for i, arg in enumerate(self.output_args):
         body += '\n  let offset{}: Int = '.format(i)
@@ -366,7 +354,7 @@ public static func {name}{generics}({input_args}
           body += 'offset{} + Int({})'.format(i - 1, self.output_args[i-1].swift_count)
       body += '\n  return (' + ', '.join([
         '{}.init(_owning: buffer.advanced(by: offset{}), count: Int({}))'.format(
-          arg.swift_type, i, arg.swift_count)
+          arg.swift_type(self.string_valued), i, arg.swift_count)
         for i, arg in enumerate(self.output_args)]) + ')'
       return body
 
@@ -399,8 +387,9 @@ class Argument(object):
       name = '_ ' + name
     return name
 
-  @property
-  def swift_type(self):
+  def swift_type(self, string_valued=False):
+    if string_valued and self.allows_string:
+      return 'StringTensor'
     return self.type.swift_type
 
   @property
@@ -459,6 +448,15 @@ class Argument(object):
       return Type('VariantHandle', number=number)
     raise UnableToGenerateCodeError(
       'Unsupported type for argument "%s".' % self.name)
+
+  @property
+  def allows_string(self):
+    if self.arg_def.type_attr:
+      type_attr = next(
+        attr for attr in self.op.type_attrs
+        if attr.name == self.arg_def.type_attr)
+      return types_pb2.DT_STRING in type_attr.attr_def.allowed_values.list.type
+    return False
 
 
 class Type(object):
@@ -682,8 +680,7 @@ class Attribute(object):
       'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
       % mode)
 
-  @property
-  def generic_constraints(self):
+  def generic_constraints(self, string_valued):
     if self.is_func_attr:
       input_type = self.swift_name.capitalize() + 'In'
       output_type = self.swift_name.capitalize() + 'Out'
@@ -699,6 +696,8 @@ class Attribute(object):
     elif self.attr_def.type == 'list(type)':
       protocol = 'TensorGroup'
     elif self.attr_def.type == 'type':
+      if string_valued and self.allows_string:
+        return None
       protocol = 'TensorFlowScalar'
       allowed_types = set(self.attr_def.allowed_values.list.type)
       allowed_types &= set(_SWIFTIFIED_TYPES.keys())
@@ -709,6 +708,10 @@ class Attribute(object):
     if protocol is not None:
       return self.swift_name + ': ' + protocol
     return None
+
+  @property
+  def allows_string(self):
+    return types_pb2.DT_STRING in self.attr_def.allowed_values.list.type
 
 
 def swift_compatible_identifier(s, capitalize=False):
@@ -803,6 +806,7 @@ def main(argv):
       except Exception as e:
         print('Cannot load api def for %s: %s' % (op_name, str(e)))
 
+  num_generated = 0
   for op_name in sorted(op_names):
     try:
       if op_name[0] == '_': continue
@@ -812,11 +816,20 @@ def main(argv):
       if any(a.is_ref for a in op_def.output_arg):
         raise UnableToGenerateCodeError('has ref-valued output')
       api_def = api_def_map.get_api_def(bytes(op_name, 'utf8'))
-      op = Op(op_def, api_def, enum_store)
-      op_codes.append(op.swift_function(mode=FLAGS.mode))
+
+      # It would be nicer to handle `StringTensor` in a more
+      # general way by having `String` conform to `TensorFlowScalar`.
+      default_op = Op(op_def, api_def, enum_store, string_valued=False)
+      string_valued_op = Op(op_def, api_def, enum_store, string_valued=True)
+      default_code = default_op.swift_function(mode=FLAGS.mode)
+      string_valued_code = string_valued_op.swift_function(mode=FLAGS.mode)
+      op_codes.append(default_code)
+      if string_valued_code != default_code:
+        op_codes.append(string_valued_code)
+      num_generated += 1
     except UnableToGenerateCodeError as e:
       print('Cannot generate code for %s: %s' % (op_name, e.details))
-  print('Generated code for %d/%d ops.' % (len(op_codes), len(op_names)))
+  print('Generated code for %d/%d ops.' % (num_generated, len(op_names)))
 
   version_codes = [
       'static let generatedTensorFlowVersion = "%s"' % tf.__version__,

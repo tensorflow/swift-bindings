@@ -648,6 +648,31 @@ public static func add<T: Numeric & TensorFlowScalar>(
   return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
+/// Returns x + y element-wise.
+///
+/// *NOTE*: `Add` supports broadcasting. `AddN` does not. More about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+@inlinable @inline(__always)
+public static func add(
+  _ x: StringTensor,
+  _ y: StringTensor
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Add", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
+}
+
 /// Add an `N`-minibatch `SparseTensor` to a `SparseTensorsMap`, return `N` handles.
 ///
 /// A `SparseTensor` of rank `R` is represented by three tensors: `sparse_indices`,
@@ -8825,6 +8850,56 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
+/// Applies set operation along last dimension of 2 `Tensor` inputs.
+///
+/// See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+///
+/// Output `result` is a `SparseTensor` represented by `result_indices`,
+/// `result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+/// has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+/// dimension contains the result of `set_operation` applied to the corresponding
+/// `[0...n-1]` dimension of `set`.
+///
+/// - Parameters:
+///   - set1: `Tensor` with rank `n`. 1st `n-1` dimensions must be the same as `set2`.
+///     Dimension `n` contains values in a set, duplicates are allowed but ignored.
+///   - set2: `Tensor` with rank `n`. 1st `n-1` dimensions must be the same as `set1`.
+///     Dimension `n` contains values in a set, duplicates are allowed but ignored.
+///
+/// - Outputs:
+///   - result_indices: 2D indices of a `SparseTensor`.
+///   - result_values: 1D values of a `SparseTensor`.
+///   - result_shape: 1D `Tensor` shape of a `SparseTensor`. `result_shape[0...n-1]` is
+///     the same as the 1st `n-1` dimensions of `set1` and `set2`, `result_shape[n]`
+///     is the max result set size across all `0...n-1` dimensions.
+@inlinable @inline(__always)
+public static func denseToDenseSetOperation(
+  set1: StringTensor,
+  set2: StringTensor,
+  setOperation: String,
+  validateIndices: Bool = true
+) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DenseToDenseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2, s)
+  _TFCOpSetAttrString(op, "set_operation", setOperation)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  let offset0: Int = 0
+  let offset1: Int = offset0 + Int(1)
+  let offset2: Int = offset1 + Int(1)
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+}
+
 /// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
 ///
 /// See SetOperationOp::SetOperationFromContext for values of `set_operation`.
@@ -8890,6 +8965,73 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+}
+
+/// Applies set operation along last dimension of `Tensor` and `SparseTensor`.
+///
+/// See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+///
+/// Input `set2` is a `SparseTensor` represented by `set2_indices`, `set2_values`,
+/// and `set2_shape`. For `set2` ranked `n`, 1st `n-1` dimensions must be the same
+/// as `set1`. Dimension `n` contains values in a set, duplicates are allowed but
+/// ignored.
+///
+/// If `validate_indices` is `True`, this op validates the order and range of `set2`
+/// indices.
+///
+/// Output `result` is a `SparseTensor` represented by `result_indices`,
+/// `result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+/// has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+/// dimension contains the result of `set_operation` applied to the corresponding
+/// `[0...n-1]` dimension of `set`.
+///
+/// - Parameters:
+///   - set1: `Tensor` with rank `n`. 1st `n-1` dimensions must be the same as `set2`.
+///     Dimension `n` contains values in a set, duplicates are allowed but ignored.
+///   - set2_indices: 2D `Tensor`, indices of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set2_values: 1D `Tensor`, values of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set2_shape: 1D `Tensor`, shape of a `SparseTensor`. `set2_shape[0...n-1]` must
+///     be the same as the 1st `n-1` dimensions of `set1`, `result_shape[n]` is the
+///     max set size across `n-1` dimensions.
+///
+/// - Outputs:
+///   - result_indices: 2D indices of a `SparseTensor`.
+///   - result_values: 1D values of a `SparseTensor`.
+///   - result_shape: 1D `Tensor` shape of a `SparseTensor`. `result_shape[0...n-1]` is
+///     the same as the 1st `n-1` dimensions of `set1` and `set2`, `result_shape[n]`
+///     is the max result set size across all `0...n-1` dimensions.
+@inlinable @inline(__always)
+public static func denseToSparseSetOperation(
+  set1: StringTensor,
+  set2Indices: Tensor<Int64>,
+  set2Values: StringTensor,
+  set2Shape: Tensor<Int64>,
+  setOperation: String,
+  validateIndices: Bool = true
+) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DenseToSparseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
+  _TFCOpSetAttrString(op, "set_operation", setOperation)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  let offset0: Int = 0
+  let offset1: Int = offset0 + Int(1)
+  let offset2: Int = offset1 + Int(1)
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// DepthToSpace for tensors of type T.
@@ -9446,6 +9588,77 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func deserializeSparse<Dtype: TensorFlowScalar, Tserialized: TensorFlowScalar>(
   serializedSparse: Tensor<Tserialized>
+) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DeserializeSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, serializedSparse, s)
+  TFE_OpSetAttrType(op, "dtype", Dtype.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "Tserialized", Tserialized.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  let offset0: Int = 0
+  let offset1: Int = offset0 + Int(1)
+  let offset2: Int = offset1 + Int(1)
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<Dtype>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+}
+
+/// Deserialize `SparseTensor` objects.
+///
+/// The input `serialized_sparse` must have the shape `[?, ?, ..., ?, 3]` where
+/// the last dimension stores serialized `SparseTensor` objects and the other N
+/// dimensions (N >= 0) correspond to a batch. The ranks of the original
+/// `SparseTensor` objects must all match. When the final `SparseTensor` is
+/// created, its rank is the rank of the incoming `SparseTensor` objects plus N;
+/// the sparse tensors have been concatenated along new dimensions, one for each
+/// batch.
+///
+/// The output `SparseTensor` object's shape values for the original dimensions
+/// are the max across the input `SparseTensor` objects' shape values for the
+/// corresponding dimensions. The new dimensions match the size of the batch.
+///
+/// The input `SparseTensor` objects' indices are assumed ordered in
+/// standard lexicographic order.  If this is not the case, after this
+/// step run `SparseReorder` to restore index ordering.
+///
+/// For example, if the serialized input is a `[2 x 3]` matrix representing two
+/// original `SparseTensor` objects:
+///
+///     index = [ 0]
+///             [10]
+///             [20]
+///     values = [1, 2, 3]
+///     shape = [50]
+///
+/// and
+///
+///     index = [ 2]
+///             [10]
+///     values = [4, 5]
+///     shape = [30]
+///
+/// then the final deserialized `SparseTensor` will be:
+///
+///     index = [0  0]
+///             [0 10]
+///             [0 20]
+///             [1  2]
+///             [1 10]
+///     values = [1, 2, 3, 4, 5]
+///     shape = [2 50]
+///
+/// - Parameter serialized_sparse: The serialized `SparseTensor` objects. The last dimension
+///   must have 3 columns.
+///
+/// - Attr dtype: The `dtype` of the serialized `SparseTensor` objects.
+@inlinable @inline(__always)
+public static func deserializeSparse<Dtype: TensorFlowScalar>(
+  serializedSparse: StringTensor
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
@@ -10818,6 +11031,31 @@ public static func enter<T: TensorFlowScalar>(
 public static func equal<T: TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
+) -> Tensor<Bool> {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Equal", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
+}
+
+/// Returns the truth value of (x == y) element-wise.
+///
+/// *NOTE*: `Equal` supports broadcasting. More about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+@inlinable @inline(__always)
+public static func equal(
+  _ x: StringTensor,
+  _ y: StringTensor
 ) -> Tensor<Bool> {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
@@ -21619,6 +21857,23 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
+public static func nPolymorphicRestrictIn(
+  _ a: StringTensor
+) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicRestrictIn", s)
+  defer { TFE_DeleteOp(op) }
+  let aCount = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrInt(op, "N", Int64(aCount))
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = 0
+  var unused: CTensorHandle?
+  _TFCEagerExecute(op, &unused, &count, s)
+  checkOk(s)
+}
+
+@inlinable @inline(__always)
 public static func nPolymorphicRestrictOut<T: TensorFlowScalar>(
   n: Int64
 ) -> [Tensor<T>] {
@@ -21635,6 +21890,25 @@ public static func nPolymorphicRestrictOut<T: TensorFlowScalar>(
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return [Tensor<T>].init(_owning: buffer, count: Int(n))
+}
+
+@inlinable @inline(__always)
+public static func nPolymorphicRestrictOut(
+  n: Int64
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicRestrictOut", s)
+  defer { TFE_DeleteOp(op) }
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrInt(op, "N", n)
+  var count: Int32 = Int32(n)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(n))
 }
 
 /// Outputs a tensor containing the reduction across all input tensors.
@@ -22222,6 +22496,31 @@ public static func none(
 public static func notEqual<T: TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
+) -> Tensor<Bool> {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NotEqual", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, x, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, y, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tensor<Bool>.init(_owning: buffer, count: Int(1))
+}
+
+/// Returns the truth value of (x != y) element-wise.
+///
+/// *NOTE*: `NotEqual` supports broadcasting. More about broadcasting
+/// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
+@inlinable @inline(__always)
+public static func notEqual(
+  _ x: StringTensor,
+  _ y: StringTensor
 ) -> Tensor<Bool> {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
@@ -31234,6 +31533,25 @@ public static func restrict<T: TensorFlowScalar>(
   return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
+@inlinable @inline(__always)
+public static func restrict(
+  _ a: StringTensor
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Restrict", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, a, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
+}
+
 /// Retrieve ADAM embedding parameters.
 ///
 /// An op that retrieves optimization parameters from embedding to host
@@ -31953,6 +32271,79 @@ public static func reverse<T: TensorFlowScalar>(
   return Tensor<T>.init(_owning: buffer, count: Int(1))
 }
 
+/// Reverses specific dimensions of a tensor.
+///
+/// Given a `tensor`, and a `bool` tensor `dims` representing the dimensions
+/// of `tensor`, this operation reverses each dimension i of `tensor` where
+/// `dims[i]` is `True`.
+///
+/// `tensor` can have up to 8 dimensions. The number of dimensions
+/// of `tensor` must equal the number of elements in `dims`. In other words:
+///
+/// `rank(tensor) = size(dims)`
+///
+/// For example:
+///
+/// ```
+/// # tensor 't' is [[[[ 0,  1,  2,  3],
+/// #                  [ 4,  5,  6,  7],
+/// #                  [ 8,  9, 10, 11]],
+/// #                 [[12, 13, 14, 15],
+/// #                  [16, 17, 18, 19],
+/// #                  [20, 21, 22, 23]]]]
+/// # tensor 't' shape is [1, 2, 3, 4]
+///
+/// # 'dims' is [False, False, False, True]
+/// reverse(t, dims) ==> [[[[ 3,  2,  1,  0],
+///                         [ 7,  6,  5,  4],
+///                         [ 11, 10, 9, 8]],
+///                        [[15, 14, 13, 12],
+///                         [19, 18, 17, 16],
+///                         [23, 22, 21, 20]]]]
+///
+/// # 'dims' is [False, True, False, False]
+/// reverse(t, dims) ==> [[[[12, 13, 14, 15],
+///                         [16, 17, 18, 19],
+///                         [20, 21, 22, 23]
+///                        [[ 0,  1,  2,  3],
+///                         [ 4,  5,  6,  7],
+///                         [ 8,  9, 10, 11]]]]
+///
+/// # 'dims' is [False, False, True, False]
+/// reverse(t, dims) ==> [[[[8, 9, 10, 11],
+///                         [4, 5, 6, 7],
+///                         [0, 1, 2, 3]]
+///                        [[20, 21, 22, 23],
+///                         [16, 17, 18, 19],
+///                         [12, 13, 14, 15]]]]
+/// ```
+///
+/// - Parameters:
+///   - tensor: Up to 8-D.
+///   - dims: 1-D. The dimensions to reverse.
+///
+/// - Output output: The same shape as `tensor`.
+@inlinable @inline(__always)
+public static func reverse(
+  _ tensor: StringTensor,
+  dims: Tensor<Bool>
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Reverse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, dims, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
+}
+
 /// Reverses variable length slices.
 ///
 /// This op first slices `input` along the dimension `batch_dim`, and for each
@@ -32121,6 +32512,83 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar, T: TensorFl
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<T>.init(_owning: buffer, count: Int(1))
+}
+
+/// Reverses specific dimensions of a tensor.
+///
+/// NOTE `tf.reverse` has now changed behavior in preparation for 1.0.
+/// `tf.reverse_v2` is currently an alias that will be deprecated before TF 1.0.
+///
+/// Given a `tensor`, and a `int32` tensor `axis` representing the set of
+/// dimensions of `tensor` to reverse. This operation reverses each dimension
+/// `i` for which there exists `j` s.t. `axis[j] == i`.
+///
+/// `tensor` can have up to 8 dimensions. The number of dimensions specified
+/// in `axis` may be 0 or more entries. If an index is specified more than
+/// once, a InvalidArgument error is raised.
+///
+/// For example:
+///
+/// ```
+/// # tensor 't' is [[[[ 0,  1,  2,  3],
+/// #                  [ 4,  5,  6,  7],
+/// #                  [ 8,  9, 10, 11]],
+/// #                 [[12, 13, 14, 15],
+/// #                  [16, 17, 18, 19],
+/// #                  [20, 21, 22, 23]]]]
+/// # tensor 't' shape is [1, 2, 3, 4]
+///
+/// # 'dims' is [3] or 'dims' is [-1]
+/// reverse(t, dims) ==> [[[[ 3,  2,  1,  0],
+///                         [ 7,  6,  5,  4],
+///                         [ 11, 10, 9, 8]],
+///                        [[15, 14, 13, 12],
+///                         [19, 18, 17, 16],
+///                         [23, 22, 21, 20]]]]
+///
+/// # 'dims' is '[1]' (or 'dims' is '[-3]')
+/// reverse(t, dims) ==> [[[[12, 13, 14, 15],
+///                         [16, 17, 18, 19],
+///                         [20, 21, 22, 23]
+///                        [[ 0,  1,  2,  3],
+///                         [ 4,  5,  6,  7],
+///                         [ 8,  9, 10, 11]]]]
+///
+/// # 'dims' is '[2]' (or 'dims' is '[-2]')
+/// reverse(t, dims) ==> [[[[8, 9, 10, 11],
+///                         [4, 5, 6, 7],
+///                         [0, 1, 2, 3]]
+///                        [[20, 21, 22, 23],
+///                         [16, 17, 18, 19],
+///                         [12, 13, 14, 15]]]]
+/// ```
+///
+/// - Parameters:
+///   - tensor: Up to 8-D.
+///   - axis: 1-D. The indices of the dimensions to reverse. Must be in the range
+///     `[-rank(tensor), rank(tensor))`.
+///
+/// - Output output: The same shape as `tensor`.
+@inlinable @inline(__always)
+public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar>(
+  _ tensor: StringTensor,
+  axis: Tensor<Tidx>
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ReverseV2", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, tensor, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, axis, s)
+  TFE_OpSetAttrType(op, "Tidx", Tidx.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Elementwise computes the bitwise right-shift of `x` and `y`.
@@ -33886,6 +34354,47 @@ public static func serializeManySparse<T: TensorFlowScalar, OutType: TensorFlowS
   return Tensor<OutType>.init(_owning: buffer, count: Int(1))
 }
 
+/// Serialize an `N`-minibatch `SparseTensor` into an `[N, 3]` `Tensor` object.
+///
+/// The `SparseTensor` must have rank `R` greater than 1, and the first dimension
+/// is treated as the minibatch dimension.  Elements of the `SparseTensor`
+/// must be sorted in increasing order of this first dimension.  The serialized
+/// `SparseTensor` objects going into each row of `serialized_sparse` will have
+/// rank `R-1`.
+///
+/// The minibatch size `N` is extracted from `sparse_shape[0]`.
+///
+/// - Parameters:
+///   - sparse_indices: 2-D.  The `indices` of the minibatch `SparseTensor`.
+///   - sparse_values: 1-D.  The `values` of the minibatch `SparseTensor`.
+///   - sparse_shape: 1-D.  The `shape` of the minibatch `SparseTensor`.
+///
+/// - Attr out_type: The `dtype` to use for serialization; the supported types are `string`
+///   (default) and `variant`.
+@inlinable @inline(__always)
+public static func serializeManySparse<T: TensorFlowScalar>(
+  sparseIndices: Tensor<Int64>,
+  sparseValues: Tensor<T>,
+  sparseShape: Tensor<Int64>
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeManySparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
+}
+
 /// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
 ///
 /// - Parameters:
@@ -33917,6 +34426,39 @@ public static func serializeSparse<T: TensorFlowScalar, OutType: TensorFlowScala
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
   return Tensor<OutType>.init(_owning: buffer, count: Int(1))
+}
+
+/// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
+///
+/// - Parameters:
+///   - sparse_indices: 2-D.  The `indices` of the `SparseTensor`.
+///   - sparse_values: 1-D.  The `values` of the `SparseTensor`.
+///   - sparse_shape: 1-D.  The `shape` of the `SparseTensor`.
+///
+/// - Attr out_type: The `dtype` to use for serialization; the supported types are `string`
+///   (default) and `variant`.
+@inlinable @inline(__always)
+public static func serializeSparse<T: TensorFlowScalar>(
+  sparseIndices: Tensor<Int64>,
+  sparseValues: Tensor<T>,
+  sparseShape: Tensor<Int64>
+) -> StringTensor {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SerializeSparse", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, sparseShape, s)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return StringTensor.init(_owning: buffer, count: Int(1))
 }
 
 /// Transforms a Tensor into a serialized TensorProto proto.
@@ -33966,6 +34508,48 @@ public static func serializeTensor<T: TensorFlowScalar>(
 public static func setSize<T: BinaryInteger & TensorFlowScalar>(
   setIndices: Tensor<Int64>,
   setValues: Tensor<T>,
+  setShape: Tensor<Int64>,
+  validateIndices: Bool = true
+) -> Tensor<Int32> {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SetSize", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, setIndices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, setValues, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, setShape, s)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  return Tensor<Int32>.init(_owning: buffer, count: Int(1))
+}
+
+/// Number of unique elements along last dimension of input `set`.
+///
+/// Input `set` is a `SparseTensor` represented by `set_indices`, `set_values`,
+/// and `set_shape`. The last dimension contains values in a set, duplicates are
+/// allowed but ignored.
+///
+/// If `validate_indices` is `True`, this op validates the order and range of `set`
+/// indices.
+///
+/// - Parameters:
+///   - set_indices: 2D `Tensor`, indices of a `SparseTensor`.
+///   - set_values: 1D `Tensor`, values of a `SparseTensor`.
+///   - set_shape: 1D `Tensor`, shape of a `SparseTensor`.
+///
+/// - Output size: For `set` ranked `n`, this is a `Tensor` with rank `n-1`, and the same 1st
+///   `n-1` dimensions as `set`. Each value is the number of unique elements in
+///   the corresponding `[0...n-1]` dimension of `set`.
+@inlinable @inline(__always)
+public static func setSize(
+  setIndices: Tensor<Int64>,
+  setValues: StringTensor,
   setShape: Tensor<Int64>,
   validateIndices: Bool = true
 ) -> Tensor<Int32> {
@@ -35369,6 +35953,103 @@ public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<OutType>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+}
+
+/// Generates sparse cross from a list of sparse and dense tensors.
+///
+/// The op takes two lists, one of 2D `SparseTensor` and one of 2D `Tensor`, each
+/// representing features of one feature column. It outputs a 2D `SparseTensor` with
+/// the batchwise crosses of these features.
+///
+/// For example, if the inputs are
+///
+///     inputs[0]: SparseTensor with shape = [2, 2]
+///     [0, 0]: "a"
+///     [1, 0]: "b"
+///     [1, 1]: "c"
+///
+///     inputs[1]: SparseTensor with shape = [2, 1]
+///     [0, 0]: "d"
+///     [1, 0]: "e"
+///
+///     inputs[2]: Tensor [["f"], ["g"]]
+///
+/// then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: "a_X_d_X_f"
+///     [1, 0]: "b_X_e_X_g"
+///     [1, 1]: "c_X_e_X_g"
+///
+/// if hashed_output=true then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: FingerprintCat64(
+///                 Fingerprint64("f"), FingerprintCat64(
+///                     Fingerprint64("d"), Fingerprint64("a")))
+///     [1, 0]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("b")))
+///     [1, 1]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("c")))
+///
+/// - Parameters:
+///   - indices: 2-D.  Indices of each input `SparseTensor`.
+///   - values: 1-D.   values of each `SparseTensor`.
+///   - shapes: 1-D.   Shapes of each `SparseTensor`.
+///   - dense_inputs: 2-D.    Columns represented by dense `Tensor`.
+///
+/// - Attrs:
+///   - hashed_output: If true, returns the hash of the cross instead of the string.
+///     This will allow us avoiding string manipulations.
+///   - num_buckets: It is used if hashed_output is true.
+///     output = hashed_value%num_buckets if num_buckets > 0 else hashed_value.
+///   - hash_key: Specify the hash_key that will be used by the `FingerprintCat64`
+///     function to combine the crosses fingerprints.
+///
+/// - Outputs:
+///   - output_indices: 2-D.  Indices of the concatenated `SparseTensor`.
+///   - output_values: 1-D.  Non-empty values of the concatenated or hashed
+///     `SparseTensor`.
+///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
+@inlinable @inline(__always)
+public static func sparseCross<SparseTypes: TensorGroup, DenseTypes: TensorGroup>(
+  indices: [Tensor<Int64>],
+  _ values: SparseTypes,
+  shapes: [Tensor<Int64>],
+  denseInputs: DenseTypes,
+  hashedOutput: Bool,
+  numBuckets: Int64,
+  hashKey: Int64,
+  internalType: TensorDataType
+) -> (outputIndices: Tensor<Int64>, outputValues: StringTensor, outputShape: Tensor<Int64>) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseCross", s)
+  defer { TFE_DeleteOp(op) }
+  let indicesCount = _TFCOpAddInputFromTensorGroup(op, indices, s)
+  TFE_OpSetAttrInt(op, "N", Int64(indicesCount))
+  let _ = _TFCOpAddInputFromTensorGroup(op, values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, shapes, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, denseInputs, s)
+  TFE_OpSetAttrBool(op, "hashed_output", (hashedOutput) ? 1 : 0)
+  TFE_OpSetAttrInt(op, "num_buckets", numBuckets)
+  TFE_OpSetAttrInt(op, "hash_key", hashKey)
+  _TFCOpSetAttrTypeArray(op, "sparse_types", SparseTypes._typeList)
+  _TFCOpSetAttrTypeArray(op, "dense_types", DenseTypes._typeList)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
+  TFE_OpSetAttrType(op, "internal_type", internalType._cDataType)
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  let offset0: Int = 0
+  let offset1: Int = offset0 + Int(1)
+  let offset2: Int = offset1 + Int(1)
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
@@ -36935,6 +37616,90 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   let offset1: Int = offset0 + Int(1)
   let offset2: Int = offset1 + Int(1)
   return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Tensor<T>.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+}
+
+/// Applies set operation along last dimension of 2 `SparseTensor` inputs.
+///
+/// See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+///
+/// If `validate_indices` is `True`, `SparseToSparseSetOperation` validates the
+/// order and range of `set1` and `set2` indices.
+///
+/// Input `set1` is a `SparseTensor` represented by `set1_indices`, `set1_values`,
+/// and `set1_shape`. For `set1` ranked `n`, 1st `n-1` dimensions must be the same
+/// as `set2`. Dimension `n` contains values in a set, duplicates are allowed but
+/// ignored.
+///
+/// Input `set2` is a `SparseTensor` represented by `set2_indices`, `set2_values`,
+/// and `set2_shape`. For `set2` ranked `n`, 1st `n-1` dimensions must be the same
+/// as `set1`. Dimension `n` contains values in a set, duplicates are allowed but
+/// ignored.
+///
+/// If `validate_indices` is `True`, this op validates the order and range of `set1`
+/// and `set2` indices.
+///
+/// Output `result` is a `SparseTensor` represented by `result_indices`,
+/// `result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+/// has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+/// dimension contains the result of `set_operation` applied to the corresponding
+/// `[0...n-1]` dimension of `set`.
+///
+/// - Parameters:
+///   - set1_indices: 2D `Tensor`, indices of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set1_values: 1D `Tensor`, values of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set1_shape: 1D `Tensor`, shape of a `SparseTensor`. `set1_shape[0...n-1]` must
+///     be the same as `set2_shape[0...n-1]`, `set1_shape[n]` is the
+///     max set size across `0...n-1` dimensions.
+///   - set2_indices: 2D `Tensor`, indices of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set2_values: 1D `Tensor`, values of a `SparseTensor`. Must be in row-major
+///     order.
+///   - set2_shape: 1D `Tensor`, shape of a `SparseTensor`. `set2_shape[0...n-1]` must
+///     be the same as `set1_shape[0...n-1]`, `set2_shape[n]` is the
+///     max set size across `0...n-1` dimensions.
+///
+/// - Outputs:
+///   - result_indices: 2D indices of a `SparseTensor`.
+///   - result_values: 1D values of a `SparseTensor`.
+///   - result_shape: 1D `Tensor` shape of a `SparseTensor`. `result_shape[0...n-1]` is
+///     the same as the 1st `n-1` dimensions of `set1` and `set2`, `result_shape[n]`
+///     is the max result set size across all `0...n-1` dimensions.
+@inlinable @inline(__always)
+public static func sparseToSparseSetOperation(
+  set1Indices: Tensor<Int64>,
+  set1Values: StringTensor,
+  set1Shape: Tensor<Int64>,
+  set2Indices: Tensor<Int64>,
+  set2Values: StringTensor,
+  set2Shape: Tensor<Int64>,
+  setOperation: String,
+  validateIndices: Bool = true
+) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
+  let s: CTFStatus = TF_NewStatus()
+  defer { TF_DeleteStatus(s) }
+  let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "SparseToSparseSetOperation", s)
+  defer { TFE_DeleteOp(op) }
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set1Shape, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Indices, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Values, s)
+  let _ = _TFCOpAddInputFromTensorGroup(op, set2Shape, s)
+  _TFCOpSetAttrString(op, "set_operation", setOperation)
+  TFE_OpSetAttrBool(op, "validate_indices", (validateIndices) ? 1 : 0)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
+  var count: Int32 = Int32(1) + Int32(1) + Int32(1)
+  let buffer: UnsafeMutablePointer<CTensorHandle> =
+    UnsafeMutablePointer.allocate(capacity: Int(count))
+  defer { buffer.deallocate() }
+  _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
+  checkOk(s)
+  let offset0: Int = 0
+  let offset1: Int = offset0 + Int(1)
+  let offset2: Int = offset1 + Int(1)
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), StringTensor.init(_owning: buffer.advanced(by: offset1), count: Int(1)), Tensor<Int64>.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Splits a tensor into `num_split` tensors along one dimension.

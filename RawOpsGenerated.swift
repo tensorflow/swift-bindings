@@ -15,7 +15,11 @@
 // limitations under the License.
 import CTensorFlow
 
+#if !COMPILING_TENSORFLOW_MODULE
+
 import TensorFlow
+
+#endif
 
 
 public enum Raw {
@@ -5523,18 +5527,17 @@ public static func complexAbs<T: TensorFlowScalar, Tout: FloatingPoint & TensorF
 }
 
 @inlinable @inline(__always)
-public static func complexStruct(
+public static func complexStruct<TC: TensorGroup>(
   nA: Int64,
-  nB: Int64,
-  tC: [TensorDataType]
-) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: tC) {
+  nB: Int64
+) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: TC) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ComplexStruct", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "n_a", nA)
   TFE_OpSetAttrInt(op, "n_b", nB)
-  _TFCOpSetAttrTypeArray(op, "t_c", tC)
+  _TFCOpSetAttrTypeArray(op, "t_c", TC._typeList)
   var count: Int32 = Int32(nA) + Int32(nB) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
@@ -5544,7 +5547,7 @@ public static func complexStruct(
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(nA)
   let offset2: Int = offset1 + Int(nB)
-  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(nB)), tC.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
+  return ([Tensor<Int32>].init(_owning: buffer.advanced(by: offset0), count: Int(nA)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset1), count: Int(nB)), TC.init(_owning: buffer.advanced(by: offset2), count: Int(1)))
 }
 
 /// Computes the ids of the positions in sampled_candidates that match true_labels.
@@ -7779,17 +7782,16 @@ public static func datasetToGraph(
 ///
 /// - Output components: The components of the single element of `input`.
 @inlinable @inline(__always)
-public static func datasetToSingleElement(
+public static func datasetToSingleElement<OutputTypes: TensorGroup>(
   dataset: VariantHandle,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DatasetToSingleElement", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, dataset, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -7797,7 +7799,7 @@ public static func datasetToSingleElement(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Identity op for gradient debugging.
@@ -8491,15 +8493,14 @@ public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
 ///     `values[i]` has datatype `output_types[i]`
 ///     and shape `[batch_shape, max(sizes[...,i])]`.
 @inlinable @inline(__always)
-public static func decodeProtoV2(
+public static func decodeProtoV2<OutputTypes: TensorGroup>(
   bytes: StringTensor,
   messageType: String,
   fieldNames: [String],
-  outputTypes: [TensorDataType],
   descriptorSource: String = "local://",
   messageFormat: String = "binary",
   sanitize: Bool = false
-) -> (sizes: Tensor<Int32>, values: outputTypes) {
+) -> (sizes: Tensor<Int32>, values: OutputTypes) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "DecodeProtoV2", s)
@@ -8507,7 +8508,7 @@ public static func decodeProtoV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, bytes, s)
   _TFCOpSetAttrString(op, "message_type", messageType)
   _TFCOpSetAttrStringArray(op, "field_names", fieldNames)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrString(op, "descriptor_source", descriptorSource)
   _TFCOpSetAttrString(op, "message_format", messageFormat)
   TFE_OpSetAttrBool(op, "sanitize", (sanitize) ? 1 : 0)
@@ -8519,7 +8520,7 @@ public static func decodeProtoV2(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), outputTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (Tensor<Int32>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), OutputTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Reinterpret the bytes of a string as a vector of numbers.
@@ -9956,11 +9957,10 @@ public static func dynamicStitch<T: TensorFlowScalar>(
 /// semantics of the input, output, and attributes are the same as those for
 /// PyFunc.
 @inlinable @inline(__always)
-public static func eagerPyFunc<Tin: TensorGroup>(
+public static func eagerPyFunc<Tin: TensorGroup, Tout: TensorGroup>(
   _ input: Tin,
-  token: String,
-  tout: [TensorDataType]
-) -> tout {
+  token: String
+) -> Tout {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "EagerPyFunc", s)
@@ -9968,14 +9968,14 @@ public static func eagerPyFunc<Tin: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
-  _TFCOpSetAttrTypeArray(op, "Tout", tout)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: Int(1))
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the (possibly normalized) Levenshtein Edit Distance.
@@ -11228,19 +11228,18 @@ public static func experimentalIgnoreErrorsDataset(
 }
 
 @inlinable @inline(__always)
-public static func experimentalIndexedDatasetGet(
+public static func experimentalIndexedDatasetGet<OutputTypes: TensorGroup>(
   materialized: ResourceHandle,
   index: Tensor<UInt64>,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ExperimentalIndexedDatasetGet", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, materialized, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -11248,7 +11247,7 @@ public static func experimentalIndexedDatasetGet(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -15227,15 +15226,14 @@ public static func infeedDequeue<Dtype: TensorFlowScalar>(
 ///
 /// - Output outputs: A list of tensors that will be provided using the infeed mechanism.
 @inlinable @inline(__always)
-public static func infeedDequeueTuple(
-  dtypes: [TensorDataType],
+public static func infeedDequeueTuple<Dtypes: TensorGroup>(
   shapes: [TensorShape?]
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "InfeedDequeueTuple", s)
   defer { TFE_DeleteOp(op) }
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "shapes", shapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -15243,7 +15241,7 @@ public static func infeedDequeueTuple(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// An op which feeds a single Tensor value into the computation.
@@ -15950,17 +15948,16 @@ public static func iteratorFromStringHandleV2(
 
 /// Gets the next output from the given iterator .
 @inlinable @inline(__always)
-public static func iteratorGetNext(
+public static func iteratorGetNext<OutputTypes: TensorGroup>(
   iterator: ResourceHandle,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IteratorGetNext", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -15968,7 +15965,7 @@ public static func iteratorGetNext(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Gets the next output from the given iterator as an Optional variant.
@@ -16001,17 +15998,16 @@ public static func iteratorGetNextAsOptional(
 /// the calling thread is not a member of the thread pool used to execute parallel
 /// operations (e.g. in eager mode).
 @inlinable @inline(__always)
-public static func iteratorGetNextSync(
+public static func iteratorGetNextSync<OutputTypes: TensorGroup>(
   iterator: ResourceHandle,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "IteratorGetNextSync", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, iterator, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -16019,7 +16015,7 @@ public static func iteratorGetNextSync(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Converts the given `resource_handle` representing an iterator to a string.
@@ -16814,21 +16810,20 @@ public static func listInput<T: TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
-public static func listOutput(
-  t: [TensorDataType]
-) -> t {
+public static func listOutput<T: TensorGroup>(
+) -> T {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ListOutput", s)
   defer { TFE_DeleteOp(op) }
-  _TFCOpSetAttrTypeArray(op, "T", t)
+  _TFCOpSetAttrTypeArray(op, "T", T._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: Int(1))
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// Loads a 2-D (matrix) `Tensor` with name `old_tensor_name` from the checkpoint
@@ -18223,15 +18218,14 @@ public static func mapIncompleteSize(
 /// underlying container does not contain this key
 /// this op will block until it does.
 @inlinable @inline(__always)
-public static func mapPeek(
+public static func mapPeek<Dtypes: TensorGroup>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapPeek", s)
@@ -18240,7 +18234,7 @@ public static func mapPeek(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -18249,7 +18243,7 @@ public static func mapPeek(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -18327,15 +18321,14 @@ public static func mapStage<FakeDtypes: TensorGroup>(
 /// from the underlying container.   If the underlying container
 /// does not contain this key, the op will block until it does.
 @inlinable @inline(__always)
-public static func mapUnstage(
+public static func mapUnstage<Dtypes: TensorGroup>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapUnstage", s)
@@ -18344,7 +18337,7 @@ public static func mapUnstage(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -18353,7 +18346,7 @@ public static func mapUnstage(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op removes and returns a random (key, value)
@@ -18361,14 +18354,13 @@ public static func mapUnstage(
 /// from the underlying container.   If the underlying container
 /// does not contain elements, the op will block until it does.
 @inlinable @inline(__always)
-public static func mapUnstageNoKey(
+public static func mapUnstageNoKey<Dtypes: TensorGroup>(
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> (key: Tensor<Int64>, values: dtypes) {
+) -> (key: Tensor<Int64>, values: Dtypes) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MapUnstageNoKey", s)
@@ -18376,7 +18368,7 @@ public static func mapUnstageNoKey(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1) + Int32(1)
@@ -18387,7 +18379,7 @@ public static func mapUnstageNoKey(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 /// Multiply the matrix "a" by the matrix "b".
@@ -20251,13 +20243,12 @@ public static func multiDeviceIteratorFromStringHandle(
 ///
 /// - Output components: Result of the get_next on the dataset.
 @inlinable @inline(__always)
-public static func multiDeviceIteratorGetNextFromShard(
+public static func multiDeviceIteratorGetNextFromShard<OutputTypes: TensorGroup>(
   multiDeviceIterator: ResourceHandle,
   shardNum: Tensor<Int32>,
   incarnationId: Tensor<Int64>,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "MultiDeviceIteratorGetNextFromShard", s)
@@ -20265,7 +20256,7 @@ public static func multiDeviceIteratorGetNextFromShard(
   let _ = _TFCOpAddInputFromTensorGroup(op, multiDeviceIterator, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, shardNum, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, incarnationId, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -20273,7 +20264,7 @@ public static func multiDeviceIteratorGetNextFromShard(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Initializes the multi device iterator with the given dataset.
@@ -20737,15 +20728,14 @@ public static func nPolymorphicIn<T: TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
-public static func nPolymorphicOut(
-  t: TensorDataType,
+public static func nPolymorphicOut<T: TensorFlowScalar>(
   n: Int64
-) -> [Tensor<t>] {
+) -> [Tensor<T>] {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicOut", s)
   defer { TFE_DeleteOp(op) }
-  TFE_OpSetAttrType(op, "T", t._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
   var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -20753,19 +20743,18 @@ public static func nPolymorphicOut(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: Int(n))
+  return [Tensor<T>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
-public static func nPolymorphicOutDefault(
-  t: TensorDataType,
+public static func nPolymorphicOutDefault<T: TensorFlowScalar>(
   n: Int64 = 2
-) -> [Tensor<t>] {
+) -> [Tensor<T>] {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicOutDefault", s)
   defer { TFE_DeleteOp(op) }
-  TFE_OpSetAttrType(op, "T", t._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
   var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -20773,7 +20762,7 @@ public static func nPolymorphicOutDefault(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: Int(n))
+  return [Tensor<T>].init(_owning: buffer, count: Int(n))
 }
 
 @inlinable @inline(__always)
@@ -20794,15 +20783,14 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
-public static func nPolymorphicRestrictOut(
-  t: TensorDataType,
+public static func nPolymorphicRestrictOut<T: TensorFlowScalar>(
   n: Int64
-) -> [Tensor<t>] {
+) -> [Tensor<T>] {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "NPolymorphicRestrictOut", s)
   defer { TFE_DeleteOp(op) }
-  TFE_OpSetAttrType(op, "T", t._cDataType)
+  TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
   TFE_OpSetAttrInt(op, "N", n)
   var count: Int32 = Int32(n)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -20810,7 +20798,7 @@ public static func nPolymorphicRestrictOut(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<t>].init(_owning: buffer, count: Int(n))
+  return [Tensor<T>].init(_owning: buffer, count: Int(n))
 }
 
 /// Outputs a tensor containing the reduction across all input tensors.
@@ -21709,17 +21697,16 @@ public static func optionalFromValue<ToutputTypes: TensorGroup>(
 
 /// Returns the value stored in an Optional variant or raises an error if none exists.
 @inlinable @inline(__always)
-public static func optionalGetValue(
+public static func optionalGetValue<OutputTypes: TensorGroup>(
   optional: VariantHandle,
-  outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
-) -> outputTypes {
+) -> OutputTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OptionalGetValue", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, optional, s)
-  _TFCOpSetAttrTypeArray(op, "output_types", outputTypes)
+  _TFCOpSetAttrTypeArray(op, "output_types", OutputTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "output_shapes", outputShapes, s)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -21727,7 +21714,7 @@ public static func optionalGetValue(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return outputTypes.init(_owning: buffer, count: Int(1))
+  return OutputTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Returns true if and only if the given Optional variant has a value.
@@ -21824,15 +21811,14 @@ public static func orderedMapIncompleteSize(
 /// this op will block until it does.   This Op is optimized for
 /// performance.
 @inlinable @inline(__always)
-public static func orderedMapPeek(
+public static func orderedMapPeek<Dtypes: TensorGroup>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapPeek", s)
@@ -21841,7 +21827,7 @@ public static func orderedMapPeek(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -21850,7 +21836,7 @@ public static func orderedMapPeek(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -21930,15 +21916,14 @@ public static func orderedMapStage<FakeDtypes: TensorGroup>(
 /// from the underlying container.   If the underlying container
 /// does not contain this key, the op will block until it does.
 @inlinable @inline(__always)
-public static func orderedMapUnstage(
+public static func orderedMapUnstage<Dtypes: TensorGroup>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapUnstage", s)
@@ -21947,7 +21932,7 @@ public static func orderedMapUnstage(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -21956,7 +21941,7 @@ public static func orderedMapUnstage(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op removes and returns the (key, value) element with the smallest
@@ -21964,14 +21949,13 @@ public static func orderedMapUnstage(
 /// key from the underlying container.   If the underlying container
 /// does not contain elements, the op will block until it does.
 @inlinable @inline(__always)
-public static func orderedMapUnstageNoKey(
+public static func orderedMapUnstageNoKey<Dtypes: TensorGroup>(
   indices: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> (key: Tensor<Int64>, values: dtypes) {
+) -> (key: Tensor<Int64>, values: Dtypes) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OrderedMapUnstageNoKey", s)
@@ -21979,7 +21963,7 @@ public static func orderedMapUnstageNoKey(
   let _ = _TFCOpAddInputFromTensorGroup(op, indices, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1) + Int32(1)
@@ -21990,7 +21974,7 @@ public static func orderedMapUnstageNoKey(
   checkOk(s)
   let offset0: Int = 0
   let offset1: Int = offset0 + Int(1)
-  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
+  return (Tensor<Int64>.init(_owning: buffer.advanced(by: offset0), count: Int(1)), Dtypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)))
 }
 
 @inlinable @inline(__always)
@@ -22011,39 +21995,37 @@ public static func outT<T: TensorFlowScalar>(
 }
 
 @inlinable @inline(__always)
-public static func outTypeList(
-  t: [TensorDataType]
-) -> t {
+public static func outTypeList<T: TensorGroup>(
+) -> T {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutTypeList", s)
   defer { TFE_DeleteOp(op) }
-  _TFCOpSetAttrTypeArray(op, "T", t)
+  _TFCOpSetAttrTypeArray(op, "T", T._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: Int(1))
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
-public static func outTypeListRestrict(
-  t: [TensorDataType]
-) -> t {
+public static func outTypeListRestrict<T: TensorGroup>(
+) -> T {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutTypeListRestrict", s)
   defer { TFE_DeleteOp(op) }
-  _TFCOpSetAttrTypeArray(op, "t", t)
+  _TFCOpSetAttrTypeArray(op, "t", T._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return t.init(_owning: buffer, count: Int(1))
+  return T.init(_owning: buffer, count: Int(1))
 }
 
 /// Retrieves a single tensor from the computation outfeed.
@@ -22093,16 +22075,15 @@ public static func outfeedDequeue<Dtype: TensorFlowScalar>(
 ///
 /// - Output outputs: A list of tensors that will be read from the outfeed.
 @inlinable @inline(__always)
-public static func outfeedDequeueTuple(
-  dtypes: [TensorDataType],
+public static func outfeedDequeueTuple<Dtypes: TensorGroup>(
   shapes: [TensorShape?],
   deviceOrdinal: Int64 = -1
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "OutfeedDequeueTuple", s)
   defer { TFE_DeleteOp(op) }
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "shapes", shapes, s)
   TFE_OpSetAttrInt(op, "device_ordinal", deviceOrdinal)
   var count: Int32 = Int32(1)
@@ -22111,7 +22092,7 @@ public static func outfeedDequeueTuple(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Enqueue a Tensor on the computation outfeed.
@@ -22666,15 +22647,14 @@ public static func parameterizedTruncatedNormal<Dtype: FloatingPoint & TensorFlo
 ///     length D1 * ... * DN will be padded with the corresponding default_value
 ///     scalar element along the second dimension.
 @inlinable @inline(__always)
-public static func parseExample<Tdense: TensorGroup>(
+public static func parseExample<SparseTypes: TensorGroup, Tdense: TensorGroup>(
   serialized: StringTensor,
   names: StringTensor,
   sparseKeys: [StringTensor],
   denseKeys: [StringTensor],
   denseDefaults: Tdense,
-  sparseTypes: [TensorDataType],
   denseShapes: [TensorShape?]
-) -> (sparseIndices: [Tensor<Int64>], sparseValues: sparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
+) -> (sparseIndices: [Tensor<Int64>], sparseValues: SparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParseExample", s)
@@ -22686,7 +22666,7 @@ public static func parseExample<Tdense: TensorGroup>(
   let denseKeysCount = _TFCOpAddInputFromTensorGroup(op, denseKeys, s)
   TFE_OpSetAttrInt(op, "Ndense", Int64(denseKeysCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, denseDefaults, s)
-  _TFCOpSetAttrTypeArray(op, "sparse_types", sparseTypes)
+  _TFCOpSetAttrTypeArray(op, "sparse_types", SparseTypes._typeList)
   _TFCOpSetAttrTypeArray(op, "Tdense", Tdense._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "dense_shapes", denseShapes, s)
   var count: Int32 = Int32(sparseKeysCount) + Int32(1) + Int32(sparseKeysCount) + Int32(1)
@@ -22699,7 +22679,7 @@ public static func parseExample<Tdense: TensorGroup>(
   let offset1: Int = offset0 + Int(sparseKeysCount)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(sparseKeysCount)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(sparseKeysCount)), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(sparseKeysCount)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(sparseKeysCount)), SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(sparseKeysCount)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Transforms a vector of brain.SequenceExample protos (as strings) into typed tensors.
@@ -22756,7 +22736,7 @@ public static func parseExample<Tdense: TensorGroup>(
 ///     feature_list_dense_key[j] must always equal
 ///     feature_list_dense_shapes[j].NumEntries().
 @inlinable @inline(__always)
-public static func parseSequenceExample<TcontextDense: TensorGroup>(
+public static func parseSequenceExample<ContextSparseTypes: TensorGroup, TcontextDense: TensorGroup, FeatureListDenseTypes: TensorGroup, FeatureListSparseTypes: TensorGroup>(
   serialized: StringTensor,
   debugName: StringTensor,
   contextDenseDefaults: TcontextDense,
@@ -22769,12 +22749,9 @@ public static func parseSequenceExample<TcontextDense: TensorGroup>(
   ncontextDense: Int64 = 0,
   nfeatureListSparse: Int64 = 0,
   nfeatureListDense: Int64 = 0,
-  contextSparseTypes: [TensorDataType],
-  featureListDenseTypes: [TensorDataType],
   contextDenseShapes: [TensorShape?],
-  featureListSparseTypes: [TensorDataType],
   featureListDenseShapes: [TensorShape?]
-) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: contextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: featureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: featureListDenseTypes, featureListDenseLengths: [Tensor<Int64>]) {
+) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: ContextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: FeatureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: FeatureListDenseTypes, featureListDenseLengths: [Tensor<Int64>]) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParseSequenceExample", s)
@@ -22791,11 +22768,11 @@ public static func parseSequenceExample<TcontextDense: TensorGroup>(
   TFE_OpSetAttrInt(op, "Ncontext_dense", ncontextDense)
   TFE_OpSetAttrInt(op, "Nfeature_list_sparse", nfeatureListSparse)
   TFE_OpSetAttrInt(op, "Nfeature_list_dense", nfeatureListDense)
-  _TFCOpSetAttrTypeArray(op, "context_sparse_types", contextSparseTypes)
+  _TFCOpSetAttrTypeArray(op, "context_sparse_types", ContextSparseTypes._typeList)
   _TFCOpSetAttrTypeArray(op, "Tcontext_dense", TcontextDense._typeList)
-  _TFCOpSetAttrTypeArray(op, "feature_list_dense_types", featureListDenseTypes)
+  _TFCOpSetAttrTypeArray(op, "feature_list_dense_types", FeatureListDenseTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "context_dense_shapes", contextDenseShapes, s)
-  _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", featureListSparseTypes)
+  _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", FeatureListSparseTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "feature_list_dense_shapes", featureListDenseShapes, s)
   var count: Int32 = Int32(ncontextSparse) + Int32(1) + Int32(ncontextSparse) + Int32(1) + Int32(nfeatureListSparse) + Int32(1) + Int32(nfeatureListSparse) + Int32(1) + Int32(nfeatureListDense)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -22812,7 +22789,7 @@ public static func parseSequenceExample<TcontextDense: TensorGroup>(
   let offset6: Int = offset5 + Int(1)
   let offset7: Int = offset6 + Int(nfeatureListSparse)
   let offset8: Int = offset7 + Int(1)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(ncontextSparse)), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(ncontextSparse)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(nfeatureListSparse)), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(nfeatureListSparse)), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: Int(nfeatureListDense)))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(ncontextSparse)), ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(ncontextSparse)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(nfeatureListSparse)), FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(nfeatureListSparse)), FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset8), count: Int(nfeatureListDense)))
 }
 
 /// Transforms a tf.Example proto (as a string) into typed tensors.
@@ -22855,15 +22832,14 @@ public static func parseSequenceExample<TcontextDense: TensorGroup>(
 ///     D1, .., DN), where M is the number of blocks of elements of length
 ///     D1 * .... * DN, in the input.
 @inlinable @inline(__always)
-public static func parseSingleExample<Tdense: TensorGroup>(
+public static func parseSingleExample<SparseTypes: TensorGroup, Tdense: TensorGroup>(
   serialized: StringTensor,
   denseDefaults: Tdense,
   numSparse: Int64,
   sparseKeys: [String],
   denseKeys: [String],
-  sparseTypes: [TensorDataType],
   denseShapes: [TensorShape?]
-) -> (sparseIndices: [Tensor<Int64>], sparseValues: sparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
+) -> (sparseIndices: [Tensor<Int64>], sparseValues: SparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParseSingleExample", s)
@@ -22873,7 +22849,7 @@ public static func parseSingleExample<Tdense: TensorGroup>(
   TFE_OpSetAttrInt(op, "num_sparse", numSparse)
   _TFCOpSetAttrStringArray(op, "sparse_keys", sparseKeys)
   _TFCOpSetAttrStringArray(op, "dense_keys", denseKeys)
-  _TFCOpSetAttrTypeArray(op, "sparse_types", sparseTypes)
+  _TFCOpSetAttrTypeArray(op, "sparse_types", SparseTypes._typeList)
   _TFCOpSetAttrTypeArray(op, "Tdense", Tdense._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "dense_shapes", denseShapes, s)
   var count: Int32 = Int32(numSparse) + Int32(1) + Int32(numSparse) + Int32(1)
@@ -22886,7 +22862,7 @@ public static func parseSingleExample<Tdense: TensorGroup>(
   let offset1: Int = offset0 + Int(numSparse)
   let offset2: Int = offset1 + Int(1)
   let offset3: Int = offset2 + Int(numSparse)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSparse)), sparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSparse)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(numSparse)), SparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(numSparse)), Tdense.init(_owning: buffer.advanced(by: offset3), count: Int(1)))
 }
 
 /// Transforms a scalar brain.SequenceExample proto (as strings) into typed tensors.
@@ -22943,7 +22919,7 @@ public static func parseSingleExample<Tdense: TensorGroup>(
 ///     feature_list_dense_key[j] must always equal
 ///     feature_list_dense_shapes[j].NumEntries().
 @inlinable @inline(__always)
-public static func parseSingleSequenceExample<TcontextDense: TensorGroup>(
+public static func parseSingleSequenceExample<ContextSparseTypes: TensorGroup, TcontextDense: TensorGroup, FeatureListDenseTypes: TensorGroup, FeatureListSparseTypes: TensorGroup>(
   serialized: StringTensor,
   featureListDenseMissingAssumedEmpty: StringTensor,
   contextSparseKeys: [StringTensor],
@@ -22952,12 +22928,9 @@ public static func parseSingleSequenceExample<TcontextDense: TensorGroup>(
   featureListDenseKeys: [StringTensor],
   contextDenseDefaults: TcontextDense,
   debugName: StringTensor,
-  contextSparseTypes: [TensorDataType],
-  featureListDenseTypes: [TensorDataType],
   contextDenseShapes: [TensorShape?],
-  featureListSparseTypes: [TensorDataType],
   featureListDenseShapes: [TensorShape?]
-) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: contextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: featureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: featureListDenseTypes) {
+) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: ContextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: FeatureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: FeatureListDenseTypes) {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ParseSingleSequenceExample", s)
@@ -22974,11 +22947,11 @@ public static func parseSingleSequenceExample<TcontextDense: TensorGroup>(
   TFE_OpSetAttrInt(op, "Nfeature_list_dense", Int64(featureListDenseKeysCount))
   let _ = _TFCOpAddInputFromTensorGroup(op, contextDenseDefaults, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, debugName, s)
-  _TFCOpSetAttrTypeArray(op, "context_sparse_types", contextSparseTypes)
+  _TFCOpSetAttrTypeArray(op, "context_sparse_types", ContextSparseTypes._typeList)
   _TFCOpSetAttrTypeArray(op, "Tcontext_dense", TcontextDense._typeList)
-  _TFCOpSetAttrTypeArray(op, "feature_list_dense_types", featureListDenseTypes)
+  _TFCOpSetAttrTypeArray(op, "feature_list_dense_types", FeatureListDenseTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "context_dense_shapes", contextDenseShapes, s)
-  _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", featureListSparseTypes)
+  _TFCOpSetAttrTypeArray(op, "feature_list_sparse_types", FeatureListSparseTypes._typeList)
   _TFCOpSetAttrOptionalTensorShapeArray(op, "feature_list_dense_shapes", featureListDenseShapes, s)
   var count: Int32 = Int32(contextSparseKeysCount) + Int32(1) + Int32(contextSparseKeysCount) + Int32(1) + Int32(featureListSparseKeysCount) + Int32(1) + Int32(featureListSparseKeysCount) + Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -22994,7 +22967,7 @@ public static func parseSingleSequenceExample<TcontextDense: TensorGroup>(
   let offset5: Int = offset4 + Int(featureListSparseKeysCount)
   let offset6: Int = offset5 + Int(1)
   let offset7: Int = offset6 + Int(featureListSparseKeysCount)
-  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(contextSparseKeysCount)), contextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(contextSparseKeysCount)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(featureListSparseKeysCount)), featureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(featureListSparseKeysCount)), featureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
+  return ([Tensor<Int64>].init(_owning: buffer.advanced(by: offset0), count: Int(contextSparseKeysCount)), ContextSparseTypes.init(_owning: buffer.advanced(by: offset1), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset2), count: Int(contextSparseKeysCount)), TcontextDense.init(_owning: buffer.advanced(by: offset3), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset4), count: Int(featureListSparseKeysCount)), FeatureListSparseTypes.init(_owning: buffer.advanced(by: offset5), count: Int(1)), [Tensor<Int64>].init(_owning: buffer.advanced(by: offset6), count: Int(featureListSparseKeysCount)), FeatureListDenseTypes.init(_owning: buffer.advanced(by: offset7), count: Int(1)))
 }
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
@@ -23557,11 +23530,10 @@ public static func prod<T: Numeric & TensorFlowScalar, Tidx: BinaryInteger & Ten
 ///
 /// - Output output: The outputs from the Op.
 @inlinable @inline(__always)
-public static func pyFunc<Tin: TensorGroup>(
+public static func pyFunc<Tin: TensorGroup, Tout: TensorGroup>(
   _ input: Tin,
-  token: String,
-  tout: [TensorDataType]
-) -> tout {
+  token: String
+) -> Tout {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PyFunc", s)
@@ -23569,23 +23541,22 @@ public static func pyFunc<Tin: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
-  _TFCOpSetAttrTypeArray(op, "Tout", tout)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: Int(1))
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// A stateless version of PyFunc.
 @inlinable @inline(__always)
-public static func pyFuncStateless<Tin: TensorGroup>(
+public static func pyFuncStateless<Tin: TensorGroup, Tout: TensorGroup>(
   _ input: Tin,
-  token: String,
-  tout: [TensorDataType]
-) -> tout {
+  token: String
+) -> Tout {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "PyFuncStateless", s)
@@ -23593,14 +23564,14 @@ public static func pyFuncStateless<Tin: TensorGroup>(
   let _ = _TFCOpAddInputFromTensorGroup(op, input, s)
   _TFCOpSetAttrString(op, "token", token)
   _TFCOpSetAttrTypeArray(op, "Tin", Tin._typeList)
-  _TFCOpSetAttrTypeArray(op, "Tout", tout)
+  _TFCOpSetAttrTypeArray(op, "Tout", Tout._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return tout.init(_owning: buffer, count: Int(1))
+  return Tout.init(_owning: buffer, count: Int(1))
 }
 
 /// Computes the QR decompositions of one or more matrices.
@@ -25553,19 +25524,18 @@ public static func queueCloseV2(
 ///
 /// - Output components: One or more tensors that were dequeued as a tuple.
 @inlinable @inline(__always)
-public static func queueDequeueManyV2(
+public static func queueDequeueManyV2<ComponentTypes: TensorGroup>(
   handle: ResourceHandle,
   n: Tensor<Int32>,
-  componentTypes: [TensorDataType],
   timeoutMs: Int64 = -1
-) -> componentTypes {
+) -> ComponentTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueDequeueManyV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
-  _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
+  _TFCOpSetAttrTypeArray(op, "component_types", ComponentTypes._typeList)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -25573,7 +25543,7 @@ public static func queueDequeueManyV2(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: Int(1))
+  return ComponentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Dequeues `n` tuples of one or more tensors from the given queue.
@@ -25608,19 +25578,18 @@ public static func queueDequeueManyV2(
 ///
 /// - Output components: One or more tensors that were dequeued as a tuple.
 @inlinable @inline(__always)
-public static func queueDequeueUpToV2(
+public static func queueDequeueUpToV2<ComponentTypes: TensorGroup>(
   handle: ResourceHandle,
   n: Tensor<Int32>,
-  componentTypes: [TensorDataType],
   timeoutMs: Int64 = -1
-) -> componentTypes {
+) -> ComponentTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueDequeueUpToV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, n, s)
-  _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
+  _TFCOpSetAttrTypeArray(op, "component_types", ComponentTypes._typeList)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -25628,7 +25597,7 @@ public static func queueDequeueUpToV2(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: Int(1))
+  return ComponentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Dequeues a tuple of one or more tensors from the given queue.
@@ -25650,17 +25619,16 @@ public static func queueDequeueUpToV2(
 ///
 /// - Output components: One or more tensors that were dequeued as a tuple.
 @inlinable @inline(__always)
-public static func queueDequeueV2(
+public static func queueDequeueV2<ComponentTypes: TensorGroup>(
   handle: ResourceHandle,
-  componentTypes: [TensorDataType],
   timeoutMs: Int64 = -1
-) -> componentTypes {
+) -> ComponentTypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "QueueDequeueV2", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, handle, s)
-  _TFCOpSetAttrTypeArray(op, "component_types", componentTypes)
+  _TFCOpSetAttrTypeArray(op, "component_types", ComponentTypes._typeList)
   TFE_OpSetAttrInt(op, "timeout_ms", timeoutMs)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -25668,7 +25636,7 @@ public static func queueDequeueV2(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return componentTypes.init(_owning: buffer, count: Int(1))
+  return ComponentTypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Enqueues zero or more tuples of one or more tensors in the given queue.
@@ -27204,18 +27172,17 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
 ///
 /// - Output outputs: Arbitrary number of tensors with arbitrary data types
 @inlinable @inline(__always)
-public static func remoteFusedGraphExecute<Tinputs: TensorGroup>(
+public static func remoteFusedGraphExecute<Tinputs: TensorGroup, Toutputs: TensorGroup>(
   inputs: Tinputs,
-  toutputs: [TensorDataType],
   serializedRemoteFusedGraphExecuteInfo: String
-) -> toutputs {
+) -> Toutputs {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RemoteFusedGraphExecute", s)
   defer { TFE_DeleteOp(op) }
   let _ = _TFCOpAddInputFromTensorGroup(op, inputs, s)
   _TFCOpSetAttrTypeArray(op, "Tinputs", Tinputs._typeList)
-  _TFCOpSetAttrTypeArray(op, "Toutputs", toutputs)
+  _TFCOpSetAttrTypeArray(op, "Toutputs", Toutputs._typeList)
   _TFCOpSetAttrString(op, "serialized_remote_fused_graph_execute_info", serializedRemoteFusedGraphExecuteInfo)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
@@ -27223,7 +27190,7 @@ public static func remoteFusedGraphExecute<Tinputs: TensorGroup>(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return toutputs.init(_owning: buffer, count: Int(1))
+  return Toutputs.init(_owning: buffer, count: Int(1))
 }
 
 /// Creates a dataset that emits the outputs of `input_dataset` `count` times.
@@ -30139,12 +30106,11 @@ public static func restoreSlice<Dt: TensorFlowScalar>(
 /// - Output tensors: shape {N}.  The restored tensors, whose shapes are read from the
 ///   checkpoint directly.
 @inlinable @inline(__always)
-public static func restoreV2(
+public static func restoreV2<Dtypes: TensorGroup>(
   prefix: StringTensor,
   tensorNames: StringTensor,
-  shapeAndSlices: StringTensor,
-  dtypes: [TensorDataType]
-) -> dtypes {
+  shapeAndSlices: StringTensor
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "RestoreV2", s)
@@ -30152,14 +30118,14 @@ public static func restoreV2(
   let _ = _TFCOpAddInputFromTensorGroup(op, prefix, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, tensorNames, s)
   let _ = _TFCOpAddInputFromTensorGroup(op, shapeAndSlices, s)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   var count: Int32 = Int32(1)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)
@@ -32968,10 +32934,9 @@ public static func shape<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlo
 ///
 /// This operation returns N 1-D integer tensors representing shape of `input[i]s`.
 @inlinable @inline(__always)
-public static func shapeN<T: TensorFlowScalar>(
-  _ input: [Tensor<T>],
-  outType: TensorDataType
-) -> [Tensor<outType>] {
+public static func shapeN<T: TensorFlowScalar, OutType: BinaryInteger & TensorFlowScalar>(
+  _ input: [Tensor<T>]
+) -> [Tensor<OutType>] {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "ShapeN", s)
@@ -32979,14 +32944,14 @@ public static func shapeN<T: TensorFlowScalar>(
   let inputCount = _TFCOpAddInputFromTensorGroup(op, input, s)
   TFE_OpSetAttrInt(op, "N", Int64(inputCount))
   TFE_OpSetAttrType(op, "T", T.tensorFlowDataType._cDataType)
-  TFE_OpSetAttrType(op, "out_type", outType._cDataType)
+  TFE_OpSetAttrType(op, "out_type", OutType.tensorFlowDataType._cDataType)
   var count: Int32 = Int32(inputCount)
   let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return [Tensor<outType>].init(_owning: buffer, count: Int(inputCount))
+  return [Tensor<OutType>].init(_owning: buffer, count: Int(inputCount))
 }
 
 /// Creates a `Dataset` that includes only 1/`num_shards` of this dataset.
@@ -36283,14 +36248,13 @@ public static func stageClear(
 /// this op will block until it does.   This Op is optimized for
 /// performance.
 @inlinable @inline(__always)
-public static func stagePeek(
+public static func stagePeek<Dtypes: TensorGroup>(
   index: Tensor<Int32>,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "StagePeek", s)
@@ -36298,7 +36262,7 @@ public static func stagePeek(
   let _ = _TFCOpAddInputFromTensorGroup(op, index, s)
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -36307,7 +36271,7 @@ public static func stagePeek(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 /// Op returns the number of elements in the underlying container.
@@ -42024,20 +41988,19 @@ public static func unsortedSegmentSum<T: Numeric & TensorFlowScalar, Tindices: B
 /// The basic functionality is similar to dequeue with many fewer
 /// capabilities and options.  This Op is optimized for performance.
 @inlinable @inline(__always)
-public static func unstage(
+public static func unstage<Dtypes: TensorGroup>(
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
-  dtypes: [TensorDataType],
   container: String,
   sharedName: String
-) -> dtypes {
+) -> Dtypes {
   let s: CTFStatus = TF_NewStatus()
   defer { TF_DeleteStatus(s) }
   let op: CTFEOp = TFE_NewOp(_ExecutionContext.global.eagerContext, "Unstage", s)
   defer { TFE_DeleteOp(op) }
   TFE_OpSetAttrInt(op, "capacity", capacity)
   TFE_OpSetAttrInt(op, "memory_limit", memoryLimit)
-  _TFCOpSetAttrTypeArray(op, "dtypes", dtypes)
+  _TFCOpSetAttrTypeArray(op, "dtypes", Dtypes._typeList)
   _TFCOpSetAttrString(op, "container", container)
   _TFCOpSetAttrString(op, "shared_name", sharedName)
   var count: Int32 = Int32(1)
@@ -42046,7 +42009,7 @@ public static func unstage(
   defer { buffer.deallocate() }
   _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, s)
   checkOk(s)
-  return dtypes.init(_owning: buffer, count: Int(1))
+  return Dtypes.init(_owning: buffer, count: Int(1))
 }
 
 @inlinable @inline(__always)

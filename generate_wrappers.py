@@ -176,25 +176,6 @@ class Op(object):
       Argument(arg_def, op=self)
       for arg_def in self.op_def.output_arg]
 
-    # A type attribute that only appears as the type of an
-    # output argument is not inferrable and should thus be
-    # added as input.
-    input_args = list(op_def.input_arg)
-    input_arg_type_attrs = set(
-      [arg.type_attr for arg in input_args] +
-      [arg.type_list_attr for arg in input_args])
-    for arg in self.output_args:
-      if arg.arg_def.number_attr is not '':
-        for attr in self.type_attrs:
-          if attr.name not in input_arg_type_attrs \
-              and attr.name == arg.arg_def.type_attr:
-            attr.set_as_not_inferred()
-      if arg.arg_def.type_list_attr is not '':
-        for attr in self.type_attrs:
-          if attr.name not in input_arg_type_attrs \
-              and attr.name == arg.arg_def.type_list_attr:
-            attr.set_as_not_inferred()
-
   def swift_function(self, mode):
     return '''
 {documentation}@inlinable @inline(__always)
@@ -539,35 +520,30 @@ class Attribute(object):
       [arg.type_attr for arg in output_args] +
       [arg.type_list_attr for arg in output_args])
     arg_type_attrs = input_arg_type_attrs.union(output_arg_type_attrs)
+    self.is_inferred_type_attr = attr_def.name in arg_type_attrs
     self.is_output_type_attr = attr_def.name in output_arg_type_attrs
 
     # The following properties are only relevant for
     # non-inferred-type-valued attributes.
     self._swift_type = ''
     self._use_enum = False
-    if attr_def.name not in arg_type_attrs:
-      self.set_as_not_inferred()
-    else:
-      self.is_inferred_type_attr = True
+    if not self.is_inferred_type_attr:
+      if self.attr_def.type not in _SWIFTIFIED_ATTR_TYPES:
+        raise UnableToGenerateCodeError(
+          'Unsupported type for attribute "%s".'
+          % self.attr_def.name)
 
-  def set_as_not_inferred(self):
-    self.is_inferred_type_attr = False
-    if self.attr_def.type not in _SWIFTIFIED_ATTR_TYPES:
-      raise UnableToGenerateCodeError(
-        'Unsupported type for attribute "%s".'
-        % self.attr_def.name)
+      # Get the arg type.
+      self._swift_type = _SWIFTIFIED_ATTR_TYPES[self.attr_def.type]
 
-    # Get the arg type.
-    self._swift_type = _SWIFTIFIED_ATTR_TYPES[self.attr_def.type]
-
-    # Check if the arg is an enum type.
-    self._use_enum = False
-    if self.attr_def.type == 'string':
-      allowed_values = tuple(sorted(self.attr_def.allowed_values.list.s))
-      if allowed_values:
-        self._swift_type = self.op.enum_store.maybe_add(
-          allowed_values, self.attr_def.name)
-        self._use_enum = True
+      # Check if the arg is an enum type.
+      self._use_enum = False
+      if self.attr_def.type == 'string':
+        allowed_values = tuple(sorted(self.attr_def.allowed_values.list.s))
+        if allowed_values:
+          self._swift_type = self.op.enum_store.maybe_add(
+            allowed_values, self.attr_def.name)
+          self._use_enum = True
 
   @property
   def name(self):
@@ -828,7 +804,9 @@ def main(argv):
       _WARNING +
       _HEADER +
       ('import CTensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
+      ('#if !COMPILING_TENSORFLOW_MODULE\n\n' if FLAGS.mode == 'eager' else '') +
       ('import TensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
+      ('#endif\n\n' if FLAGS.mode == 'eager' else '') +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

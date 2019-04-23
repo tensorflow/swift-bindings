@@ -632,7 +632,7 @@ class Attribute(object):
         if self.attr_def.type == 'list(type)':
           return '_TFCOpSetAttrTypeArray(op, "' + self.name + '", ' + self.swift_name + '._typeList)'
         if string_valued and self.allows_string:
-          return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + str(types_pb2.DT_STRING) + ')'
+          return 'TFE_OpSetAttrType(op, "' + self.name + '", TF_STRING)'
         return 'TFE_OpSetAttrType(op, "' + self.name + '", ' + self.swift_name + '.tensorFlowDataType._cDataType)'
 
       # Function-valued attributes.

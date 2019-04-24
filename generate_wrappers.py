@@ -174,6 +174,14 @@ class Op(object):
       attr for attr in self.attrs
       if attr.is_type_attr]
 
+    # Check mode-compatibility for the attributes.
+    for attr in self.type_attrs:
+      if attr.attr_def.type == 'list(type)' and mode == 'tfop':
+        raise UnableToGenerateCodeError(
+          'Attributes with data type array values are not supported when using the "tfop" mode.')
+      elif attr.attr_def.type == 'list(type)' and mode == 'tfop-eager-fallback':
+        self.mode = 'eager'
+
     # Collect all the input and output arguments.
     self.input_args = [
       Argument(arg_def, op=self)
@@ -182,6 +190,7 @@ class Op(object):
       Argument(arg_def, op=self)
       for arg_def in self.op_def.output_arg]
 
+    # Check mode-compatibility for the output arguments.
     for output_arg in self.output_args:
       if output_arg.is_list and mode == 'tfop':
         raise UnableToGenerateCodeError(

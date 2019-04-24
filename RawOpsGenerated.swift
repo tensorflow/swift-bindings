@@ -1006,10 +1006,10 @@ public static func anonymousIterator(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("AnonymousIterator",
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("AnonymousIterator")
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// A container for an iterator resource.
@@ -1025,10 +1025,10 @@ public static func anonymousIteratorV2(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> (handle: ResourceHandle, deleter: VariantHandle) {
-  let ret: (ResourceHandle, VariantHandle) = #tfop("AnonymousIteratorV2",
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return (ret.0, ret.1)
+  let op = TFE_Op("AnonymousIteratorV2")
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1), Int(1))
 }
 
 /// Computes the "logical or" of elements across dimensions of a tensor.
@@ -1217,6 +1217,30 @@ public static func asinh<T: FloatingPoint & TensorFlowScalar>(
     x,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Asserts that the given condition is true.
+///
+/// If `condition` evaluates to false, print the list of tensors in `data`.
+/// `summarize` determines how many entries of the tensors to print.
+///
+/// - Parameters:
+///   - condition: The condition to evaluate.
+///   - data: The tensors to print out when condition is false.
+///
+/// - Attr summarize: Print this many entries of each tensor.
+@inlinable @inline(__always)
+public static func assert<T: TensorGroup>(
+  condition: Tensor<Bool>,
+  data: T,
+  summarize: Int64 = 3
+) {
+  let op = TFE_Op("Assert")
+  let _ = op.addInput(condition)
+  let _ = op.addInput(data)
+  op.setAttr("T", T._typeList)
+  op.setAttr("summarize", summarize)
+  op.execute()
 }
 
 /// Adds a value to the current value of a variable.
@@ -1862,12 +1886,12 @@ public static func batchDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("BatchDataset",
-    inputDataset,
-    batchSize,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("BatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(batchSize)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that batches `batch_size` elements from `input_dataset`.
@@ -1885,14 +1909,14 @@ public static func batchDatasetV2(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("BatchDatasetV2",
-    inputDataset,
-    batchSize,
-    dropRemainder,
-    parallel_copy: parallelCopy,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("BatchDatasetV2")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(batchSize)
+  let _ = op.addInput(dropRemainder)
+  op.setAttr("parallel_copy", parallelCopy)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Batches all the inputs tensors to the computation done by the function.
@@ -3914,12 +3938,12 @@ public static func cacheDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("CacheDataset",
-    inputDataset,
-    filename,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("CacheDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(filename)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Cast x of type SrcT to y of DstT.
@@ -4481,12 +4505,12 @@ public static func concatenateDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ConcatenateDataset",
-    inputDataset,
-    anotherDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ConcatenateDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(anotherDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Sets up the centralized structures for a distributed TPU system.
@@ -8391,6 +8415,74 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
   return StringTensor(handle: ret)
 }
 
+/// The op serializes protobuf messages provided in the input tensors.
+///
+/// The types of the tensors in `values` must match the schema for the
+/// fields specified in `field_names`. All the tensors in `values` must
+/// have a common shape prefix, *batch_shape*.
+///
+/// The `sizes` tensor specifies repeat counts for each field.  The repeat
+/// count (last dimension) of a each tensor in `values` must be greater
+/// than or equal to corresponding repeat count in `sizes`.
+///
+/// A `message_type` name must be provided to give context for the field
+/// names. The actual message descriptor can be looked up either in the
+/// linked-in descriptor pool or a filename provided by the caller using
+/// the `descriptor_source` attribute.
+///
+/// The `descriptor_source` attribute selects a source of protocol
+/// descriptors to consult when looking up `message_type`. This may be a
+/// filename containing a serialized `FileDescriptorSet` message,
+/// or the special value `local://`, in which case only descriptors linked
+/// into the code will be searched; the filename can be on any filesystem
+/// accessible to TensorFlow.
+///
+/// You can build a `descriptor_source` file using the `--descriptor_set_out`
+/// and `--include_imports` options to the protocol compiler `protoc`.
+///
+/// The `local://` database only covers descriptors linked into the
+/// code via C++ libraries, not Python imports. You can link in a proto descriptor
+/// by creating a cc_library target with alwayslink=1.
+///
+/// There are a few special cases in the value mapping:
+///
+/// Submessage and group fields must be pre-serialized as TensorFlow strings.
+///
+/// TensorFlow lacks support for unsigned int64s, so they must be
+/// represented as `tf.int64` with the same twos-complement bit pattern
+/// (the obvious way).
+///
+/// Unsigned int32 values can be represented exactly with `tf.int64`, or
+/// with sign wrapping if the input is of type `tf.int32`.
+///
+/// - Parameters:
+///   - sizes: Tensor of int32 with shape `[batch_shape, len(field_names)]`.
+///   - values: List of tensors containing values for the corresponding field.
+///
+/// - Attrs:
+///   - field_names: List of strings containing proto field names.
+///   - message_type: Name of the proto message type to decode.
+///   - Tinput_types: The input types.
+///
+/// - Output bytes: Tensor of serialized protos with shape `batch_shape`.
+@inlinable @inline(__always)
+public static func encodeProto<TinputTypes: TensorGroup>(
+  sizes: Tensor<Int32>,
+  _ values: TinputTypes,
+  fieldNames: [String],
+  messageType: String,
+  descriptorSource: String = "local://"
+) -> StringTensor {
+  let op = TFE_Op("EncodeProto")
+  let _ = op.addInput(sizes)
+  let _ = op.addInput(values)
+  op.setAttr("field_names", fieldNames)
+  op.setAttr("message_type", messageType)
+  op.setAttr("descriptor_source", descriptorSource)
+  op.setAttr("Tinput_types", TinputTypes._typeList)
+  return op.execute(Int(1))
+}
+
 /// Encode audio data using the WAV file format.
 ///
 /// This operation will generate a string suitable to be saved out to create a .wav
@@ -8800,12 +8892,12 @@ public static func experimentalAssertNextDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalAssertNextDataset",
-    inputDataset,
-    transformations,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalAssertNextDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(transformations)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that shards the input dataset.
@@ -8830,13 +8922,13 @@ public static func experimentalAutoShardDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalAutoShardDataset",
-    inputDataset,
-    numWorkers,
-    index,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalAutoShardDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(numWorkers)
+  let _ = op.addInput(index)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Records the bytes size of each element of `input_dataset` in a StatsAggregator.
@@ -8847,12 +8939,40 @@ public static func experimentalBytesProducedStatsDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalBytesProducedStatsDataset",
-    inputDataset,
-    tag,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalBytesProducedStatsDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(tag)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+@inlinable @inline(__always)
+public static func experimentalCSVDataset<OutputTypes: TensorGroup>(
+  filenames: StringTensor,
+  compressionType: StringTensor,
+  bufferSize: Tensor<Int64>,
+  header: Tensor<Bool>,
+  fieldDelim: StringTensor,
+  useQuoteDelim: Tensor<Bool>,
+  naValue: StringTensor,
+  selectCols: Tensor<Int64>,
+  recordDefaults: OutputTypes,
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalCSVDataset")
+  let _ = op.addInput(filenames)
+  let _ = op.addInput(compressionType)
+  let _ = op.addInput(bufferSize)
+  let _ = op.addInput(header)
+  let _ = op.addInput(fieldDelim)
+  let _ = op.addInput(useQuoteDelim)
+  let _ = op.addInput(naValue)
+  let _ = op.addInput(selectCols)
+  let _ = op.addInput(recordDefaults)
+  op.setAttr("output_types", OutputTypes._typeList)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -8862,12 +8982,13 @@ public static func experimentalChooseFastestDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalChooseFastestDataset",
-    inputDatasets,
-    num_experiments: numExperiments,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalChooseFastestDataset")
+  let inputDatasetsCount = op.addInput(inputDatasets)
+  op.setAttr("N", inputDatasetsCount)
+  op.setAttr("num_experiments", numExperiments)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Returns the cardinality of `input_dataset`.
@@ -8923,13 +9044,13 @@ public static func experimentalDenseToSparseBatchDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalDenseToSparseBatchDataset",
-    inputDataset,
-    batchSize,
-    rowShape,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalDenseToSparseBatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(batchSize)
+  let _ = op.addInput(rowShape)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// A substitute for `InterleaveDataset` on a fixed list of `N` datasets.
@@ -8946,12 +9067,126 @@ public static func experimentalDirectedInterleaveDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalDirectedInterleaveDataset",
-    selectorInputDataset,
-    dataInputDatasets,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalDirectedInterleaveDataset")
+  let _ = op.addInput(selectorInputDataset)
+  let dataInputDatasetsCount = op.addInput(dataInputDatasets)
+  op.setAttr("N", dataInputDatasetsCount)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that computes a group-by on `input_dataset`.
+///
+/// Creates a dataset that computes a group-by on `input_dataset`.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - key_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `key_func`.
+///   - init_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `init_func`.
+///   - reduce_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `reduce_func`.
+///   - finalize_func_other_arguments: A list of tensors, typically values that were captured when
+///     building a closure for `finalize_func`.
+///
+/// - Attrs:
+///   - key_func: A function mapping an element of `input_dataset`, concatenated
+///     with `key_func_other_arguments` to a scalar value of type DT_INT64.
+///   - init_func: A function mapping a key of type DT_INT64, concatenated with
+///     `init_func_other_arguments` to the initial reducer state.
+///   - reduce_func: A function mapping the current reducer state and an element of `input_dataset`,
+///     concatenated with `reduce_func_other_arguments` to a new reducer state.
+///   - finalize_func: A function mapping the final reducer state to an output element.
+@inlinable @inline(__always)
+public static func experimentalGroupByReducerDataset<
+    KeyfuncIn: TensorGroup,
+    KeyfuncOut: TensorGroup,
+    InitfuncIn: TensorGroup,
+    InitfuncOut: TensorGroup,
+    ReducefuncIn: TensorGroup,
+    ReducefuncOut: TensorGroup,
+    FinalizefuncIn: TensorGroup,
+    FinalizefuncOut: TensorGroup,
+    TkeyFuncOtherArguments: TensorGroup,
+    TinitFuncOtherArguments: TensorGroup,
+    TreduceFuncOtherArguments: TensorGroup,
+    TfinalizeFuncOtherArguments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  keyFuncOtherArguments: TkeyFuncOtherArguments,
+  initFuncOtherArguments: TinitFuncOtherArguments,
+  reduceFuncOtherArguments: TreduceFuncOtherArguments,
+  finalizeFuncOtherArguments: TfinalizeFuncOtherArguments,
+  keyFunc: (KeyfuncIn) -> KeyfuncOut,
+  initFunc: (InitfuncIn) -> InitfuncOut,
+  reduceFunc: (ReducefuncIn) -> ReducefuncOut,
+  finalizeFunc: (FinalizefuncIn) -> FinalizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalGroupByReducerDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(keyFuncOtherArguments)
+  let _ = op.addInput(initFuncOtherArguments)
+  let _ = op.addInput(reduceFuncOtherArguments)
+  let _ = op.addInput(finalizeFuncOtherArguments)
+  op.setAttr("key_func", keyFunc)
+  op.setAttr("init_func", initFunc)
+  op.setAttr("reduce_func", reduceFunc)
+  op.setAttr("finalize_func", finalizeFunc)
+  op.setAttr("Tkey_func_other_arguments", TkeyFuncOtherArguments._typeList)
+  op.setAttr("Tinit_func_other_arguments", TinitFuncOtherArguments._typeList)
+  op.setAttr("Treduce_func_other_arguments", TreduceFuncOtherArguments._typeList)
+  op.setAttr("Tfinalize_func_other_arguments", TfinalizeFuncOtherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that computes a windowed group-by on `input_dataset`.
+///
+/// // TODO(mrry): Support non-int64 keys.
+///
+/// - Attr key_func: A function mapping an element of `input_dataset`, concatenated
+///   with `key_func_other_arguments` to a scalar value of type DT_INT64.
+@inlinable @inline(__always)
+public static func experimentalGroupByWindowDataset<
+    KeyfuncIn: TensorGroup,
+    KeyfuncOut: TensorGroup,
+    ReducefuncIn: TensorGroup,
+    ReducefuncOut: TensorGroup,
+    WindowsizefuncIn: TensorGroup,
+    WindowsizefuncOut: TensorGroup,
+    TkeyFuncOtherArguments: TensorGroup,
+    TreduceFuncOtherArguments: TensorGroup,
+    TwindowSizeFuncOtherArguments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  keyFuncOtherArguments: TkeyFuncOtherArguments,
+  reduceFuncOtherArguments: TreduceFuncOtherArguments,
+  windowSizeFuncOtherArguments: TwindowSizeFuncOtherArguments,
+  keyFunc: (KeyfuncIn) -> KeyfuncOut,
+  reduceFunc: (ReducefuncIn) -> ReducefuncOut,
+  windowSizeFunc: (WindowsizefuncIn) -> WindowsizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalGroupByWindowDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(keyFuncOtherArguments)
+  let _ = op.addInput(reduceFuncOtherArguments)
+  let _ = op.addInput(windowSizeFuncOtherArguments)
+  op.setAttr("key_func", keyFunc)
+  op.setAttr("reduce_func", reduceFunc)
+  op.setAttr("window_size_func", windowSizeFunc)
+  op.setAttr("Tkey_func_other_arguments", TkeyFuncOtherArguments._typeList)
+  op.setAttr("Treduce_func_other_arguments", TreduceFuncOtherArguments._typeList)
+  op.setAttr("Twindow_size_func_other_arguments", TwindowSizeFuncOtherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -8970,11 +9205,11 @@ public static func experimentalIgnoreErrorsDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalIgnoreErrorsDataset",
-    inputDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalIgnoreErrorsDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -9017,11 +9252,11 @@ public static func experimentalLMDBDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalLMDBDataset",
-    filenames,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalLMDBDataset")
+  let _ = op.addInput(filenames)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Records the latency of producing `input_dataset` elements in a StatsAggregator.
@@ -9032,12 +9267,91 @@ public static func experimentalLatencyStatsDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalLatencyStatsDataset",
-    inputDataset,
-    tag,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalLatencyStatsDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(tag)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that fuses mapping with batching.
+///
+/// Creates a dataset that applies `f` to the outputs of `input_dataset` and then
+/// batches `batch_size` of them.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `batch_size * num_parallel_batches` copies of `f` in parallel.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - other_arguments: A list of tensors, typically values that were captured when building a closure
+///     for `f`.
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch. It determines the number of concurrent invocations of `f` that process
+///     elements from `input_dataset` in parallel.
+///   - num_parallel_calls: A scalar representing the maximum number of parallel invocations of the `map_fn`
+///     function. Applying the `map_fn` on consecutive input elements in parallel has
+///     the potential to improve input pipeline throughput.
+///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
+///     is smaller than desired.
+///
+/// - Attr f: A function to apply to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalMapAndBatchDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  batchSize: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  dropRemainder: Tensor<Bool>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalMapAndBatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(batchSize)
+  let _ = op.addInput(numParallelCalls)
+  let _ = op.addInput(dropRemainder)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalMapDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalMapDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -9056,12 +9370,12 @@ public static func experimentalMaterializedIndexDatasetHandle(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("ExperimentalMaterializedIndexDatasetHandle",
-    container: container,
-    shared_name: sharedName,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalMaterializedIndexDatasetHandle")
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that overrides the maximum intra-op parallelism.
@@ -9074,12 +9388,12 @@ public static func experimentalMaxIntraOpParallelismDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalMaxIntraOpParallelismDataset",
-    inputDataset,
-    maxIntraOpParallelism,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalMaxIntraOpParallelismDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(maxIntraOpParallelism)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -9088,11 +9402,168 @@ public static func experimentalNonSerializableDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalNonSerializableDataset",
-    inputDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalNonSerializableDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that fuses mapping with batching.
+///
+/// Creates a dataset that applies `f` to the outputs of `input_dataset` and then
+/// batches `batch_size` of them.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `batch_size * num_parallel_batches` copies of `f` in parallel.
+///
+/// Unlike "MapAndBatchDatasetV2", this dataset uses a NUMA-aware thread scheduling
+/// policy. Because it uses the single-threaded executor, it only supports the
+/// function-based control flow ops.
+///
+/// - Parameters:
+///   - input_dataset: A variant tensor representing the input dataset.
+///   - other_arguments: A list of tensors, typically values that were captured when building a closure
+///     for `f`.
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch. It determines the number of concurrent invocations of `f` that process
+///     elements from `input_dataset` in parallel.
+///   - num_parallel_calls: A scalar representing the maximum number of parallel invocations of the `map_fn`
+///     function. Applying the `map_fn` on consecutive input elements in parallel has
+///     the potential to improve input pipeline throughput.
+///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
+///     is smaller than desired.
+///
+/// - Attr f: A function to apply to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalNumaMapAndBatchDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  batchSize: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  dropRemainder: Tensor<Bool>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalNumaMapAndBatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(batchSize)
+  let _ = op.addInput(numParallelCalls)
+  let _ = op.addInput(dropRemainder)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// The resulting dataset is similar to the `InterleaveDataset`, with the exception
+/// that if retrieving the next value from a dataset would cause the requester to
+/// block, it will skip that input dataset. This dataset is especially useful
+/// when loading data from a variable-latency datastores (e.g. HDFS, GCS), as it
+/// allows the training step to proceed so long as some data is available.
+///
+/// !! WARNING !! This dataset is not deterministic!
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func experimentalParallelInterleaveDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  sloppy: Tensor<Bool>,
+  bufferOutputElements: Tensor<Int64>,
+  prefetchInputElements: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalParallelInterleaveDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(cycleLength)
+  let _ = op.addInput(blockLength)
+  let _ = op.addInput(sloppy)
+  let _ = op.addInput(bufferOutputElements)
+  let _ = op.addInput(prefetchInputElements)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Transforms `input_dataset` containing `Example` protos as vectors of DT_STRING into a dataset of `Tensor` or `SparseTensor` objects representing the parsed features.
+///
+/// - Parameter dense_defaults: A dict mapping string keys to `Tensor`s.
+///   The keys of the dict must match the dense_keys of the feature.
+///
+/// - Attrs:
+///   - sparse_keys: A list of string keys in the examples features.
+///     The results for these keys will be returned as `SparseTensor` objects.
+///   - dense_keys: A list of Ndense string Tensors (scalars).
+///     The keys expected in the Examples features associated with dense values.
+///   - sparse_types: A list of `DTypes` of the same length as `sparse_keys`.
+///     Only `tf.float32` (`FloatList`), `tf.int64` (`Int64List`),
+///     and `tf.string` (`BytesList`) are supported.
+///   - Tdense: A list of DTypes of the same length as `dense_keys`.
+///     Only `tf.float32` (`FloatList`), `tf.int64` (`Int64List`),
+///     and `tf.string` (`BytesList`) are supported.
+///
+///   - dense_shapes: List of tuples with the same length as `dense_keys`.
+///     The shape of the data for each dense feature referenced by `dense_keys`.
+///     Required for any input tensors identified by `dense_keys`.  Must be
+///     either fully defined, or may contain an unknown first dimension.
+///     An unknown first dimension means the feature is treated as having
+///     a variable number of blocks, and the output shape along this dimension
+///     is considered unknown at graph build time.  Padding is applied for
+///     minibatch elements smaller than the maximum number of blocks for the
+///     given feature along this dimension.
+///   - output_types: The type list for the return values.
+///   - output_shapes: The list of shapes being produced.
+@inlinable @inline(__always)
+public static func experimentalParseExampleDataset<Tdense: TensorGroup>(
+  inputDataset: VariantHandle,
+  numParallelCalls: Tensor<Int64>,
+  denseDefaults: Tdense,
+  sparseKeys: [String],
+  denseKeys: [String],
+  sparseTypes: [TensorDataType],
+  denseShapes: [TensorShape?],
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  sloppy: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalParseExampleDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(numParallelCalls)
+  let _ = op.addInput(denseDefaults)
+  op.setAttr("sparse_keys", sparseKeys)
+  op.setAttr("dense_keys", denseKeys)
+  op.setAttr("sparse_types", sparseTypes)
+  op.setAttr("Tdense", Tdense._typeList)
+  op.setAttr("dense_shapes", denseShapes)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("sloppy", sloppy)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -9105,12 +9576,12 @@ public static func experimentalPrivateThreadPoolDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalPrivateThreadPoolDataset",
-    inputDataset,
-    numThreads,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalPrivateThreadPoolDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(numThreads)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a Dataset that returns pseudorandom numbers.
@@ -9127,12 +9598,12 @@ public static func experimentalRandomDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalRandomDataset",
-    seed,
-    seed2,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalRandomDataset")
+  let _ = op.addInput(seed)
+  let _ = op.addInput(seed2)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that changes the batch size.
@@ -9152,12 +9623,41 @@ public static func experimentalRebatchDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalRebatchDataset",
-    inputDataset,
-    numWorkers,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalRebatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(numWorkers)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset successively reduces `f` over the elements of `input_dataset`.
+@inlinable @inline(__always)
+public static func experimentalScanDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Tstate: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  initialState: Tstate,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalScanDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(initialState)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("f", f)
+  op.setAttr("Tstate", Tstate._typeList)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -9169,14 +9669,14 @@ public static func experimentalSetStatsAggregatorDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalSetStatsAggregatorDataset",
-    inputDataset,
-    statsAggregator,
-    tag,
-    counterPrefix,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalSetStatsAggregatorDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(statsAggregator)
+  let _ = op.addInput(tag)
+  let _ = op.addInput(counterPrefix)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -9186,12 +9686,12 @@ public static func experimentalSleepDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalSleepDataset",
-    inputDataset,
-    sleepMicroseconds,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalSleepDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(sleepMicroseconds)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that passes a sliding window over `input_dataset`.
@@ -9212,14 +9712,14 @@ public static func experimentalSlidingWindowDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalSlidingWindowDataset",
-    inputDataset,
-    windowSize,
-    windowShift,
-    windowStride,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalSlidingWindowDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(windowSize)
+  let _ = op.addInput(windowShift)
+  let _ = op.addInput(windowStride)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that executes a SQL query and emits rows of the result set.
@@ -9236,13 +9736,13 @@ public static func experimentalSqlDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalSqlDataset",
-    driverName,
-    dataSourceName,
-    query,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalSqlDataset")
+  let _ = op.addInput(driverName)
+  let _ = op.addInput(dataSourceName)
+  let _ = op.addInput(query)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a statistics manager resource.
@@ -9267,6 +9767,40 @@ public static func experimentalStatsAggregatorSummary(
   return StringTensor(handle: ret)
 }
 
+/// Creates a dataset that stops iteration when predicate` is false.
+///
+/// The `predicate` function must return a scalar boolean and accept the
+/// following arguments:
+///
+/// * One tensor for each component of an element of `input_dataset`.
+/// * One tensor for each value in `other_arguments`.
+///
+/// - Parameter other_arguments: A list of tensors, typically values that were captured when
+///   building a closure for `predicate`.
+///
+/// - Attr predicate: A function returning a scalar boolean.
+@inlinable @inline(__always)
+public static func experimentalTakeWhileDataset<
+    PredicateIn: TensorGroup,
+    PredicateOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  predicate: (PredicateIn) -> PredicateOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("ExperimentalTakeWhileDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("predicate", predicate)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
 ///
 /// - Parameter thread_pool: A resource produced by the ThreadPoolHandle op.
@@ -9277,12 +9811,12 @@ public static func experimentalThreadPoolDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalThreadPoolDataset",
-    inputDataset,
-    threadPool,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalThreadPoolDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(threadPool)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that uses a custom thread pool to compute `input_dataset`.
@@ -9321,11 +9855,11 @@ public static func experimentalUnbatchDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalUnbatchDataset",
-    inputDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalUnbatchDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that contains the unique elements of `input_dataset`.
@@ -9335,11 +9869,11 @@ public static func experimentalUniqueDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ExperimentalUniqueDataset",
-    inputDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ExperimentalUniqueDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Computes exponential of x - 1 element-wise.
@@ -9619,13 +10153,13 @@ public static func fIFOQueueV2(
   container: String,
   sharedName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("FIFOQueueV2",
-    component_types: componentTypes,
-    shapes: shapes,
-    capacity: capacity,
-    container: container,
-    shared_name: sharedName)
-  return ret
+  let op = TFE_Op("FIFOQueueV2")
+  op.setAttr("component_types", componentTypes)
+  op.setAttr("shapes", shapes)
+  op.setAttr("capacity", capacity)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Output a fact about factorials.
@@ -9925,11 +10459,45 @@ public static func filterByLastComponentDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("FilterByLastComponentDataset",
-    inputDataset,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("FilterByLastComponentDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset containing elements of `input_dataset` matching `predicate`.
+///
+/// The `predicate` function must return a scalar boolean and accept the
+/// following arguments:
+///
+/// * One tensor for each component of an element of `input_dataset`.
+/// * One tensor for each value in `other_arguments`.
+///
+/// - Parameter other_arguments: A list of tensors, typically values that were captured when
+///   building a closure for `predicate`.
+///
+/// - Attr predicate: A function returning a scalar boolean.
+@inlinable @inline(__always)
+public static func filterDataset<
+    PredicateIn: TensorGroup,
+    PredicateOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  predicate: (PredicateIn) -> PredicateOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("FilterDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("predicate", predicate)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -10119,6 +10687,37 @@ public static func fixedUnigramCandidateSampler(
     seed: seed,
     seed2: seed2)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike MapDataset, the `f` in FlatMapDataset is expected to return a
+/// Dataset variant, and FlatMapDataset will flatten successive results
+/// into a single Dataset.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func flatMapDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("FlatMapDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -11421,6 +12020,43 @@ public static func generateVocabRemapping(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
+/// Creates a dataset that invokes a function to generate elements.
+@inlinable @inline(__always)
+public static func generatorDataset<
+    InitfuncIn: TensorGroup,
+    InitfuncOut: TensorGroup,
+    NextfuncIn: TensorGroup,
+    NextfuncOut: TensorGroup,
+    FinalizefuncIn: TensorGroup,
+    FinalizefuncOut: TensorGroup,
+    TinitFuncArgs: TensorGroup,
+    TnextFuncArgs: TensorGroup,
+    TfinalizeFuncArgs: TensorGroup
+>(
+  initFuncOtherArgs: TinitFuncArgs,
+  nextFuncOtherArgs: TnextFuncArgs,
+  finalizeFuncOtherArgs: TfinalizeFuncArgs,
+  initFunc: (InitfuncIn) -> InitfuncOut,
+  nextFunc: (NextfuncIn) -> NextfuncOut,
+  finalizeFunc: (FinalizefuncIn) -> FinalizefuncOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("GeneratorDataset")
+  let _ = op.addInput(initFuncOtherArgs)
+  let _ = op.addInput(nextFuncOtherArgs)
+  let _ = op.addInput(finalizeFuncOtherArgs)
+  op.setAttr("init_func", initFunc)
+  op.setAttr("next_func", nextFunc)
+  op.setAttr("finalize_func", finalizeFunc)
+  op.setAttr("Tinit_func_args", TinitFuncArgs._typeList)
+  op.setAttr("Tnext_func_args", TnextFuncArgs._typeList)
+  op.setAttr("Tfinalize_func_args", TfinalizeFuncArgs._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
 /// Store the input tensor in the state of the current session.
 ///
 /// - Parameter value: The tensor to be stored.
@@ -12117,6 +12753,36 @@ public static func infeedEnqueuePrelinearizedBuffer(
     device_ordinal: deviceOrdinal)
 }
 
+/// Feeds multiple Tensor values into the computation as an XLA tuple.
+///
+/// - Parameter inputs: A list of tensors that will be provided using the infeed mechanism.
+///
+/// - Attrs:
+///   - dtypes: The element types of each element in `inputs`.
+///   - shapes: The shapes of each tensor in `inputs`.
+///   - layouts: A vector holding the requested layout in minor-to-major sequence for
+///     all the tuple shapes, in the order the shapes appear in the "shapes" input.
+///     The layout elements for a sub-shape can be set to -1, in which case the
+///     corresponding layout will be computed by the infeed operation.
+///   - device_ordinal: The TPU device to use. This should be -1 when the Op
+///     is running on a TPU device, and >= 0 when the Op is running on the CPU
+///     device.
+@inlinable @inline(__always)
+public static func infeedEnqueueTuple<Dtypes: TensorGroup>(
+  inputs: Dtypes,
+  shapes: [TensorShape?],
+  layouts: [Int32],
+  deviceOrdinal: Int64 = -1
+) {
+  let op = TFE_Op("InfeedEnqueueTuple")
+  let _ = op.addInput(inputs)
+  op.setAttr("dtypes", Dtypes._typeList)
+  op.setAttr("shapes", shapes)
+  op.setAttr("layouts", layouts)
+  op.setAttr("device_ordinal", deviceOrdinal)
+  op.execute()
+}
+
 /// Initializes a table from a text file.
 ///
 /// It inserts one key-value pair into the table for each line of the file.
@@ -12310,6 +12976,43 @@ public static func intOutputFloatOutput(
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
 }
 
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike MapDataset, the `f` in InterleaveDataset is expected to return
+/// a Dataset variant, and InterleaveDataset will flatten successive
+/// results into a single Dataset. Unlike FlatMapDataset,
+/// InterleaveDataset will interleave sequences of up to `block_length`
+/// consecutive elements from `cycle_length` input elements.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func interleaveDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("InterleaveDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(cycleLength)
+  let _ = op.addInput(blockLength)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
 /// Computes the reciprocal of x element-wise.
 ///
 /// I.e., \\(y = 1 / x\\).
@@ -12470,12 +13173,12 @@ public static func iterator(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("Iterator",
-    shared_name: sharedName,
-    container: container,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("Iterator")
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("container", container)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Converts the given string representing a handle to an iterator to a resource.
@@ -12495,11 +13198,11 @@ public static func iteratorFromStringHandle(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("IteratorFromStringHandle",
-    stringHandle,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("IteratorFromStringHandle")
+  let _ = op.addInput(stringHandle)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 @inlinable @inline(__always)
@@ -12508,11 +13211,11 @@ public static func iteratorFromStringHandleV2(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("IteratorFromStringHandleV2",
-    stringHandle,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("IteratorFromStringHandleV2")
+  let _ = op.addInput(stringHandle)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Gets the next output from the given iterator .
@@ -12535,11 +13238,11 @@ public static func iteratorGetNextAsOptional(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("IteratorGetNextAsOptional",
-    iterator,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("IteratorGetNextAsOptional")
+  let _ = op.addInput(iterator)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Gets the next output from the given iterator.
@@ -12581,12 +13284,12 @@ public static func iteratorV2(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("IteratorV2",
-    shared_name: sharedName,
-    container: container,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("IteratorV2")
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("container", container)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Returns the index of a data point that should be added to the seed set.
@@ -14231,12 +14934,40 @@ public static func mapClear(
   container: String,
   sharedName: String
 ) {
-  return #tfop("MapClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
+  let op = TFE_Op("MapClear")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+@inlinable @inline(__always)
+public static func mapDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("MapDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
 }
 
 ///   Maps a function on the list of tensors unpacked from arguments on dimension 0.
@@ -14302,13 +15033,13 @@ public static func mapIncompleteSize(
   container: String,
   sharedName: String
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("MapIncompleteSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let op = TFE_Op("MapIncompleteSize")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Op peeks at the values at the specified key.  If the
@@ -14344,13 +15075,50 @@ public static func mapSize(
   container: String,
   sharedName: String
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("MapSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let op = TFE_Op("MapSize")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
+}
+
+/// Stage (key, values) in the underlying container which behaves like a hashtable.
+///
+/// - Parameters:
+///   - key: int64
+///   - values: a list of tensors
+///     dtypes A list of data types that inserted values should adhere to.
+///
+/// - Attrs:
+///   - capacity: Maximum number of elements in the Staging Area. If > 0, inserts
+///     on the container will block when the capacity is reached.
+///   - container: If non-empty, this queue is placed in the given container. Otherwise,
+///     a default container is used.
+///   - shared_name: It is necessary to match this name to the matching Unstage Op.
+@inlinable @inline(__always)
+public static func mapStage<FakeDtypes: TensorGroup>(
+  key: Tensor<Int64>,
+  indices: Tensor<Int32>,
+  _ values: FakeDtypes,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
+  dtypes: [TensorDataType],
+  container: String,
+  sharedName: String
+) {
+  let op = TFE_Op("MapStage")
+  let _ = op.addInput(key)
+  let _ = op.addInput(indices)
+  let _ = op.addInput(values)
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("fake_dtypes", FakeDtypes._typeList)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
 }
 
 /// Op removes and returns the values associated with the key
@@ -15784,12 +16552,12 @@ public static func modelDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ModelDataset",
-    inputDataset,
-    cpu_budget: cpuBudget,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ModelDataset")
+  let _ = op.addInput(inputDataset)
+  op.setAttr("cpu_budget", cpuBudget)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Returns x * y element-wise.
@@ -15844,13 +16612,13 @@ public static func multiDeviceIterator(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("MultiDeviceIterator",
-    devices: devices,
-    shared_name: sharedName,
-    container: container,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("MultiDeviceIterator")
+  op.setAttr("devices", devices)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("container", container)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Generates a MultiDeviceIterator resource from its provided string handle.
@@ -15868,11 +16636,11 @@ public static func multiDeviceIteratorFromStringHandle(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("MultiDeviceIteratorFromStringHandle",
-    stringHandle,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("MultiDeviceIteratorFromStringHandle")
+  let _ = op.addInput(stringHandle)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Gets next element for the provided shard number.
@@ -16965,13 +17733,13 @@ public static func oneShotIterator<DatasetfactoryIn: TensorGroup,
   container: String,
   sharedName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("OneShotIterator",
-    dataset_factory$func: _tffunc(datasetFactory),
-    output_types: outputTypes,
-    output_shapes: outputShapes,
-    container: container,
-    shared_name: sharedName)
-  return ret
+  let op = TFE_Op("OneShotIterator")
+  op.setAttr("dataset_factory", datasetFactory)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Returns a tensor of ones with the same shape and type as x.
@@ -17019,13 +17787,24 @@ public static func optimizeDataset(
   outputShapes: [TensorShape?],
   optimizationConfigs: [String]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("OptimizeDataset",
-    inputDataset,
-    optimizations,
-    output_types: outputTypes,
-    output_shapes: outputShapes,
-    optimization_configs: optimizationConfigs)
-  return ret
+  let op = TFE_Op("OptimizeDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(optimizations)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("optimization_configs", optimizationConfigs)
+  return op.execute(Int(1))
+}
+
+/// Constructs an Optional variant from a tuple of tensors.
+@inlinable @inline(__always)
+public static func optionalFromValue<ToutputTypes: TensorGroup>(
+  components: ToutputTypes
+) -> VariantHandle {
+  let op = TFE_Op("OptionalFromValue")
+  let _ = op.addInput(components)
+  op.setAttr("Toutput_types", ToutputTypes._typeList)
+  return op.execute(Int(1))
 }
 
 /// Returns the value stored in an Optional variant or raises an error if none exists.
@@ -17068,12 +17847,13 @@ public static func orderedMapClear(
   container: String,
   sharedName: String
 ) {
-  return #tfop("OrderedMapClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
+  let op = TFE_Op("OrderedMapClear")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
 }
 
 /// Op returns the number of incomplete elements in the underlying container.
@@ -17085,13 +17865,13 @@ public static func orderedMapIncompleteSize(
   container: String,
   sharedName: String
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("OrderedMapIncompleteSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let op = TFE_Op("OrderedMapIncompleteSize")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Op peeks at the values at the specified key.  If the
@@ -17128,13 +17908,52 @@ public static func orderedMapSize(
   container: String,
   sharedName: String
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("OrderedMapSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let op = TFE_Op("OrderedMapSize")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
+}
+
+/// Stage (key, values) in the underlying container which behaves like a ordered
+///
+/// associative container.   Elements are ordered by key.
+///
+/// - Parameters:
+///   - key: int64
+///   - values: a list of tensors
+///     dtypes A list of data types that inserted values should adhere to.
+///
+/// - Attrs:
+///   - capacity: Maximum number of elements in the Staging Area. If > 0, inserts
+///     on the container will block when the capacity is reached.
+///   - container: If non-empty, this queue is placed in the given container. Otherwise,
+///     a default container is used.
+///   - shared_name: It is necessary to match this name to the matching Unstage Op.
+@inlinable @inline(__always)
+public static func orderedMapStage<FakeDtypes: TensorGroup>(
+  key: Tensor<Int64>,
+  indices: Tensor<Int32>,
+  _ values: FakeDtypes,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
+  dtypes: [TensorDataType],
+  container: String,
+  sharedName: String
+) {
+  let op = TFE_Op("OrderedMapStage")
+  let _ = op.addInput(key)
+  let _ = op.addInput(indices)
+  let _ = op.addInput(values)
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("fake_dtypes", FakeDtypes._typeList)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
 }
 
 /// Op removes and returns the values associated with the key
@@ -17268,6 +18087,20 @@ public static func outfeedEnqueue<Dtype: TensorFlowScalar>(
     dtype$dtype: Dtype.tensorFlowDataType)
 }
 
+/// Enqueue multiple Tensor values on the computation outfeed.
+///
+/// - Parameter inputs: A list of tensors that will be inserted into the outfeed queue as an
+///   XLA tuple.
+@inlinable @inline(__always)
+public static func outfeedEnqueueTuple<Dtypes: TensorGroup>(
+  inputs: Dtypes
+) {
+  let op = TFE_Op("OutfeedEnqueueTuple")
+  let _ = op.addInput(inputs)
+  op.setAttr("dtypes", Dtypes._typeList)
+  op.execute()
+}
+
 /// Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor.
 ///
 /// Packs the `N` tensors in `values` into a tensor with rank one higher than each
@@ -17393,6 +18226,72 @@ public static func padV2<
   return Tensor(handle: ret)
 }
 
+/// Creates a dataset that batches and pads `batch_size` elements from the input.
+///
+/// - Parameters:
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch.
+///   - padded_shapes: A list of int64 tensors representing the desired padded shapes
+///     of the corresponding output components. These shapes may be partially
+///     specified, using `-1` to indicate that a particular dimension should be
+///     padded to the maximum size of all batch elements.
+///   - padding_values: A list of scalars containing the padding value to use for
+///     each of the outputs.
+@inlinable @inline(__always)
+public static func paddedBatchDataset<ToutputTypes: TensorGroup>(
+  inputDataset: VariantHandle,
+  batchSize: Tensor<Int64>,
+  paddedShapes: [Tensor<Int64>],
+  paddingValues: ToutputTypes,
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("PaddedBatchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(batchSize)
+  let paddedShapesCount = op.addInput(paddedShapes)
+  op.setAttr("N", paddedShapesCount)
+  let _ = op.addInput(paddingValues)
+  op.setAttr("Toutput_types", ToutputTypes._typeList)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that batches and pads `batch_size` elements from the input.
+///
+/// - Parameters:
+///   - batch_size: A scalar representing the number of elements to accumulate in a
+///     batch.
+///   - padded_shapes: A list of int64 tensors representing the desired padded shapes
+///     of the corresponding output components. These shapes may be partially
+///     specified, using `-1` to indicate that a particular dimension should be
+///     padded to the maximum size of all batch elements.
+///   - padding_values: A list of scalars containing the padding value to use for
+///     each of the outputs.
+///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
+///     is smaller than desired.
+@inlinable @inline(__always)
+public static func paddedBatchDatasetV2<ToutputTypes: TensorGroup>(
+  inputDataset: VariantHandle,
+  batchSize: Tensor<Int64>,
+  paddedShapes: [Tensor<Int64>],
+  paddingValues: ToutputTypes,
+  dropRemainder: Tensor<Bool>,
+  parallelCopy: Bool = false,
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("PaddedBatchDatasetV2")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(batchSize)
+  let paddedShapesCount = op.addInput(paddedShapes)
+  op.setAttr("N", paddedShapesCount)
+  let _ = op.addInput(paddingValues)
+  let _ = op.addInput(dropRemainder)
+  op.setAttr("parallel_copy", parallelCopy)
+  op.setAttr("Toutput_types", ToutputTypes._typeList)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
 /// A queue that produces elements in first-in first-out order.
 ///
 /// Variable-size shapes are allowed by setting the corresponding shape dimensions
@@ -17425,13 +18324,13 @@ public static func paddingFIFOQueueV2(
   container: String,
   sharedName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("PaddingFIFOQueueV2",
-    component_types: componentTypes,
-    shapes: shapes,
-    capacity: capacity,
-    container: container,
-    shared_name: sharedName)
-  return ret
+  let op = TFE_Op("PaddingFIFOQueueV2")
+  op.setAttr("component_types", componentTypes)
+  op.setAttr("shapes", shapes)
+  op.setAttr("capacity", capacity)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Concatenates a list of `N` tensors along the first dimension.
@@ -17545,6 +18444,78 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
     data,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// - Attr f: A function mapping elements of `input_dataset`, concatenated with
+///   `other_arguments`, to a Dataset variant that contains elements matching
+///   `output_types` and `output_shapes`.
+@inlinable @inline(__always)
+public static func parallelInterleaveDatasetV2<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  cycleLength: Tensor<Int64>,
+  blockLength: Tensor<Int64>,
+  numParallelCalls: Tensor<Int64>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  sloppy: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ParallelInterleaveDatasetV2")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(cycleLength)
+  let _ = op.addInput(blockLength)
+  let _ = op.addInput(numParallelCalls)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("sloppy", sloppy)
+  return op.execute(Int(1))
+}
+
+/// Creates a dataset that applies `f` to the outputs of `input_dataset`.
+///
+/// Unlike a "MapDataset", which applies `f` sequentially, this dataset invokes up
+/// to `num_parallel_calls` copies of `f` in parallel.
+///
+/// - Parameter num_parallel_calls: The number of concurrent invocations of `f` that process
+///   elements from `input_dataset` in parallel.
+@inlinable @inline(__always)
+public static func parallelMapDataset<
+    FIn: TensorGroup,
+    FOut: TensorGroup,
+    Targuments: TensorGroup
+>(
+  inputDataset: VariantHandle,
+  otherArguments: Targuments,
+  numParallelCalls: Tensor<Int32>,
+  f: (FIn) -> FOut,
+  outputTypes: [TensorDataType],
+  outputShapes: [TensorShape?],
+  useInterOpParallelism: Bool = true,
+  sloppy: Bool = false,
+  preserveCardinality: Bool = false
+) -> VariantHandle {
+  let op = TFE_Op("ParallelMapDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(otherArguments)
+  let _ = op.addInput(numParallelCalls)
+  op.setAttr("f", f)
+  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
+  op.setAttr("sloppy", sloppy)
+  op.setAttr("preserve_cardinality", preserveCardinality)
+  return op.execute(Int(1))
 }
 
 /// Outputs random values from a normal distribution. The parameters may each be a
@@ -18136,12 +19107,12 @@ public static func prefetchDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("PrefetchDataset",
-    inputDataset,
-    bufferSize,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("PrefetchDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(bufferSize)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// An op which linearizes one Tensor value to an opaque variant tensor.
@@ -18166,6 +19137,31 @@ public static func prelinearize<Dtype: TensorFlowScalar>(
     shape: shape,
     layout: layout)
   return ret
+}
+
+/// An op which linearizes multiple Tensor values to an opaque variant tensor.
+///
+/// - Parameter inputs: A list of tensors that will be provided using the infeed mechanism.
+///
+/// - Attrs:
+///   - dtypes: The element types of each element in `inputs`.
+///   - shapes: The shapes of each tensor in `inputs`.
+///   - layouts: A vector holding the requested layout in minor-to-major sequence for all the
+///     tuple shapes in the order the shapes appear in the "shapes" input. The layout
+///     elements for a sub-shape can be set to -1 in which case the corresponding layout
+///     will be computed by the infeed operation.
+@inlinable @inline(__always)
+public static func prelinearizeTuple<Dtypes: TensorGroup>(
+  inputs: Dtypes,
+  shapes: [TensorShape?],
+  layouts: [Int32]
+) -> VariantHandle {
+  let op = TFE_Op("PrelinearizeTuple")
+  let _ = op.addInput(inputs)
+  op.setAttr("dtypes", Dtypes._typeList)
+  op.setAttr("shapes", shapes)
+  op.setAttr("layouts", layouts)
+  return op.execute(Int(1))
 }
 
 /// An identity op that triggers an error if a gradient is requested.
@@ -18194,6 +19190,42 @@ public static func preventGradient<T: TensorFlowScalar>(
     T$dtype: T.tensorFlowDataType,
     message: message)
   return Tensor(handle: ret)
+}
+
+/// Prints a list of tensors.
+///
+/// Passes `input` through to `output` and prints `data` when evaluating.
+///
+/// - Parameters:
+///   - input: The tensor passed to `output`
+///   - data: A list of tensors to print out when op is evaluated.
+///
+/// - Attrs:
+///   - message: A string, prefix of the error message.
+///   - first_n: Only log `first_n` number of times. -1 disables logging.
+///   - summarize: Only print this many entries of each tensor.
+///
+/// - Output output: = The unmodified `input` tensor
+@inlinable @inline(__always)
+public static func print<
+    T: TensorFlowScalar,
+    U: TensorGroup
+>(
+  _ input: Tensor<T>,
+  data: U,
+  message: String,
+  firstN: Int64 = -1,
+  summarize: Int64 = 3
+) -> Tensor<T> {
+  let op = TFE_Op("Print")
+  let _ = op.addInput(input)
+  let _ = op.addInput(data)
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("U", U._typeList)
+  op.setAttr("message", message)
+  op.setAttr("first_n", firstN)
+  op.setAttr("summarize", summarize)
+  return op.execute(Int(1))
 }
 
 /// Prints a string scalar.
@@ -18243,13 +19275,13 @@ public static func priorityQueueV2(
   container: String,
   sharedName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("PriorityQueueV2",
-    component_types: componentTypes,
-    shapes: shapes,
-    capacity: capacity,
-    container: container,
-    shared_name: sharedName)
-  return ret
+  let op = TFE_Op("PriorityQueueV2")
+  op.setAttr("component_types", componentTypes)
+  op.setAttr("shapes", shapes)
+  op.setAttr("capacity", capacity)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Computes the product of elements across dimensions of a tensor.
@@ -20045,6 +21077,69 @@ public static func queueDequeueV2<ComponentTypes: TensorGroup>(
   return op.execute(Int(ComponentTypes._typeList.count))
 }
 
+/// Enqueues zero or more tuples of one or more tensors in the given queue.
+///
+/// This operation slices each component tensor along the 0th dimension to
+/// make multiple queue elements. All of the tuple components must have the
+/// same size in the 0th dimension.
+///
+/// The components input has k elements, which correspond to the components of
+/// tuples stored in the given queue.
+///
+/// N.B. If the queue is full, this operation will block until the given
+/// elements have been enqueued (or 'timeout_ms' elapses, if specified).
+///
+/// - Parameters:
+///   - handle: The handle to a queue.
+///   - components: One or more tensors from which the enqueued tensors should
+///     be taken.
+///
+/// - Attr timeout_ms: If the queue is too full, this operation will block for up
+///   to timeout_ms milliseconds.
+///   Note: This option is not supported yet.
+@inlinable @inline(__always)
+public static func queueEnqueueManyV2<Tcomponents: TensorGroup>(
+  handle: ResourceHandle,
+  components: Tcomponents,
+  timeoutMs: Int64 = -1
+) {
+  let op = TFE_Op("QueueEnqueueManyV2")
+  let _ = op.addInput(handle)
+  let _ = op.addInput(components)
+  op.setAttr("Tcomponents", Tcomponents._typeList)
+  op.setAttr("timeout_ms", timeoutMs)
+  op.execute()
+}
+
+/// Enqueues a tuple of one or more tensors in the given queue.
+///
+/// The components input has k elements, which correspond to the components of
+/// tuples stored in the given queue.
+///
+/// N.B. If the queue is full, this operation will block until the given
+/// element has been enqueued (or 'timeout_ms' elapses, if specified).
+///
+/// - Parameters:
+///   - handle: The handle to a queue.
+///   - components: One or more tensors from which the enqueued tensors should be taken.
+///
+/// - Attr timeout_ms: If the queue is full, this operation will block for up to
+///   timeout_ms milliseconds.
+///   Note: This option is not supported yet.
+@inlinable @inline(__always)
+public static func queueEnqueueV2<Tcomponents: TensorGroup>(
+  handle: ResourceHandle,
+  components: Tcomponents,
+  timeoutMs: Int64 = -1
+) {
+  let op = TFE_Op("QueueEnqueueV2")
+  let _ = op.addInput(handle)
+  let _ = op.addInput(components)
+  op.setAttr("Tcomponents", Tcomponents._typeList)
+  op.setAttr("timeout_ms", timeoutMs)
+  op.execute()
+}
+
 /// Returns true if queue is closed.
 ///
 /// This operation returns true if the queue is closed and false if the queue
@@ -20467,16 +21562,16 @@ public static func randomShuffleQueueV2(
   container: String,
   sharedName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("RandomShuffleQueueV2",
-    component_types: componentTypes,
-    shapes: shapes,
-    capacity: capacity,
-    min_after_dequeue: minAfterDequeue,
-    seed: seed,
-    seed2: seed2,
-    container: container,
-    shared_name: sharedName)
-  return ret
+  let op = TFE_Op("RandomShuffleQueueV2")
+  op.setAttr("component_types", componentTypes)
+  op.setAttr("shapes", shapes)
+  op.setAttr("capacity", capacity)
+  op.setAttr("min_after_dequeue", minAfterDequeue)
+  op.setAttr("seed", seed)
+  op.setAttr("seed2", seed2)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// Outputs random values from a normal distribution.
@@ -20636,13 +21731,13 @@ public static func rangeDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("RangeDataset",
-    start,
-    stop,
-    step,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("RangeDataset")
+  let _ = op.addInput(start)
+  let _ = op.addInput(stop)
+  let _ = op.addInput(step)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Returns the rank of a tensor.
@@ -21247,12 +22342,12 @@ public static func repeatDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("RepeatDataset",
-    inputDataset,
-    count,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("RepeatDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(count)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Computes a range that covers the actual values present in a quantized tensor.
@@ -25011,14 +26106,116 @@ public static func samplingDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("SamplingDataset",
-    inputDataset,
-    rate,
-    seed,
-    seed2,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("SamplingDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(rate)
+  let _ = op.addInput(seed)
+  let _ = op.addInput(seed2)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
+/// Saves the input tensors to disk.
+///
+/// The size of `tensor_names` must match the number of tensors in `data`. `data[i]`
+/// is written to `filename` with name `tensor_names[i]`.
+///
+/// See also `SaveSlices`.
+///
+/// - Parameters:
+///   - filename: Must have a single element. The name of the file to which we write
+///     the tensor.
+///   - tensor_names: Shape `[N]`. The names of the tensors to be saved.
+///   - data: `N` tensors to save.
+@inlinable @inline(__always)
+public static func save<T: TensorGroup>(
+  filename: StringTensor,
+  tensorNames: StringTensor,
+  data: T
+) {
+  let op = TFE_Op("Save")
+  let _ = op.addInput(filename)
+  let _ = op.addInput(tensorNames)
+  let _ = op.addInput(data)
+  op.setAttr("T", T._typeList)
+  op.execute()
+}
+
+/// Saves input tensors slices to disk.
+///
+/// This is like `Save` except that tensors can be listed in the saved file as being
+/// a slice of a larger tensor.  `shapes_and_slices` specifies the shape of the
+/// larger tensor and the slice that this tensor covers. `shapes_and_slices` must
+/// have as many elements as `tensor_names`.
+///
+/// Elements of the `shapes_and_slices` input must either be:
+///
+/// *  The empty string, in which case the corresponding tensor is
+///    saved normally.
+/// *  A string of the form `dim0 dim1 ... dimN-1 slice-spec` where the
+///    `dimI` are the dimensions of the larger tensor and `slice-spec`
+///    specifies what part is covered by the tensor to save.
+///
+/// `slice-spec` itself is a `:`-separated list: `slice0:slice1:...:sliceN-1`
+/// where each `sliceI` is either:
+///
+/// *  The string `-` meaning that the slice covers all indices of this dimension
+/// *  `start,length` where `start` and `length` are integers.  In that
+///    case the slice covers `length` indices starting at `start`.
+///
+/// See also `Save`.
+///
+/// - Parameters:
+///   - filename: Must have a single element. The name of the file to which we write the
+///     tensor.
+///   - tensor_names: Shape `[N]`. The names of the tensors to be saved.
+///   - shapes_and_slices: Shape `[N]`.  The shapes and slice specifications to use when
+///     saving the tensors.
+///   - data: `N` tensors to save.
+@inlinable @inline(__always)
+public static func saveSlices<T: TensorGroup>(
+  filename: StringTensor,
+  tensorNames: StringTensor,
+  shapesAndSlices: StringTensor,
+  data: T
+) {
+  let op = TFE_Op("SaveSlices")
+  let _ = op.addInput(filename)
+  let _ = op.addInput(tensorNames)
+  let _ = op.addInput(shapesAndSlices)
+  let _ = op.addInput(data)
+  op.setAttr("T", T._typeList)
+  op.execute()
+}
+
+/// Saves tensors in V2 checkpoint format.
+///
+/// By default, saves the named tensors in full.  If the caller wishes to save
+/// specific slices of full tensors, "shape_and_slices" should be non-empty strings
+/// and correspondingly well-formed.
+///
+/// - Parameters:
+///   - prefix: Must have a single element. The prefix of the V2 checkpoint to which we
+///     write the tensors.
+///   - tensor_names: shape {N}. The names of the tensors to be saved.
+///   - shape_and_slices: shape {N}.  The slice specs of the tensors to be saved.
+///     Empty strings indicate that they are non-partitioned tensors.
+///   - tensors: `N` tensors to save.
+@inlinable @inline(__always)
+public static func saveV2<Dtypes: TensorGroup>(
+  prefix: StringTensor,
+  tensorNames: StringTensor,
+  shapeAndSlices: StringTensor,
+  tensors: Dtypes
+) {
+  let op = TFE_Op("SaveV2")
+  let _ = op.addInput(prefix)
+  let _ = op.addInput(tensorNames)
+  let _ = op.addInput(shapeAndSlices)
+  let _ = op.addInput(tensors)
+  op.setAttr("dtypes", Dtypes._typeList)
+  op.execute()
 }
 
 /// Outputs a `Summary` protocol buffer with scalar values.
@@ -26166,13 +27363,13 @@ public static func shardDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ShardDataset",
-    inputDataset,
-    numShards,
-    index,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ShardDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(numShards)
+  let _ = op.addInput(index)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Generate a sharded filename. The filename is printf formatted as
@@ -26227,15 +27424,15 @@ public static func shuffleAndRepeatDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ShuffleAndRepeatDataset",
-    inputDataset,
-    bufferSize,
-    seed,
-    seed2,
-    count,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ShuffleAndRepeatDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(bufferSize)
+  let _ = op.addInput(seed)
+  let _ = op.addInput(seed2)
+  let _ = op.addInput(count)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a dataset that shuffles elements from `input_dataset` pseudorandomly.
@@ -26264,15 +27461,15 @@ public static func shuffleDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ShuffleDataset",
-    inputDataset,
-    bufferSize,
-    seed,
-    seed2,
-    reshuffle_each_iteration: reshuffleEachIteration,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ShuffleDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(bufferSize)
+  let _ = op.addInput(seed)
+  let _ = op.addInput(seed2)
+  op.setAttr("reshuffle_each_iteration", reshuffleEachIteration)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Shuts down a running distributed TPU system.
@@ -26404,12 +27601,12 @@ public static func skipDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("SkipDataset",
-    inputDataset,
-    count,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("SkipDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(count)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Parses a text file and creates a batch of examples.
@@ -27113,6 +28310,183 @@ public static func sparseConcat<T: TensorFlowScalar>(
     concat_dim: concatDim,
     T$dtype: T.tensorFlowDataType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+}
+
+/// Generates sparse cross from a list of sparse and dense tensors.
+///
+/// The op takes two lists, one of 2D `SparseTensor` and one of 2D `Tensor`, each
+/// representing features of one feature column. It outputs a 2D `SparseTensor` with
+/// the batchwise crosses of these features.
+///
+/// For example, if the inputs are
+///
+///     inputs[0]: SparseTensor with shape = [2, 2]
+///     [0, 0]: "a"
+///     [1, 0]: "b"
+///     [1, 1]: "c"
+///
+///     inputs[1]: SparseTensor with shape = [2, 1]
+///     [0, 0]: "d"
+///     [1, 0]: "e"
+///
+///     inputs[2]: Tensor [["f"], ["g"]]
+///
+/// then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: "a_X_d_X_f"
+///     [1, 0]: "b_X_e_X_g"
+///     [1, 1]: "c_X_e_X_g"
+///
+/// if hashed_output=true then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: FingerprintCat64(
+///                 Fingerprint64("f"), FingerprintCat64(
+///                     Fingerprint64("d"), Fingerprint64("a")))
+///     [1, 0]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("b")))
+///     [1, 1]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("c")))
+///
+/// - Parameters:
+///   - indices: 2-D.  Indices of each input `SparseTensor`.
+///   - values: 1-D.   values of each `SparseTensor`.
+///   - shapes: 1-D.   Shapes of each `SparseTensor`.
+///   - dense_inputs: 2-D.    Columns represented by dense `Tensor`.
+///
+/// - Attrs:
+///   - hashed_output: If true, returns the hash of the cross instead of the string.
+///     This will allow us avoiding string manipulations.
+///   - num_buckets: It is used if hashed_output is true.
+///     output = hashed_value%num_buckets if num_buckets > 0 else hashed_value.
+///   - hash_key: Specify the hash_key that will be used by the `FingerprintCat64`
+///     function to combine the crosses fingerprints.
+///
+/// - Outputs:
+///   - output_indices: 2-D.  Indices of the concatenated `SparseTensor`.
+///   - output_values: 1-D.  Non-empty values of the concatenated or hashed
+///     `SparseTensor`.
+///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
+@inlinable @inline(__always)
+public static func sparseCross<
+    SparseTypes: TensorGroup,
+    DenseTypes: TensorGroup,
+    OutType: BinaryInteger & TensorFlowScalar
+>(
+  indices: [Tensor<Int64>],
+  _ values: SparseTypes,
+  shapes: [Tensor<Int64>],
+  denseInputs: DenseTypes,
+  hashedOutput: Bool,
+  numBuckets: Int64,
+  hashKey: Int64,
+  internalType: TensorDataType
+) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<OutType>, outputShape: Tensor<Int64>) {
+  let op = TFE_Op("SparseCross")
+  let indicesCount = op.addInput(indices)
+  op.setAttr("N", indicesCount)
+  let _ = op.addInput(values)
+  let _ = op.addInput(shapes)
+  let _ = op.addInput(denseInputs)
+  op.setAttr("hashed_output", hashedOutput)
+  op.setAttr("num_buckets", numBuckets)
+  op.setAttr("hash_key", hashKey)
+  op.setAttr("sparse_types", SparseTypes._typeList)
+  op.setAttr("dense_types", DenseTypes._typeList)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
+  op.setAttr("internal_type", internalType)
+  return op.execute(Int(1), Int(1), Int(1))
+}
+
+/// Generates sparse cross from a list of sparse and dense tensors.
+///
+/// The op takes two lists, one of 2D `SparseTensor` and one of 2D `Tensor`, each
+/// representing features of one feature column. It outputs a 2D `SparseTensor` with
+/// the batchwise crosses of these features.
+///
+/// For example, if the inputs are
+///
+///     inputs[0]: SparseTensor with shape = [2, 2]
+///     [0, 0]: "a"
+///     [1, 0]: "b"
+///     [1, 1]: "c"
+///
+///     inputs[1]: SparseTensor with shape = [2, 1]
+///     [0, 0]: "d"
+///     [1, 0]: "e"
+///
+///     inputs[2]: Tensor [["f"], ["g"]]
+///
+/// then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: "a_X_d_X_f"
+///     [1, 0]: "b_X_e_X_g"
+///     [1, 1]: "c_X_e_X_g"
+///
+/// if hashed_output=true then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: FingerprintCat64(
+///                 Fingerprint64("f"), FingerprintCat64(
+///                     Fingerprint64("d"), Fingerprint64("a")))
+///     [1, 0]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("b")))
+///     [1, 1]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("c")))
+///
+/// - Parameters:
+///   - indices: 2-D.  Indices of each input `SparseTensor`.
+///   - values: 1-D.   values of each `SparseTensor`.
+///   - shapes: 1-D.   Shapes of each `SparseTensor`.
+///   - dense_inputs: 2-D.    Columns represented by dense `Tensor`.
+///
+/// - Attrs:
+///   - hashed_output: If true, returns the hash of the cross instead of the string.
+///     This will allow us avoiding string manipulations.
+///   - num_buckets: It is used if hashed_output is true.
+///     output = hashed_value%num_buckets if num_buckets > 0 else hashed_value.
+///   - hash_key: Specify the hash_key that will be used by the `FingerprintCat64`
+///     function to combine the crosses fingerprints.
+///
+/// - Outputs:
+///   - output_indices: 2-D.  Indices of the concatenated `SparseTensor`.
+///   - output_values: 1-D.  Non-empty values of the concatenated or hashed
+///     `SparseTensor`.
+///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
+@inlinable @inline(__always)
+public static func sparseCross<
+    SparseTypes: TensorGroup,
+    DenseTypes: TensorGroup
+>(
+  indices: [Tensor<Int64>],
+  _ values: SparseTypes,
+  shapes: [Tensor<Int64>],
+  denseInputs: DenseTypes,
+  hashedOutput: Bool,
+  numBuckets: Int64,
+  hashKey: Int64,
+  internalType: TensorDataType
+) -> (outputIndices: Tensor<Int64>, outputValues: StringTensor, outputShape: Tensor<Int64>) {
+  let op = TFE_Op("SparseCross")
+  let indicesCount = op.addInput(indices)
+  op.setAttr("N", indicesCount)
+  let _ = op.addInput(values)
+  let _ = op.addInput(shapes)
+  let _ = op.addInput(denseInputs)
+  op.setAttr("hashed_output", hashedOutput)
+  op.setAttr("num_buckets", numBuckets)
+  op.setAttr("hash_key", hashKey)
+  op.setAttr("sparse_types", SparseTypes._typeList)
+  op.setAttr("dense_types", DenseTypes._typeList)
+  op.setAttr("out_type", TensorDataType(TF_STRING))
+  op.setAttr("internal_type", internalType)
+  return op.execute(Int(1), Int(1), Int(1))
 }
 
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
@@ -28710,6 +30084,40 @@ public static func stackV2(
   return ret
 }
 
+/// Stage values similar to a lightweight Enqueue.
+///
+/// The basic functionality of this Op is similar to a queue with many
+/// fewer capabilities and options.  This Op is optimized for performance.
+///
+/// - Parameter values: a list of tensors
+///   dtypes A list of data types that inserted values should adhere to.
+///
+/// - Attrs:
+///   - capacity: Maximum number of elements in the Staging Area. If > 0, inserts
+///     on the container will block when the capacity is reached.
+///   - memory_limit: The maximum number of bytes allowed for Tensors in the Staging Area.
+///     If > 0, inserts will block until sufficient space is available.
+///   - container: If non-empty, this queue is placed in the given container. Otherwise,
+///     a default container is used.
+///   - shared_name: It is necessary to match this name to the matching Unstage Op.
+@inlinable @inline(__always)
+public static func stage<Dtypes: TensorGroup>(
+  _ values: Dtypes,
+  capacity: Int64 = 0,
+  memoryLimit: Int64 = 0,
+  container: String,
+  sharedName: String
+) {
+  let op = TFE_Op("Stage")
+  let _ = op.addInput(values)
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", Dtypes._typeList)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
+}
+
 /// Op removes all elements in the underlying container.
 @inlinable @inline(__always)
 public static func stageClear(
@@ -28719,12 +30127,13 @@ public static func stageClear(
   container: String,
   sharedName: String
 ) {
-  return #tfop("StageClear",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
+  let op = TFE_Op("StageClear")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.execute()
 }
 
 /// Op peeks at the values at the specified index.  If the
@@ -28759,13 +30168,13 @@ public static func stageSize(
   container: String,
   sharedName: String
 ) -> Tensor<Int32> {
-  let ret: TensorHandle<Int32> = #tfop("StageSize",
-    capacity: capacity,
-    memory_limit: memoryLimit,
-    dtypes: dtypes,
-    container: container,
-    shared_name: sharedName)
-  return Tensor(handle: ret)
+  let op = TFE_Op("StageSize")
+  op.setAttr("capacity", capacity)
+  op.setAttr("memory_limit", memoryLimit)
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  return op.execute(Int(1))
 }
 
 /// returns `f(inputs)`, where `f`'s body is placed and partitioned.
@@ -29578,6 +30987,34 @@ public static func stridedSliceGrad<
     new_axis_mask: newAxisMask,
     shrink_axis_mask: shrinkAxisMask)
   return Tensor(handle: ret)
+}
+
+/// Formats a string template using a list of tensors.
+///
+/// Formats a string template using a list of tensors, pretty-printing tensor summaries.
+///
+/// - Parameter inputs: The list of tensors to format into the placeholder string.
+///
+/// - Attrs:
+///   - template: A string, the template to format tensor summaries into.
+///   - placeholder: A string, at each placeholder in the template a subsequent tensor summary will be inserted.
+///   - summarize: When formatting the tensor summaries print the first and last summarize entries of each tensor dimension.
+///
+/// - Output output: = The resulting string scalar.
+@inlinable @inline(__always)
+public static func stringFormat<T: TensorGroup>(
+  inputs: T,
+  template: String = "%s",
+  placeholder: String = "%s",
+  summarize: Int64 = 3
+) -> StringTensor {
+  let op = TFE_Op("StringFormat")
+  let _ = op.addInput(inputs)
+  op.setAttr("T", T._typeList)
+  op.setAttr("template", template)
+  op.setAttr("placeholder", placeholder)
+  op.setAttr("summarize", summarize)
+  return op.execute(Int(1))
 }
 
 /// Joins the strings in the given list of string tensors into one tensor;
@@ -30412,12 +31849,12 @@ public static func takeDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("TakeDataset",
-    inputDataset,
-    count,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("TakeDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(count)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Read `SparseTensors` from a `SparseTensorsMap` and concatenate them.
@@ -31057,6 +32494,19 @@ public static func tensorArrayWriteV3<T: TensorFlowScalar>(
     flowIn,
     T$dtype: T.tensorFlowDataType)
   return Tensor(handle: ret)
+}
+
+/// Creates a dataset that emits `components` as a tuple of tensors once.
+@inlinable @inline(__always)
+public static func tensorDataset<ToutputTypes: TensorGroup>(
+  components: ToutputTypes,
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("TensorDataset")
+  let _ = op.addInput(components)
+  op.setAttr("Toutput_types", ToutputTypes._typeList)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Creates a tree resource and returns a handle to it.
@@ -31835,6 +33285,19 @@ public static func tensorScatterUpdate<
   return Tensor(handle: ret)
 }
 
+/// Creates a dataset that emits each dim-0 slice of `components` once.
+@inlinable @inline(__always)
+public static func tensorSliceDataset<ToutputTypes: TensorGroup>(
+  components: ToutputTypes,
+  outputShapes: [TensorShape?]
+) -> VariantHandle {
+  let op = TFE_Op("TensorSliceDataset")
+  let _ = op.addInput(components)
+  op.setAttr("Toutput_types", ToutputTypes._typeList)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
+}
+
 /// Assign `value` to the sliced l-value reference of `input`.
 ///
 /// The values of `value` are assigned to the positions in the tensor `input` that
@@ -32451,6 +33914,38 @@ public static func twoIntOutputs(
 ) -> (a: Tensor<Int32>, b: Tensor<Int32>) {
   let ret: (TensorHandle<Int32>, TensorHandle<Int32>) = #tfop("TwoIntOutputs")
   return (Tensor(handle: ret.0), Tensor(handle: ret.1))
+}
+
+@inlinable @inline(__always)
+public static func typeList<T: TensorGroup>(
+  _ a: T
+) {
+  let op = TFE_Op("TypeList")
+  let _ = op.addInput(a)
+  op.setAttr("T", T._typeList)
+  op.execute()
+}
+
+@inlinable @inline(__always)
+public static func typeListRestrict<T: TensorGroup>(
+  _ a: T
+) {
+  let op = TFE_Op("TypeListRestrict")
+  let _ = op.addInput(a)
+  op.setAttr("T", T._typeList)
+  op.execute()
+}
+
+@inlinable @inline(__always)
+public static func typeListTwice<T: TensorGroup>(
+  _ a: T,
+  _ b: T
+) {
+  let op = TFE_Op("TypeListTwice")
+  let _ = op.addInput(a)
+  let _ = op.addInput(b)
+  op.setAttr("T", T._typeList)
+  op.execute()
 }
 
 @inlinable @inline(__always)
@@ -33664,15 +35159,15 @@ public static func windowDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("WindowDataset",
-    inputDataset,
-    size,
-    shift,
-    stride,
-    dropRemainder,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("WindowDataset")
+  let _ = op.addInput(inputDataset)
+  let _ = op.addInput(size)
+  let _ = op.addInput(shift)
+  let _ = op.addInput(stride)
+  let _ = op.addInput(dropRemainder)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 /// Worker heartbeat op.
@@ -33892,11 +35387,12 @@ public static func zipDataset(
   outputTypes: [TensorDataType],
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("ZipDataset",
-    inputDatasets,
-    output_types: outputTypes,
-    output_shapes: outputShapes)
-  return ret
+  let op = TFE_Op("ZipDataset")
+  let inputDatasetsCount = op.addInput(inputDatasets)
+  op.setAttr("N", inputDatasetsCount)
+  op.setAttr("output_types", outputTypes)
+  op.setAttr("output_shapes", outputShapes)
+  return op.execute(Int(1))
 }
 
 }

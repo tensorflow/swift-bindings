@@ -28,17 +28,44 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func addInput<T: TensorArrayProtocol>(_ input: T) -> Int {
-    let count = input._tensorHandleCount
-    let buffer = UnsafeMutableBufferPointer<CTensorHandle>.allocate(capacity: Int(count))
-    input._unpackTensorHandles(into: buffer.baseAddress)
-    for handle in buffer {
-      TFE_OpAddInput(op, handle, status)
-      guard TF_GetCode(status) == TF_OK else {
-        return 0
-      }
+  internal func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
+    TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
+    guard TF_GetCode(status) == TF_OK else {
+      return 0
     }
-    buffer.deallocate()
+    return 1
+  }
+
+  @inlinable @inline(__always)
+  internal func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
+    TFE_OpAddInput(op, input.handle._cTensorHandle, status)
+    guard TF_GetCode(status) == TF_OK else {
+      return 0
+    }
+    return 1
+  }
+
+  @inlinable @inline(__always)
+  internal func addInput(_ input: StringTensor) -> Int {
+    TFE_OpAddInput(op, input.handle._cTensorHandle, status)
+    guard TF_GetCode(status) == TF_OK else {
+      return 0
+    }
+    return 1
+  }
+
+  @inlinable @inline(__always)
+  internal func addInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
+    let count = input._tensorHandleCount
+    var buffer = UnsafeMutableBufferPointer<CTensorHandle>.allocate(capacity: Int(count))
+    defer { buffer.deallocate() }
+    var pointer = UnsafeMutablePointer<OpaquePointer?>(buffer.baseAddress)
+    defer { pointer?.deallocate() }
+    input._unpackTensorHandles(into: buffer.baseAddress)
+    TFE_OpAddInputList(op, pointer, count, status)
+    guard TF_GetCode(status) == TF_OK else {
+      return 0
+    }
     return Int(count)
   }
 

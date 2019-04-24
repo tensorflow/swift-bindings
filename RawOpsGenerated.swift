@@ -536,7 +536,7 @@ public static func accumulateNV2<T: Numeric & TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("AccumulateNV2")
-  let inputsCount = op.addInput(inputs)
+  let inputsCount = op.addInputList(inputs)
   op.setAttr("N", inputsCount)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
@@ -1231,7 +1231,7 @@ public static func asinh<T: FloatingPoint & TensorFlowScalar>(
 ///
 /// - Attr summarize: Print this many entries of each tensor.
 @inlinable @inline(__always)
-public static func assert<T: TensorGroup>(
+public static func assert<T: TensorArrayProtocol>(
   condition: Tensor<Bool>,
   data: T,
   summarize: Int64 = 3
@@ -1239,7 +1239,7 @@ public static func assert<T: TensorGroup>(
   return #tfop("Assert",
     condition,
     data,
-    T$dtype: T._typeList,
+    T$dtype: data._typeList,
     summarize: summarize)
 }
 
@@ -1828,7 +1828,7 @@ public static func b(
 ///  empty, the op name will be used as the shared name.
 /// T: the types of tensors to be batched.
 @inlinable @inline(__always)
-public static func batch<T: TensorGroup>(
+public static func batch<T: TensorArrayProtocol>(
   inTensors: T,
   numBatchThreads: Int64,
   maxBatchSize: Int64,
@@ -1841,7 +1841,7 @@ public static func batch<T: TensorGroup>(
   batchingQueue: String
 ) -> (batchedTensors: T, batchIndex: Tensor<Int64>, id: Tensor<Int64>) {
   let op = TFE_Op("Batch")
-  let _ = op.addInput(inTensors)
+  let _ = op.addInputList(inTensors)
   op.setAttr("num_batch_threads", numBatchThreads)
   op.setAttr("max_batch_size", maxBatchSize)
   op.setAttr("max_enqueued_batches", maxEnqueuedBatches)
@@ -1851,8 +1851,8 @@ public static func batch<T: TensorGroup>(
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("batching_queue", batchingQueue)
-  op.setAttr("T", T._typeList)
-  return op.execute(Int(T._typeList.count), Int(1), Int(1))
+  op.setAttr("T", inTensors._typeList)
+  return op.execute(Int(inTensors._typeList.count), Int(1), Int(1))
 }
 
 @inlinable @inline(__always)
@@ -1989,8 +1989,8 @@ public static func batchDatasetV2(
 public static func batchFunction<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Tin: TensorGroup,
-    Tcaptured: TensorGroup,
+    Tin: TensorArrayProtocol,
+    Tcaptured: TensorArrayProtocol,
     Tout: TensorGroup
 >(
   inTensors: Tin,
@@ -2006,8 +2006,8 @@ public static func batchFunction<
   batchingQueue: String
 ) -> Tout {
   let op = TFE_Op("BatchFunction")
-  let _ = op.addInput(inTensors)
-  let _ = op.addInput(capturedTensors)
+  let _ = op.addInputList(inTensors)
+  let _ = op.addInputList(capturedTensors)
   op.setAttr("f", f)
   op.setAttr("num_batch_threads", numBatchThreads)
   op.setAttr("max_batch_size", maxBatchSize)
@@ -2017,8 +2017,8 @@ public static func batchFunction<
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("batching_queue", batchingQueue)
-  op.setAttr("Tin", Tin._typeList)
-  op.setAttr("Tcaptured", Tcaptured._typeList)
+  op.setAttr("Tin", inTensors._typeList)
+  op.setAttr("Tcaptured", capturedTensors._typeList)
   op.setAttr("Tout", Tout._typeList)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -3129,9 +3129,9 @@ public static func boostedTreesBucketize(
   bucketBoundaries: [Tensor<Float>]
 ) -> [Tensor<Int32>] {
   let op = TFE_Op("BoostedTreesBucketize")
-  let floatValuesCount = op.addInput(floatValues)
+  let floatValuesCount = op.addInputList(floatValues)
   op.setAttr("num_features", floatValuesCount)
-  let _ = op.addInput(bucketBoundaries)
+  let _ = op.addInputList(bucketBoundaries)
   return op.execute(Int(floatValuesCount))
 }
 
@@ -3230,7 +3230,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
 ) -> (nodeIdsList: [Tensor<Int32>], gainsList: [Tensor<Float>], thresholdsList: [Tensor<Int32>], leftNodeContribsList: [Tensor<Float>], rightNodeContribsList: [Tensor<Float>]) {
   let op = TFE_Op("BoostedTreesCalculateBestGainsPerFeature")
   let _ = op.addInput(nodeIdRange)
-  let statsSummaryListCount = op.addInput(statsSummaryList)
+  let statsSummaryListCount = op.addInputList(statsSummaryList)
   op.setAttr("num_features", statsSummaryListCount)
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
@@ -3409,7 +3409,7 @@ public static func boostedTreesMakeQuantileSummaries(
   epsilon: Tensor<Float>
 ) -> [Tensor<Float>] {
   let op = TFE_Op("BoostedTreesMakeQuantileSummaries")
-  let floatValuesCount = op.addInput(floatValues)
+  let floatValuesCount = op.addInputList(floatValues)
   op.setAttr("num_features", floatValuesCount)
   let _ = op.addInput(exampleWeights)
   let _ = op.addInput(epsilon)
@@ -4467,7 +4467,7 @@ public static func concatOffset(
 ) -> [Tensor<Int32>] {
   let op = TFE_Op("ConcatOffset")
   let _ = op.addInput(concatDim)
-  let shapeCount = op.addInput(shape)
+  let shapeCount = op.addInputList(shape)
   op.setAttr("N", shapeCount)
   return op.execute(Int(shapeCount))
 }
@@ -6495,7 +6495,7 @@ public static func decodeBmp(
 ///
 /// - Output output: Each tensor will have the same shape as records.
 @inlinable @inline(__always)
-public static func decodeCSV<OutType: TensorGroup>(
+public static func decodeCSV<OutType: TensorArrayProtocol>(
   records: StringTensor,
   recordDefaults: OutType,
   fieldDelim: String = ",",
@@ -6505,13 +6505,13 @@ public static func decodeCSV<OutType: TensorGroup>(
 ) -> OutType {
   let op = TFE_Op("DecodeCSV")
   let _ = op.addInput(records)
-  let _ = op.addInput(recordDefaults)
-  op.setAttr("OUT_TYPE", OutType._typeList)
+  let _ = op.addInputList(recordDefaults)
+  op.setAttr("OUT_TYPE", recordDefaults._typeList)
   op.setAttr("field_delim", fieldDelim)
   op.setAttr("use_quote_delim", useQuoteDelim)
   op.setAttr("na_value", naValue)
   op.setAttr("select_cols", selectCols)
-  return op.execute(Int(OutType._typeList.count))
+  return op.execute(Int(recordDefaults._typeList.count))
 }
 
 /// Decompress strings.
@@ -8109,16 +8109,16 @@ public static func dynamicStitch<T: TensorFlowScalar>(
 /// PyFunc.
 @inlinable @inline(__always)
 public static func eagerPyFunc<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup
 >(
   _ input: Tin,
   token: String
 ) -> Tout {
   let op = TFE_Op("EagerPyFunc")
-  let _ = op.addInput(input)
+  let _ = op.addInputList(input)
   op.setAttr("token", token)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -8468,7 +8468,7 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
 ///
 /// - Output bytes: Tensor of serialized protos with shape `batch_shape`.
 @inlinable @inline(__always)
-public static func encodeProto<TinputTypes: TensorGroup>(
+public static func encodeProto<TinputTypes: TensorArrayProtocol>(
   sizes: Tensor<Int32>,
   _ values: TinputTypes,
   fieldNames: [String],
@@ -8481,7 +8481,7 @@ public static func encodeProto<TinputTypes: TensorGroup>(
     field_names: fieldNames,
     message_type: messageType,
     descriptor_source: descriptorSource,
-    Tinput_types$dtype: TinputTypes._typeList)
+    Tinput_types$dtype: values._typeList)
   return StringTensor(handle: ret)
 }
 
@@ -8950,7 +8950,7 @@ public static func experimentalBytesProducedStatsDataset(
 }
 
 @inlinable @inline(__always)
-public static func experimentalCSVDataset<OutputTypes: TensorGroup>(
+public static func experimentalCSVDataset<OutputTypes: TensorArrayProtocol>(
   filenames: StringTensor,
   compressionType: StringTensor,
   bufferSize: Tensor<Int64>,
@@ -8972,7 +8972,7 @@ public static func experimentalCSVDataset<OutputTypes: TensorGroup>(
     naValue,
     selectCols,
     recordDefaults,
-    output_types$dtype: OutputTypes._typeList,
+    output_types$dtype: recordDefaults._typeList,
     output_shapes: outputShapes)
   return ret
 }
@@ -9109,10 +9109,10 @@ public static func experimentalGroupByReducerDataset<
     ReducefuncOut: TensorGroup,
     FinalizefuncIn: TensorGroup,
     FinalizefuncOut: TensorGroup,
-    TkeyFuncOtherArguments: TensorGroup,
-    TinitFuncOtherArguments: TensorGroup,
-    TreduceFuncOtherArguments: TensorGroup,
-    TfinalizeFuncOtherArguments: TensorGroup
+    TkeyFuncOtherArguments: TensorArrayProtocol,
+    TinitFuncOtherArguments: TensorArrayProtocol,
+    TreduceFuncOtherArguments: TensorArrayProtocol,
+    TfinalizeFuncOtherArguments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   keyFuncOtherArguments: TkeyFuncOtherArguments,
@@ -9136,10 +9136,10 @@ public static func experimentalGroupByReducerDataset<
     init_func$func: _tffunc(initFunc),
     reduce_func$func: _tffunc(reduceFunc),
     finalize_func$func: _tffunc(finalizeFunc),
-    Tkey_func_other_arguments$dtype: TkeyFuncOtherArguments._typeList,
-    Tinit_func_other_arguments$dtype: TinitFuncOtherArguments._typeList,
-    Treduce_func_other_arguments$dtype: TreduceFuncOtherArguments._typeList,
-    Tfinalize_func_other_arguments$dtype: TfinalizeFuncOtherArguments._typeList,
+    Tkey_func_other_arguments$dtype: keyFuncOtherArguments._typeList,
+    Tinit_func_other_arguments$dtype: initFuncOtherArguments._typeList,
+    Treduce_func_other_arguments$dtype: reduceFuncOtherArguments._typeList,
+    Tfinalize_func_other_arguments$dtype: finalizeFuncOtherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -9159,9 +9159,9 @@ public static func experimentalGroupByWindowDataset<
     ReducefuncOut: TensorGroup,
     WindowsizefuncIn: TensorGroup,
     WindowsizefuncOut: TensorGroup,
-    TkeyFuncOtherArguments: TensorGroup,
-    TreduceFuncOtherArguments: TensorGroup,
-    TwindowSizeFuncOtherArguments: TensorGroup
+    TkeyFuncOtherArguments: TensorArrayProtocol,
+    TreduceFuncOtherArguments: TensorArrayProtocol,
+    TwindowSizeFuncOtherArguments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   keyFuncOtherArguments: TkeyFuncOtherArguments,
@@ -9181,9 +9181,9 @@ public static func experimentalGroupByWindowDataset<
     key_func$func: _tffunc(keyFunc),
     reduce_func$func: _tffunc(reduceFunc),
     window_size_func$func: _tffunc(windowSizeFunc),
-    Tkey_func_other_arguments$dtype: TkeyFuncOtherArguments._typeList,
-    Treduce_func_other_arguments$dtype: TreduceFuncOtherArguments._typeList,
-    Twindow_size_func_other_arguments$dtype: TwindowSizeFuncOtherArguments._typeList,
+    Tkey_func_other_arguments$dtype: keyFuncOtherArguments._typeList,
+    Treduce_func_other_arguments$dtype: reduceFuncOtherArguments._typeList,
+    Twindow_size_func_other_arguments$dtype: windowSizeFuncOtherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -9301,7 +9301,7 @@ public static func experimentalLatencyStatsDataset(
 public static func experimentalMapAndBatchDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -9320,7 +9320,7 @@ public static func experimentalMapAndBatchDataset<
     numParallelCalls,
     dropRemainder,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     preserve_cardinality: preserveCardinality)
@@ -9332,7 +9332,7 @@ public static func experimentalMapAndBatchDataset<
 public static func experimentalMapDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -9346,7 +9346,7 @@ public static func experimentalMapDataset<
     inputDataset,
     otherArguments,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     use_inter_op_parallelism: useInterOpParallelism,
@@ -9439,7 +9439,7 @@ public static func experimentalNonSerializableDataset(
 public static func experimentalNumaMapAndBatchDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -9458,7 +9458,7 @@ public static func experimentalNumaMapAndBatchDataset<
     numParallelCalls,
     dropRemainder,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     preserve_cardinality: preserveCardinality)
@@ -9482,7 +9482,7 @@ public static func experimentalNumaMapAndBatchDataset<
 public static func experimentalParallelInterleaveDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -9504,7 +9504,7 @@ public static func experimentalParallelInterleaveDataset<
     bufferOutputElements,
     prefetchInputElements,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -9539,7 +9539,7 @@ public static func experimentalParallelInterleaveDataset<
 ///   - output_types: The type list for the return values.
 ///   - output_shapes: The list of shapes being produced.
 @inlinable @inline(__always)
-public static func experimentalParseExampleDataset<Tdense: TensorGroup>(
+public static func experimentalParseExampleDataset<Tdense: TensorArrayProtocol>(
   inputDataset: VariantHandle,
   numParallelCalls: Tensor<Int64>,
   denseDefaults: Tdense,
@@ -9558,7 +9558,7 @@ public static func experimentalParseExampleDataset<Tdense: TensorGroup>(
     sparse_keys: sparseKeys,
     dense_keys: denseKeys,
     sparse_types$dtype: sparseTypes,
-    Tdense$dtype: Tdense._typeList,
+    Tdense$dtype: denseDefaults._typeList,
     dense_shapes: denseShapes,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
@@ -9636,8 +9636,8 @@ public static func experimentalRebatchDataset(
 public static func experimentalScanDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Tstate: TensorGroup,
-    Targuments: TensorGroup
+    Tstate: TensorArrayProtocol,
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   initialState: Tstate,
@@ -9652,8 +9652,8 @@ public static func experimentalScanDataset<
     initialState,
     otherArguments,
     f$func: _tffunc(f),
-    Tstate$dtype: Tstate._typeList,
-    Targuments$dtype: Targuments._typeList,
+    Tstate$dtype: initialState._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     preserve_cardinality: preserveCardinality)
@@ -9783,7 +9783,7 @@ public static func experimentalStatsAggregatorSummary(
 public static func experimentalTakeWhileDataset<
     PredicateIn: TensorGroup,
     PredicateOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -9795,7 +9795,7 @@ public static func experimentalTakeWhileDataset<
     inputDataset,
     otherArguments,
     predicate$func: _tffunc(predicate),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -10482,7 +10482,7 @@ public static func filterByLastComponentDataset(
 public static func filterDataset<
     PredicateIn: TensorGroup,
     PredicateOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -10494,7 +10494,7 @@ public static func filterDataset<
     inputDataset,
     otherArguments,
     predicate$func: _tffunc(predicate),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -10702,7 +10702,7 @@ public static func fixedUnigramCandidateSampler(
 public static func flatMapDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -10714,7 +10714,7 @@ public static func flatMapDataset<
     inputDataset,
     otherArguments,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -10855,7 +10855,7 @@ public static func foo3(
 /// - Output output: A list of output tensors whose types are T.
 @inlinable @inline(__always)
 public static func for_<
-    T: TensorGroup,
+    T: TensorArrayProtocol,
     BodyIn: TensorGroup,
     BodyOut: TensorGroup
 >(
@@ -10869,10 +10869,10 @@ public static func for_<
   let _ = op.addInput(start)
   let _ = op.addInput(limit)
   let _ = op.addInput(delta)
-  let _ = op.addInput(input)
-  op.setAttr("T", T._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("T", input._typeList)
   op.setAttr("body", body)
-  return op.execute(Int(T._typeList.count))
+  return op.execute(Int(input._typeList.count))
 }
 
 /// Performs fractional average pooling on the input.
@@ -12029,9 +12029,9 @@ public static func generatorDataset<
     NextfuncOut: TensorGroup,
     FinalizefuncIn: TensorGroup,
     FinalizefuncOut: TensorGroup,
-    TinitFuncArgs: TensorGroup,
-    TnextFuncArgs: TensorGroup,
-    TfinalizeFuncArgs: TensorGroup
+    TinitFuncArgs: TensorArrayProtocol,
+    TnextFuncArgs: TensorArrayProtocol,
+    TfinalizeFuncArgs: TensorArrayProtocol
 >(
   initFuncOtherArgs: TinitFuncArgs,
   nextFuncOtherArgs: TnextFuncArgs,
@@ -12049,9 +12049,9 @@ public static func generatorDataset<
     init_func$func: _tffunc(initFunc),
     next_func$func: _tffunc(nextFunc),
     finalize_func$func: _tffunc(finalizeFunc),
-    Tinit_func_args$dtype: TinitFuncArgs._typeList,
-    Tnext_func_args$dtype: TnextFuncArgs._typeList,
-    Tfinalize_func_args$dtype: TfinalizeFuncArgs._typeList,
+    Tinit_func_args$dtype: initFuncOtherArgs._typeList,
+    Tnext_func_args$dtype: nextFuncOtherArgs._typeList,
+    Tfinalize_func_args$dtype: finalizeFuncOtherArgs._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -12385,13 +12385,13 @@ public static func identity<T: TensorFlowScalar>(
 ///   return [None, g(dy)]  # Do not backprop to f(x).
 /// ```
 @inlinable @inline(__always)
-public static func identityN<T: TensorGroup>(
+public static func identityN<T: TensorArrayProtocol>(
   _ input: T
 ) -> T {
   let op = TFE_Op("IdentityN")
-  let _ = op.addInput(input)
-  op.setAttr("T", T._typeList)
-  return op.execute(Int(T._typeList.count))
+  let _ = op.addInputList(input)
+  op.setAttr("T", input._typeList)
+  return op.execute(Int(input._typeList.count))
 }
 
 /// A Reader that outputs the queued work as both the key and value.
@@ -12440,7 +12440,7 @@ public static func identityReaderV2(
 @inlinable @inline(__always)
 public static func if_<
     Tcond: TensorFlowScalar,
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     ThenbranchIn: TensorGroup,
     ThenbranchOut: TensorGroup,
@@ -12455,9 +12455,9 @@ public static func if_<
 ) -> Tout {
   let op = TFE_Op("If")
   let _ = op.addInput(cond)
-  let _ = op.addInput(input)
+  let _ = op.addInputList(input)
   op.setAttr("Tcond", Tcond.tensorFlowDataType)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("then_branch", thenBranch)
   op.setAttr("else_branch", elseBranch)
@@ -12769,7 +12769,7 @@ public static func infeedEnqueuePrelinearizedBuffer(
 ///     is running on a TPU device, and >= 0 when the Op is running on the CPU
 ///     device.
 @inlinable @inline(__always)
-public static func infeedEnqueueTuple<Dtypes: TensorGroup>(
+public static func infeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
   inputs: Dtypes,
   shapes: [TensorShape?],
   layouts: [Int32],
@@ -12777,7 +12777,7 @@ public static func infeedEnqueueTuple<Dtypes: TensorGroup>(
 ) {
   return #tfop("InfeedEnqueueTuple",
     inputs,
-    dtypes$dtype: Dtypes._typeList,
+    dtypes$dtype: inputs._typeList,
     shapes: shapes,
     layouts: layouts,
     device_ordinal: deviceOrdinal)
@@ -12991,7 +12991,7 @@ public static func intOutputFloatOutput(
 public static func interleaveDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -13007,7 +13007,7 @@ public static func interleaveDataset<
     cycleLength,
     blockLength,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes)
   return ret
@@ -14947,7 +14947,7 @@ public static func mapClear(
 public static func mapDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -14961,7 +14961,7 @@ public static func mapDataset<
     inputDataset,
     otherArguments,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     use_inter_op_parallelism: useInterOpParallelism,
@@ -14999,8 +14999,8 @@ public static func mapDataset<
 ///       remaining dimensions correspond to those in `output_shapes`.
 @inlinable @inline(__always)
 public static func mapDefun<
-    Targuments: TensorGroup,
-    Tcaptured: TensorGroup,
+    Targuments: TensorArrayProtocol,
+    Tcaptured: TensorArrayProtocol,
     OutputTypes: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -15012,10 +15012,10 @@ public static func mapDefun<
   maxIntraOpParallelism: Int64 = 1
 ) -> OutputTypes {
   let op = TFE_Op("MapDefun")
-  let _ = op.addInput(arguments)
-  let _ = op.addInput(capturedInputs)
-  op.setAttr("Targuments", Targuments._typeList)
-  op.setAttr("Tcaptured", Tcaptured._typeList)
+  let _ = op.addInputList(arguments)
+  let _ = op.addInputList(capturedInputs)
+  op.setAttr("Targuments", arguments._typeList)
+  op.setAttr("Tcaptured", capturedInputs._typeList)
   op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("f", f)
@@ -15097,7 +15097,7 @@ public static func mapSize(
 ///     a default container is used.
 ///   - shared_name: It is necessary to match this name to the matching Unstage Op.
 @inlinable @inline(__always)
-public static func mapStage<FakeDtypes: TensorGroup>(
+public static func mapStage<FakeDtypes: TensorArrayProtocol>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   _ values: FakeDtypes,
@@ -15114,7 +15114,7 @@ public static func mapStage<FakeDtypes: TensorGroup>(
     capacity: capacity,
     memory_limit: memoryLimit,
     dtypes$dtype: dtypes,
-    fake_dtypes$dtype: FakeDtypes._typeList,
+    fake_dtypes$dtype: values._typeList,
     container: container,
     shared_name: sharedName)
 }
@@ -17796,12 +17796,12 @@ public static func optimizeDataset(
 
 /// Constructs an Optional variant from a tuple of tensors.
 @inlinable @inline(__always)
-public static func optionalFromValue<ToutputTypes: TensorGroup>(
+public static func optionalFromValue<ToutputTypes: TensorArrayProtocol>(
   components: ToutputTypes
 ) -> VariantHandle {
   let ret: VariantHandle = #tfop("OptionalFromValue",
     components,
-    Toutput_types$dtype: ToutputTypes._typeList)
+    Toutput_types$dtype: components._typeList)
   return ret
 }
 
@@ -17930,7 +17930,7 @@ public static func orderedMapSize(
 ///     a default container is used.
 ///   - shared_name: It is necessary to match this name to the matching Unstage Op.
 @inlinable @inline(__always)
-public static func orderedMapStage<FakeDtypes: TensorGroup>(
+public static func orderedMapStage<FakeDtypes: TensorArrayProtocol>(
   key: Tensor<Int64>,
   indices: Tensor<Int32>,
   _ values: FakeDtypes,
@@ -17947,7 +17947,7 @@ public static func orderedMapStage<FakeDtypes: TensorGroup>(
     capacity: capacity,
     memory_limit: memoryLimit,
     dtypes$dtype: dtypes,
-    fake_dtypes$dtype: FakeDtypes._typeList,
+    fake_dtypes$dtype: values._typeList,
     container: container,
     shared_name: sharedName)
 }
@@ -18088,12 +18088,12 @@ public static func outfeedEnqueue<Dtype: TensorFlowScalar>(
 /// - Parameter inputs: A list of tensors that will be inserted into the outfeed queue as an
 ///   XLA tuple.
 @inlinable @inline(__always)
-public static func outfeedEnqueueTuple<Dtypes: TensorGroup>(
+public static func outfeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
   inputs: Dtypes
 ) {
   return #tfop("OutfeedEnqueueTuple",
     inputs,
-    dtypes$dtype: Dtypes._typeList)
+    dtypes$dtype: inputs._typeList)
 }
 
 /// Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor.
@@ -18233,7 +18233,7 @@ public static func padV2<
 ///   - padding_values: A list of scalars containing the padding value to use for
 ///     each of the outputs.
 @inlinable @inline(__always)
-public static func paddedBatchDataset<ToutputTypes: TensorGroup>(
+public static func paddedBatchDataset<ToutputTypes: TensorArrayProtocol>(
   inputDataset: VariantHandle,
   batchSize: Tensor<Int64>,
   paddedShapes: [Tensor<Int64>],
@@ -18245,7 +18245,7 @@ public static func paddedBatchDataset<ToutputTypes: TensorGroup>(
     batchSize,
     paddedShapes,
     paddingValues,
-    Toutput_types$dtype: ToutputTypes._typeList,
+    Toutput_types$dtype: paddingValues._typeList,
     output_shapes: outputShapes)
   return ret
 }
@@ -18264,7 +18264,7 @@ public static func paddedBatchDataset<ToutputTypes: TensorGroup>(
 ///   - drop_remainder: A scalar representing whether the last batch should be dropped in case its size
 ///     is smaller than desired.
 @inlinable @inline(__always)
-public static func paddedBatchDatasetV2<ToutputTypes: TensorGroup>(
+public static func paddedBatchDatasetV2<ToutputTypes: TensorArrayProtocol>(
   inputDataset: VariantHandle,
   batchSize: Tensor<Int64>,
   paddedShapes: [Tensor<Int64>],
@@ -18280,7 +18280,7 @@ public static func paddedBatchDatasetV2<ToutputTypes: TensorGroup>(
     paddingValues,
     dropRemainder,
     parallel_copy: parallelCopy,
-    Toutput_types$dtype: ToutputTypes._typeList,
+    Toutput_types$dtype: paddingValues._typeList,
     output_shapes: outputShapes)
   return ret
 }
@@ -18358,7 +18358,7 @@ public static func parallelConcat<T: TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("ParallelConcat")
-  let valuesCount = op.addInput(values)
+  let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
@@ -18449,7 +18449,7 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
 public static func parallelInterleaveDatasetV2<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -18468,7 +18468,7 @@ public static func parallelInterleaveDatasetV2<
     blockLength,
     numParallelCalls,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     sloppy: sloppy)
@@ -18486,7 +18486,7 @@ public static func parallelInterleaveDatasetV2<
 public static func parallelMapDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Targuments: TensorGroup
+    Targuments: TensorArrayProtocol
 >(
   inputDataset: VariantHandle,
   otherArguments: Targuments,
@@ -18503,7 +18503,7 @@ public static func parallelMapDataset<
     otherArguments,
     numParallelCalls,
     f$func: _tffunc(f),
-    Targuments$dtype: Targuments._typeList,
+    Targuments$dtype: otherArguments._typeList,
     output_types$dtype: outputTypes,
     output_shapes: outputShapes,
     use_inter_op_parallelism: useInterOpParallelism,
@@ -18607,7 +18607,7 @@ public static func parameterizedTruncatedNormal<
 @inlinable @inline(__always)
 public static func parseExample<
     SparseTypes: TensorGroup,
-    Tdense: TensorGroup
+    Tdense: TensorArrayProtocol
 >(
   serialized: StringTensor,
   names: StringTensor,
@@ -18619,15 +18619,15 @@ public static func parseExample<
   let op = TFE_Op("ParseExample")
   let _ = op.addInput(serialized)
   let _ = op.addInput(names)
-  let sparseKeysCount = op.addInput(sparseKeys)
+  let sparseKeysCount = op.addInputList(sparseKeys)
   op.setAttr("Nsparse", sparseKeysCount)
-  let denseKeysCount = op.addInput(denseKeys)
+  let denseKeysCount = op.addInputList(denseKeys)
   op.setAttr("Ndense", denseKeysCount)
-  let _ = op.addInput(denseDefaults)
+  let _ = op.addInputList(denseDefaults)
   op.setAttr("sparse_types", SparseTypes._typeList)
-  op.setAttr("Tdense", Tdense._typeList)
+  op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
-  return op.execute(Int(sparseKeysCount), Int(SparseTypes._typeList.count), Int(sparseKeysCount), Int(Tdense._typeList.count))
+  return op.execute(Int(sparseKeysCount), Int(SparseTypes._typeList.count), Int(sparseKeysCount), Int(denseDefaults._typeList.count))
 }
 
 /// Transforms a vector of brain.SequenceExample protos (as strings) into typed tensors.
@@ -18686,7 +18686,7 @@ public static func parseExample<
 @inlinable @inline(__always)
 public static func parseSequenceExample<
     ContextSparseTypes: TensorGroup,
-    TcontextDense: TensorGroup,
+    TcontextDense: TensorArrayProtocol,
     FeatureListDenseTypes: TensorGroup,
     FeatureListSparseTypes: TensorGroup
 >(
@@ -18708,7 +18708,7 @@ public static func parseSequenceExample<
   let op = TFE_Op("ParseSequenceExample")
   let _ = op.addInput(serialized)
   let _ = op.addInput(debugName)
-  let _ = op.addInput(contextDenseDefaults)
+  let _ = op.addInputList(contextDenseDefaults)
   op.setAttr("feature_list_dense_missing_assumed_empty", featureListDenseMissingAssumedEmpty)
   op.setAttr("context_sparse_keys", contextSparseKeys)
   op.setAttr("context_dense_keys", contextDenseKeys)
@@ -18719,12 +18719,12 @@ public static func parseSequenceExample<
   op.setAttr("Nfeature_list_sparse", nfeatureListSparse)
   op.setAttr("Nfeature_list_dense", nfeatureListDense)
   op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
-  op.setAttr("Tcontext_dense", TcontextDense._typeList)
+  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
   op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
   op.setAttr("context_dense_shapes", contextDenseShapes)
   op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
-  return op.execute(Int(ncontextSparse), Int(ContextSparseTypes._typeList.count), Int(ncontextSparse), Int(TcontextDense._typeList.count), Int(nfeatureListSparse), Int(FeatureListSparseTypes._typeList.count), Int(nfeatureListSparse), Int(FeatureListDenseTypes._typeList.count), Int(nfeatureListDense))
+  return op.execute(Int(ncontextSparse), Int(ContextSparseTypes._typeList.count), Int(ncontextSparse), Int(contextDenseDefaults._typeList.count), Int(nfeatureListSparse), Int(FeatureListSparseTypes._typeList.count), Int(nfeatureListSparse), Int(FeatureListDenseTypes._typeList.count), Int(nfeatureListDense))
 }
 
 /// Transforms a tf.Example proto (as a string) into typed tensors.
@@ -18769,7 +18769,7 @@ public static func parseSequenceExample<
 @inlinable @inline(__always)
 public static func parseSingleExample<
     SparseTypes: TensorGroup,
-    Tdense: TensorGroup
+    Tdense: TensorArrayProtocol
 >(
   serialized: StringTensor,
   denseDefaults: Tdense,
@@ -18780,14 +18780,14 @@ public static func parseSingleExample<
 ) -> (sparseIndices: [Tensor<Int64>], sparseValues: SparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
   let op = TFE_Op("ParseSingleExample")
   let _ = op.addInput(serialized)
-  let _ = op.addInput(denseDefaults)
+  let _ = op.addInputList(denseDefaults)
   op.setAttr("num_sparse", numSparse)
   op.setAttr("sparse_keys", sparseKeys)
   op.setAttr("dense_keys", denseKeys)
   op.setAttr("sparse_types", SparseTypes._typeList)
-  op.setAttr("Tdense", Tdense._typeList)
+  op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
-  return op.execute(Int(numSparse), Int(SparseTypes._typeList.count), Int(numSparse), Int(Tdense._typeList.count))
+  return op.execute(Int(numSparse), Int(SparseTypes._typeList.count), Int(numSparse), Int(denseDefaults._typeList.count))
 }
 
 /// Transforms a scalar brain.SequenceExample proto (as strings) into typed tensors.
@@ -18846,7 +18846,7 @@ public static func parseSingleExample<
 @inlinable @inline(__always)
 public static func parseSingleSequenceExample<
     ContextSparseTypes: TensorGroup,
-    TcontextDense: TensorGroup,
+    TcontextDense: TensorArrayProtocol,
     FeatureListDenseTypes: TensorGroup,
     FeatureListSparseTypes: TensorGroup
 >(
@@ -18864,23 +18864,23 @@ public static func parseSingleSequenceExample<
   let op = TFE_Op("ParseSingleSequenceExample")
   let _ = op.addInput(serialized)
   let _ = op.addInput(featureListDenseMissingAssumedEmpty)
-  let contextSparseKeysCount = op.addInput(contextSparseKeys)
+  let contextSparseKeysCount = op.addInputList(contextSparseKeys)
   op.setAttr("Ncontext_sparse", contextSparseKeysCount)
-  let contextDenseKeysCount = op.addInput(contextDenseKeys)
+  let contextDenseKeysCount = op.addInputList(contextDenseKeys)
   op.setAttr("Ncontext_dense", contextDenseKeysCount)
-  let featureListSparseKeysCount = op.addInput(featureListSparseKeys)
+  let featureListSparseKeysCount = op.addInputList(featureListSparseKeys)
   op.setAttr("Nfeature_list_sparse", featureListSparseKeysCount)
-  let featureListDenseKeysCount = op.addInput(featureListDenseKeys)
+  let featureListDenseKeysCount = op.addInputList(featureListDenseKeys)
   op.setAttr("Nfeature_list_dense", featureListDenseKeysCount)
-  let _ = op.addInput(contextDenseDefaults)
+  let _ = op.addInputList(contextDenseDefaults)
   let _ = op.addInput(debugName)
   op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
-  op.setAttr("Tcontext_dense", TcontextDense._typeList)
+  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
   op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
   op.setAttr("context_dense_shapes", contextDenseShapes)
   op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
-  return op.execute(Int(contextSparseKeysCount), Int(ContextSparseTypes._typeList.count), Int(contextSparseKeysCount), Int(TcontextDense._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListSparseTypes._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListDenseTypes._typeList.count))
+  return op.execute(Int(contextSparseKeysCount), Int(ContextSparseTypes._typeList.count), Int(contextSparseKeysCount), Int(contextDenseDefaults._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListSparseTypes._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListDenseTypes._typeList.count))
 }
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
@@ -18916,7 +18916,7 @@ public static func parseTensor<OutType: TensorFlowScalar>(
 /// - Output output: A list of return values.
 @inlinable @inline(__always)
 public static func partitionedCall<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -18928,8 +18928,8 @@ public static func partitionedCall<
   executorType: String
 ) -> Tout {
   let op = TFE_Op("PartitionedCall")
-  let _ = op.addInput(args)
-  op.setAttr("Tin", Tin._typeList)
+  let _ = op.addInputList(args)
+  op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   op.setAttr("config", config)
@@ -19145,14 +19145,14 @@ public static func prelinearize<Dtype: TensorFlowScalar>(
 ///     elements for a sub-shape can be set to -1 in which case the corresponding layout
 ///     will be computed by the infeed operation.
 @inlinable @inline(__always)
-public static func prelinearizeTuple<Dtypes: TensorGroup>(
+public static func prelinearizeTuple<Dtypes: TensorArrayProtocol>(
   inputs: Dtypes,
   shapes: [TensorShape?],
   layouts: [Int32]
 ) -> VariantHandle {
   let ret: VariantHandle = #tfop("PrelinearizeTuple",
     inputs,
-    dtypes$dtype: Dtypes._typeList,
+    dtypes$dtype: inputs._typeList,
     shapes: shapes,
     layouts: layouts)
   return ret
@@ -19203,7 +19203,7 @@ public static func preventGradient<T: TensorFlowScalar>(
 @inlinable @inline(__always)
 public static func print<
     T: TensorFlowScalar,
-    U: TensorGroup
+    U: TensorArrayProtocol
 >(
   _ input: Tensor<T>,
   data: U,
@@ -19215,7 +19215,7 @@ public static func print<
     input,
     data,
     T$dtype: T.tensorFlowDataType,
-    U$dtype: U._typeList,
+    U$dtype: data._typeList,
     message: message,
     first_n: firstN,
     summarize: summarize)
@@ -19327,16 +19327,16 @@ public static func prod<
 /// - Output output: The outputs from the Op.
 @inlinable @inline(__always)
 public static func pyFunc<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup
 >(
   _ input: Tin,
   token: String
 ) -> Tout {
   let op = TFE_Op("PyFunc")
-  let _ = op.addInput(input)
+  let _ = op.addInputList(input)
   op.setAttr("token", token)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -19344,16 +19344,16 @@ public static func pyFunc<
 /// A stateless version of PyFunc.
 @inlinable @inline(__always)
 public static func pyFuncStateless<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup
 >(
   _ input: Tin,
   token: String
 ) -> Tout {
   let op = TFE_Op("PyFuncStateless")
-  let _ = op.addInput(input)
+  let _ = op.addInputList(input)
   op.setAttr("token", token)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -21092,7 +21092,7 @@ public static func queueDequeueV2<ComponentTypes: TensorGroup>(
 ///   to timeout_ms milliseconds.
 ///   Note: This option is not supported yet.
 @inlinable @inline(__always)
-public static func queueEnqueueManyV2<Tcomponents: TensorGroup>(
+public static func queueEnqueueManyV2<Tcomponents: TensorArrayProtocol>(
   handle: ResourceHandle,
   components: Tcomponents,
   timeoutMs: Int64 = -1
@@ -21100,7 +21100,7 @@ public static func queueEnqueueManyV2<Tcomponents: TensorGroup>(
   return #tfop("QueueEnqueueManyV2",
     handle,
     components,
-    Tcomponents$dtype: Tcomponents._typeList,
+    Tcomponents$dtype: components._typeList,
     timeout_ms: timeoutMs)
 }
 
@@ -21120,7 +21120,7 @@ public static func queueEnqueueManyV2<Tcomponents: TensorGroup>(
 ///   timeout_ms milliseconds.
 ///   Note: This option is not supported yet.
 @inlinable @inline(__always)
-public static func queueEnqueueV2<Tcomponents: TensorGroup>(
+public static func queueEnqueueV2<Tcomponents: TensorArrayProtocol>(
   handle: ResourceHandle,
   components: Tcomponents,
   timeoutMs: Int64 = -1
@@ -21128,7 +21128,7 @@ public static func queueEnqueueV2<Tcomponents: TensorGroup>(
   return #tfop("QueueEnqueueV2",
     handle,
     components,
-    Tcomponents$dtype: Tcomponents._typeList,
+    Tcomponents$dtype: components._typeList,
     timeout_ms: timeoutMs)
 }
 
@@ -21242,7 +21242,7 @@ public static func raggedGather<
   oUTPUTRAGGEDRANK: Int64
 ) -> (outputNestedSplits: [Tensor<Int64>], outputDenseValues: Tensor<Tvalues>) {
   let op = TFE_Op("RaggedGather")
-  let paramsNestedSplitsCount = op.addInput(paramsNestedSplits)
+  let paramsNestedSplitsCount = op.addInputList(paramsNestedSplits)
   op.setAttr("PARAMS_RAGGED_RANK", paramsNestedSplitsCount)
   let _ = op.addInput(paramsDenseValues)
   let _ = op.addInput(indices)
@@ -22063,8 +22063,8 @@ public static func recvTPUEmbeddingActivations(
 public static func reduceDataset<
     FIn: TensorGroup,
     FOut: TensorGroup,
-    Tstate: TensorGroup,
-    Targuments: TensorGroup,
+    Tstate: TensorArrayProtocol,
+    Targuments: TensorArrayProtocol,
     OutputTypes: TensorGroup
 >(
   inputDataset: VariantHandle,
@@ -22076,11 +22076,11 @@ public static func reduceDataset<
 ) -> OutputTypes {
   let op = TFE_Op("ReduceDataset")
   let _ = op.addInput(inputDataset)
-  let _ = op.addInput(initialState)
-  let _ = op.addInput(otherArguments)
+  let _ = op.addInputList(initialState)
+  let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Tstate", Tstate._typeList)
-  op.setAttr("Targuments", Targuments._typeList)
+  op.setAttr("Tstate", initialState._typeList)
+  op.setAttr("Targuments", otherArguments._typeList)
   op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
@@ -22273,7 +22273,7 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
 /// - Output output: A list of return values.
 @inlinable @inline(__always)
 public static func remoteCall<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -22284,8 +22284,8 @@ public static func remoteCall<
 ) -> Tout {
   let op = TFE_Op("RemoteCall")
   let _ = op.addInput(target)
-  let _ = op.addInput(args)
-  op.setAttr("Tin", Tin._typeList)
+  let _ = op.addInputList(args)
+  op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
@@ -22309,15 +22309,15 @@ public static func remoteCall<
 /// - Output outputs: Arbitrary number of tensors with arbitrary data types
 @inlinable @inline(__always)
 public static func remoteFusedGraphExecute<
-    Tinputs: TensorGroup,
+    Tinputs: TensorArrayProtocol,
     Toutputs: TensorGroup
 >(
   inputs: Tinputs,
   serializedRemoteFusedGraphExecuteInfo: String
 ) -> Toutputs {
   let op = TFE_Op("RemoteFusedGraphExecute")
-  let _ = op.addInput(inputs)
-  op.setAttr("Tinputs", Tinputs._typeList)
+  let _ = op.addInputList(inputs)
+  op.setAttr("Tinputs", inputs._typeList)
   op.setAttr("Toutputs", Toutputs._typeList)
   op.setAttr("serialized_remote_fused_graph_execute_info", serializedRemoteFusedGraphExecuteInfo)
   return op.execute(Int(Toutputs._typeList.count))
@@ -26121,7 +26121,7 @@ public static func samplingDataset(
 ///   - tensor_names: Shape `[N]`. The names of the tensors to be saved.
 ///   - data: `N` tensors to save.
 @inlinable @inline(__always)
-public static func save<T: TensorGroup>(
+public static func save<T: TensorArrayProtocol>(
   filename: StringTensor,
   tensorNames: StringTensor,
   data: T
@@ -26130,7 +26130,7 @@ public static func save<T: TensorGroup>(
     filename,
     tensorNames,
     data,
-    T$dtype: T._typeList)
+    T$dtype: data._typeList)
 }
 
 /// Saves input tensors slices to disk.
@@ -26165,7 +26165,7 @@ public static func save<T: TensorGroup>(
 ///     saving the tensors.
 ///   - data: `N` tensors to save.
 @inlinable @inline(__always)
-public static func saveSlices<T: TensorGroup>(
+public static func saveSlices<T: TensorArrayProtocol>(
   filename: StringTensor,
   tensorNames: StringTensor,
   shapesAndSlices: StringTensor,
@@ -26176,7 +26176,7 @@ public static func saveSlices<T: TensorGroup>(
     tensorNames,
     shapesAndSlices,
     data,
-    T$dtype: T._typeList)
+    T$dtype: data._typeList)
 }
 
 /// Saves tensors in V2 checkpoint format.
@@ -26193,7 +26193,7 @@ public static func saveSlices<T: TensorGroup>(
 ///     Empty strings indicate that they are non-partitioned tensors.
 ///   - tensors: `N` tensors to save.
 @inlinable @inline(__always)
-public static func saveV2<Dtypes: TensorGroup>(
+public static func saveV2<Dtypes: TensorArrayProtocol>(
   prefix: StringTensor,
   tensorNames: StringTensor,
   shapeAndSlices: StringTensor,
@@ -26204,7 +26204,7 @@ public static func saveV2<Dtypes: TensorGroup>(
     tensorNames,
     shapeAndSlices,
     tensors,
-    dtypes$dtype: Dtypes._typeList)
+    dtypes$dtype: tensors._typeList)
 }
 
 /// Outputs a `Summary` protocol buffer with scalar values.
@@ -26536,18 +26536,18 @@ public static func sdcaOptimizer(
   numInnerIterations: Int64
 ) -> (outExampleStateData: Tensor<Float>, outDeltaSparseWeights: [Tensor<Float>], outDeltaDenseWeights: [Tensor<Float>]) {
   let op = TFE_Op("SdcaOptimizer")
-  let sparseExampleIndicesCount = op.addInput(sparseExampleIndices)
+  let sparseExampleIndicesCount = op.addInputList(sparseExampleIndices)
   op.setAttr("num_sparse_features", sparseExampleIndicesCount)
-  let _ = op.addInput(sparseFeatureIndices)
-  let sparseFeatureValuesCount = op.addInput(sparseFeatureValues)
+  let _ = op.addInputList(sparseFeatureIndices)
+  let sparseFeatureValuesCount = op.addInputList(sparseFeatureValues)
   op.setAttr("num_sparse_features_with_values", sparseFeatureValuesCount)
-  let denseFeaturesCount = op.addInput(denseFeatures)
+  let denseFeaturesCount = op.addInputList(denseFeatures)
   op.setAttr("num_dense_features", denseFeaturesCount)
   let _ = op.addInput(exampleWeights)
   let _ = op.addInput(exampleLabels)
-  let _ = op.addInput(sparseIndices)
-  let _ = op.addInput(sparseWeights)
-  let _ = op.addInput(denseWeights)
+  let _ = op.addInputList(sparseIndices)
+  let _ = op.addInputList(sparseWeights)
+  let _ = op.addInputList(denseWeights)
   let _ = op.addInput(exampleStateData)
   op.setAttr("loss_type", lossType.cName)
   op.setAttr("adaptative", adaptative)
@@ -26637,18 +26637,18 @@ public static func sdcaOptimizerV2(
   numInnerIterations: Int64
 ) -> (outExampleStateData: Tensor<Float>, outDeltaSparseWeights: [Tensor<Float>], outDeltaDenseWeights: [Tensor<Float>]) {
   let op = TFE_Op("SdcaOptimizerV2")
-  let sparseExampleIndicesCount = op.addInput(sparseExampleIndices)
+  let sparseExampleIndicesCount = op.addInputList(sparseExampleIndices)
   op.setAttr("num_sparse_features", sparseExampleIndicesCount)
-  let _ = op.addInput(sparseFeatureIndices)
-  let sparseFeatureValuesCount = op.addInput(sparseFeatureValues)
+  let _ = op.addInputList(sparseFeatureIndices)
+  let sparseFeatureValuesCount = op.addInputList(sparseFeatureValues)
   op.setAttr("num_sparse_features_with_values", sparseFeatureValuesCount)
-  let denseFeaturesCount = op.addInput(denseFeatures)
+  let denseFeaturesCount = op.addInputList(denseFeatures)
   op.setAttr("num_dense_features", denseFeaturesCount)
   let _ = op.addInput(exampleWeights)
   let _ = op.addInput(exampleLabels)
-  let _ = op.addInput(sparseIndices)
-  let _ = op.addInput(sparseWeights)
-  let _ = op.addInput(denseWeights)
+  let _ = op.addInputList(sparseIndices)
+  let _ = op.addInputList(sparseWeights)
+  let _ = op.addInputList(denseWeights)
   let _ = op.addInput(exampleStateData)
   op.setAttr("loss_type", lossType.cName)
   op.setAttr("adaptive", adaptive)
@@ -27332,7 +27332,7 @@ public static func shapeN<
   _ input: [Tensor<T>]
 ) -> [Tensor<OutType>] {
   let op = TFE_Op("ShapeN")
-  let inputCount = op.addInput(input)
+  let inputCount = op.addInputList(input)
   op.setAttr("N", inputCount)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
@@ -28361,8 +28361,8 @@ public static func sparseConcat<T: TensorFlowScalar>(
 ///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
 @inlinable @inline(__always)
 public static func sparseCross<
-    SparseTypes: TensorGroup,
-    DenseTypes: TensorGroup,
+    SparseTypes: TensorArrayProtocol,
+    DenseTypes: TensorArrayProtocol,
     OutType: BinaryInteger & TensorFlowScalar
 >(
   indices: [Tensor<Int64>],
@@ -28382,8 +28382,8 @@ public static func sparseCross<
     hashed_output: hashedOutput,
     num_buckets: numBuckets,
     hash_key: hashKey,
-    sparse_types$dtype: SparseTypes._typeList,
-    dense_types$dtype: DenseTypes._typeList,
+    sparse_types$dtype: values._typeList,
+    dense_types$dtype: denseInputs._typeList,
     out_type$dtype: OutType.tensorFlowDataType,
     internal_type$dtype: internalType)
   return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
@@ -28449,8 +28449,8 @@ public static func sparseCross<
 ///   - output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
 @inlinable @inline(__always)
 public static func sparseCross<
-    SparseTypes: TensorGroup,
-    DenseTypes: TensorGroup
+    SparseTypes: TensorArrayProtocol,
+    DenseTypes: TensorArrayProtocol
 >(
   indices: [Tensor<Int64>],
   _ values: SparseTypes,
@@ -28469,8 +28469,8 @@ public static func sparseCross<
     hashed_output: hashedOutput,
     num_buckets: numBuckets,
     hash_key: hashKey,
-    sparse_types$dtype: SparseTypes._typeList,
-    dense_types$dtype: DenseTypes._typeList,
+    sparse_types$dtype: values._typeList,
+    dense_types$dtype: denseInputs._typeList,
     out_type$dtype: TensorDataType(TF_STRING),
     internal_type$dtype: internalType)
   return (Tensor(handle: ret.0), StringTensor(handle: ret.1), Tensor(handle: ret.2))
@@ -30088,7 +30088,7 @@ public static func stackV2(
 ///     a default container is used.
 ///   - shared_name: It is necessary to match this name to the matching Unstage Op.
 @inlinable @inline(__always)
-public static func stage<Dtypes: TensorGroup>(
+public static func stage<Dtypes: TensorArrayProtocol>(
   _ values: Dtypes,
   capacity: Int64 = 0,
   memoryLimit: Int64 = 0,
@@ -30099,7 +30099,7 @@ public static func stage<Dtypes: TensorGroup>(
     values,
     capacity: capacity,
     memory_limit: memoryLimit,
-    dtypes$dtype: Dtypes._typeList,
+    dtypes$dtype: values._typeList,
     container: container,
     shared_name: sharedName)
 }
@@ -30178,7 +30178,7 @@ public static func stageSize(
 /// - Output output: A list of return values.
 @inlinable @inline(__always)
 public static func statefulPartitionedCall<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -30190,8 +30190,8 @@ public static func statefulPartitionedCall<
   executorType: String
 ) -> Tout {
   let op = TFE_Op("StatefulPartitionedCall")
-  let _ = op.addInput(args)
-  op.setAttr("Tin", Tin._typeList)
+  let _ = op.addInputList(args)
+  op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   op.setAttr("config", config)
@@ -30442,7 +30442,7 @@ public static func statefulUniformInt<
 @inlinable @inline(__always)
 public static func statelessIf<
     Tcond: TensorFlowScalar,
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     ThenbranchIn: TensorGroup,
     ThenbranchOut: TensorGroup,
@@ -30456,9 +30456,9 @@ public static func statelessIf<
 ) -> Tout {
   let op = TFE_Op("StatelessIf")
   let _ = op.addInput(cond)
-  let _ = op.addInput(input)
+  let _ = op.addInputList(input)
   op.setAttr("Tcond", Tcond.tensorFlowDataType)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("then_branch", thenBranch)
   op.setAttr("else_branch", elseBranch)
@@ -30651,7 +30651,7 @@ public static func statelessTruncatedNormal<
 /// - Output output: A list of output tensors whose types are T.
 @inlinable @inline(__always)
 public static func statelessWhile<
-    T: TensorGroup,
+    T: TensorArrayProtocol,
     CondIn: TensorGroup,
     CondOut: TensorGroup,
     BodyIn: TensorGroup,
@@ -30662,11 +30662,11 @@ public static func statelessWhile<
   body: (BodyIn) -> BodyOut
 ) -> T {
   let op = TFE_Op("StatelessWhile")
-  let _ = op.addInput(input)
-  op.setAttr("T", T._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("T", input._typeList)
   op.setAttr("cond", cond)
   op.setAttr("body", body)
-  return op.execute(Int(T._typeList.count))
+  return op.execute(Int(input._typeList.count))
 }
 
 /// Check if the input matches the regex pattern.
@@ -30987,7 +30987,7 @@ public static func stridedSliceGrad<
 ///
 /// - Output output: = The resulting string scalar.
 @inlinable @inline(__always)
-public static func stringFormat<T: TensorGroup>(
+public static func stringFormat<T: TensorArrayProtocol>(
   inputs: T,
   template: String = "%s",
   placeholder: String = "%s",
@@ -30995,7 +30995,7 @@ public static func stringFormat<T: TensorGroup>(
 ) -> StringTensor {
   let ret: TensorHandle<String> = #tfop("StringFormat",
     inputs,
-    T$dtype: T._typeList,
+    T$dtype: inputs._typeList,
     template: template,
     placeholder: placeholder,
     summarize: summarize)
@@ -31543,7 +31543,7 @@ public static func switch_<T: TensorFlowScalar>(
 /// - Output output: a list of output tensors of size N;
 @inlinable @inline(__always)
 public static func symbolicGradient<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -31552,8 +31552,8 @@ public static func symbolicGradient<
   f: (FIn) -> FOut
 ) -> Tout {
   let op = TFE_Op("SymbolicGradient")
-  let _ = op.addInput(input)
-  op.setAttr("Tin", Tin._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
@@ -31671,7 +31671,7 @@ public static func tPUOrdinalSelector(
 /// - Output output: The output of the function call.
 @inlinable @inline(__always)
 public static func tPUPartitionedCall<
-    Tin: TensorGroup,
+    Tin: TensorArrayProtocol,
     Tout: TensorGroup,
     FIn: TensorGroup,
     FOut: TensorGroup
@@ -31681,9 +31681,9 @@ public static func tPUPartitionedCall<
   f: (FIn) -> FOut
 ) -> Tout {
   let op = TFE_Op("TPUPartitionedCall")
-  let _ = op.addInput(args)
+  let _ = op.addInputList(args)
   let _ = op.addInput(deviceOrdinal)
-  op.setAttr("Tin", Tin._typeList)
+  op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
@@ -31724,9 +31724,9 @@ public static func tPUPartitionedCall<
 public static func tPUReplicate<
     ComputationIn: TensorGroup,
     ComputationOut: TensorGroup,
-    Tinputs: TensorGroup,
-    TbroadcastInputs: TensorGroup,
-    TguaranteedConstants: TensorGroup,
+    Tinputs: TensorArrayProtocol,
+    TbroadcastInputs: TensorArrayProtocol,
+    TguaranteedConstants: TensorArrayProtocol,
     OutputTypes: TensorGroup
 >(
   inputs: Tinputs,
@@ -31744,11 +31744,11 @@ public static func tPUReplicate<
   stepMarkerLocation: String = "STEP_MARK_AT_ENTRY"
 ) -> OutputTypes {
   let op = TFE_Op("TPUReplicate")
-  let _ = op.addInput(inputs)
-  let _ = op.addInput(broadcastInputs)
-  let variablesCount = op.addInput(variables)
+  let _ = op.addInputList(inputs)
+  let _ = op.addInputList(broadcastInputs)
+  let variablesCount = op.addInputList(variables)
   op.setAttr("NumVariables", variablesCount)
-  let _ = op.addInput(guaranteedConstants)
+  let _ = op.addInputList(guaranteedConstants)
   op.setAttr("computation", computation)
   op.setAttr("num_replicas", numReplicas)
   op.setAttr("num_cores_per_replica", numCoresPerReplica)
@@ -31756,9 +31756,9 @@ public static func tPUReplicate<
   op.setAttr("use_tpu", useTpu)
   op.setAttr("device_assignment", deviceAssignment)
   op.setAttr("host_compute_core", hostComputeCore)
-  op.setAttr("Tinputs", Tinputs._typeList)
-  op.setAttr("Tbroadcast_inputs", TbroadcastInputs._typeList)
-  op.setAttr("Tguaranteed_constants", TguaranteedConstants._typeList)
+  op.setAttr("Tinputs", inputs._typeList)
+  op.setAttr("Tbroadcast_inputs", broadcastInputs._typeList)
+  op.setAttr("Tguaranteed_constants", guaranteedConstants._typeList)
   op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("padding_map", paddingMap)
   op.setAttr("step_marker_location", stepMarkerLocation)
@@ -32483,13 +32483,13 @@ public static func tensorArrayWriteV3<T: TensorFlowScalar>(
 
 /// Creates a dataset that emits `components` as a tuple of tensors once.
 @inlinable @inline(__always)
-public static func tensorDataset<ToutputTypes: TensorGroup>(
+public static func tensorDataset<ToutputTypes: TensorArrayProtocol>(
   components: ToutputTypes,
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let ret: VariantHandle = #tfop("TensorDataset",
     components,
-    Toutput_types$dtype: ToutputTypes._typeList,
+    Toutput_types$dtype: components._typeList,
     output_shapes: outputShapes)
   return ret
 }
@@ -33272,13 +33272,13 @@ public static func tensorScatterUpdate<
 
 /// Creates a dataset that emits each dim-0 slice of `components` once.
 @inlinable @inline(__always)
-public static func tensorSliceDataset<ToutputTypes: TensorGroup>(
+public static func tensorSliceDataset<ToutputTypes: TensorArrayProtocol>(
   components: ToutputTypes,
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let ret: VariantHandle = #tfop("TensorSliceDataset",
     components,
-    Toutput_types$dtype: ToutputTypes._typeList,
+    Toutput_types$dtype: components._typeList,
     output_shapes: outputShapes)
   return ret
 }
@@ -33902,32 +33902,32 @@ public static func twoIntOutputs(
 }
 
 @inlinable @inline(__always)
-public static func typeList<T: TensorGroup>(
+public static func typeList<T: TensorArrayProtocol>(
   _ a: T
 ) {
   return #tfop("TypeList",
     a,
-    T$dtype: T._typeList)
+    T$dtype: a._typeList)
 }
 
 @inlinable @inline(__always)
-public static func typeListRestrict<T: TensorGroup>(
+public static func typeListRestrict<T: TensorArrayProtocol>(
   _ a: T
 ) {
   return #tfop("TypeListRestrict",
     a,
-    T$dtype: T._typeList)
+    T$dtype: a._typeList)
 }
 
 @inlinable @inline(__always)
-public static func typeListTwice<T: TensorGroup>(
+public static func typeListTwice<T: TensorArrayProtocol>(
   _ a: T,
   _ b: T
 ) {
   return #tfop("TypeListTwice",
     a,
     b,
-    T$dtype: T._typeList)
+    T$dtype: a._typeList)
 }
 
 @inlinable @inline(__always)
@@ -35076,7 +35076,7 @@ public static func where_<T: TensorFlowScalar>(
 /// - Output output: A list of output tensors whose types are T.
 @inlinable @inline(__always)
 public static func while_<
-    T: TensorGroup,
+    T: TensorArrayProtocol,
     CondIn: TensorGroup,
     CondOut: TensorGroup,
     BodyIn: TensorGroup,
@@ -35089,13 +35089,13 @@ public static func while_<
   parallelIterations: Int64 = 10
 ) -> T {
   let op = TFE_Op("While")
-  let _ = op.addInput(input)
-  op.setAttr("T", T._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("T", input._typeList)
   op.setAttr("cond", cond)
   op.setAttr("body", body)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("parallel_iterations", parallelIterations)
-  return op.execute(Int(T._typeList.count))
+  return op.execute(Int(input._typeList.count))
 }
 
 /// A Reader that outputs the entire contents of a file as a value.

@@ -394,9 +394,11 @@ class Argument(object):
       number_attr = self.arg_def.number_attr
       if self.arg_def.number_attr and number_attr not in self.op.inferred_counts:
         self.op.inferred_counts[number_attr] = self.swift_name + 'Count'
-        return ('let {name}Count = op.addInput({name})\n  ' +
+        return ('let {name}Count = op.addInputList({name})\n  ' +
                 'op.setAttr("{number_attr}", {name}Count)'
                 ).format(name=self.swift_name, number_attr=self.arg_def.number_attr)
+      elif self.is_list:
+        return 'let _ = op.addInputList({})'.format(self.swift_name)
       else:
         return 'let _ = op.addInput({})'.format(self.swift_name)
 
@@ -602,10 +604,20 @@ class Attribute(object):
     return ''
 
   def swift_setter(self, mode, string_valued=False):
+    # We use this for obtaining the `_typeList` property.
+    input_arg = None
+    if self.attr_def.type == 'list(type)':
+      for arg in self.op.input_args:
+        if self.attr_def.name in [arg.arg_def.type_attr,
+                                  arg.arg_def.type_list_attr]:
+          input_arg = arg
+          break
     if mode == 'tfop':
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
+          if input_arg is not None:
+            return self.name + '$dtype: ' + input_arg.swift_name + '._typeList'
           return self.name + '$dtype: ' + self.swift_name + '._typeList'
         if string_valued and self.allows_string:
           return self.name + '$dtype: TensorDataType(TF_STRING)'
@@ -626,8 +638,11 @@ class Attribute(object):
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
-          self.op.inferred_counts[self.name] = self.swift_name + '._typeList.count'
-          return 'op.setAttr("{}", {}._typeList)'.format(self.name, self.swift_name)
+          name = self.swift_name
+          if input_arg is not None:
+            name = input_arg.swift_name
+          self.op.inferred_counts[self.name] = name + '._typeList.count'
+          return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
         if string_valued and self.allows_string:
           return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
         return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
@@ -647,6 +662,14 @@ class Attribute(object):
       % mode)
 
   def generic_constraints(self, string_valued):
+    # We use this for obtaining the `_typeList` property.
+    input_arg = None
+    if self.attr_def.type == 'list(type)':
+      for arg in self.op.input_args:
+        if self.attr_def.name in [arg.arg_def.type_attr,
+                                  arg.arg_def.type_list_attr]:
+          input_arg = arg
+          break
     if self.is_func_attr:
       input_type = self.swift_name.capitalize() + 'In'
       output_type = self.swift_name.capitalize() + 'Out'
@@ -655,12 +678,10 @@ class Attribute(object):
     if not self.is_inferred_type_attr:
       return None
     protocol = None
-    if self.attr_def.type == 'list(type)' \
-        and self.is_output_type_attr \
-        and not self.is_inferred_type_attr:
-      protocol = 'TensorArrayProtocol'
-    elif self.attr_def.type == 'list(type)':
+    if self.attr_def.type == 'list(type)' and input_arg is None:
       protocol = 'TensorGroup'
+    elif self.attr_def.type == 'list(type)':
+      protocol = 'TensorArrayProtocol'
     elif self.attr_def.type == 'type':
       if string_valued and self.allows_string:
         return None

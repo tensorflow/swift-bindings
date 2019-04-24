@@ -40,8 +40,8 @@ flags.DEFINE_string(
 
 flags.DEFINE_string(
   'mode',
-  'eager',
-  'Code generation mode that can be either "tfop" or "eager".')
+  'tfop-eager-fallback',
+  'Code generation mode that can be either "tfop", "eager", or "tfop-eager-fallback".')
 
 _WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!
 //
@@ -150,7 +150,8 @@ class UnableToGenerateCodeError(Exception):
 
 
 class Op(object):
-  def __init__(self, op_def, api_def, enum_store, string_valued=False):
+  def __init__(self, mode, op_def, api_def, enum_store, string_valued=False):
+    self.mode = mode
     self.op_def = op_def
     self.api_def = api_def
     self.enum_store = enum_store
@@ -181,7 +182,16 @@ class Op(object):
       Argument(arg_def, op=self)
       for arg_def in self.op_def.output_arg]
 
-  def swift_function(self, mode):
+    for output_arg in self.output_args:
+      if output_arg.is_list and mode == 'tfop':
+        raise UnableToGenerateCodeError(
+          'Output lists are not supported when using the "tfop" mode.')
+      elif output_arg.is_list and mode == 'tfop-eager-fallback':
+        self.mode = 'eager'
+    if self.mode == 'tfop-eager-fallback':
+      self.mode = 'tfop'
+
+  def swift_function(self):
     return '''
 {documentation}@inlinable @inline(__always)
 public static func {name}{generics}({input_args}
@@ -192,8 +202,8 @@ public static func {name}{generics}({input_args}
       name=self._swift_name(),
       generics=self._swift_generics(),
       input_args=self._swift_input_args(),
-      return_type=self._swift_return_type(mode),
-      body=self._swift_body(mode))
+      return_type=self._swift_return_type(),
+      body=self._swift_body())
 
   def _swift_documentation(self):
     def comment_block(text, indent_level):
@@ -264,14 +274,7 @@ public static func {name}{generics}({input_args}
       args = args[:-1]
     return args
 
-  def _swift_return_type(self, mode):
-    # Do not generate ops with output lists.
-    # TODO: We could support output lists by giving the outputs generic type that
-    # conforms to TensorGroup.
-    for output_arg in self.output_args:
-      if output_arg.is_list and mode == "tfop":
-        raise UnableToGenerateCodeError('Output lists are not supported when using the "tfop" mode.')
-
+  def _swift_return_type(self):
     return_type = ''
     if len(self.output_args) == 1:
       return_type = ' -> ' + str(self.output_args[0].swift_type(self.string_valued))
@@ -282,13 +285,13 @@ public static func {name}{generics}({input_args}
       return_type = ' -> (' + ', '.join(named_types) + ')'
     return return_type
 
-  def _swift_body(self, mode):
-    if mode == 'tfop':
+  def _swift_body(self):
+    if self.mode == 'tfop':
       tfop_args = ['"' + self.op_def.name + '"']
       for arg in self.input_args:
-        tfop_args.append(arg.swift_setter(mode))
+        tfop_args.append(arg.swift_setter(self.mode))
       for attr in self.attrs:
-        setter = attr.swift_setter(mode, self.string_valued)
+        setter = attr.swift_setter(self.mode, self.string_valued)
         if setter != '':
           tfop_args.append(setter)
       tfop_args = ',\n    '.join(tfop_args)
@@ -320,13 +323,13 @@ public static func {name}{generics}({input_args}
         else:
           body += convert_for_return(self.output_args[0], 'ret')
         return body
-    elif mode == 'eager':
+    elif self.mode == 'eager':
       body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
       setters = []
       for arg in self.input_args:
-        setters.append(arg.swift_setter(mode))
+        setters.append(arg.swift_setter(self.mode))
       for attr in self.attrs:
-        setters.append(attr.swift_setter(mode, self.string_valued))
+        setters.append(attr.swift_setter(self.mode, self.string_valued))
       body += '\n  '.join(setters)
       counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
       if len(self.output_args) == 0:
@@ -336,8 +339,8 @@ public static func {name}{generics}({input_args}
 
     # `mode` was neither "tfop" nor "eager".
     raise UnableToGenerateCodeError(
-      'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
-      % mode)
+      'Invalid mode "%s" provided (only "tfop", "eager", and "tfop-eager-fallback" are supported).'
+      % self.mode)
 
 
 class Argument(object):
@@ -767,10 +770,10 @@ def main(argv):
 
       # It would be nicer to handle `StringTensor` in a more
       # general way by having `String` conform to `TensorFlowScalar`.
-      default_op = Op(op_def, api_def, enum_store, string_valued=False)
-      string_valued_op = Op(op_def, api_def, enum_store, string_valued=True)
-      default_code = default_op.swift_function(mode=FLAGS.mode)
-      string_valued_code = string_valued_op.swift_function(mode=FLAGS.mode)
+      default_op = Op(FLAGS.mode, op_def, api_def, enum_store, string_valued=False)
+      string_valued_op = Op(FLAGS.mode, op_def, api_def, enum_store, string_valued=True)
+      default_code = default_op.swift_function()
+      string_valued_code = string_valued_op.swift_function()
       op_codes.append(default_code)
       if string_valued_code != default_code:
         op_codes.append(string_valued_code)
@@ -786,10 +789,7 @@ def main(argv):
   swift_code = (
       _WARNING +
       _HEADER +
-      ('import CTensorFlow\n\n' if FLAGS.mode == 'eager' else '') +
-      ('#if !COMPILING_TENSORFLOW_MODULE\n' if FLAGS.mode == 'eager' else '') +
-      ('import TensorFlow\n' if FLAGS.mode == 'eager' else '') +
-      ('#endif\n' if FLAGS.mode == 'eager' else '') +
+      'import CTensorFlow\n\n' +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

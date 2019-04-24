@@ -16,10 +16,6 @@
 
 import CTensorFlow
 
-#if !COMPILING_TENSORFLOW_MODULE
-import TensorFlow
-#endif
-
 @usableFromInline
 internal struct TFE_Op {
   @usableFromInline internal let status: CTFStatus

@@ -181,13 +181,6 @@ class Op(object):
           'Attributes with shape values are not supported when using the "tfop" mode.')
       elif attr.attr_def.type == 'shape' and mode == 'tfop-eager-fallback':
         self.mode = 'eager'
-      elif (attr.attr_def.type == 'list(type)' or not attr.is_inferred_type_attr) \
-          and mode == 'tfop':
-        raise UnableToGenerateCodeError(
-          'Attributes with data type array values are not supported when using the "tfop" mode.')
-      elif (attr.attr_def.type == 'list(type)' or not attr.is_inferred_type_attr) \
-          and mode == 'tfop-eager-fallback':
-        self.mode = 'eager'
 
     # Collect all the input and output arguments.
     self.input_args = [
@@ -613,11 +606,14 @@ class Attribute(object):
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
         if self.attr_def.type == 'list(type)':
-          # TODO: [tfop]
-          raise UnableToGenerateCodeError('Unsupported type for attribute "%s" in "tfop" mode.' % self.attr_def.name)
+          return self.name + '$dtype: ' + self.swift_name + '._typeList'
         if string_valued and self.allows_string:
           return self.name + '$dtype: TensorDataType(TF_STRING)'
         return self.name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
+
+      # Type-valued attributes.
+      if self.attr_def.type in ['type', 'list(type)']:
+        return self.name + '$dtype: ' + self.swift_name
 
       # Function-valued attributes.
       if self.is_func_attr:

@@ -175,8 +175,13 @@ class Op(object):
       if attr.is_type_attr]
 
     # Check mode-compatibility for the attributes.
-    for attr in self.type_attrs:
-      if (attr.attr_def.type == 'list(type)' or not attr.is_inferred_type_attr) \
+    for attr in self.attrs:
+      if attr.attr_def.type == 'shape' and mode == 'tfop':
+        raise UnableToGenerateCodeError(
+          'Attributes with shape values are not supported when using the "tfop" mode.')
+      elif attr.attr_def.type == 'shape' and mode == 'tfop-eager-fallback':
+        self.mode = 'eager'
+      elif (attr.attr_def.type == 'list(type)' or not attr.is_inferred_type_attr) \
           and mode == 'tfop':
         raise UnableToGenerateCodeError(
           'Attributes with data type array values are not supported when using the "tfop" mode.')

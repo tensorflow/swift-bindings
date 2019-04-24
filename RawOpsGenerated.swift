@@ -5782,19 +5782,19 @@ public static func cudnnRNNParamsSize<S: BinaryInteger & TensorFlowScalar>(
   seed: Int64 = 0,
   seed2: Int64 = 0
 ) -> Tensor<S> {
-  let ret: TensorHandle<S> = #tfop("CudnnRNNParamsSize",
-    numLayers,
-    numUnits,
-    inputSize,
-    T: t,
-    S$dtype: S.tensorFlowDataType,
-    rnn_mode: rnnMode.cName,
-    input_mode: inputMode.cName,
-    direction: direction.cName,
-    dropout: dropout,
-    seed: seed,
-    seed2: seed2)
-  return Tensor(handle: ret)
+  let op = TFE_Op("CudnnRNNParamsSize")
+  let _ = op.addInput(numLayers)
+  let _ = op.addInput(numUnits)
+  let _ = op.addInput(inputSize)
+  op.setAttr("T", t)
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("rnn_mode", rnnMode.cName)
+  op.setAttr("input_mode", inputMode.cName)
+  op.setAttr("direction", direction.cName)
+  op.setAttr("dropout", dropout)
+  op.setAttr("seed", seed)
+  op.setAttr("seed2", seed2)
+  return op.execute(Int(1))
 }
 
 /// Retrieves CudnnRNN params in canonical form.
@@ -8268,12 +8268,12 @@ public static func emptyTensorList<ShapeType: BinaryInteger & TensorFlowScalar>(
   maxNumElements: Tensor<Int32>,
   elementDtype: TensorDataType
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("EmptyTensorList",
-    elementShape,
-    maxNumElements,
-    element_dtype: elementDtype,
-    shape_type$dtype: ShapeType.tensorFlowDataType)
-  return ret
+  let op = TFE_Op("EmptyTensorList")
+  let _ = op.addInput(elementShape)
+  let _ = op.addInput(maxNumElements)
+  op.setAttr("element_dtype", elementDtype)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  return op.execute(Int(1))
 }
 
 /// Encode strings into web-safe base64 format.
@@ -12209,13 +12209,13 @@ public static func hashTableV2(
   keyDtype: TensorDataType,
   valueDtype: TensorDataType
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("HashTableV2",
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing,
-    key_dtype: keyDtype,
-    value_dtype: valueDtype)
-  return ret
+  let op = TFE_Op("HashTableV2")
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("use_node_name_sharing", useNodeNameSharing)
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
+  return op.execute(Int(1))
 }
 
 /// Return histogram of values.
@@ -16779,18 +16779,18 @@ public static func mutableDenseHashTableV2<KeyDtype: TensorFlowScalar>(
   initialNumBuckets: Int64 = 131072,
   maxLoadFactor: Double = 0.8
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("MutableDenseHashTableV2",
-    emptyKey,
-    deletedKey,
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing,
-    key_dtype$dtype: KeyDtype.tensorFlowDataType,
-    value_dtype: valueDtype,
-    value_shape: valueShape,
-    initial_num_buckets: initialNumBuckets,
-    max_load_factor: maxLoadFactor)
-  return ret
+  let op = TFE_Op("MutableDenseHashTableV2")
+  let _ = op.addInput(emptyKey)
+  let _ = op.addInput(deletedKey)
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("use_node_name_sharing", useNodeNameSharing)
+  op.setAttr("key_dtype", KeyDtype.tensorFlowDataType)
+  op.setAttr("value_dtype", valueDtype)
+  op.setAttr("value_shape", valueShape)
+  op.setAttr("initial_num_buckets", initialNumBuckets)
+  op.setAttr("max_load_factor", maxLoadFactor)
+  return op.execute(Int(1))
 }
 
 /// Creates an empty hash table.
@@ -16817,14 +16817,14 @@ public static func mutableHashTableOfTensorsV2(
   valueDtype: TensorDataType,
   valueShape: TensorShape?
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("MutableHashTableOfTensorsV2",
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing,
-    key_dtype: keyDtype,
-    value_dtype: valueDtype,
-    value_shape: valueShape)
-  return ret
+  let op = TFE_Op("MutableHashTableOfTensorsV2")
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("use_node_name_sharing", useNodeNameSharing)
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
+  op.setAttr("value_shape", valueShape)
+  return op.execute(Int(1))
 }
 
 /// Creates an empty hash table.
@@ -16852,13 +16852,13 @@ public static func mutableHashTableV2(
   keyDtype: TensorDataType,
   valueDtype: TensorDataType
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("MutableHashTableV2",
-    container: container,
-    shared_name: sharedName,
-    use_node_name_sharing: useNodeNameSharing,
-    key_dtype: keyDtype,
-    value_dtype: valueDtype)
-  return ret
+  let op = TFE_Op("MutableHashTableV2")
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("use_node_name_sharing", useNodeNameSharing)
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
+  return op.execute(Int(1))
 }
 
 /// Locks a mutex resource.  The output is the lock.  So long as the lock tensor
@@ -20694,20 +20694,20 @@ public static func quantizedMatMul<
   transposeB: Bool = false,
   tactivation: TensorDataType
 ) -> (out: Tensor<Toutput>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
-  let ret: (TensorHandle<Toutput>, TensorHandle<Float>, TensorHandle<Float>) = #tfop("QuantizedMatMul",
-    a,
-    b,
-    minA,
-    maxA,
-    minB,
-    maxB,
-    T1$dtype: T1.tensorFlowDataType,
-    T2$dtype: T2.tensorFlowDataType,
-    Toutput$dtype: Toutput.tensorFlowDataType,
-    transpose_a: transposeA,
-    transpose_b: transposeB,
-    Tactivation: tactivation)
-  return (Tensor(handle: ret.0), Tensor(handle: ret.1), Tensor(handle: ret.2))
+  let op = TFE_Op("QuantizedMatMul")
+  let _ = op.addInput(a)
+  let _ = op.addInput(b)
+  let _ = op.addInput(minA)
+  let _ = op.addInput(maxA)
+  let _ = op.addInput(minB)
+  let _ = op.addInput(maxB)
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("Toutput", Toutput.tensorFlowDataType)
+  op.setAttr("transpose_a", transposeA)
+  op.setAttr("transpose_b", transposeB)
+  op.setAttr("Tactivation", tactivation)
+  return op.execute(Int(1), Int(1), Int(1))
 }
 
 /// Produces the max pool of the input tensor for quantized types.
@@ -30077,11 +30077,11 @@ public static func stackV2(
   elemType: TensorDataType,
   stackName: String
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("StackV2",
-    maxSize,
-    elem_type: elemType,
-    stack_name: stackName)
-  return ret
+  let op = TFE_Op("StackV2")
+  let _ = op.addInput(maxSize)
+  op.setAttr("elem_type", elemType)
+  op.setAttr("stack_name", stackName)
+  return op.execute(Int(1))
 }
 
 /// Stage values similar to a lightweight Enqueue.
@@ -32394,14 +32394,14 @@ public static func tensorArrayV2(
   clearAfterRead: Bool = true,
   tensorArrayName: String
 ) -> StringTensor {
-  let ret: TensorHandle<String> = #tfop("TensorArrayV2",
-    size,
-    dtype: dtype,
-    element_shape: elementShape,
-    dynamic_size: dynamicSize,
-    clear_after_read: clearAfterRead,
-    tensor_array_name: tensorArrayName)
-  return StringTensor(handle: ret)
+  let op = TFE_Op("TensorArrayV2")
+  let _ = op.addInput(size)
+  op.setAttr("dtype", dtype)
+  op.setAttr("element_shape", elementShape)
+  op.setAttr("dynamic_size", dynamicSize)
+  op.setAttr("clear_after_read", clearAfterRead)
+  op.setAttr("tensor_array_name", tensorArrayName)
+  return op.execute(Int(1))
 }
 
 /// An array of Tensors of given size.
@@ -32443,15 +32443,15 @@ public static func tensorArrayV3(
   identicalElementShapes: Bool = false,
   tensorArrayName: String
 ) -> (handle: ResourceHandle, flow: Tensor<Float>) {
-  let ret: (ResourceHandle, TensorHandle<Float>) = #tfop("TensorArrayV3",
-    size,
-    dtype: dtype,
-    element_shape: elementShape,
-    dynamic_size: dynamicSize,
-    clear_after_read: clearAfterRead,
-    identical_element_shapes: identicalElementShapes,
-    tensor_array_name: tensorArrayName)
-  return (ret.0, Tensor(handle: ret.1))
+  let op = TFE_Op("TensorArrayV3")
+  let _ = op.addInput(size)
+  op.setAttr("dtype", dtype)
+  op.setAttr("element_shape", elementShape)
+  op.setAttr("dynamic_size", dynamicSize)
+  op.setAttr("clear_after_read", clearAfterRead)
+  op.setAttr("identical_element_shapes", identicalElementShapes)
+  op.setAttr("tensor_array_name", tensorArrayName)
+  return op.execute(Int(1), Int(1))
 }
 
 /// Deprecated. Use TensorArrayGradV3
@@ -32641,11 +32641,11 @@ public static func tensorListConcatLists(
   inputB: VariantHandle,
   elementDtype: TensorDataType
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("TensorListConcatLists",
-    inputA,
-    inputB,
-    element_dtype: elementDtype)
-  return ret
+  let op = TFE_Op("TensorListConcatLists")
+  let _ = op.addInput(inputA)
+  let _ = op.addInput(inputB)
+  op.setAttr("element_dtype", elementDtype)
+  return op.execute(Int(1))
 }
 
 /// Concats all tensors in the list along the 0th dimension.
@@ -32828,12 +32828,12 @@ public static func tensorListReserve<ShapeType: BinaryInteger & TensorFlowScalar
   numElements: Tensor<Int32>,
   elementDtype: TensorDataType
 ) -> VariantHandle {
-  let ret: VariantHandle = #tfop("TensorListReserve",
-    elementShape,
-    numElements,
-    element_dtype: elementDtype,
-    shape_type$dtype: ShapeType.tensorFlowDataType)
-  return ret
+  let op = TFE_Op("TensorListReserve")
+  let _ = op.addInput(elementShape)
+  let _ = op.addInput(numElements)
+  op.setAttr("element_dtype", elementDtype)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  return op.execute(Int(1))
 }
 
 /// Resizes the list.
@@ -34960,12 +34960,12 @@ public static func varHandleOp(
   dtype: TensorDataType,
   shape: TensorShape?
 ) -> ResourceHandle {
-  let ret: ResourceHandle = #tfop("VarHandleOp",
-    container: container,
-    shared_name: sharedName,
-    dtype: dtype,
-    shape: shape)
-  return ret
+  let op = TFE_Op("VarHandleOp")
+  op.setAttr("container", container)
+  op.setAttr("shared_name", sharedName)
+  op.setAttr("dtype", dtype)
+  op.setAttr("shape", shape)
+  return op.execute(Int(1))
 }
 
 /// Checks whether a resource handle-based variable has been initialized.

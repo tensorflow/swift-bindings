@@ -314,7 +314,9 @@ public static func {name}{generics}({input_args}
       if not self.output_args:
         return 'return #tfop({})'.format(tfop_args)
       else:
-        handle_types = [arg.swift_handle_type for arg in self.output_args]
+        handle_types = [
+          arg.swift_handle_type(self.string_valued)
+          for arg in self.output_args]
         if len(self.output_args) > 1:
           return_handle_type = '(' + ', '.join(handle_types) + ')'
         else:
@@ -387,8 +389,9 @@ class Argument(object):
       return 'StringTensor'
     return self.type.swift_type
 
-  @property
-  def swift_handle_type(self):
+  def swift_handle_type(self, string_valued=False):
+    if string_valued and self.allows_string:
+      return 'TensorHandle<String>'
     return self.type.swift_handle_type
 
   def swift_setter(self, mode):

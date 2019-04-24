@@ -591,7 +591,7 @@ public static func add(
   _ x: StringTensor,
   _ y: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<T> = #tfop("Add",
+  let ret: TensorHandle<String> = #tfop("Add",
     x,
     y,
     T$dtype: TensorDataType(TF_STRING))
@@ -24953,7 +24953,7 @@ public static func restrict<T: TensorFlowScalar>(
 public static func restrict(
   _ a: StringTensor
 ) -> StringTensor {
-  let ret: TensorHandle<T> = #tfop("Restrict",
+  let ret: TensorHandle<String> = #tfop("Restrict",
     a,
     T$dtype: TensorDataType(TF_STRING))
   return StringTensor(handle: ret)
@@ -25522,7 +25522,7 @@ public static func reverse(
   _ tensor: StringTensor,
   dims: Tensor<Bool>
 ) -> StringTensor {
-  let ret: TensorHandle<T> = #tfop("Reverse",
+  let ret: TensorHandle<String> = #tfop("Reverse",
     tensor,
     dims,
     T$dtype: TensorDataType(TF_STRING))
@@ -25747,7 +25747,7 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar>(
   _ tensor: StringTensor,
   axis: Tensor<Tidx>
 ) -> StringTensor {
-  let ret: TensorHandle<T> = #tfop("ReverseV2",
+  let ret: TensorHandle<String> = #tfop("ReverseV2",
     tensor,
     axis,
     Tidx$dtype: Tidx.tensorFlowDataType,
@@ -27261,7 +27261,7 @@ public static func serializeManySparse<T: TensorFlowScalar>(
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
 ) -> StringTensor {
-  let ret: TensorHandle<OutType> = #tfop("SerializeManySparse",
+  let ret: TensorHandle<String> = #tfop("SerializeManySparse",
     sparseIndices,
     sparseValues,
     sparseShape,
@@ -27312,7 +27312,7 @@ public static func serializeSparse<T: TensorFlowScalar>(
   sparseValues: Tensor<T>,
   sparseShape: Tensor<Int64>
 ) -> StringTensor {
-  let ret: TensorHandle<OutType> = #tfop("SerializeSparse",
+  let ret: TensorHandle<String> = #tfop("SerializeSparse",
     sparseIndices,
     sparseValues,
     sparseShape,

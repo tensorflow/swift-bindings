@@ -16,6 +16,10 @@
 
 import CTensorFlow
 
+/// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
+/// *exactly once*. If not called, then a memory leak is introduced due to the underlying TensorFlow
+/// eager op object not being freed. If called more than once, then a SEGFAULT may occur due to
+/// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
 internal struct TFE_Op {
   @usableFromInline internal let status: CTFStatus
@@ -270,6 +274,11 @@ internal struct TFE_Op {
     }
   }
 
+  /// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
+  /// *exactly once*. If not called, then a memory leak is introduced due to the underlying
+  /// TensorFlow eager op object not being freed. If called more than once, then a SEGFAULT may
+  /// occur due to trying to execute a TensorFlow eager op that has already been freed.
+
   @inlinable @inline(__always)
   internal func execute() {
     var count: Int32 = 0
@@ -280,7 +289,6 @@ internal struct TFE_Op {
     TF_DeleteStatus(status)
   }
 
-  /// NOTE: Any of the following functions can only be executed once.
 %for n in range(1, 10 + 1):
   @inlinable @inline(__always)
   internal func execute<${", ".join(["T" + str(i) + " : TensorArrayProtocol" for i in range(n)])}>(

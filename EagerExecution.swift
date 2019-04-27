@@ -270,6 +270,7 @@ internal struct TFE_Op {
     }
   }
 
+  /// NOTE: Any of the following functions can only be executed once.
   @inlinable @inline(__always)
   internal func execute() {
     var count: Int32 = 0
@@ -280,7 +281,6 @@ internal struct TFE_Op {
     TF_DeleteStatus(status)
   }
 
-  /// NOTE: Any of the following functions can only be executed once.
   @inlinable @inline(__always)
   internal func execute<T0 : TensorArrayProtocol>(
     _ count0: Int

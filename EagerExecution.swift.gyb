@@ -60,7 +60,7 @@ internal struct TFE_Op {
     let pointer = UnsafeMutablePointer<OpaquePointer?>(buffer.baseAddress)
     input._unpackTensorHandles(into: buffer.baseAddress)
     TFE_OpAddInputList(op, pointer, count, status)
-    checkOk(status)
+    // TODO: checkOk(status)
     return Int(count)
   }
 

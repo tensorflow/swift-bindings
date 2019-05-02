@@ -40,7 +40,7 @@ flags.DEFINE_string(
 
 flags.DEFINE_string(
   'mode',
-  'tfop-eager-fallback',
+  'eager',
   'Code generation mode that can be either "tfop", "eager", or "tfop-eager-fallback".')
 
 _WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!

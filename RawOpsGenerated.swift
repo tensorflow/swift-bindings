@@ -513,8 +513,8 @@ public static func abs<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Abs")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -538,9 +538,9 @@ public static func accumulateNV2<T: Numeric & TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("AccumulateNV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let inputsCount = op.addInputList(inputs)
   op.setAttr("N", inputsCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
   return op.execute(Int(1))
 }
@@ -551,8 +551,8 @@ public static func acos<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Acos")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -562,8 +562,8 @@ public static func acosh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Acosh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -577,9 +577,9 @@ public static func add<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Add")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -593,9 +593,9 @@ public static func add(
   _ y: StringTensor
 ) -> StringTensor {
   let op = TFE_Op("Add")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -647,10 +647,10 @@ public static func addManySparseToTensorsMap<T: TensorFlowScalar>(
   sharedName: String
 ) -> Tensor<Int64> {
   let op = TFE_Op("AddManySparseToTensorsMap")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -664,9 +664,9 @@ public static func addN<T: Numeric & TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> Tensor<T> {
   let op = TFE_Op("AddN")
+  op.setAttr("T", T.tensorFlowDataType)
   let inputsCount = op.addInputList(inputs)
   op.setAttr("N", inputsCount)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -708,10 +708,10 @@ public static func addSparseToTensorsMap<T: TensorFlowScalar>(
   sharedName: String
 ) -> Tensor<Int64> {
   let op = TFE_Op("AddSparseToTensorsMap")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -727,9 +727,9 @@ public static func addV2<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("AddV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -742,11 +742,11 @@ public static func adjustContrast<T: Numeric & TensorFlowScalar>(
   maxValue: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("AdjustContrast")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(contrastFactor)
   let _ = op.addInput(minValue)
   let _ = op.addInput(maxValue)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -773,9 +773,9 @@ public static func adjustContrastv2<T: FloatingPoint & TensorFlowScalar>(
   contrastFactor: Tensor<Float>
 ) -> Tensor<T> {
   let op = TFE_Op("AdjustContrastv2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(contrastFactor)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -799,9 +799,9 @@ public static func adjustHue<T: FloatingPoint & TensorFlowScalar>(
   delta: Tensor<Float>
 ) -> Tensor<T> {
   let op = TFE_Op("AdjustHue")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(delta)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -825,9 +825,9 @@ public static func adjustSaturation<T: FloatingPoint & TensorFlowScalar>(
   scale: Tensor<Float>
 ) -> Tensor<T> {
   let op = TFE_Op("AdjustSaturation")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(scale)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -853,10 +853,10 @@ public static func all<Tidx: BinaryInteger & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> Tensor<Bool> {
   let op = TFE_Op("All")
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -957,9 +957,9 @@ public static func allToAll<T: TensorFlowScalar>(
   splitCount: Int64
 ) -> Tensor<T> {
   let op = TFE_Op("AllToAll")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(groupAssignment)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("concat_dimension", concatDimension)
   op.setAttr("split_dimension", splitDimension)
   op.setAttr("split_count", splitCount)
@@ -993,9 +993,9 @@ public static func angle<
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
   let op = TFE_Op("Angle")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tout", Tout.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -1057,10 +1057,10 @@ public static func any<Tidx: BinaryInteger & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> Tensor<Bool> {
   let op = TFE_Op("Any")
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1072,9 +1072,9 @@ public static func approximateEqual<T: Numeric & TensorFlowScalar>(
   tolerance: Double = 1e-05
 ) -> Tensor<Bool> {
   let op = TFE_Op("ApproximateEqual")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("tolerance", tolerance)
   return op.execute(Int(1))
 }
@@ -1106,11 +1106,11 @@ public static func argMax<
   dimension: Tensor<Tidx>
 ) -> Tensor<OutputType> {
   let op = TFE_Op("ArgMax")
-  let _ = op.addInput(input)
-  let _ = op.addInput(dimension)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
   op.setAttr("output_type", OutputType.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(dimension)
   return op.execute(Int(1))
 }
 
@@ -1141,11 +1141,11 @@ public static func argMin<
   dimension: Tensor<Tidx>
 ) -> Tensor<OutputType> {
   let op = TFE_Op("ArgMin")
-  let _ = op.addInput(input)
-  let _ = op.addInput(dimension)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
   op.setAttr("output_type", OutputType.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(dimension)
   return op.execute(Int(1))
 }
 
@@ -1174,8 +1174,8 @@ public static func asString<T: TensorFlowScalar>(
   fill: String
 ) -> StringTensor {
   let op = TFE_Op("AsString")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("precision", precision)
   op.setAttr("scientific", scientific)
   op.setAttr("shortest", shortest)
@@ -1207,8 +1207,8 @@ public static func asin<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Asin")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -1218,8 +1218,8 @@ public static func asinh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Asinh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -1240,9 +1240,9 @@ public static func assert<T: TensorArrayProtocol>(
   summarize: Int64 = 3
 ) {
   let op = TFE_Op("Assert")
+  op.setAttr("T", data._typeList)
   let _ = op.addInput(condition)
   let _ = op.addInputList(data)
-  op.setAttr("T", data._typeList)
   op.setAttr("summarize", summarize)
   op.execute()
 }
@@ -1263,9 +1263,9 @@ public static func assignAddVariableOp<Dtype: TensorFlowScalar>(
   value: Tensor<Dtype>
 ) {
   let op = TFE_Op("AssignAddVariableOp")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(value)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.execute()
 }
 
@@ -1285,9 +1285,9 @@ public static func assignSubVariableOp<Dtype: TensorFlowScalar>(
   value: Tensor<Dtype>
 ) {
   let op = TFE_Op("AssignSubVariableOp")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(value)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.execute()
 }
 
@@ -1307,9 +1307,9 @@ public static func assignVariableOp<Dtype: TensorFlowScalar>(
   value: Tensor<Dtype>
 ) {
   let op = TFE_Op("AssignVariableOp")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(value)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.execute()
 }
 
@@ -1336,8 +1336,8 @@ public static func atan<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Atan")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -1354,9 +1354,9 @@ public static func atan2<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Atan2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1366,8 +1366,8 @@ public static func atanh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Atanh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -1467,10 +1467,10 @@ public static func attrListTypeDefault<T: TensorFlowScalar>(
   _ b: [Tensor<T>]
 ) {
   let op = TFE_Op("AttrListTypeDefault")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
   let _ = op.addInputList(b)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -1524,8 +1524,8 @@ public static func attrTypeDefault<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) {
   let op = TFE_Op("AttrTypeDefault")
-  let _ = op.addInput(a)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(a)
   op.execute()
 }
 
@@ -1684,12 +1684,12 @@ public static func avgPool<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("AvgPool")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1719,12 +1719,12 @@ public static func avgPool3D<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let op = TFE_Op("AvgPool3D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1757,13 +1757,13 @@ public static func avgPool3DGrad<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let op = TFE_Op("AvgPool3DGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInputShape)
   let _ = op.addInput(grad)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1795,13 +1795,13 @@ public static func avgPoolGrad<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("AvgPoolGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInputShape)
   let _ = op.addInput(grad)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1865,6 +1865,7 @@ public static func batch<T: TensorArrayProtocol>(
   batchingQueue: String
 ) -> (batchedTensors: T, batchIndex: Tensor<Int64>, id: Tensor<Int64>) {
   let op = TFE_Op("Batch")
+  op.setAttr("T", inTensors._typeList)
   let _ = op.addInputList(inTensors)
   op.setAttr("num_batch_threads", numBatchThreads)
   op.setAttr("max_batch_size", maxBatchSize)
@@ -1875,7 +1876,6 @@ public static func batch<T: TensorArrayProtocol>(
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("batching_queue", batchingQueue)
-  op.setAttr("T", inTensors._typeList)
   return op.execute(Int(inTensors._typeList.count), Int(1), Int(1))
 }
 
@@ -1884,8 +1884,8 @@ public static func batchCholesky<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchCholesky")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -1895,9 +1895,9 @@ public static func batchCholeskyGrad<T: FloatingPoint & TensorFlowScalar>(
   grad: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchCholeskyGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(l)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -1913,9 +1913,9 @@ public static func batchDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("BatchDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(batchSize)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -1936,11 +1936,11 @@ public static func batchDatasetV2(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("BatchDatasetV2")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(batchSize)
   let _ = op.addInput(dropRemainder)
   op.setAttr("parallel_copy", parallelCopy)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -2030,6 +2030,9 @@ public static func batchFunction<
   batchingQueue: String
 ) -> Tout {
   let op = TFE_Op("BatchFunction")
+  op.setAttr("Tin", inTensors._typeList)
+  op.setAttr("Tcaptured", capturedTensors._typeList)
+  op.setAttr("Tout", Tout._typeList)
   let _ = op.addInputList(inTensors)
   let _ = op.addInputList(capturedTensors)
   op.setAttr("f", f)
@@ -2041,9 +2044,6 @@ public static func batchFunction<
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("batching_queue", batchingQueue)
-  op.setAttr("Tin", inTensors._typeList)
-  op.setAttr("Tcaptured", capturedTensors._typeList)
-  op.setAttr("Tout", Tout._typeList)
   return op.execute(Int(Tout._typeList.count))
 }
 
@@ -2085,9 +2085,9 @@ public static func batchMatMul<T: Numeric & TensorFlowScalar>(
   adjY: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatMul")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("adj_x", adjX)
   op.setAttr("adj_y", adjY)
   return op.execute(Int(1))
@@ -2136,9 +2136,9 @@ public static func batchMatMulV2<T: Numeric & TensorFlowScalar>(
   adjY: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatMulV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("adj_x", adjX)
   op.setAttr("adj_y", adjY)
   return op.execute(Int(1))
@@ -2151,10 +2151,10 @@ public static func batchMatrixBandPart<T: TensorFlowScalar>(
   numUpper: Tensor<Int64>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixBandPart")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(numLower)
   let _ = op.addInput(numUpper)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2163,8 +2163,8 @@ public static func batchMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixDeterminant")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -2173,8 +2173,8 @@ public static func batchMatrixDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixDiag")
-  let _ = op.addInput(diagonal)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(diagonal)
   return op.execute(Int(1))
 }
 
@@ -2183,8 +2183,8 @@ public static func batchMatrixDiagPart<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixDiagPart")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -2194,9 +2194,9 @@ public static func batchMatrixInverse<T: FloatingPoint & TensorFlowScalar>(
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixInverse")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2206,9 +2206,9 @@ public static func batchMatrixSetDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixSetDiag")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(diagonal)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2219,10 +2219,10 @@ public static func batchMatrixSolve<T: FloatingPoint & TensorFlowScalar>(
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixSolve")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2234,10 +2234,10 @@ public static func batchMatrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   fast: Bool = true
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixSolveLs")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   let _ = op.addInput(l2Regularizer)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("fast", fast)
   return op.execute(Int(1))
 }
@@ -2250,11 +2250,11 @@ public static func batchMatrixTriangularSolve<T: FloatingPoint & TensorFlowScala
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("BatchMatrixTriangularSolve")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   op.setAttr("lower", lower)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2291,12 +2291,12 @@ public static func batchNormWithGlobalNormalization<T: Numeric & TensorFlowScala
   scaleAfterNormalization: Bool
 ) -> Tensor<T> {
   let op = TFE_Op("BatchNormWithGlobalNormalization")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(t)
   let _ = op.addInput(m)
   let _ = op.addInput(v)
   let _ = op.addInput(beta)
   let _ = op.addInput(gamma)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("variance_epsilon", varianceEpsilon)
   op.setAttr("scale_after_normalization", scaleAfterNormalization)
   return op.execute(Int(1))
@@ -2341,12 +2341,12 @@ public static func batchNormWithGlobalNormalizationGrad<T: Numeric & TensorFlowS
   scaleAfterNormalization: Bool
 ) -> (dx: Tensor<T>, dm: Tensor<T>, dv: Tensor<T>, db: Tensor<T>, dg: Tensor<T>) {
   let op = TFE_Op("BatchNormWithGlobalNormalizationGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(t)
   let _ = op.addInput(m)
   let _ = op.addInput(v)
   let _ = op.addInput(gamma)
   let _ = op.addInput(backprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("variance_epsilon", varianceEpsilon)
   op.setAttr("scale_after_normalization", scaleAfterNormalization)
   return op.execute(Int(1), Int(1), Int(1), Int(1), Int(1))
@@ -2357,8 +2357,8 @@ public static func batchSelfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchSelfAdjointEig")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -2368,9 +2368,9 @@ public static func batchSelfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   computeV: Bool = true
 ) -> (e: Tensor<T>, v: Tensor<T>) {
   let op = TFE_Op("BatchSelfAdjointEigV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("compute_v", computeV)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -2381,10 +2381,10 @@ public static func batchSvd<T: FloatingPoint & TensorFlowScalar>(
   fullMatrices: Bool = false
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   let op = TFE_Op("BatchSvd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("compute_uv", computeUv)
   op.setAttr("full_matrices", fullMatrices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -2486,11 +2486,11 @@ public static func batchToSpace<
   blockSize: Int64
 ) -> Tensor<T> {
   let op = TFE_Op("BatchToSpace")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(crops)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("block_size", blockSize)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2627,12 +2627,12 @@ public static func batchToSpaceND<
   crops: Tensor<Tcrops>
 ) -> Tensor<T> {
   let op = TFE_Op("BatchToSpaceND")
-  let _ = op.addInput(input)
-  let _ = op.addInput(blockShape)
-  let _ = op.addInput(crops)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tblock_shape", TblockShape.tensorFlowDataType)
   op.setAttr("Tcrops", Tcrops.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(blockShape)
+  let _ = op.addInput(crops)
   return op.execute(Int(1))
 }
 
@@ -2647,8 +2647,8 @@ public static func besselI0e<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BesselI0e")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -2663,8 +2663,8 @@ public static func besselI1e<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BesselI1e")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -2690,10 +2690,10 @@ public static func betainc<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Betainc")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2722,9 +2722,9 @@ public static func biasAdd<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("BiasAdd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   let _ = op.addInput(bias)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("data_format", dataFormat.cName)
   return op.execute(Int(1))
 }
@@ -2752,8 +2752,8 @@ public static func biasAddGrad<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("BiasAddGrad")
-  let _ = op.addInput(outBackprop)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(outBackprop)
   op.setAttr("data_format", dataFormat.cName)
   return op.execute(Int(1))
 }
@@ -2776,9 +2776,9 @@ public static func biasAddV1<T: Numeric & TensorFlowScalar>(
   bias: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BiasAddV1")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   let _ = op.addInput(bias)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2788,9 +2788,9 @@ public static func binary<T: TensorFlowScalar>(
   _ b: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Binary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2820,10 +2820,10 @@ public static func bincount<T: Numeric & TensorFlowScalar>(
   weights: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Bincount")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(arr)
   let _ = op.addInput(size)
   let _ = op.addInput(weights)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2886,9 +2886,9 @@ public static func bitcast<
   _ input: Tensor<T>
 ) -> Tensor<Type> {
   let op = TFE_Op("Bitcast")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("type", Type.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -2902,9 +2902,9 @@ public static func bitwiseAnd<T: BinaryInteger & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BitwiseAnd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2918,9 +2918,9 @@ public static func bitwiseOr<T: BinaryInteger & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BitwiseOr")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -2934,9 +2934,9 @@ public static func bitwiseXor<T: BinaryInteger & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BitwiseXor")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -3001,6 +3001,7 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   usePeephole: Bool = false
 ) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
   let op = TFE_Op("BlockLSTM")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(seqLenMax)
   let _ = op.addInput(x)
   let _ = op.addInput(csPrev)
@@ -3013,7 +3014,6 @@ public static func blockLSTM<T: FloatingPoint & TensorFlowScalar>(
   op.setAttr("forget_bias", forgetBias)
   op.setAttr("cell_clip", cellClip)
   op.setAttr("use_peephole", usePeephole)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -3076,6 +3076,7 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   usePeephole: Bool
 ) -> (xGrad: Tensor<T>, csPrevGrad: Tensor<T>, hPrevGrad: Tensor<T>, wGrad: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>, bGrad: Tensor<T>) {
   let op = TFE_Op("BlockLSTMGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(seqLenMax)
   let _ = op.addInput(x)
   let _ = op.addInput(csPrev)
@@ -3095,7 +3096,6 @@ public static func blockLSTMGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(csGrad)
   let _ = op.addInput(hGrad)
   op.setAttr("use_peephole", usePeephole)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -3732,9 +3732,9 @@ public static func broadcastArgs<T: BinaryInteger & TensorFlowScalar>(
   s1: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("BroadcastArgs")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(s0)
   let _ = op.addInput(s1)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -3747,9 +3747,9 @@ public static func broadcastGradientArgs<T: BinaryInteger & TensorFlowScalar>(
   s1: Tensor<T>
 ) -> (r0: Tensor<T>, r1: Tensor<T>) {
   let op = TFE_Op("BroadcastGradientArgs")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(s0)
   let _ = op.addInput(s1)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -3787,10 +3787,10 @@ public static func broadcastTo<
   shape: Tensor<Tidx>
 ) -> Tensor<T> {
   let op = TFE_Op("BroadcastTo")
-  let _ = op.addInput(input)
-  let _ = op.addInput(shape)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(shape)
   return op.execute(Int(1))
 }
 
@@ -3822,8 +3822,8 @@ public static func bucketize<T: Numeric & TensorFlowScalar>(
   boundaries: [Double]
 ) -> Tensor<Int32> {
   let op = TFE_Op("Bucketize")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("boundaries", boundaries)
   return op.execute(Int(1))
 }
@@ -3979,9 +3979,9 @@ public static func cacheDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("CacheDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(filename)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -3996,9 +3996,9 @@ public static func cast<
   truncate: Bool = false
 ) -> Tensor<Dstt> {
   let op = TFE_Op("Cast")
-  let _ = op.addInput(x)
   op.setAttr("SrcT", Srct.tensorFlowDataType)
   op.setAttr("DstT", Dstt.tensorFlowDataType)
+  let _ = op.addInput(x)
   op.setAttr("Truncate", truncate)
   return op.execute(Int(1))
 }
@@ -4009,8 +4009,8 @@ public static func ceil<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Ceil")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -4026,8 +4026,8 @@ public static func checkNumerics<T: FloatingPoint & TensorFlowScalar>(
   message: String
 ) -> Tensor<T> {
   let op = TFE_Op("CheckNumerics")
-  let _ = op.addInput(tensor)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(tensor)
   op.setAttr("message", message)
   return op.execute(Int(1))
 }
@@ -4056,8 +4056,8 @@ public static func cholesky<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Cholesky")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -4081,9 +4081,9 @@ public static func choleskyGrad<T: FloatingPoint & TensorFlowScalar>(
   grad: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("CholeskyGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(l)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4109,10 +4109,10 @@ public static func clipByValue<T: Numeric & TensorFlowScalar>(
   clipValueMax: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("ClipByValue")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(t)
   let _ = op.addInput(clipValueMin)
   let _ = op.addInput(clipValueMax)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4152,8 +4152,8 @@ public static func collectiveBcastSend<T: Numeric & TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("CollectiveBcastSend")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("group_size", groupSize)
   op.setAttr("group_key", groupKey)
   op.setAttr("instance_key", instanceKey)
@@ -4171,8 +4171,8 @@ public static func collectiveGather<T: Numeric & TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("CollectiveGather")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("group_size", groupSize)
   op.setAttr("group_key", groupKey)
   op.setAttr("instance_key", instanceKey)
@@ -4202,9 +4202,9 @@ public static func collectivePermute<T: Numeric & TensorFlowScalar>(
   sourceTargetPairs: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("CollectivePermute")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(sourceTargetPairs)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4221,8 +4221,8 @@ public static func collectiveReduce<T: Numeric & TensorFlowScalar>(
   waitFor: [Int32]
 ) -> Tensor<T> {
   let op = TFE_Op("CollectiveReduce")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("group_size", groupSize)
   op.setAttr("group_key", groupKey)
   op.setAttr("instance_key", instanceKey)
@@ -4346,9 +4346,9 @@ public static func compareAndBitpack<T: TensorFlowScalar>(
   threshold: Tensor<T>
 ) -> Tensor<UInt8> {
   let op = TFE_Op("CompareAndBitpack")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(threshold)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4377,10 +4377,10 @@ public static func complex<
   imag: Tensor<T>
 ) -> Tensor<Tout> {
   let op = TFE_Op("Complex")
-  let _ = op.addInput(real)
-  let _ = op.addInput(imag)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tout", Tout.tensorFlowDataType)
+  let _ = op.addInput(real)
+  let _ = op.addInput(imag)
   return op.execute(Int(1))
 }
 
@@ -4398,9 +4398,9 @@ public static func complexAbs<
   _ x: Tensor<T>
 ) -> Tensor<Tout> {
   let op = TFE_Op("ComplexAbs")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tout", Tout.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -4410,9 +4410,9 @@ public static func complexStruct<TC: TensorGroup>(
   nB: Int64
 ) -> (a: [Tensor<Int32>], b: [Tensor<Int64>], c: TC) {
   let op = TFE_Op("ComplexStruct")
+  op.setAttr("t_c", TC._typeList)
   op.setAttr("n_a", nA)
   op.setAttr("n_b", nB)
-  op.setAttr("t_c", TC._typeList)
   return op.execute(Int(nA), Int(nB), Int(TC._typeList.count))
 }
 
@@ -4474,10 +4474,10 @@ public static func concat<T: TensorFlowScalar>(
   _ values: [Tensor<T>]
 ) -> Tensor<T> {
   let op = TFE_Op("Concat")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(concatDim)
   let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4532,11 +4532,11 @@ public static func concatV2<
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
   let op = TFE_Op("ConcatV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
   let _ = op.addInput(axis)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -4549,9 +4549,9 @@ public static func concatenateDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ConcatenateDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(anotherDataset)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -4599,8 +4599,8 @@ public static func conj<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Conj")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -4618,10 +4618,10 @@ public static func conjugateTranspose<
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
   let op = TFE_Op("ConjugateTranspose")
-  let _ = op.addInput(x)
-  let _ = op.addInput(perm)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tperm", Tperm.tensorFlowDataType)
+  let _ = op.addInput(x)
+  let _ = op.addInput(perm)
   return op.execute(Int(1))
 }
 
@@ -4728,9 +4728,9 @@ public static func conv2D<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv2D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("use_cudnn_on_gpu", useCudnnOnGpu)
   op.setAttr("padding", padding.cName)
@@ -4786,10 +4786,10 @@ public static func conv2DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv2DBackpropFilter")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filterSizes)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("use_cudnn_on_gpu", useCudnnOnGpu)
   op.setAttr("padding", padding.cName)
@@ -4844,10 +4844,10 @@ public static func conv2DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv2DBackpropInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputSizes)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("use_cudnn_on_gpu", useCudnnOnGpu)
   op.setAttr("padding", padding.cName)
@@ -4894,9 +4894,9 @@ public static func conv3D<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv3D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
@@ -4927,10 +4927,10 @@ public static func conv3DBackpropFilter<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv3DBackpropFilter")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -4973,10 +4973,10 @@ public static func conv3DBackpropFilterV2<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv3DBackpropFilterV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filterSizes)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
@@ -5007,10 +5007,10 @@ public static func conv3DBackpropInput<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv3DBackpropInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -5056,15 +5056,15 @@ public static func conv3DBackpropInputV2<
   dilations: [Int32] = [1, 1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("Conv3DBackpropInputV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tshape", Tshape.tensorFlowDataType)
   let _ = op.addInput(inputSizes)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
   op.setAttr("dilations", dilations)
-  op.setAttr("Tshape", Tshape.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -5097,8 +5097,8 @@ public static func copy<T: TensorFlowScalar>(
   debugOpsSpec: [String]
 ) -> Tensor<T> {
   let op = TFE_Op("Copy")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("tensor_name", tensorName)
   op.setAttr("debug_ops_spec", debugOpsSpec)
   return op.execute(Int(1))
@@ -5131,8 +5131,8 @@ public static func copyHost<T: TensorFlowScalar>(
   debugOpsSpec: [String]
 ) -> Tensor<T> {
   let op = TFE_Op("CopyHost")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("tensor_name", tensorName)
   op.setAttr("debug_ops_spec", debugOpsSpec)
   return op.execute(Int(1))
@@ -5143,8 +5143,8 @@ public static func copyOp<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("CopyOp")
-  let _ = op.addInput(a)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(a)
   return op.execute(Int(1))
 }
 
@@ -5154,8 +5154,8 @@ public static func cos<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Cos")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -5165,8 +5165,8 @@ public static func cosh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Cosh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -5259,11 +5259,11 @@ public static func cropAndResize<T: Numeric & TensorFlowScalar>(
   extrapolationValue: Double = 0
 ) -> Tensor<Float> {
   let op = TFE_Op("CropAndResize")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(image)
   let _ = op.addInput(boxes)
   let _ = op.addInput(boxInd)
   let _ = op.addInput(cropSize)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("method", method.cName)
   op.setAttr("extrapolation_value", extrapolationValue)
   return op.execute(Int(1))
@@ -5301,11 +5301,11 @@ public static func cropAndResizeGradBoxes<T: Numeric & TensorFlowScalar>(
   method: Method3 = .bilinear
 ) -> Tensor<Float> {
   let op = TFE_Op("CropAndResizeGradBoxes")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(image)
   let _ = op.addInput(boxes)
   let _ = op.addInput(boxInd)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("method", method.cName)
   return op.execute(Int(1))
 }
@@ -5343,11 +5343,11 @@ public static func cropAndResizeGradImage<T: FloatingPoint & TensorFlowScalar>(
   method: Method = .bilinear
 ) -> Tensor<T> {
   let op = TFE_Op("CropAndResizeGradImage")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(boxes)
   let _ = op.addInput(boxInd)
   let _ = op.addInput(imageSize)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("method", method.cName)
   return op.execute(Int(1))
 }
@@ -5369,9 +5369,9 @@ public static func cross<T: Numeric & TensorFlowScalar>(
   _ b: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Cross")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -5399,9 +5399,9 @@ public static func crossReplicaSum<T: Numeric & TensorFlowScalar>(
   groupAssignment: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("CrossReplicaSum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(groupAssignment)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -5452,11 +5452,11 @@ public static func cudnnRNN<T: FloatingPoint & TensorFlowScalar>(
   isTraining: Bool = true
 ) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>) {
   let op = TFE_Op("CudnnRNN")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
   let _ = op.addInput(params)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5529,6 +5529,7 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
   let op = TFE_Op("CudnnRNNBackprop")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
@@ -5540,7 +5541,6 @@ public static func cudnnRNNBackprop<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(outputHBackprop)
   let _ = op.addInput(outputCBackprop)
   let _ = op.addInput(reserveSpace)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5616,6 +5616,7 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
   let op = TFE_Op("CudnnRNNBackpropV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
@@ -5628,7 +5629,6 @@ public static func cudnnRNNBackpropV2<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(outputCBackprop)
   let _ = op.addInput(reserveSpace)
   let _ = op.addInput(hostReserved)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5711,6 +5711,7 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   timeMajor: Bool = true
 ) -> (inputBackprop: Tensor<T>, inputHBackprop: Tensor<T>, inputCBackprop: Tensor<T>, paramsBackprop: Tensor<T>) {
   let op = TFE_Op("CudnnRNNBackpropV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
@@ -5724,7 +5725,6 @@ public static func cudnnRNNBackpropV3<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(outputCBackprop)
   let _ = op.addInput(reserveSpace)
   let _ = op.addInput(hostReserved)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5781,13 +5781,13 @@ public static func cudnnRNNCanonicalToParams<T: FloatingPoint & TensorFlowScalar
   seed2: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("CudnnRNNCanonicalToParams")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(numLayers)
   let _ = op.addInput(numUnits)
   let _ = op.addInput(inputSize)
   let weightsCount = op.addInputList(weights)
   op.setAttr("num_params", weightsCount)
   let _ = op.addInputList(biases)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5834,11 +5834,11 @@ public static func cudnnRNNParamsSize<S: BinaryInteger & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> Tensor<S> {
   let op = TFE_Op("CudnnRNNParamsSize")
+  op.setAttr("T", t)
+  op.setAttr("S", S.tensorFlowDataType)
   let _ = op.addInput(numLayers)
   let _ = op.addInput(numUnits)
   let _ = op.addInput(inputSize)
-  op.setAttr("T", t)
-  op.setAttr("S", S.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -5894,11 +5894,11 @@ public static func cudnnRNNParamsToCanonical<T: FloatingPoint & TensorFlowScalar
   seed2: Int64 = 0
 ) -> (weights: [Tensor<T>], biases: [Tensor<T>]) {
   let op = TFE_Op("CudnnRNNParamsToCanonical")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(numLayers)
   let _ = op.addInput(numUnits)
   let _ = op.addInput(inputSize)
   let _ = op.addInput(params)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("num_params", numParams)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
@@ -5959,11 +5959,11 @@ public static func cudnnRNNV2<T: FloatingPoint & TensorFlowScalar>(
   isTraining: Bool = true
 ) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>, hostReserved: Tensor<Int8>) {
   let op = TFE_Op("CudnnRNNV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
   let _ = op.addInput(params)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -6030,12 +6030,12 @@ public static func cudnnRNNV3<T: FloatingPoint & TensorFlowScalar>(
   timeMajor: Bool = true
 ) -> (output: Tensor<T>, outputH: Tensor<T>, outputC: Tensor<T>, reserveSpace: Tensor<T>, hostReserved: Tensor<Int8>) {
   let op = TFE_Op("CudnnRNNV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputH)
   let _ = op.addInput(inputC)
   let _ = op.addInput(params)
   let _ = op.addInput(sequenceLengths)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("rnn_mode", rnnMode.cName)
   op.setAttr("input_mode", inputMode.cName)
   op.setAttr("direction", direction.cName)
@@ -6099,12 +6099,12 @@ public static func cumprod<
   reverse: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Cumprod")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(axis)
   op.setAttr("exclusive", exclusive)
   op.setAttr("reverse", reverse)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -6160,12 +6160,12 @@ public static func cumsum<
   reverse: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Cumsum")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(axis)
   op.setAttr("exclusive", exclusive)
   op.setAttr("reverse", reverse)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -6188,8 +6188,8 @@ public static func dataFormatDimMap<T: BinaryInteger & TensorFlowScalar>(
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
   let op = TFE_Op("DataFormatDimMap")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   op.setAttr("src_format", srcFormat)
   op.setAttr("dst_format", dstFormat)
   return op.execute(Int(1))
@@ -6213,8 +6213,8 @@ public static func dataFormatVecPermute<T: BinaryInteger & TensorFlowScalar>(
   dstFormat: String = "NCHW"
 ) -> Tensor<T> {
   let op = TFE_Op("DataFormatVecPermute")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   op.setAttr("src_format", srcFormat)
   op.setAttr("dst_format", dstFormat)
   return op.execute(Int(1))
@@ -6247,8 +6247,8 @@ public static func datasetToSingleElement<OutputTypes: TensorGroup>(
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("DatasetToSingleElement")
-  let _ = op.addInput(dataset)
   op.setAttr("output_types", OutputTypes._typeList)
+  let _ = op.addInput(dataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -6263,8 +6263,8 @@ public static func debugGradientIdentity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("DebugGradientIdentity")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -6295,8 +6295,8 @@ public static func debugIdentity<T: TensorFlowScalar>(
   gatedGrpc: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("DebugIdentity")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("device_name", deviceName)
   op.setAttr("tensor_name", tensorName)
   op.setAttr("debug_urls", debugUrls)
@@ -6331,8 +6331,8 @@ public static func debugNanCount<T: TensorFlowScalar>(
   gatedGrpc: Bool = false
 ) -> Tensor<Int64> {
   let op = TFE_Op("DebugNanCount")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("device_name", deviceName)
   op.setAttr("tensor_name", tensorName)
   op.setAttr("debug_urls", debugUrls)
@@ -6403,8 +6403,8 @@ public static func debugNumericSummary<T: TensorFlowScalar>(
   gatedGrpc: Bool = false
 ) -> Tensor<Double> {
   let op = TFE_Op("DebugNumericSummary")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("device_name", deviceName)
   op.setAttr("tensor_name", tensorName)
   op.setAttr("debug_urls", debugUrls)
@@ -6553,9 +6553,9 @@ public static func decodeCSV<OutType: TensorArrayProtocol>(
   selectCols: [Int32]
 ) -> OutType {
   let op = TFE_Op("DecodeCSV")
+  op.setAttr("OUT_TYPE", recordDefaults._typeList)
   let _ = op.addInput(records)
   let _ = op.addInputList(recordDefaults)
-  op.setAttr("OUT_TYPE", recordDefaults._typeList)
   op.setAttr("field_delim", fieldDelim)
   op.setAttr("use_quote_delim", useQuoteDelim)
   op.setAttr("na_value", naValue)
@@ -6704,9 +6704,9 @@ public static func decodePaddedRaw<OutType: Numeric & TensorFlowScalar>(
   littleEndian: Bool = true
 ) -> Tensor<OutType> {
   let op = TFE_Op("DecodePaddedRaw")
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(inputBytes)
   let _ = op.addInput(fixedLength)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("little_endian", littleEndian)
   return op.execute(Int(1))
 }
@@ -6740,9 +6740,9 @@ public static func decodePng<Dtype: UnsignedInteger & TensorFlowScalar>(
   channels: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("DecodePng")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(contents)
   op.setAttr("channels", channels)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -6827,10 +6827,10 @@ public static func decodeProtoV2<OutputTypes: TensorGroup>(
   sanitize: Bool = false
 ) -> (sizes: Tensor<Int32>, values: OutputTypes) {
   let op = TFE_Op("DecodeProtoV2")
+  op.setAttr("output_types", OutputTypes._typeList)
   let _ = op.addInput(bytes)
   op.setAttr("message_type", messageType)
   op.setAttr("field_names", fieldNames)
-  op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("descriptor_source", descriptorSource)
   op.setAttr("message_format", messageFormat)
   op.setAttr("sanitize", sanitize)
@@ -6854,8 +6854,8 @@ public static func decodeRaw<OutType: TensorFlowScalar>(
   littleEndian: Bool = true
 ) -> Tensor<OutType> {
   let op = TFE_Op("DecodeRaw")
-  let _ = op.addInput(bytes)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(bytes)
   op.setAttr("little_endian", littleEndian)
   return op.execute(Int(1))
 }
@@ -6910,8 +6910,8 @@ public static func deepCopy<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("DeepCopy")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -6973,11 +6973,11 @@ public static func denseToDenseSetOperation<T: BinaryInteger & TensorFlowScalar>
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   let op = TFE_Op("DenseToDenseSetOperation")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(set1)
   let _ = op.addInput(set2)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7011,11 +7011,11 @@ public static func denseToDenseSetOperation(
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
   let op = TFE_Op("DenseToDenseSetOperation")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(set1)
   let _ = op.addInput(set2)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7064,13 +7064,13 @@ public static func denseToSparseSetOperation<T: BinaryInteger & TensorFlowScalar
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   let op = TFE_Op("DenseToSparseSetOperation")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(set1)
   let _ = op.addInput(set2Indices)
   let _ = op.addInput(set2Values)
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7119,13 +7119,13 @@ public static func denseToSparseSetOperation(
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
   let op = TFE_Op("DenseToSparseSetOperation")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(set1)
   let _ = op.addInput(set2Indices)
   let _ = op.addInput(set2Values)
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7229,8 +7229,8 @@ public static func depthToSpace<T: TensorFlowScalar>(
   dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("DepthToSpace")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("block_size", blockSize)
   op.setAttr("data_format", dataFormat.cName)
   return op.execute(Int(1))
@@ -7281,9 +7281,9 @@ public static func depthwiseConv2dNative<T: FloatingPoint & TensorFlowScalar>(
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("DepthwiseConv2dNative")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
@@ -7334,10 +7334,10 @@ public static func depthwiseConv2dNativeBackpropFilter<T: FloatingPoint & Tensor
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("DepthwiseConv2dNativeBackpropFilter")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filterSizes)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
@@ -7388,10 +7388,10 @@ public static func depthwiseConv2dNativeBackpropInput<T: FloatingPoint & TensorF
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> Tensor<T> {
   let op = TFE_Op("DepthwiseConv2dNativeBackpropInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputSizes)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
@@ -7486,10 +7486,10 @@ public static func dequantize<T: TensorFlowScalar>(
   mode: Mode = .minCombined
 ) -> Tensor<Float> {
   let op = TFE_Op("Dequantize")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(minRange)
   let _ = op.addInput(maxRange)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("mode", mode.cName)
   return op.execute(Int(1))
 }
@@ -7564,8 +7564,8 @@ public static func deserializeManySparse<Dtype: TensorFlowScalar>(
   serializedSparse: StringTensor
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let op = TFE_Op("DeserializeManySparse")
-  let _ = op.addInput(serializedSparse)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(serializedSparse)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7625,9 +7625,9 @@ public static func deserializeSparse<
   serializedSparse: Tensor<Tserialized>
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let op = TFE_Op("DeserializeSparse")
-  let _ = op.addInput(serializedSparse)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("Tserialized", Tserialized.tensorFlowDataType)
+  let _ = op.addInput(serializedSparse)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7684,9 +7684,9 @@ public static func deserializeSparse<Dtype: TensorFlowScalar>(
   serializedSparse: StringTensor
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let op = TFE_Op("DeserializeSparse")
-  let _ = op.addInput(serializedSparse)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("Tserialized", TensorDataType(TF_STRING))
+  let _ = op.addInput(serializedSparse)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -7744,8 +7744,8 @@ public static func diag<T: Numeric & TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Diag")
-  let _ = op.addInput(diagonal)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(diagonal)
   return op.execute(Int(1))
 }
 
@@ -7778,8 +7778,8 @@ public static func diagPart<T: Numeric & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("DiagPart")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -7791,8 +7791,8 @@ public static func digamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Digamma")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -7843,9 +7843,9 @@ public static func dilation2D<T: Numeric & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("Dilation2D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("rates", rates)
   op.setAttr("padding", padding.cName)
@@ -7877,10 +7877,10 @@ public static func dilation2DBackpropFilter<T: Numeric & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("Dilation2DBackpropFilter")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("rates", rates)
   op.setAttr("padding", padding.cName)
@@ -7912,10 +7912,10 @@ public static func dilation2DBackpropInput<T: Numeric & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("Dilation2DBackpropInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(outBackprop)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("rates", rates)
   op.setAttr("padding", padding.cName)
@@ -7932,9 +7932,9 @@ public static func div<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Div")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -7949,9 +7949,9 @@ public static func divNoNan<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("DivNoNan")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -7982,9 +7982,9 @@ public static func drawBoundingBoxes<T: FloatingPoint & TensorFlowScalar>(
   boxes: Tensor<Float>
 ) -> Tensor<T> {
   let op = TFE_Op("DrawBoundingBoxes")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(boxes)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8017,10 +8017,10 @@ public static func drawBoundingBoxesV2<T: FloatingPoint & TensorFlowScalar>(
   colors: Tensor<Float>
 ) -> Tensor<T> {
   let op = TFE_Op("DrawBoundingBoxesV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(boxes)
   let _ = op.addInput(colors)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8074,10 +8074,10 @@ public static func dynamicPartition<T: TensorFlowScalar>(
   numPartitions: Int64
 ) -> [Tensor<T>] {
   let op = TFE_Op("DynamicPartition")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(partitions)
   op.setAttr("num_partitions", numPartitions)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(numPartitions))
 }
 
@@ -8151,10 +8151,10 @@ public static func dynamicStitch<T: TensorFlowScalar>(
   data: [Tensor<T>]
 ) -> Tensor<T> {
   let op = TFE_Op("DynamicStitch")
+  op.setAttr("T", T.tensorFlowDataType)
   let indicesCount = op.addInputList(indices)
   op.setAttr("N", indicesCount)
   let _ = op.addInputList(data)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8171,10 +8171,10 @@ public static func eagerPyFunc<
   token: String
 ) -> Tout {
   let op = TFE_Op("EagerPyFunc")
-  let _ = op.addInputList(input)
-  op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("token", token)
   return op.execute(Int(Tout._typeList.count))
 }
 
@@ -8245,6 +8245,7 @@ public static func editDistance<T: TensorFlowScalar>(
   normalize: Bool = true
 ) -> Tensor<Float> {
   let op = TFE_Op("EditDistance")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(hypothesisIndices)
   let _ = op.addInput(hypothesisValues)
   let _ = op.addInput(hypothesisShape)
@@ -8252,7 +8253,6 @@ public static func editDistance<T: TensorFlowScalar>(
   let _ = op.addInput(truthValues)
   let _ = op.addInput(truthShape)
   op.setAttr("normalize", normalize)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8265,8 +8265,8 @@ public static func elu<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Elu")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -8284,9 +8284,9 @@ public static func eluGrad<T: FloatingPoint & TensorFlowScalar>(
   outputs: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("EluGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(outputs)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8305,8 +8305,8 @@ public static func empty<Dtype: TensorFlowScalar>(
   init_: Bool = false
 ) -> Tensor<Dtype> {
   let op = TFE_Op("Empty")
-  let _ = op.addInput(shape)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(shape)
   op.setAttr("init", init_)
   return op.execute(Int(1))
 }
@@ -8326,10 +8326,10 @@ public static func emptyTensorList<ShapeType: BinaryInteger & TensorFlowScalar>(
   elementDtype: TensorDataType
 ) -> VariantHandle {
   let op = TFE_Op("EmptyTensorList")
-  let _ = op.addInput(elementShape)
-  let _ = op.addInput(maxNumElements)
   op.setAttr("element_dtype", elementDtype)
   op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  let _ = op.addInput(elementShape)
+  let _ = op.addInput(maxNumElements)
   return op.execute(Int(1))
 }
 
@@ -8466,9 +8466,9 @@ public static func encodePng<T: UnsignedInteger & TensorFlowScalar>(
   compression: Int64 = -1
 ) -> StringTensor {
   let op = TFE_Op("EncodePng")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(image)
   op.setAttr("compression", compression)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8531,12 +8531,12 @@ public static func encodeProto<TinputTypes: TensorArrayProtocol>(
   descriptorSource: String = "local://"
 ) -> StringTensor {
   let op = TFE_Op("EncodeProto")
+  op.setAttr("Tinput_types", values._typeList)
   let _ = op.addInput(sizes)
   let _ = op.addInputList(values)
   op.setAttr("field_names", fieldNames)
   op.setAttr("message_type", messageType)
   op.setAttr("descriptor_source", descriptorSource)
-  op.setAttr("Tinput_types", values._typeList)
   return op.execute(Int(1))
 }
 
@@ -8641,14 +8641,14 @@ public static func enqueueTPUEmbeddingSparseBatch<
   combiners: [String]
 ) {
   let op = TFE_Op("EnqueueTPUEmbeddingSparseBatch")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("T3", T3.tensorFlowDataType)
   let sampleIndicesCount = op.addInputList(sampleIndices)
   op.setAttr("N", sampleIndicesCount)
   let _ = op.addInputList(embeddingIndices)
   let _ = op.addInputList(aggregationWeights)
   let _ = op.addInput(modeOverride)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("T3", T3.tensorFlowDataType)
   op.setAttr("device_ordinal", deviceOrdinal)
   op.setAttr("combiners", combiners)
   op.execute()
@@ -8709,14 +8709,14 @@ public static func enqueueTPUEmbeddingSparseTensorBatch<
   maxSequenceLengths: [Int32]
 ) {
   let op = TFE_Op("EnqueueTPUEmbeddingSparseTensorBatch")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("T3", T3.tensorFlowDataType)
   let sampleIndicesCount = op.addInputList(sampleIndices)
   op.setAttr("N", sampleIndicesCount)
   let _ = op.addInputList(embeddingIndices)
   let _ = op.addInputList(aggregationWeights)
   let _ = op.addInput(modeOverride)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("T3", T3.tensorFlowDataType)
   op.setAttr("device_ordinal", deviceOrdinal)
   op.setAttr("combiners", combiners)
   op.setAttr("table_ids", tableIds)
@@ -8740,9 +8740,9 @@ public static func ensureShape<T: TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("EnsureShape")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("shape", shape)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8770,8 +8770,8 @@ public static func enter<T: TensorFlowScalar>(
   parallelIterations: Int64 = 10
 ) -> Tensor<T> {
   let op = TFE_Op("Enter")
-  let _ = op.addInput(data)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(data)
   op.setAttr("frame_name", frameName)
   op.setAttr("is_constant", isConstant)
   op.setAttr("parallel_iterations", parallelIterations)
@@ -8788,9 +8788,9 @@ public static func equal<T: TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("Equal")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8804,9 +8804,9 @@ public static func equal(
   _ y: StringTensor
 ) -> Tensor<Bool> {
   let op = TFE_Op("Equal")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -8816,8 +8816,8 @@ public static func erf<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Erf")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -8827,8 +8827,8 @@ public static func erfc<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Erfc")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -8857,11 +8857,11 @@ public static func euclideanNorm<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("EuclideanNorm")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -8877,8 +8877,8 @@ public static func exit<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Exit")
-  let _ = op.addInput(data)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(data)
   return op.execute(Int(1))
 }
 
@@ -8888,8 +8888,8 @@ public static func exp<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Exp")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -8941,10 +8941,10 @@ public static func expandDims<
   dim: Tensor<Tdim>
 ) -> Tensor<T> {
   let op = TFE_Op("ExpandDims")
-  let _ = op.addInput(input)
-  let _ = op.addInput(dim)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tdim", Tdim.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(dim)
   return op.execute(Int(1))
 }
 
@@ -8956,9 +8956,9 @@ public static func experimentalAssertNextDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalAssertNextDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(transformations)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -8986,10 +8986,10 @@ public static func experimentalAutoShardDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalAutoShardDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(numWorkers)
   let _ = op.addInput(index)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9003,9 +9003,9 @@ public static func experimentalBytesProducedStatsDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalBytesProducedStatsDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(tag)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9024,6 +9024,7 @@ public static func experimentalCSVDataset<OutputTypes: TensorArrayProtocol>(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalCSVDataset")
+  op.setAttr("output_types", recordDefaults._typeList)
   let _ = op.addInput(filenames)
   let _ = op.addInput(compressionType)
   let _ = op.addInput(bufferSize)
@@ -9033,7 +9034,6 @@ public static func experimentalCSVDataset<OutputTypes: TensorArrayProtocol>(
   let _ = op.addInput(naValue)
   let _ = op.addInput(selectCols)
   let _ = op.addInputList(recordDefaults)
-  op.setAttr("output_types", recordDefaults._typeList)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9046,10 +9046,10 @@ public static func experimentalChooseFastestDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalChooseFastestDataset")
+  op.setAttr("output_types", outputTypes)
   let inputDatasetsCount = op.addInputList(inputDatasets)
   op.setAttr("N", inputDatasetsCount)
   op.setAttr("num_experiments", numExperiments)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9109,10 +9109,10 @@ public static func experimentalDenseToSparseBatchDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalDenseToSparseBatchDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(batchSize)
   let _ = op.addInput(rowShape)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9132,10 +9132,10 @@ public static func experimentalDirectedInterleaveDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalDirectedInterleaveDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(selectorInputDataset)
   let dataInputDatasetsCount = op.addInputList(dataInputDatasets)
   op.setAttr("N", dataInputDatasetsCount)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9191,6 +9191,11 @@ public static func experimentalGroupByReducerDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalGroupByReducerDataset")
+  op.setAttr("Tkey_func_other_arguments", keyFuncOtherArguments._typeList)
+  op.setAttr("Tinit_func_other_arguments", initFuncOtherArguments._typeList)
+  op.setAttr("Treduce_func_other_arguments", reduceFuncOtherArguments._typeList)
+  op.setAttr("Tfinalize_func_other_arguments", finalizeFuncOtherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(keyFuncOtherArguments)
   let _ = op.addInputList(initFuncOtherArguments)
@@ -9200,11 +9205,6 @@ public static func experimentalGroupByReducerDataset<
   op.setAttr("init_func", initFunc)
   op.setAttr("reduce_func", reduceFunc)
   op.setAttr("finalize_func", finalizeFunc)
-  op.setAttr("Tkey_func_other_arguments", keyFuncOtherArguments._typeList)
-  op.setAttr("Tinit_func_other_arguments", initFuncOtherArguments._typeList)
-  op.setAttr("Treduce_func_other_arguments", reduceFuncOtherArguments._typeList)
-  op.setAttr("Tfinalize_func_other_arguments", finalizeFuncOtherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9238,6 +9238,10 @@ public static func experimentalGroupByWindowDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalGroupByWindowDataset")
+  op.setAttr("Tkey_func_other_arguments", keyFuncOtherArguments._typeList)
+  op.setAttr("Treduce_func_other_arguments", reduceFuncOtherArguments._typeList)
+  op.setAttr("Twindow_size_func_other_arguments", windowSizeFuncOtherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(keyFuncOtherArguments)
   let _ = op.addInputList(reduceFuncOtherArguments)
@@ -9245,10 +9249,6 @@ public static func experimentalGroupByWindowDataset<
   op.setAttr("key_func", keyFunc)
   op.setAttr("reduce_func", reduceFunc)
   op.setAttr("window_size_func", windowSizeFunc)
-  op.setAttr("Tkey_func_other_arguments", keyFuncOtherArguments._typeList)
-  op.setAttr("Treduce_func_other_arguments", reduceFuncOtherArguments._typeList)
-  op.setAttr("Twindow_size_func_other_arguments", windowSizeFuncOtherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9270,8 +9270,8 @@ public static func experimentalIgnoreErrorsDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalIgnoreErrorsDataset")
-  let _ = op.addInput(inputDataset)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(inputDataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9283,9 +9283,9 @@ public static func experimentalIndexedDatasetGet<OutputTypes: TensorGroup>(
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("ExperimentalIndexedDatasetGet")
+  op.setAttr("output_types", OutputTypes._typeList)
   let _ = op.addInput(materialized)
   let _ = op.addInput(index)
-  op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -9318,8 +9318,8 @@ public static func experimentalLMDBDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalLMDBDataset")
-  let _ = op.addInput(filenames)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(filenames)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9333,9 +9333,9 @@ public static func experimentalLatencyStatsDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalLatencyStatsDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(tag)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9379,14 +9379,14 @@ public static func experimentalMapAndBatchDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalMapAndBatchDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(batchSize)
   let _ = op.addInput(numParallelCalls)
   let _ = op.addInput(dropRemainder)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   return op.execute(Int(1))
@@ -9408,11 +9408,11 @@ public static func experimentalMapDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalMapDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   op.setAttr("preserve_cardinality", preserveCardinality)
@@ -9436,9 +9436,9 @@ public static func experimentalMaterializedIndexDatasetHandle(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("ExperimentalMaterializedIndexDatasetHandle")
+  op.setAttr("output_types", outputTypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9454,9 +9454,9 @@ public static func experimentalMaxIntraOpParallelismDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalMaxIntraOpParallelismDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(maxIntraOpParallelism)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9468,8 +9468,8 @@ public static func experimentalNonSerializableDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalNonSerializableDataset")
-  let _ = op.addInput(inputDataset)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(inputDataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9517,14 +9517,14 @@ public static func experimentalNumaMapAndBatchDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalNumaMapAndBatchDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(batchSize)
   let _ = op.addInput(numParallelCalls)
   let _ = op.addInput(dropRemainder)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   return op.execute(Int(1))
@@ -9561,6 +9561,8 @@ public static func experimentalParallelInterleaveDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalParallelInterleaveDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(cycleLength)
@@ -9569,8 +9571,6 @@ public static func experimentalParallelInterleaveDataset<
   let _ = op.addInput(bufferOutputElements)
   let _ = op.addInput(prefetchInputElements)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9617,15 +9617,15 @@ public static func experimentalParseExampleDataset<Tdense: TensorArrayProtocol>(
   sloppy: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalParseExampleDataset")
+  op.setAttr("sparse_types", sparseTypes)
+  op.setAttr("Tdense", denseDefaults._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(numParallelCalls)
   let _ = op.addInputList(denseDefaults)
   op.setAttr("sparse_keys", sparseKeys)
   op.setAttr("dense_keys", denseKeys)
-  op.setAttr("sparse_types", sparseTypes)
-  op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("sloppy", sloppy)
   return op.execute(Int(1))
@@ -9642,9 +9642,9 @@ public static func experimentalPrivateThreadPoolDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalPrivateThreadPoolDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(numThreads)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9664,9 +9664,9 @@ public static func experimentalRandomDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalRandomDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(seed)
   let _ = op.addInput(seed2)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9689,9 +9689,9 @@ public static func experimentalRebatchDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalRebatchDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(numWorkers)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9713,13 +9713,13 @@ public static func experimentalScanDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalScanDataset")
+  op.setAttr("Tstate", initialState._typeList)
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(initialState)
   let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Tstate", initialState._typeList)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   return op.execute(Int(1))
@@ -9735,11 +9735,11 @@ public static func experimentalSetStatsAggregatorDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalSetStatsAggregatorDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(statsAggregator)
   let _ = op.addInput(tag)
   let _ = op.addInput(counterPrefix)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9752,9 +9752,9 @@ public static func experimentalSleepDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalSleepDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(sleepMicroseconds)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9778,11 +9778,11 @@ public static func experimentalSlidingWindowDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalSlidingWindowDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(windowSize)
   let _ = op.addInput(windowShift)
   let _ = op.addInput(windowStride)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9802,10 +9802,10 @@ public static func experimentalSqlDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalSqlDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(driverName)
   let _ = op.addInput(dataSourceName)
   let _ = op.addInput(query)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9857,11 +9857,11 @@ public static func experimentalTakeWhileDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalTakeWhileDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   op.setAttr("predicate", predicate)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9877,9 +9877,9 @@ public static func experimentalThreadPoolDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalThreadPoolDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(threadPool)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9921,8 +9921,8 @@ public static func experimentalUnbatchDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalUnbatchDataset")
-  let _ = op.addInput(inputDataset)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(inputDataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9935,8 +9935,8 @@ public static func experimentalUniqueDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ExperimentalUniqueDataset")
-  let _ = op.addInput(inputDataset)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(inputDataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -9949,8 +9949,8 @@ public static func expm1<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Expm1")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -10058,11 +10058,11 @@ public static func extractImagePatches<T: Numeric & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("ExtractImagePatches")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   op.setAttr("ksizes", ksizes)
   op.setAttr("strides", strides)
   op.setAttr("rates", rates)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("padding", padding.cName)
   return op.execute(Int(1))
 }
@@ -10082,8 +10082,8 @@ public static func extractJpegShape<OutputType: BinaryInteger & TensorFlowScalar
   contents: StringTensor
 ) -> Tensor<OutputType> {
   let op = TFE_Op("ExtractJpegShape")
-  let _ = op.addInput(contents)
   op.setAttr("output_type", OutputType.tensorFlowDataType)
+  let _ = op.addInput(contents)
   return op.execute(Int(1))
 }
 
@@ -10117,10 +10117,10 @@ public static func extractVolumePatches<T: Numeric & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("ExtractVolumePatches")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("ksizes", ksizes)
   op.setAttr("strides", strides)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("padding", padding.cName)
   return op.execute(Int(1))
 }
@@ -10143,8 +10143,8 @@ public static func fFT<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("FFT")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -10166,8 +10166,8 @@ public static func fFT2D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("FFT2D")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -10189,8 +10189,8 @@ public static func fFT3D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("FFT3D")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -10511,10 +10511,10 @@ public static func fill<
   value: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Fill")
-  let _ = op.addInput(dims)
-  let _ = op.addInput(value)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("index_type", IndexType.tensorFlowDataType)
+  let _ = op.addInput(dims)
+  let _ = op.addInput(value)
   return op.execute(Int(1))
 }
 
@@ -10526,8 +10526,8 @@ public static func filterByLastComponentDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("FilterByLastComponentDataset")
-  let _ = op.addInput(inputDataset)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(inputDataset)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -10557,11 +10557,11 @@ public static func filterDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("FilterDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   op.setAttr("predicate", predicate)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -10778,11 +10778,11 @@ public static func flatMapDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("FlatMapDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -10818,8 +10818,8 @@ public static func floor<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Floor")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -10833,9 +10833,9 @@ public static func floorDiv<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("FloorDiv")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -10852,9 +10852,9 @@ public static func floorMod<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("FloorMod")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -10937,11 +10937,11 @@ public static func for_<
   body: (BodyIn) -> BodyOut
 ) -> T {
   let op = TFE_Op("For")
+  op.setAttr("T", input._typeList)
   let _ = op.addInput(start)
   let _ = op.addInput(limit)
   let _ = op.addInput(delta)
   let _ = op.addInputList(input)
-  op.setAttr("T", input._typeList)
   op.setAttr("body", body)
   return op.execute(Int(input._typeList.count))
 }
@@ -10998,6 +10998,7 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   let op = TFE_Op("FractionalAvgPool")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   op.setAttr("pooling_ratio", poolingRatio)
   op.setAttr("pseudo_random", pseudoRandom)
@@ -11005,7 +11006,6 @@ public static func fractionalAvgPool<T: Numeric & TensorFlowScalar>(
   op.setAttr("deterministic", deterministic)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -11046,12 +11046,12 @@ public static func fractionalAvgPoolGrad<T: Numeric & TensorFlowScalar>(
   overlapping: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("FractionalAvgPoolGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInputTensorShape)
   let _ = op.addInput(outBackprop)
   let _ = op.addInput(rowPoolingSequence)
   let _ = op.addInput(colPoolingSequence)
   op.setAttr("overlapping", overlapping)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -11131,6 +11131,7 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> (output: Tensor<T>, rowPoolingSequence: Tensor<Int64>, colPoolingSequence: Tensor<Int64>) {
   let op = TFE_Op("FractionalMaxPool")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   op.setAttr("pooling_ratio", poolingRatio)
   op.setAttr("pseudo_random", pseudoRandom)
@@ -11138,7 +11139,6 @@ public static func fractionalMaxPool<T: Numeric & TensorFlowScalar>(
   op.setAttr("deterministic", deterministic)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -11175,13 +11175,13 @@ public static func fractionalMaxPoolGrad<T: Numeric & TensorFlowScalar>(
   overlapping: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("FractionalMaxPoolGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(outBackprop)
   let _ = op.addInput(rowPoolingSequence)
   let _ = op.addInput(colPoolingSequence)
   op.setAttr("overlapping", overlapping)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -11238,12 +11238,12 @@ public static func fusedBatchNorm<T: FloatingPoint & TensorFlowScalar>(
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<T>, batchVariance: Tensor<T>, reserveSpace1: Tensor<T>, reserveSpace2: Tensor<T>) {
   let op = TFE_Op("FusedBatchNorm")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(scale)
   let _ = op.addInput(offset)
   let _ = op.addInput(mean)
   let _ = op.addInput(variance)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("epsilon", epsilon)
   op.setAttr("data_format", dataFormat.cName)
   op.setAttr("is_training", isTraining)
@@ -11296,12 +11296,12 @@ public static func fusedBatchNormGrad<T: FloatingPoint & TensorFlowScalar>(
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<T>, offsetBackprop: Tensor<T>, reserveSpace3: Tensor<T>, reserveSpace4: Tensor<T>) {
   let op = TFE_Op("FusedBatchNormGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(yBackprop)
   let _ = op.addInput(x)
   let _ = op.addInput(scale)
   let _ = op.addInput(reserveSpace1)
   let _ = op.addInput(reserveSpace2)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("epsilon", epsilon)
   op.setAttr("data_format", dataFormat.cName)
   op.setAttr("is_training", isTraining)
@@ -11358,13 +11358,13 @@ public static func fusedBatchNormGradV2<
   isTraining: Bool = true
 ) -> (xBackprop: Tensor<T>, scaleBackprop: Tensor<U>, offsetBackprop: Tensor<U>, reserveSpace3: Tensor<U>, reserveSpace4: Tensor<U>) {
   let op = TFE_Op("FusedBatchNormGradV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("U", U.tensorFlowDataType)
   let _ = op.addInput(yBackprop)
   let _ = op.addInput(x)
   let _ = op.addInput(scale)
   let _ = op.addInput(reserveSpace1)
   let _ = op.addInput(reserveSpace2)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("U", U.tensorFlowDataType)
   op.setAttr("epsilon", epsilon)
   op.setAttr("data_format", dataFormat.cName)
   op.setAttr("is_training", isTraining)
@@ -11418,13 +11418,13 @@ public static func fusedBatchNormV2<
   isTraining: Bool = true
 ) -> (y: Tensor<T>, batchMean: Tensor<U>, batchVariance: Tensor<U>, reserveSpace1: Tensor<U>, reserveSpace2: Tensor<U>) {
   let op = TFE_Op("FusedBatchNormV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("U", U.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(scale)
   let _ = op.addInput(offset)
   let _ = op.addInput(mean)
   let _ = op.addInput(variance)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("U", U.tensorFlowDataType)
   op.setAttr("epsilon", epsilon)
   op.setAttr("data_format", dataFormat.cName)
   op.setAttr("is_training", isTraining)
@@ -11466,10 +11466,10 @@ public static func fusedPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("FusedPadConv2D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(paddings)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("mode", mode.cName)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
@@ -11516,11 +11516,11 @@ public static func fusedResizeAndPadConv2D<T: FloatingPoint & TensorFlowScalar>(
   padding: Padding
 ) -> Tensor<T> {
   let op = TFE_Op("FusedResizeAndPadConv2D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(size)
   let _ = op.addInput(paddings)
   let _ = op.addInput(filter)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("resize_align_corners", resizeAlignCorners)
   op.setAttr("mode", mode.cName)
   op.setAttr("strides", strides)
@@ -11584,13 +11584,13 @@ public static func gRUBlockCell<T: FloatingPoint & TensorFlowScalar>(
   bC: Tensor<T>
 ) -> (r: Tensor<T>, u: Tensor<T>, c: Tensor<T>, h: Tensor<T>) {
   let op = TFE_Op("GRUBlockCell")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(hPrev)
   let _ = op.addInput(wRu)
   let _ = op.addInput(wC)
   let _ = op.addInput(bRu)
   let _ = op.addInput(bC)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -11690,6 +11690,7 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   dH: Tensor<T>
 ) -> (dX: Tensor<T>, dHPrev: Tensor<T>, dCBar: Tensor<T>, dRBarUBar: Tensor<T>) {
   let op = TFE_Op("GRUBlockCellGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(hPrev)
   let _ = op.addInput(wRu)
@@ -11700,7 +11701,6 @@ public static func gRUBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(u)
   let _ = op.addInput(c)
   let _ = op.addInput(dH)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -11741,11 +11741,11 @@ public static func gather<
   validateIndices: Bool = true
 ) -> Tensor<Tparams> {
   let op = TFE_Op("Gather")
+  op.setAttr("Tparams", Tparams.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(params)
   let _ = op.addInput(indices)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("Tparams", Tparams.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -11871,10 +11871,10 @@ public static func gatherNd<
   indices: Tensor<Tindices>
 ) -> Tensor<Tparams> {
   let op = TFE_Op("GatherNd")
-  let _ = op.addInput(params)
-  let _ = op.addInput(indices)
   op.setAttr("Tparams", Tparams.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(params)
+  let _ = op.addInput(indices)
   return op.execute(Int(1))
 }
 
@@ -11928,12 +11928,12 @@ public static func gatherV2<
   axis: Tensor<Taxis>
 ) -> Tensor<Tparams> {
   let op = TFE_Op("GatherV2")
-  let _ = op.addInput(params)
-  let _ = op.addInput(indices)
-  let _ = op.addInput(axis)
   op.setAttr("Tparams", Tparams.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("Taxis", Taxis.tensorFlowDataType)
+  let _ = op.addInput(params)
+  let _ = op.addInput(indices)
+  let _ = op.addInput(axis)
   return op.execute(Int(1))
 }
 
@@ -12117,16 +12117,16 @@ public static func generatorDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("GeneratorDataset")
+  op.setAttr("Tinit_func_args", initFuncOtherArgs._typeList)
+  op.setAttr("Tnext_func_args", nextFuncOtherArgs._typeList)
+  op.setAttr("Tfinalize_func_args", finalizeFuncOtherArgs._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInputList(initFuncOtherArgs)
   let _ = op.addInputList(nextFuncOtherArgs)
   let _ = op.addInputList(finalizeFuncOtherArgs)
   op.setAttr("init_func", initFunc)
   op.setAttr("next_func", nextFunc)
   op.setAttr("finalize_func", finalizeFunc)
-  op.setAttr("Tinit_func_args", initFuncOtherArgs._typeList)
-  op.setAttr("Tnext_func_args", nextFuncOtherArgs._typeList)
-  op.setAttr("Tfinalize_func_args", finalizeFuncOtherArgs._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -12142,8 +12142,8 @@ public static func getSessionHandle<T: TensorFlowScalar>(
   value: Tensor<T>
 ) -> StringTensor {
   let op = TFE_Op("GetSessionHandle")
-  let _ = op.addInput(value)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(value)
   return op.execute(Int(1))
 }
 
@@ -12158,8 +12158,8 @@ public static func getSessionHandleV2<T: TensorFlowScalar>(
   value: Tensor<T>
 ) -> ResourceHandle {
   let op = TFE_Op("GetSessionHandleV2")
-  let _ = op.addInput(value)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(value)
   return op.execute(Int(1))
 }
 
@@ -12175,8 +12175,8 @@ public static func getSessionTensor<Dtype: TensorFlowScalar>(
   handle: StringTensor
 ) -> Tensor<Dtype> {
   let op = TFE_Op("GetSessionTensor")
-  let _ = op.addInput(handle)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(handle)
   return op.execute(Int(1))
 }
 
@@ -12198,9 +12198,9 @@ public static func greater<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("Greater")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12214,9 +12214,9 @@ public static func greaterEqual<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("GreaterEqual")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12233,8 +12233,8 @@ public static func guaranteeConst<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("GuaranteeConst")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12254,8 +12254,8 @@ public static func hSVToRGB<T: FloatingPoint & TensorFlowScalar>(
   images: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("HSVToRGB")
-  let _ = op.addInput(images)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(images)
   return op.execute(Int(1))
 }
 
@@ -12285,11 +12285,11 @@ public static func hashTableV2(
   valueDtype: TensorDataType
 ) -> ResourceHandle {
   let op = TFE_Op("HashTableV2")
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("use_node_name_sharing", useNodeNameSharing)
-  op.setAttr("key_dtype", keyDtype)
-  op.setAttr("value_dtype", valueDtype)
   return op.execute(Int(1))
 }
 
@@ -12329,11 +12329,11 @@ public static func histogramFixedWidth<
   nbins: Tensor<Int32>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("HistogramFixedWidth")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(values)
   let _ = op.addInput(valueRange)
   let _ = op.addInput(nbins)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12356,9 +12356,9 @@ public static func histogramSummary<T: Numeric & TensorFlowScalar>(
   _ values: Tensor<T>
 ) -> StringTensor {
   let op = TFE_Op("HistogramSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(tag)
   let _ = op.addInput(values)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12380,8 +12380,8 @@ public static func iFFT<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("IFFT")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12403,8 +12403,8 @@ public static func iFFT2D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("IFFT2D")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12426,8 +12426,8 @@ public static func iFFT3D<Tcomplex: TensorFlowScalar>(
   _ input: Tensor<Tcomplex>
 ) -> Tensor<Tcomplex> {
   let op = TFE_Op("IFFT3D")
-  let _ = op.addInput(input)
   op.setAttr("Tcomplex", Tcomplex.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12437,8 +12437,8 @@ public static func identity<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Identity")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12464,8 +12464,8 @@ public static func identityN<T: TensorArrayProtocol>(
   _ input: T
 ) -> T {
   let op = TFE_Op("IdentityN")
-  let _ = op.addInputList(input)
   op.setAttr("T", input._typeList)
+  let _ = op.addInputList(input)
   return op.execute(Int(input._typeList.count))
 }
 
@@ -12529,11 +12529,11 @@ public static func if_<
   outputShapes: [TensorShape?]
 ) -> Tout {
   let op = TFE_Op("If")
-  let _ = op.addInput(cond)
-  let _ = op.addInputList(input)
   op.setAttr("Tcond", Tcond.tensorFlowDataType)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInput(cond)
+  let _ = op.addInputList(input)
   op.setAttr("then_branch", thenBranch)
   op.setAttr("else_branch", elseBranch)
   op.setAttr("output_shapes", outputShapes)
@@ -12561,9 +12561,9 @@ public static func igamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Igamma")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12574,9 +12574,9 @@ public static func igammaGradA<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("IgammaGradA")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12600,9 +12600,9 @@ public static func igammac<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Igammac")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12627,9 +12627,9 @@ public static func imag<
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
   let op = TFE_Op("Imag")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tout", Tout.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -12671,11 +12671,11 @@ public static func inPolymorphicTwice<T: TensorFlowScalar>(
   _ b: [Tensor<T>]
 ) {
   let op = TFE_Op("InPolymorphicTwice")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
   let bCount = op.addInputList(b)
   op.setAttr("M", bCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -12710,10 +12710,10 @@ public static func inTopK<T: BinaryInteger & TensorFlowScalar>(
   k: Int64
 ) -> Tensor<Bool> {
   let op = TFE_Op("InTopK")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(predictions)
   let _ = op.addInput(targets)
   op.setAttr("k", k)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12747,10 +12747,10 @@ public static func inTopKV2<T: BinaryInteger & TensorFlowScalar>(
   k: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("InTopKV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(predictions)
   let _ = op.addInput(targets)
   let _ = op.addInput(k)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12809,8 +12809,8 @@ public static func infeedEnqueue<Dtype: TensorFlowScalar>(
   deviceOrdinal: Int64 = -1
 ) {
   let op = TFE_Op("InfeedEnqueue")
-  let _ = op.addInput(input)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("shape", shape)
   op.setAttr("layout", layout)
   op.setAttr("device_ordinal", deviceOrdinal)
@@ -12856,8 +12856,8 @@ public static func infeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
   deviceOrdinal: Int64 = -1
 ) {
   let op = TFE_Op("InfeedEnqueueTuple")
-  let _ = op.addInputList(inputs)
   op.setAttr("dtypes", inputs._typeList)
+  let _ = op.addInputList(inputs)
   op.setAttr("shapes", shapes)
   op.setAttr("layouts", layouts)
   op.setAttr("device_ordinal", deviceOrdinal)
@@ -12922,11 +12922,11 @@ public static func initializeTableV2<
   _ values: Tensor<Tval>
 ) {
   let op = TFE_Op("InitializeTableV2")
+  op.setAttr("Tkey", Tkey.tensorFlowDataType)
+  op.setAttr("Tval", Tval.tensorFlowDataType)
   let _ = op.addInput(tableHandle)
   let _ = op.addInput(keys)
   let _ = op.addInput(values)
-  op.setAttr("Tkey", Tkey.tensorFlowDataType)
-  op.setAttr("Tval", Tval.tensorFlowDataType)
   op.execute()
 }
 
@@ -12947,10 +12947,10 @@ public static func inplaceAdd<T: TensorFlowScalar>(
   v: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("InplaceAdd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(i)
   let _ = op.addInput(v)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12971,10 +12971,10 @@ public static func inplaceSub<T: TensorFlowScalar>(
   v: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("InplaceSub")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(i)
   let _ = op.addInput(v)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -12995,10 +12995,10 @@ public static func inplaceUpdate<T: TensorFlowScalar>(
   v: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("InplaceUpdate")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(i)
   let _ = op.addInput(v)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13090,13 +13090,13 @@ public static func interleaveDataset<
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("InterleaveDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(cycleLength)
   let _ = op.addInput(blockLength)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13109,8 +13109,8 @@ public static func inv<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Inv")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13124,9 +13124,9 @@ public static func invGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("InvGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13139,8 +13139,8 @@ public static func invert<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Invert")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13170,8 +13170,8 @@ public static func invertPermutation<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("InvertPermutation")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13215,8 +13215,8 @@ public static func isFinite<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("IsFinite")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13230,8 +13230,8 @@ public static func isInf<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("IsInf")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13245,8 +13245,8 @@ public static func isNan<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("IsNan")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13262,9 +13262,9 @@ public static func iterator(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("Iterator")
+  op.setAttr("output_types", outputTypes)
   op.setAttr("shared_name", sharedName)
   op.setAttr("container", container)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13287,8 +13287,8 @@ public static func iteratorFromStringHandle(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("IteratorFromStringHandle")
-  let _ = op.addInput(stringHandle)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(stringHandle)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13300,8 +13300,8 @@ public static func iteratorFromStringHandleV2(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("IteratorFromStringHandleV2")
-  let _ = op.addInput(stringHandle)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(stringHandle)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13313,8 +13313,8 @@ public static func iteratorGetNext<OutputTypes: TensorGroup>(
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("IteratorGetNext")
-  let _ = op.addInput(iterator)
   op.setAttr("output_types", OutputTypes._typeList)
+  let _ = op.addInput(iterator)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -13327,8 +13327,8 @@ public static func iteratorGetNextAsOptional(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("IteratorGetNextAsOptional")
-  let _ = op.addInput(iterator)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(iterator)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13345,8 +13345,8 @@ public static func iteratorGetNextSync<OutputTypes: TensorGroup>(
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("IteratorGetNextSync")
-  let _ = op.addInput(iterator)
   op.setAttr("output_types", OutputTypes._typeList)
+  let _ = op.addInput(iterator)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -13373,9 +13373,9 @@ public static func iteratorV2(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("IteratorV2")
+  op.setAttr("output_types", outputTypes)
   op.setAttr("shared_name", sharedName)
   op.setAttr("container", container)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -13467,8 +13467,8 @@ public static func l2Loss<T: FloatingPoint & TensorFlowScalar>(
   t: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("L2Loss")
-  let _ = op.addInput(t)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(t)
   return op.execute(Int(1))
 }
 
@@ -13502,12 +13502,12 @@ public static func lRN<T: FloatingPoint & TensorFlowScalar>(
   beta: Double = 0.5
 ) -> Tensor<T> {
   let op = TFE_Op("LRN")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("depth_radius", depthRadius)
   op.setAttr("bias", bias)
   op.setAttr("alpha", alpha)
   op.setAttr("beta", beta)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13536,6 +13536,7 @@ public static func lRNGrad<T: FloatingPoint & TensorFlowScalar>(
   beta: Double = 0.5
 ) -> Tensor<T> {
   let op = TFE_Op("LRNGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputGrads)
   let _ = op.addInput(inputImage)
   let _ = op.addInput(outputImage)
@@ -13543,7 +13544,6 @@ public static func lRNGrad<T: FloatingPoint & TensorFlowScalar>(
   op.setAttr("bias", bias)
   op.setAttr("alpha", alpha)
   op.setAttr("beta", beta)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13612,6 +13612,7 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   usePeephole: Bool = false
 ) -> (i: Tensor<T>, cs: Tensor<T>, f: Tensor<T>, o: Tensor<T>, ci: Tensor<T>, co: Tensor<T>, h: Tensor<T>) {
   let op = TFE_Op("LSTMBlockCell")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(csPrev)
   let _ = op.addInput(hPrev)
@@ -13623,7 +13624,6 @@ public static func lSTMBlockCell<T: FloatingPoint & TensorFlowScalar>(
   op.setAttr("forget_bias", forgetBias)
   op.setAttr("cell_clip", cellClip)
   op.setAttr("use_peephole", usePeephole)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -13678,6 +13678,7 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   usePeephole: Bool
 ) -> (csPrevGrad: Tensor<T>, dicfo: Tensor<T>, wciGrad: Tensor<T>, wcfGrad: Tensor<T>, wcoGrad: Tensor<T>) {
   let op = TFE_Op("LSTMBlockCellGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(csPrev)
   let _ = op.addInput(hPrev)
@@ -13695,7 +13696,6 @@ public static func lSTMBlockCellGrad<T: FloatingPoint & TensorFlowScalar>(
   let _ = op.addInput(csGrad)
   let _ = op.addInput(hGrad)
   op.setAttr("use_peephole", usePeephole)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -13706,9 +13706,9 @@ public static func leakyRelu<T: FloatingPoint & TensorFlowScalar>(
   alpha: Double = 0.2
 ) -> Tensor<T> {
   let op = TFE_Op("LeakyRelu")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(features)
   op.setAttr("alpha", alpha)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13727,10 +13727,10 @@ public static func leakyReluGrad<T: FloatingPoint & TensorFlowScalar>(
   alpha: Double = 0.2
 ) -> Tensor<T> {
   let op = TFE_Op("LeakyReluGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(features)
   op.setAttr("alpha", alpha)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13802,9 +13802,9 @@ public static func leftShift<T: BinaryInteger & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("LeftShift")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13818,9 +13818,9 @@ public static func less<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("Less")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13834,9 +13834,9 @@ public static func lessEqual<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("LessEqual")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13846,8 +13846,8 @@ public static func lgamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Lgamma")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -13879,11 +13879,11 @@ public static func linSpace<
   num: Tensor<Tidx>
 ) -> Tensor<T> {
   let op = TFE_Op("LinSpace")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(start)
   let _ = op.addInput(stop)
   let _ = op.addInput(num)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -13927,10 +13927,10 @@ public static func listDiff<
   _ y: Tensor<T>
 ) -> (out: Tensor<T>, idx: Tensor<OutIdx>) {
   let op = TFE_Op("ListDiff")
-  let _ = op.addInput(x)
-  let _ = op.addInput(y)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_idx", OutIdx.tensorFlowDataType)
+  let _ = op.addInput(x)
+  let _ = op.addInput(y)
   return op.execute(Int(1), Int(1))
 }
 
@@ -13939,9 +13939,9 @@ public static func listInput<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
   let op = TFE_Op("ListInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -14608,8 +14608,8 @@ public static func log<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Log")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -14621,8 +14621,8 @@ public static func log1p<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Log1p")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -14649,8 +14649,8 @@ public static func logMatrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> (sign: Tensor<T>, logAbsDeterminant: Tensor<T>) {
   let op = TFE_Op("LogMatrixDeterminant")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1), Int(1))
 }
 
@@ -14668,8 +14668,8 @@ public static func logSoftmax<T: FloatingPoint & TensorFlowScalar>(
   logits: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("LogSoftmax")
-  let _ = op.addInput(logits)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(logits)
   return op.execute(Int(1))
 }
 
@@ -14786,9 +14786,9 @@ public static func lookupTableExportV2<
   tableHandle: ResourceHandle
 ) -> (keys: Tensor<Tkeys>, values: Tensor<Tvalues>) {
   let op = TFE_Op("LookupTableExportV2")
-  let _ = op.addInput(tableHandle)
   op.setAttr("Tkeys", Tkeys.tensorFlowDataType)
   op.setAttr("Tvalues", Tvalues.tensorFlowDataType)
+  let _ = op.addInput(tableHandle)
   return op.execute(Int(1), Int(1))
 }
 
@@ -14816,11 +14816,11 @@ public static func lookupTableFindV2<
   defaultValue: Tensor<Tout>
 ) -> Tensor<Tout> {
   let op = TFE_Op("LookupTableFindV2")
+  op.setAttr("Tin", Tin.tensorFlowDataType)
+  op.setAttr("Tout", Tout.tensorFlowDataType)
   let _ = op.addInput(tableHandle)
   let _ = op.addInput(keys)
   let _ = op.addInput(defaultValue)
-  op.setAttr("Tin", Tin.tensorFlowDataType)
-  op.setAttr("Tout", Tout.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -14843,11 +14843,11 @@ public static func lookupTableImportV2<
   _ values: Tensor<Tout>
 ) {
   let op = TFE_Op("LookupTableImportV2")
+  op.setAttr("Tin", Tin.tensorFlowDataType)
+  op.setAttr("Tout", Tout.tensorFlowDataType)
   let _ = op.addInput(tableHandle)
   let _ = op.addInput(keys)
   let _ = op.addInput(values)
-  op.setAttr("Tin", Tin.tensorFlowDataType)
-  op.setAttr("Tout", Tout.tensorFlowDataType)
   op.execute()
 }
 
@@ -14870,11 +14870,11 @@ public static func lookupTableInsertV2<
   _ values: Tensor<Tout>
 ) {
   let op = TFE_Op("LookupTableInsertV2")
+  op.setAttr("Tin", Tin.tensorFlowDataType)
+  op.setAttr("Tout", Tout.tensorFlowDataType)
   let _ = op.addInput(tableHandle)
   let _ = op.addInput(keys)
   let _ = op.addInput(values)
-  op.setAttr("Tin", Tin.tensorFlowDataType)
-  op.setAttr("Tout", Tout.tensorFlowDataType)
   op.execute()
 }
 
@@ -14892,9 +14892,9 @@ public static func lookupTableRemoveV2<Tin: TensorFlowScalar>(
   keys: Tensor<Tin>
 ) {
   let op = TFE_Op("LookupTableRemoveV2")
+  op.setAttr("Tin", Tin.tensorFlowDataType)
   let _ = op.addInput(tableHandle)
   let _ = op.addInput(keys)
-  op.setAttr("Tin", Tin.tensorFlowDataType)
   op.execute()
 }
 
@@ -14966,10 +14966,10 @@ public static func lowerBound<
   _ values: Tensor<T>
 ) -> Tensor<OutType> {
   let op = TFE_Op("LowerBound")
-  let _ = op.addInput(sortedInputs)
-  let _ = op.addInput(values)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(sortedInputs)
+  let _ = op.addInput(values)
   return op.execute(Int(1))
 }
 
@@ -15016,9 +15016,9 @@ public static func lu<
   _ input: Tensor<T>
 ) -> (lu: Tensor<T>, p: Tensor<OutputIdxType>) {
   let op = TFE_Op("Lu")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("output_idx_type", OutputIdxType.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1), Int(1))
 }
 
@@ -15047,9 +15047,9 @@ public static func mapClear(
   sharedName: String
 ) {
   let op = TFE_Op("MapClear")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -15071,11 +15071,11 @@ public static func mapDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("MapDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   op.setAttr("preserve_cardinality", preserveCardinality)
@@ -15125,11 +15125,11 @@ public static func mapDefun<
   maxIntraOpParallelism: Int64 = 1
 ) -> OutputTypes {
   let op = TFE_Op("MapDefun")
-  let _ = op.addInputList(arguments)
-  let _ = op.addInputList(capturedInputs)
   op.setAttr("Targuments", arguments._typeList)
   op.setAttr("Tcaptured", capturedInputs._typeList)
   op.setAttr("output_types", OutputTypes._typeList)
+  let _ = op.addInputList(arguments)
+  let _ = op.addInputList(capturedInputs)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("f", f)
   op.setAttr("max_intra_op_parallelism", maxIntraOpParallelism)
@@ -15146,9 +15146,9 @@ public static func mapIncompleteSize(
   sharedName: String
 ) -> Tensor<Int32> {
   let op = TFE_Op("MapIncompleteSize")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -15168,11 +15168,11 @@ public static func mapPeek<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("MapPeek")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -15188,9 +15188,9 @@ public static func mapSize(
   sharedName: String
 ) -> Tensor<Int32> {
   let op = TFE_Op("MapSize")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -15221,13 +15221,13 @@ public static func mapStage<FakeDtypes: TensorArrayProtocol>(
   sharedName: String
 ) {
   let op = TFE_Op("MapStage")
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("fake_dtypes", values._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   let _ = op.addInputList(values)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
-  op.setAttr("fake_dtypes", values._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -15247,11 +15247,11 @@ public static func mapUnstage<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("MapUnstage")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -15270,10 +15270,10 @@ public static func mapUnstageNoKey<Dtypes: TensorGroup>(
   sharedName: String
 ) -> (key: Tensor<Int64>, values: Dtypes) {
   let op = TFE_Op("MapUnstageNoKey")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1), Int(Dtypes._typeList.count))
@@ -15300,11 +15300,11 @@ public static func matMul<T: Numeric & TensorFlowScalar>(
   transposeB: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MatMul")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
   op.setAttr("transpose_a", transposeA)
   op.setAttr("transpose_b", transposeB)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15386,11 +15386,11 @@ public static func matrixBandPart<
   numUpper: Tensor<Tindex>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixBandPart")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindex", Tindex.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(numLower)
   let _ = op.addInput(numUpper)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindex", Tindex.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15408,8 +15408,8 @@ public static func matrixDeterminant<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixDeterminant")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -15450,8 +15450,8 @@ public static func matrixDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixDiag")
-  let _ = op.addInput(diagonal)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(diagonal)
   return op.execute(Int(1))
 }
 
@@ -15495,8 +15495,8 @@ public static func matrixDiagPart<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixDiagPart")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -15506,8 +15506,8 @@ public static func matrixExponential<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixExponential")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -15538,9 +15538,9 @@ public static func matrixInverse<T: FloatingPoint & TensorFlowScalar>(
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixInverse")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15574,8 +15574,8 @@ public static func matrixLogarithm<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixLogarithm")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -15605,9 +15605,9 @@ public static func matrixSetDiag<T: TensorFlowScalar>(
   diagonal: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixSetDiag")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(diagonal)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15635,10 +15635,10 @@ public static func matrixSolve<T: FloatingPoint & TensorFlowScalar>(
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixSolve")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15697,10 +15697,10 @@ public static func matrixSolveLs<T: FloatingPoint & TensorFlowScalar>(
   fast: Bool = true
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixSolveLs")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   let _ = op.addInput(l2Regularizer)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("fast", fast)
   return op.execute(Int(1))
 }
@@ -15735,8 +15735,8 @@ public static func matrixSquareRoot<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixSquareRoot")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -15781,11 +15781,11 @@ public static func matrixTriangularSolve<T: FloatingPoint & TensorFlowScalar>(
   adjoint: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MatrixTriangularSolve")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(matrix)
   let _ = op.addInput(rhs)
   op.setAttr("lower", lower)
   op.setAttr("adjoint", adjoint)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15814,11 +15814,11 @@ public static func max<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Max")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15847,8 +15847,8 @@ public static func maxPool<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPool")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
@@ -15882,12 +15882,12 @@ public static func maxPool3D<T: FloatingPoint & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPool3D")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15923,6 +15923,8 @@ public static func maxPool3DGrad<
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPool3DGrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("TInput", Tinput.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -15930,8 +15932,6 @@ public static func maxPool3DGrad<
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("TInput", Tinput.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -15966,6 +15966,7 @@ public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat1 = .ndhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPool3DGradGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -15973,7 +15974,6 @@ public static func maxPool3DGradGrad<T: Numeric & TensorFlowScalar>(
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16007,6 +16007,7 @@ public static func maxPoolGrad<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -16014,7 +16015,6 @@ public static func maxPoolGrad<T: Numeric & TensorFlowScalar>(
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16048,6 +16048,7 @@ public static func maxPoolGradGrad<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGradGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -16055,7 +16056,6 @@ public static func maxPoolGradGrad<T: Numeric & TensorFlowScalar>(
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16089,6 +16089,7 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGradGradV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -16096,7 +16097,6 @@ public static func maxPoolGradGradV2<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16130,6 +16130,8 @@ public static func maxPoolGradGradWithArgmax<
   includeBatchInIndex: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGradGradWithArgmax")
+  op.setAttr("Targmax", Targmax.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(grad)
   let _ = op.addInput(argmax)
@@ -16137,8 +16139,6 @@ public static func maxPoolGradGradWithArgmax<
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("include_batch_in_index", includeBatchInIndex)
-  op.setAttr("Targmax", Targmax.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16172,6 +16172,7 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGradV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(origInput)
   let _ = op.addInput(origOutput)
   let _ = op.addInput(grad)
@@ -16179,7 +16180,6 @@ public static func maxPoolGradV2<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16213,6 +16213,8 @@ public static func maxPoolGradWithArgmax<
   includeBatchInIndex: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolGradWithArgmax")
+  op.setAttr("Targmax", Targmax.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(grad)
   let _ = op.addInput(argmax)
@@ -16220,8 +16222,6 @@ public static func maxPoolGradWithArgmax<
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("include_batch_in_index", includeBatchInIndex)
-  op.setAttr("Targmax", Targmax.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16251,10 +16251,10 @@ public static func maxPoolV2<T: Numeric & TensorFlowScalar>(
   dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("MaxPoolV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(ksize)
   let _ = op.addInput(strides)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("padding", padding.cName)
   op.setAttr("data_format", dataFormat.cName)
   return op.execute(Int(1))
@@ -16296,13 +16296,13 @@ public static func maxPoolWithArgmax<
   includeBatchInIndex: Bool = false
 ) -> (output: Tensor<T>, argmax: Tensor<Targmax>) {
   let op = TFE_Op("MaxPoolWithArgmax")
+  op.setAttr("Targmax", Targmax.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
-  op.setAttr("Targmax", Targmax.tensorFlowDataType)
   op.setAttr("padding", padding.cName)
   op.setAttr("include_batch_in_index", includeBatchInIndex)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -16316,9 +16316,9 @@ public static func maximum<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Maximum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16347,11 +16347,11 @@ public static func mean<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Mean")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16373,9 +16373,9 @@ public static func merge<T: TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> (output: Tensor<T>, valueIndex: Tensor<Int32>) {
   let op = TFE_Op("Merge")
+  op.setAttr("T", T.tensorFlowDataType)
   let inputsCount = op.addInputList(inputs)
   op.setAttr("N", inputsCount)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -16498,11 +16498,11 @@ public static func min<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Min")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16516,9 +16516,9 @@ public static func minimum<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Minimum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16572,10 +16572,10 @@ public static func mirrorPad<
   mode: Mode5
 ) -> Tensor<T> {
   let op = TFE_Op("MirrorPad")
-  let _ = op.addInput(input)
-  let _ = op.addInput(paddings)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(paddings)
   op.setAttr("mode", mode.cName)
   return op.execute(Int(1))
 }
@@ -16619,10 +16619,10 @@ public static func mirrorPadGrad<
   mode: Mode5
 ) -> Tensor<T> {
   let op = TFE_Op("MirrorPadGrad")
-  let _ = op.addInput(input)
-  let _ = op.addInput(paddings)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(paddings)
   op.setAttr("mode", mode.cName)
   return op.execute(Int(1))
 }
@@ -16649,9 +16649,9 @@ public static func mod<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Mod")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16668,9 +16668,9 @@ public static func modelDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ModelDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   op.setAttr("cpu_budget", cpuBudget)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -16685,9 +16685,9 @@ public static func mul<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Mul")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16701,9 +16701,9 @@ public static func mulNoNan<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("MulNoNan")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16728,10 +16728,10 @@ public static func multiDeviceIterator(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("MultiDeviceIterator")
+  op.setAttr("output_types", outputTypes)
   op.setAttr("devices", devices)
   op.setAttr("shared_name", sharedName)
   op.setAttr("container", container)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -16752,8 +16752,8 @@ public static func multiDeviceIteratorFromStringHandle(
   outputShapes: [TensorShape?]
 ) -> ResourceHandle {
   let op = TFE_Op("MultiDeviceIteratorFromStringHandle")
-  let _ = op.addInput(stringHandle)
   op.setAttr("output_types", outputTypes)
+  let _ = op.addInput(stringHandle)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -16778,10 +16778,10 @@ public static func multiDeviceIteratorGetNextFromShard<OutputTypes: TensorGroup>
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("MultiDeviceIteratorGetNextFromShard")
+  op.setAttr("output_types", OutputTypes._typeList)
   let _ = op.addInput(multiDeviceIterator)
   let _ = op.addInput(shardNum)
   let _ = op.addInput(incarnationId)
-  op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -16847,12 +16847,12 @@ public static func multinomial<
   seed2: Int64 = 0
 ) -> Tensor<OutputDtype> {
   let op = TFE_Op("Multinomial")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("output_dtype", OutputDtype.tensorFlowDataType)
   let _ = op.addInput(logits)
   let _ = op.addInput(numSamples)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("output_dtype", OutputDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -16895,13 +16895,13 @@ public static func mutableDenseHashTableV2<KeyDtype: TensorFlowScalar>(
   maxLoadFactor: Double = 0.8
 ) -> ResourceHandle {
   let op = TFE_Op("MutableDenseHashTableV2")
+  op.setAttr("key_dtype", KeyDtype.tensorFlowDataType)
+  op.setAttr("value_dtype", valueDtype)
   let _ = op.addInput(emptyKey)
   let _ = op.addInput(deletedKey)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("use_node_name_sharing", useNodeNameSharing)
-  op.setAttr("key_dtype", KeyDtype.tensorFlowDataType)
-  op.setAttr("value_dtype", valueDtype)
   op.setAttr("value_shape", valueShape)
   op.setAttr("initial_num_buckets", initialNumBuckets)
   op.setAttr("max_load_factor", maxLoadFactor)
@@ -16933,11 +16933,11 @@ public static func mutableHashTableOfTensorsV2(
   valueShape: TensorShape?
 ) -> ResourceHandle {
   let op = TFE_Op("MutableHashTableOfTensorsV2")
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("use_node_name_sharing", useNodeNameSharing)
-  op.setAttr("key_dtype", keyDtype)
-  op.setAttr("value_dtype", valueDtype)
   op.setAttr("value_shape", valueShape)
   return op.execute(Int(1))
 }
@@ -16968,11 +16968,11 @@ public static func mutableHashTableV2(
   valueDtype: TensorDataType
 ) -> ResourceHandle {
   let op = TFE_Op("MutableHashTableV2")
+  op.setAttr("key_dtype", keyDtype)
+  op.setAttr("value_dtype", valueDtype)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.setAttr("use_node_name_sharing", useNodeNameSharing)
-  op.setAttr("key_dtype", keyDtype)
-  op.setAttr("value_dtype", valueDtype)
   return op.execute(Int(1))
 }
 
@@ -17057,10 +17057,10 @@ public static func nInPolymorphicTwice<T: TensorFlowScalar>(
   _ b: [Tensor<T>]
 ) {
   let op = TFE_Op("NInPolymorphicTwice")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
   let _ = op.addInputList(b)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -17085,11 +17085,11 @@ public static func nInTwoTypeVariables<
   _ b: [Tensor<T>]
 ) {
   let op = TFE_Op("NInTwoTypeVariables")
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
   let _ = op.addInputList(b)
-  op.setAttr("S", S.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -17126,9 +17126,9 @@ public static func nPolymorphicIn<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
   let op = TFE_Op("NPolymorphicIn")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -17157,9 +17157,9 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
   _ a: [Tensor<T>]
 ) {
   let op = TFE_Op("NPolymorphicRestrictIn")
+  op.setAttr("T", T.tensorFlowDataType)
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -17168,9 +17168,9 @@ public static func nPolymorphicRestrictIn(
   _ a: StringTensor
 ) {
   let op = TFE_Op("NPolymorphicRestrictIn")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let aCount = op.addInputList(a)
   op.setAttr("N", aCount)
-  op.setAttr("T", TensorDataType(TF_STRING))
   op.execute()
 }
 
@@ -17216,9 +17216,9 @@ public static func ncclAllReduce<T: Numeric & TensorFlowScalar>(
   sharedName: String
 ) -> Tensor<T> {
   let op = TFE_Op("NcclAllReduce")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("reduction", reduction.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("num_devices", numDevices)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -17241,8 +17241,8 @@ public static func ncclBroadcast<T: Numeric & TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("NcclBroadcast")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("shape", shape)
   return op.execute(Int(1))
 }
@@ -17263,10 +17263,10 @@ public static func ncclReduce<T: Numeric & TensorFlowScalar>(
   reduction: Reduction
 ) -> Tensor<T> {
   let op = TFE_Op("NcclReduce")
+  op.setAttr("T", T.tensorFlowDataType)
   let inputCount = op.addInputList(input)
   op.setAttr("num_devices", inputCount)
   op.setAttr("reduction", reduction.cName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17308,8 +17308,8 @@ public static func neg<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Neg")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -17328,9 +17328,9 @@ public static func nextAfter<T: FloatingPoint & TensorFlowScalar>(
   x2: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("NextAfter")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x1)
   let _ = op.addInput(x2)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17344,8 +17344,8 @@ public static func nextIteration<T: TensorFlowScalar>(
   data: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("NextIteration")
-  let _ = op.addInput(data)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(data)
   return op.execute(Int(1))
 }
 
@@ -17375,9 +17375,9 @@ public static func nonDeterministicInts<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("NonDeterministicInts")
-  let _ = op.addInput(shape)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
+  let _ = op.addInput(shape)
   return op.execute(Int(1))
 }
 
@@ -17467,11 +17467,11 @@ public static func nonMaxSuppressionV2<T: FloatingPoint & TensorFlowScalar>(
   iouThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
   let op = TFE_Op("NonMaxSuppressionV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(boxes)
   let _ = op.addInput(scores)
   let _ = op.addInput(maxOutputSize)
   let _ = op.addInput(iouThreshold)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17517,12 +17517,12 @@ public static func nonMaxSuppressionV3<T: FloatingPoint & TensorFlowScalar>(
   scoreThreshold: Tensor<Float>
 ) -> Tensor<Int32> {
   let op = TFE_Op("NonMaxSuppressionV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(boxes)
   let _ = op.addInput(scores)
   let _ = op.addInput(maxOutputSize)
   let _ = op.addInput(iouThreshold)
   let _ = op.addInput(scoreThreshold)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17575,12 +17575,12 @@ public static func nonMaxSuppressionV4<T: FloatingPoint & TensorFlowScalar>(
   padToMaxOutputSize: Bool = false
 ) -> (selectedIndices: Tensor<Int32>, validOutputs: Tensor<Int32>) {
   let op = TFE_Op("NonMaxSuppressionV4")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(boxes)
   let _ = op.addInput(scores)
   let _ = op.addInput(maxOutputSize)
   let _ = op.addInput(iouThreshold)
   let _ = op.addInput(scoreThreshold)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("pad_to_max_output_size", padToMaxOutputSize)
   return op.execute(Int(1), Int(1))
 }
@@ -17651,9 +17651,9 @@ public static func notEqual<T: TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<Bool> {
   let op = TFE_Op("NotEqual")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17667,9 +17667,9 @@ public static func notEqual(
   _ y: StringTensor
 ) -> Tensor<Bool> {
   let op = TFE_Op("NotEqual")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -17699,10 +17699,10 @@ public static func nthElement<T: Numeric & TensorFlowScalar>(
   reverse: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("NthElement")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(n)
   op.setAttr("reverse", reverse)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17825,13 +17825,13 @@ public static func oneHot<
   axis: Int64 = -1
 ) -> Tensor<T> {
   let op = TFE_Op("OneHot")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("TI", Ti.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(depth)
   let _ = op.addInput(onValue)
   let _ = op.addInput(offValue)
   op.setAttr("axis", axis)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("TI", Ti.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -17870,8 +17870,8 @@ public static func oneShotIterator<DatasetfactoryIn: TensorGroup,
   sharedName: String
 ) -> ResourceHandle {
   let op = TFE_Op("OneShotIterator")
-  op.setAttr("dataset_factory", datasetFactory)
   op.setAttr("output_types", outputTypes)
+  op.setAttr("dataset_factory", datasetFactory)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
@@ -17888,8 +17888,8 @@ public static func onesLike<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("OnesLike")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -17926,9 +17926,9 @@ public static func optimizeDataset(
   optimizationConfigs: [String]
 ) -> VariantHandle {
   let op = TFE_Op("OptimizeDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(optimizations)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("optimization_configs", optimizationConfigs)
   return op.execute(Int(1))
@@ -17940,8 +17940,8 @@ public static func optionalFromValue<ToutputTypes: TensorArrayProtocol>(
   components: ToutputTypes
 ) -> VariantHandle {
   let op = TFE_Op("OptionalFromValue")
-  let _ = op.addInputList(components)
   op.setAttr("Toutput_types", components._typeList)
+  let _ = op.addInputList(components)
   return op.execute(Int(1))
 }
 
@@ -17952,8 +17952,8 @@ public static func optionalGetValue<OutputTypes: TensorGroup>(
   outputShapes: [TensorShape?]
 ) -> OutputTypes {
   let op = TFE_Op("OptionalGetValue")
-  let _ = op.addInput(optional)
   op.setAttr("output_types", OutputTypes._typeList)
+  let _ = op.addInput(optional)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(OutputTypes._typeList.count))
 }
@@ -17987,9 +17987,9 @@ public static func orderedMapClear(
   sharedName: String
 ) {
   let op = TFE_Op("OrderedMapClear")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -18005,9 +18005,9 @@ public static func orderedMapIncompleteSize(
   sharedName: String
 ) -> Tensor<Int32> {
   let op = TFE_Op("OrderedMapIncompleteSize")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -18028,11 +18028,11 @@ public static func orderedMapPeek<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("OrderedMapPeek")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -18048,9 +18048,9 @@ public static func orderedMapSize(
   sharedName: String
 ) -> Tensor<Int32> {
   let op = TFE_Op("OrderedMapSize")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -18083,13 +18083,13 @@ public static func orderedMapStage<FakeDtypes: TensorArrayProtocol>(
   sharedName: String
 ) {
   let op = TFE_Op("OrderedMapStage")
+  op.setAttr("dtypes", dtypes)
+  op.setAttr("fake_dtypes", values._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   let _ = op.addInputList(values)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
-  op.setAttr("fake_dtypes", values._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -18109,11 +18109,11 @@ public static func orderedMapUnstage<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("OrderedMapUnstage")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(key)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -18132,10 +18132,10 @@ public static func orderedMapUnstageNoKey<Dtypes: TensorGroup>(
   sharedName: String
 ) -> (key: Tensor<Int64>, values: Dtypes) {
   let op = TFE_Op("OrderedMapUnstageNoKey")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(indices)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1), Int(Dtypes._typeList.count))
@@ -18222,8 +18222,8 @@ public static func outfeedEnqueue<Dtype: TensorFlowScalar>(
   _ input: Tensor<Dtype>
 ) {
   let op = TFE_Op("OutfeedEnqueue")
-  let _ = op.addInput(input)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.execute()
 }
 
@@ -18236,8 +18236,8 @@ public static func outfeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
   inputs: Dtypes
 ) {
   let op = TFE_Op("OutfeedEnqueueTuple")
-  let _ = op.addInputList(inputs)
   op.setAttr("dtypes", inputs._typeList)
+  let _ = op.addInputList(inputs)
   op.execute()
 }
 
@@ -18275,9 +18275,9 @@ public static func pack<T: TensorFlowScalar>(
   axis: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("Pack")
+  op.setAttr("T", T.tensorFlowDataType)
   let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("axis", axis)
   return op.execute(Int(1))
 }
@@ -18316,10 +18316,10 @@ public static func pad<
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
   let op = TFE_Op("Pad")
-  let _ = op.addInput(input)
-  let _ = op.addInput(paddings)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(paddings)
   return op.execute(Int(1))
 }
 
@@ -18359,11 +18359,11 @@ public static func padV2<
   constantValues: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("PadV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(paddings)
   let _ = op.addInput(constantValues)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -18387,12 +18387,12 @@ public static func paddedBatchDataset<ToutputTypes: TensorArrayProtocol>(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("PaddedBatchDataset")
+  op.setAttr("Toutput_types", paddingValues._typeList)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(batchSize)
   let paddedShapesCount = op.addInputList(paddedShapes)
   op.setAttr("N", paddedShapesCount)
   let _ = op.addInputList(paddingValues)
-  op.setAttr("Toutput_types", paddingValues._typeList)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -18421,6 +18421,7 @@ public static func paddedBatchDatasetV2<ToutputTypes: TensorArrayProtocol>(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("PaddedBatchDatasetV2")
+  op.setAttr("Toutput_types", paddingValues._typeList)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(batchSize)
   let paddedShapesCount = op.addInputList(paddedShapes)
@@ -18428,7 +18429,6 @@ public static func paddedBatchDatasetV2<ToutputTypes: TensorArrayProtocol>(
   let _ = op.addInputList(paddingValues)
   let _ = op.addInput(dropRemainder)
   op.setAttr("parallel_copy", parallelCopy)
-  op.setAttr("Toutput_types", paddingValues._typeList)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -18506,9 +18506,9 @@ public static func parallelConcat<T: TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<T> {
   let op = TFE_Op("ParallelConcat")
+  op.setAttr("T", T.tensorFlowDataType)
   let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
   return op.execute(Int(1))
 }
@@ -18582,10 +18582,10 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
   data: [Tensor<T>]
 ) -> Tensor<T> {
   let op = TFE_Op("ParallelDynamicStitch")
+  op.setAttr("T", T.tensorFlowDataType)
   let indicesCount = op.addInputList(indices)
   op.setAttr("N", indicesCount)
   let _ = op.addInputList(data)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -18611,14 +18611,14 @@ public static func parallelInterleaveDatasetV2<
   sloppy: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ParallelInterleaveDatasetV2")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(cycleLength)
   let _ = op.addInput(blockLength)
   let _ = op.addInput(numParallelCalls)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("sloppy", sloppy)
   return op.execute(Int(1))
@@ -18648,12 +18648,12 @@ public static func parallelMapDataset<
   preserveCardinality: Bool = false
 ) -> VariantHandle {
   let op = TFE_Op("ParallelMapDataset")
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(otherArguments)
   let _ = op.addInput(numParallelCalls)
   op.setAttr("f", f)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   op.setAttr("sloppy", sloppy)
@@ -18697,6 +18697,8 @@ public static func parameterizedTruncatedNormal<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("ParameterizedTruncatedNormal")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(means)
   let _ = op.addInput(stdevs)
@@ -18704,8 +18706,6 @@ public static func parameterizedTruncatedNormal<
   let _ = op.addInput(maxvals)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -18766,6 +18766,8 @@ public static func parseExample<
   denseShapes: [TensorShape?]
 ) -> (sparseIndices: [Tensor<Int64>], sparseValues: SparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
   let op = TFE_Op("ParseExample")
+  op.setAttr("sparse_types", SparseTypes._typeList)
+  op.setAttr("Tdense", denseDefaults._typeList)
   let _ = op.addInput(serialized)
   let _ = op.addInput(names)
   let sparseKeysCount = op.addInputList(sparseKeys)
@@ -18773,8 +18775,6 @@ public static func parseExample<
   let denseKeysCount = op.addInputList(denseKeys)
   op.setAttr("Ndense", denseKeysCount)
   let _ = op.addInputList(denseDefaults)
-  op.setAttr("sparse_types", SparseTypes._typeList)
-  op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
   return op.execute(Int(sparseKeysCount), Int(SparseTypes._typeList.count), Int(sparseKeysCount), Int(denseDefaults._typeList.count))
 }
@@ -18855,6 +18855,10 @@ public static func parseSequenceExample<
   featureListDenseShapes: [TensorShape?]
 ) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: ContextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: FeatureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: FeatureListDenseTypes, featureListDenseLengths: [Tensor<Int64>]) {
   let op = TFE_Op("ParseSequenceExample")
+  op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
+  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
+  op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
+  op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   let _ = op.addInput(serialized)
   let _ = op.addInput(debugName)
   let _ = op.addInputList(contextDenseDefaults)
@@ -18867,11 +18871,7 @@ public static func parseSequenceExample<
   op.setAttr("Ncontext_dense", ncontextDense)
   op.setAttr("Nfeature_list_sparse", nfeatureListSparse)
   op.setAttr("Nfeature_list_dense", nfeatureListDense)
-  op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
-  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
-  op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
   op.setAttr("context_dense_shapes", contextDenseShapes)
-  op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
   return op.execute(Int(ncontextSparse), Int(ContextSparseTypes._typeList.count), Int(ncontextSparse), Int(contextDenseDefaults._typeList.count), Int(nfeatureListSparse), Int(FeatureListSparseTypes._typeList.count), Int(nfeatureListSparse), Int(FeatureListDenseTypes._typeList.count), Int(nfeatureListDense))
 }
@@ -18928,13 +18928,13 @@ public static func parseSingleExample<
   denseShapes: [TensorShape?]
 ) -> (sparseIndices: [Tensor<Int64>], sparseValues: SparseTypes, sparseShapes: [Tensor<Int64>], denseValues: Tdense) {
   let op = TFE_Op("ParseSingleExample")
+  op.setAttr("sparse_types", SparseTypes._typeList)
+  op.setAttr("Tdense", denseDefaults._typeList)
   let _ = op.addInput(serialized)
   let _ = op.addInputList(denseDefaults)
   op.setAttr("num_sparse", numSparse)
   op.setAttr("sparse_keys", sparseKeys)
   op.setAttr("dense_keys", denseKeys)
-  op.setAttr("sparse_types", SparseTypes._typeList)
-  op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
   return op.execute(Int(numSparse), Int(SparseTypes._typeList.count), Int(numSparse), Int(denseDefaults._typeList.count))
 }
@@ -19011,6 +19011,10 @@ public static func parseSingleSequenceExample<
   featureListDenseShapes: [TensorShape?]
 ) -> (contextSparseIndices: [Tensor<Int64>], contextSparseValues: ContextSparseTypes, contextSparseShapes: [Tensor<Int64>], contextDenseValues: TcontextDense, featureListSparseIndices: [Tensor<Int64>], featureListSparseValues: FeatureListSparseTypes, featureListSparseShapes: [Tensor<Int64>], featureListDenseValues: FeatureListDenseTypes) {
   let op = TFE_Op("ParseSingleSequenceExample")
+  op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
+  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
+  op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
+  op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   let _ = op.addInput(serialized)
   let _ = op.addInput(featureListDenseMissingAssumedEmpty)
   let contextSparseKeysCount = op.addInputList(contextSparseKeys)
@@ -19023,11 +19027,7 @@ public static func parseSingleSequenceExample<
   op.setAttr("Nfeature_list_dense", featureListDenseKeysCount)
   let _ = op.addInputList(contextDenseDefaults)
   let _ = op.addInput(debugName)
-  op.setAttr("context_sparse_types", ContextSparseTypes._typeList)
-  op.setAttr("Tcontext_dense", contextDenseDefaults._typeList)
-  op.setAttr("feature_list_dense_types", FeatureListDenseTypes._typeList)
   op.setAttr("context_dense_shapes", contextDenseShapes)
-  op.setAttr("feature_list_sparse_types", FeatureListSparseTypes._typeList)
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
   return op.execute(Int(contextSparseKeysCount), Int(ContextSparseTypes._typeList.count), Int(contextSparseKeysCount), Int(contextDenseDefaults._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListSparseTypes._typeList.count), Int(featureListSparseKeysCount), Int(FeatureListDenseTypes._typeList.count))
 }
@@ -19045,8 +19045,8 @@ public static func parseTensor<OutType: TensorFlowScalar>(
   serialized: StringTensor
 ) -> Tensor<OutType> {
   let op = TFE_Op("ParseTensor")
-  let _ = op.addInput(serialized)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(serialized)
   return op.execute(Int(1))
 }
 
@@ -19077,9 +19077,9 @@ public static func partitionedCall<
   executorType: String
 ) -> Tout {
   let op = TFE_Op("PartitionedCall")
-  let _ = op.addInputList(args)
   op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(args)
   op.setAttr("f", f)
   op.setAttr("config", config)
   op.setAttr("config_proto", configProto)
@@ -19146,8 +19146,8 @@ public static func placeholderWithDefault<Dtype: TensorFlowScalar>(
   shape: TensorShape?
 ) -> Tensor<Dtype> {
   let op = TFE_Op("PlaceholderWithDefault")
-  let _ = op.addInput(input)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("shape", shape)
   return op.execute(Int(1))
 }
@@ -19167,9 +19167,9 @@ public static func polygamma<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Polygamma")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(x)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -19178,8 +19178,8 @@ public static func polymorphic<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Polymorphic")
-  let _ = op.addInput(a)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(a)
   return op.execute(Int(1))
 }
 
@@ -19212,8 +19212,8 @@ public static func populationCount<T: BinaryInteger & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<UInt8> {
   let op = TFE_Op("PopulationCount")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -19233,9 +19233,9 @@ public static func pow<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Pow")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -19251,9 +19251,9 @@ public static func prefetchDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("PrefetchDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(bufferSize)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -19275,8 +19275,8 @@ public static func prelinearize<Dtype: TensorFlowScalar>(
   layout: [Int32]
 ) -> VariantHandle {
   let op = TFE_Op("Prelinearize")
-  let _ = op.addInput(input)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("shape", shape)
   op.setAttr("layout", layout)
   return op.execute(Int(1))
@@ -19300,8 +19300,8 @@ public static func prelinearizeTuple<Dtypes: TensorArrayProtocol>(
   layouts: [Int32]
 ) -> VariantHandle {
   let op = TFE_Op("PrelinearizeTuple")
-  let _ = op.addInputList(inputs)
   op.setAttr("dtypes", inputs._typeList)
+  let _ = op.addInputList(inputs)
   op.setAttr("shapes", shapes)
   op.setAttr("layouts", layouts)
   return op.execute(Int(1))
@@ -19329,8 +19329,8 @@ public static func preventGradient<T: TensorFlowScalar>(
   message: String
 ) -> Tensor<T> {
   let op = TFE_Op("PreventGradient")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("message", message)
   return op.execute(Int(1))
 }
@@ -19361,10 +19361,10 @@ public static func print<
   summarize: Int64 = 3
 ) -> Tensor<T> {
   let op = TFE_Op("Print")
-  let _ = op.addInput(input)
-  let _ = op.addInputList(data)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("U", data._typeList)
+  let _ = op.addInput(input)
+  let _ = op.addInputList(data)
   op.setAttr("message", message)
   op.setAttr("first_n", firstN)
   op.setAttr("summarize", summarize)
@@ -19453,11 +19453,11 @@ public static func prod<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Prod")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -19484,10 +19484,10 @@ public static func pyFunc<
   token: String
 ) -> Tout {
   let op = TFE_Op("PyFunc")
-  let _ = op.addInputList(input)
-  op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("token", token)
   return op.execute(Int(Tout._typeList.count))
 }
 
@@ -19501,10 +19501,10 @@ public static func pyFuncStateless<
   token: String
 ) -> Tout {
   let op = TFE_Op("PyFuncStateless")
-  let _ = op.addInputList(input)
-  op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(input)
+  op.setAttr("token", token)
   return op.execute(Int(Tout._typeList.count))
 }
 
@@ -19539,9 +19539,9 @@ public static func qr<T: FloatingPoint & TensorFlowScalar>(
   fullMatrices: Bool = false
 ) -> (q: Tensor<T>, r: Tensor<T>) {
   let op = TFE_Op("Qr")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("full_matrices", fullMatrices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -19556,13 +19556,13 @@ public static func quantizeAndDequantize<T: FloatingPoint & TensorFlowScalar>(
   inputMax: Double = 0
 ) -> Tensor<T> {
   let op = TFE_Op("QuantizeAndDequantize")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("signed_input", signedInput)
   op.setAttr("num_bits", numBits)
   op.setAttr("range_given", rangeGiven)
   op.setAttr("input_min", inputMin)
   op.setAttr("input_max", inputMax)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -19654,13 +19654,13 @@ public static func quantizeAndDequantizeV2<T: FloatingPoint & TensorFlowScalar>(
   roundMode: RoundMode = .halfToEven
 ) -> Tensor<T> {
   let op = TFE_Op("QuantizeAndDequantizeV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
   op.setAttr("signed_input", signedInput)
   op.setAttr("num_bits", numBits)
   op.setAttr("range_given", rangeGiven)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("round_mode", roundMode.cName)
   return op.execute(Int(1))
 }
@@ -19679,13 +19679,13 @@ public static func quantizeAndDequantizeV3<T: FloatingPoint & TensorFlowScalar>(
   rangeGiven: Bool = true
 ) -> Tensor<T> {
   let op = TFE_Op("QuantizeAndDequantizeV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
   let _ = op.addInput(numBits)
   op.setAttr("signed_input", signedInput)
   op.setAttr("range_given", rangeGiven)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -19735,11 +19735,11 @@ public static func quantizeDownAndShrinkRange<
   inputMax: Tensor<Float>
 ) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("QuantizeDownAndShrinkRange")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -19861,10 +19861,10 @@ public static func quantizeV2<T: TensorFlowScalar>(
   roundMode: RoundMode6 = .halfAwayFromZero
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("QuantizeV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(minRange)
   let _ = op.addInput(maxRange)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("mode", mode.cName)
   op.setAttr("round_mode", roundMode.cName)
   return op.execute(Int(1), Int(1), Int(1))
@@ -19898,15 +19898,15 @@ public static func quantizedAdd<
   maxY: Tensor<Float>
 ) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
   let op = TFE_Op("QuantizedAdd")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("Toutput", Toutput.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
   let _ = op.addInput(minX)
   let _ = op.addInput(maxX)
   let _ = op.addInput(minY)
   let _ = op.addInput(maxY)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("Toutput", Toutput.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -19937,10 +19937,10 @@ public static func quantizedAvgPool<T: TensorFlowScalar>(
   padding: Padding
 ) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedAvgPool")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
@@ -20004,6 +20004,8 @@ public static func quantizedBatchNormWithGlobalNormalization<
   scaleAfterNormalization: Bool
 ) -> (result: Tensor<OutType>, resultMin: Tensor<Float>, resultMax: Tensor<Float>) {
   let op = TFE_Op("QuantizedBatchNormWithGlobalNormalization")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(t)
   let _ = op.addInput(tMin)
   let _ = op.addInput(tMax)
@@ -20019,8 +20021,6 @@ public static func quantizedBatchNormWithGlobalNormalization<
   let _ = op.addInput(gamma)
   let _ = op.addInput(gammaMin)
   let _ = op.addInput(gammaMax)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("variance_epsilon", varianceEpsilon)
   op.setAttr("scale_after_normalization", scaleAfterNormalization)
   return op.execute(Int(1), Int(1), Int(1))
@@ -20054,15 +20054,15 @@ public static func quantizedBiasAdd<
   maxBias: Tensor<Float>
 ) -> (output: Tensor<OutType>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
   let op = TFE_Op("QuantizedBiasAdd")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(bias)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minBias)
   let _ = op.addInput(maxBias)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -20090,12 +20090,12 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   inputMaxes: [Tensor<Float>]
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("QuantizedConcat")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(concatDim)
   let valuesCount = op.addInputList(values)
   op.setAttr("N", valuesCount)
   let _ = op.addInputList(inputMins)
   let _ = op.addInputList(inputMaxes)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -20143,15 +20143,15 @@ public static func quantizedConv2D<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2D")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20176,15 +20176,15 @@ public static func quantizedConv2DAndRelu<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DAndRelu")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20212,6 +20212,9 @@ public static func quantizedConv2DAndReluAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DAndReluAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
@@ -20220,9 +20223,6 @@ public static func quantizedConv2DAndReluAndRequantize<
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(minFreezedOutput)
   let _ = op.addInput(maxFreezedOutput)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20250,6 +20250,9 @@ public static func quantizedConv2DAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
@@ -20258,9 +20261,6 @@ public static func quantizedConv2DAndRequantize<
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(minFreezedOutput)
   let _ = op.addInput(maxFreezedOutput)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20306,15 +20306,15 @@ public static func quantizedConv2DPerChannel<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DPerChannel")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20340,6 +20340,9 @@ public static func quantizedConv2DWithBias<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBias")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20347,9 +20350,6 @@ public static func quantizedConv2DWithBias<
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20376,6 +20376,9 @@ public static func quantizedConv2DWithBiasAndRelu<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasAndRelu")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20383,9 +20386,6 @@ public static func quantizedConv2DWithBiasAndRelu<
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20415,6 +20415,10 @@ public static func quantizedConv2DWithBiasAndReluAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasAndReluAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("Tbias", Tbias.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20424,10 +20428,6 @@ public static func quantizedConv2DWithBiasAndReluAndRequantize<
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(minFreezedOutput)
   let _ = op.addInput(maxFreezedOutput)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("Tbias", Tbias.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20457,6 +20457,10 @@ public static func quantizedConv2DWithBiasAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("Tbias", Tbias.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20466,10 +20470,6 @@ public static func quantizedConv2DWithBiasAndRequantize<
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(minFreezedOutput)
   let _ = op.addInput(maxFreezedOutput)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("Tbias", Tbias.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20503,6 +20503,11 @@ public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasSignedSumAndReluAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("Tbias", Tbias.tensorFlowDataType)
+  op.setAttr("Tsummand", Tsummand.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20515,11 +20520,6 @@ public static func quantizedConv2DWithBiasSignedSumAndReluAndRequantize<
   let _ = op.addInput(summand)
   let _ = op.addInput(minSummand)
   let _ = op.addInput(maxSummand)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("Tbias", Tbias.tensorFlowDataType)
-  op.setAttr("Tsummand", Tsummand.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20547,6 +20547,9 @@ public static func quantizedConv2DWithBiasSumAndRelu<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasSumAndRelu")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20555,9 +20558,6 @@ public static func quantizedConv2DWithBiasSumAndRelu<
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(summand)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20591,6 +20591,11 @@ public static func quantizedConv2DWithBiasSumAndReluAndRequantize<
   paddingList: [Int32]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedConv2DWithBiasSumAndReluAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("Tbias", Tbias.tensorFlowDataType)
+  op.setAttr("Tsummand", Tsummand.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20603,11 +20608,6 @@ public static func quantizedConv2DWithBiasSumAndReluAndRequantize<
   let _ = op.addInput(summand)
   let _ = op.addInput(minSummand)
   let _ = op.addInput(maxSummand)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("Tbias", Tbias.tensorFlowDataType)
-  op.setAttr("Tsummand", Tsummand.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20632,15 +20632,15 @@ public static func quantizedDepthwiseConv2D<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedDepthwiseConv2D")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20665,6 +20665,9 @@ public static func quantizedDepthwiseConv2DWithBias<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedDepthwiseConv2DWithBias")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20672,9 +20675,6 @@ public static func quantizedDepthwiseConv2DWithBias<
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20699,6 +20699,9 @@ public static func quantizedDepthwiseConv2DWithBiasAndRelu<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedDepthwiseConv2DWithBiasAndRelu")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20706,9 +20709,6 @@ public static func quantizedDepthwiseConv2DWithBiasAndRelu<
   let _ = op.addInput(maxInput)
   let _ = op.addInput(minFilter)
   let _ = op.addInput(maxFilter)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20736,6 +20736,10 @@ public static func quantizedDepthwiseConv2DWithBiasAndReluAndRequantize<
   dilations: [Int32] = [1, 1, 1, 1]
 ) -> (output: Tensor<OutType>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
+  op.setAttr("Tbias", Tbias.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(filter)
   let _ = op.addInput(bias)
@@ -20745,10 +20749,6 @@ public static func quantizedDepthwiseConv2DWithBiasAndReluAndRequantize<
   let _ = op.addInput(maxFilter)
   let _ = op.addInput(minFreezedOutput)
   let _ = op.addInput(maxFreezedOutput)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("Tfilter", Tfilter.tensorFlowDataType)
-  op.setAttr("Tbias", Tbias.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
   op.setAttr("dilations", dilations)
@@ -20787,10 +20787,10 @@ public static func quantizedInstanceNorm<T: TensorFlowScalar>(
   minSeparation: Double = 0.001
 ) -> (y: Tensor<T>, yMin: Tensor<Float>, yMax: Tensor<Float>) {
   let op = TFE_Op("QuantizedInstanceNorm")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(xMin)
   let _ = op.addInput(xMax)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("output_range_given", outputRangeGiven)
   op.setAttr("given_y_min", givenYMin)
   op.setAttr("given_y_max", givenYMax)
@@ -20840,18 +20840,18 @@ public static func quantizedMatMul<
   tactivation: TensorDataType
 ) -> (out: Tensor<Toutput>, minOut: Tensor<Float>, maxOut: Tensor<Float>) {
   let op = TFE_Op("QuantizedMatMul")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("Toutput", Toutput.tensorFlowDataType)
+  op.setAttr("Tactivation", tactivation)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
   let _ = op.addInput(minA)
   let _ = op.addInput(maxA)
   let _ = op.addInput(minB)
   let _ = op.addInput(maxB)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("Toutput", Toutput.tensorFlowDataType)
   op.setAttr("transpose_a", transposeA)
   op.setAttr("transpose_b", transposeB)
-  op.setAttr("Tactivation", tactivation)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -20882,10 +20882,10 @@ public static func quantizedMaxPool<T: TensorFlowScalar>(
   padding: Padding
 ) -> (output: Tensor<T>, minOutput: Tensor<Float>, maxOutput: Tensor<Float>) {
   let op = TFE_Op("QuantizedMaxPool")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(minInput)
   let _ = op.addInput(maxInput)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("ksize", ksize)
   op.setAttr("strides", strides)
   op.setAttr("padding", padding.cName)
@@ -20920,15 +20920,15 @@ public static func quantizedMul<
   maxY: Tensor<Float>
 ) -> (z: Tensor<Toutput>, minZ: Tensor<Float>, maxZ: Tensor<Float>) {
   let op = TFE_Op("QuantizedMul")
+  op.setAttr("T1", T1.tensorFlowDataType)
+  op.setAttr("T2", T2.tensorFlowDataType)
+  op.setAttr("Toutput", Toutput.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
   let _ = op.addInput(minX)
   let _ = op.addInput(maxX)
   let _ = op.addInput(minY)
   let _ = op.addInput(maxY)
-  op.setAttr("T1", T1.tensorFlowDataType)
-  op.setAttr("T2", T2.tensorFlowDataType)
-  op.setAttr("Toutput", Toutput.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -20952,11 +20952,11 @@ public static func quantizedRelu<
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   let op = TFE_Op("QuantizedRelu")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(features)
   let _ = op.addInput(minFeatures)
   let _ = op.addInput(maxFeatures)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -20980,11 +20980,11 @@ public static func quantizedRelu6<
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   let op = TFE_Op("QuantizedRelu6")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(features)
   let _ = op.addInput(minFeatures)
   let _ = op.addInput(maxFeatures)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -21009,12 +21009,12 @@ public static func quantizedReluX<
   maxFeatures: Tensor<Float>
 ) -> (activations: Tensor<OutType>, minActivations: Tensor<Float>, maxActivations: Tensor<Float>) {
   let op = TFE_Op("QuantizedReluX")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(features)
   let _ = op.addInput(maxValue)
   let _ = op.addInput(minFeatures)
   let _ = op.addInput(maxFeatures)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -21041,12 +21041,12 @@ public static func quantizedReshape<
   inputMax: Tensor<Float>
 ) -> (output: Tensor<T>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("QuantizedReshape")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tshape", Tshape.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(shape)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tshape", Tshape.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -21074,11 +21074,11 @@ public static func quantizedResizeBilinear<T: FloatingPoint & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> (resizedImages: Tensor<T>, outMin: Tensor<Float>, outMax: Tensor<Float>) {
   let op = TFE_Op("QuantizedResizeBilinear")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
   let _ = op.addInput(min)
   let _ = op.addInput(max)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1), Int(1), Int(1))
@@ -21141,9 +21141,9 @@ public static func queueDequeueManyV2<ComponentTypes: TensorGroup>(
   timeoutMs: Int64 = -1
 ) -> ComponentTypes {
   let op = TFE_Op("QueueDequeueManyV2")
+  op.setAttr("component_types", ComponentTypes._typeList)
   let _ = op.addInput(handle)
   let _ = op.addInput(n)
-  op.setAttr("component_types", ComponentTypes._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   return op.execute(Int(ComponentTypes._typeList.count))
 }
@@ -21186,9 +21186,9 @@ public static func queueDequeueUpToV2<ComponentTypes: TensorGroup>(
   timeoutMs: Int64 = -1
 ) -> ComponentTypes {
   let op = TFE_Op("QueueDequeueUpToV2")
+  op.setAttr("component_types", ComponentTypes._typeList)
   let _ = op.addInput(handle)
   let _ = op.addInput(n)
-  op.setAttr("component_types", ComponentTypes._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   return op.execute(Int(ComponentTypes._typeList.count))
 }
@@ -21217,8 +21217,8 @@ public static func queueDequeueV2<ComponentTypes: TensorGroup>(
   timeoutMs: Int64 = -1
 ) -> ComponentTypes {
   let op = TFE_Op("QueueDequeueV2")
-  let _ = op.addInput(handle)
   op.setAttr("component_types", ComponentTypes._typeList)
+  let _ = op.addInput(handle)
   op.setAttr("timeout_ms", timeoutMs)
   return op.execute(Int(ComponentTypes._typeList.count))
 }
@@ -21250,9 +21250,9 @@ public static func queueEnqueueManyV2<Tcomponents: TensorArrayProtocol>(
   timeoutMs: Int64 = -1
 ) {
   let op = TFE_Op("QueueEnqueueManyV2")
+  op.setAttr("Tcomponents", components._typeList)
   let _ = op.addInput(handle)
   let _ = op.addInputList(components)
-  op.setAttr("Tcomponents", components._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   op.execute()
 }
@@ -21279,9 +21279,9 @@ public static func queueEnqueueV2<Tcomponents: TensorArrayProtocol>(
   timeoutMs: Int64 = -1
 ) {
   let op = TFE_Op("QueueEnqueueV2")
+  op.setAttr("Tcomponents", components._typeList)
   let _ = op.addInput(handle)
   let _ = op.addInputList(components)
-  op.setAttr("Tcomponents", components._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   op.execute()
 }
@@ -21333,8 +21333,8 @@ public static func rGBToHSV<T: FloatingPoint & TensorFlowScalar>(
   images: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("RGBToHSV")
-  let _ = op.addInput(images)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(images)
   return op.execute(Int(1))
 }
 
@@ -21396,12 +21396,12 @@ public static func raggedGather<
   oUTPUTRAGGEDRANK: Int64
 ) -> (outputNestedSplits: [Tensor<Int64>], outputDenseValues: Tensor<Tvalues>) {
   let op = TFE_Op("RaggedGather")
+  op.setAttr("Tvalues", Tvalues.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let paramsNestedSplitsCount = op.addInputList(paramsNestedSplits)
   op.setAttr("PARAMS_RAGGED_RANK", paramsNestedSplitsCount)
   let _ = op.addInput(paramsDenseValues)
   let _ = op.addInput(indices)
-  op.setAttr("Tvalues", Tvalues.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("OUTPUT_RAGGED_RANK", oUTPUTRAGGEDRANK)
   return op.execute(Int(oUTPUTRAGGEDRANK), Int(1))
 }
@@ -21442,10 +21442,10 @@ public static func raggedRange<T: Numeric & TensorFlowScalar>(
   deltas: Tensor<T>
 ) -> (rtNestedSplits: Tensor<Int64>, rtDenseValues: Tensor<T>) {
   let op = TFE_Op("RaggedRange")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(starts)
   let _ = op.addInput(limits)
   let _ = op.addInput(deltas)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -21473,10 +21473,10 @@ public static func raggedTensorToSparse<T: TensorFlowScalar>(
   rtDenseValues: Tensor<T>
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<T>, sparseDenseShape: Tensor<Int64>) {
   let op = TFE_Op("RaggedTensorToSparse")
+  op.setAttr("T", T.tensorFlowDataType)
   let rtNestedSplitsCount = op.addInputList(rtNestedSplits)
   op.setAttr("RAGGED_RANK", rtNestedSplitsCount)
   let _ = op.addInput(rtDenseValues)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -21508,9 +21508,9 @@ public static func randomCrop<T: Numeric & TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("RandomCrop")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(image)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
   return op.execute(Int(1))
@@ -21548,12 +21548,12 @@ public static func randomGamma<
   seed2: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("RandomGamma")
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(alpha)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("S", S.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21564,9 +21564,9 @@ public static func randomGammaGrad<T: FloatingPoint & TensorFlowScalar>(
   sample: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("RandomGammaGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(alpha)
   let _ = op.addInput(sample)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21582,12 +21582,12 @@ public static func randomPoisson<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("RandomPoisson")
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(rate)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("S", S.tensorFlowDataType)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21630,13 +21630,13 @@ public static func randomPoissonV2<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("RandomPoissonV2")
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("R", R.tensorFlowDataType)
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(rate)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("S", S.tensorFlowDataType)
-  op.setAttr("R", R.tensorFlowDataType)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21669,10 +21669,10 @@ public static func randomShuffle<T: TensorFlowScalar>(
   seed2: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("RandomShuffle")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21745,11 +21745,11 @@ public static func randomStandardNormal<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("RandomStandardNormal")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21778,11 +21778,11 @@ public static func randomUniform<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("RandomUniform")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21820,13 +21820,13 @@ public static func randomUniformInt<
   seed2: Int64 = 0
 ) -> Tensor<Tout> {
   let op = TFE_Op("RandomUniformInt")
+  op.setAttr("Tout", Tout.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(minval)
   let _ = op.addInput(maxval)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("Tout", Tout.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21857,10 +21857,10 @@ public static func range<Tidx: Numeric & TensorFlowScalar>(
   delta: Tensor<Tidx>
 ) -> Tensor<Tidx> {
   let op = TFE_Op("Range")
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(start)
   let _ = op.addInput(limit)
   let _ = op.addInput(delta)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -21879,10 +21879,10 @@ public static func rangeDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("RangeDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(start)
   let _ = op.addInput(stop)
   let _ = op.addInput(step)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -21907,8 +21907,8 @@ public static func rank<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Int32> {
   let op = TFE_Op("Rank")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -21939,8 +21939,8 @@ public static func readVariableOp<Dtype: TensorFlowScalar>(
   resource: ResourceHandle
 ) -> Tensor<Dtype> {
   let op = TFE_Op("ReadVariableOp")
-  let _ = op.addInput(resource)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(resource)
   return op.execute(Int(1))
 }
 
@@ -22091,9 +22091,9 @@ public static func real<
   _ input: Tensor<T>
 ) -> Tensor<Tout> {
   let op = TFE_Op("Real")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tout", Tout.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -22109,9 +22109,9 @@ public static func realDiv<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("RealDiv")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -22123,8 +22123,8 @@ public static func reciprocal<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Reciprocal")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -22138,9 +22138,9 @@ public static func reciprocalGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("ReciprocalGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -22232,13 +22232,13 @@ public static func reduceDataset<
   useInterOpParallelism: Bool = true
 ) -> OutputTypes {
   let op = TFE_Op("ReduceDataset")
+  op.setAttr("Tstate", initialState._typeList)
+  op.setAttr("Targuments", otherArguments._typeList)
+  op.setAttr("output_types", OutputTypes._typeList)
   let _ = op.addInput(inputDataset)
   let _ = op.addInputList(initialState)
   let _ = op.addInputList(otherArguments)
   op.setAttr("f", f)
-  op.setAttr("Tstate", initialState._typeList)
-  op.setAttr("Targuments", otherArguments._typeList)
-  op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   return op.execute(Int(OutputTypes._typeList.count))
@@ -22359,8 +22359,8 @@ public static func relu<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Relu")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -22370,8 +22370,8 @@ public static func relu6<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Relu6")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -22390,9 +22390,9 @@ public static func relu6Grad<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Relu6Grad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(features)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -22410,9 +22410,9 @@ public static func reluGrad<T: Numeric & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("ReluGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(features)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -22440,10 +22440,10 @@ public static func remoteCall<
   f: (FIn) -> FOut
 ) -> Tout {
   let op = TFE_Op("RemoteCall")
-  let _ = op.addInput(target)
-  let _ = op.addInputList(args)
   op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInput(target)
+  let _ = op.addInputList(args)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -22473,9 +22473,9 @@ public static func remoteFusedGraphExecute<
   serializedRemoteFusedGraphExecuteInfo: String
 ) -> Toutputs {
   let op = TFE_Op("RemoteFusedGraphExecute")
-  let _ = op.addInputList(inputs)
   op.setAttr("Tinputs", inputs._typeList)
   op.setAttr("Toutputs", Toutputs._typeList)
+  let _ = op.addInputList(inputs)
   op.setAttr("serialized_remote_fused_graph_execute_info", serializedRemoteFusedGraphExecuteInfo)
   return op.execute(Int(Toutputs._typeList.count))
 }
@@ -22492,9 +22492,9 @@ public static func repeatDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("RepeatDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(count)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -22522,10 +22522,10 @@ public static func requantizationRange<Tinput: TensorFlowScalar>(
   inputMax: Tensor<Float>
 ) -> (outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("RequantizationRange")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -22552,10 +22552,10 @@ public static func requantizationRangePerChannel<T: TensorFlowScalar>(
   clipValueMax: Double
 ) -> (outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("RequantizationRangePerChannel")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("clip_value_max", clipValueMax)
   return op.execute(Int(1), Int(1))
 }
@@ -22595,13 +22595,13 @@ public static func requantize<
   requestedOutputMax: Tensor<Float>
 ) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("Requantize")
+  op.setAttr("Tinput", Tinput.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
   let _ = op.addInput(requestedOutputMin)
   let _ = op.addInput(requestedOutputMax)
-  op.setAttr("Tinput", Tinput.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -22634,13 +22634,13 @@ public static func requantizePerChannel<
   requestedOutputMax: Tensor<Float>
 ) -> (output: Tensor<OutType>, outputMin: Tensor<Float>, outputMax: Tensor<Float>) {
   let op = TFE_Op("RequantizePerChannel")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(inputMin)
   let _ = op.addInput(inputMax)
   let _ = op.addInput(requestedOutputMin)
   let _ = op.addInput(requestedOutputMax)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -22739,10 +22739,10 @@ public static func reshape<
   shape: Tensor<Tshape>
 ) -> Tensor<T> {
   let op = TFE_Op("Reshape")
-  let _ = op.addInput(tensor)
-  let _ = op.addInput(shape)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tshape", Tshape.tensorFlowDataType)
+  let _ = op.addInput(tensor)
+  let _ = op.addInput(shape)
   return op.execute(Int(1))
 }
 
@@ -22777,9 +22777,9 @@ public static func resizeArea<T: Numeric & TensorFlowScalar>(
   alignCorners: Bool = false
 ) -> Tensor<Float> {
   let op = TFE_Op("ResizeArea")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   return op.execute(Int(1))
 }
@@ -22806,9 +22806,9 @@ public static func resizeBicubic<T: Numeric & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<Float> {
   let op = TFE_Op("ResizeBicubic")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22835,9 +22835,9 @@ public static func resizeBicubicGrad<T: FloatingPoint & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("ResizeBicubicGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(originalImage)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22865,9 +22865,9 @@ public static func resizeBilinear<T: Numeric & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<Float> {
   let op = TFE_Op("ResizeBilinear")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22894,9 +22894,9 @@ public static func resizeBilinearGrad<T: FloatingPoint & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("ResizeBilinearGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(originalImage)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22922,9 +22922,9 @@ public static func resizeNearestNeighbor<T: Numeric & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("ResizeNearestNeighbor")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22950,9 +22950,9 @@ public static func resizeNearestNeighborGrad<T: Numeric & TensorFlowScalar>(
   halfPixelCenters: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("ResizeNearestNeighborGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("align_corners", alignCorners)
   op.setAttr("half_pixel_centers", halfPixelCenters)
   return op.execute(Int(1))
@@ -22992,6 +22992,7 @@ public static func resourceApplyAdaMax<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAdaMax")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(m)
   let _ = op.addInput(v)
@@ -23001,7 +23002,6 @@ public static func resourceApplyAdaMax<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(beta2)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23036,6 +23036,7 @@ public static func resourceApplyAdadelta<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAdadelta")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(accumUpdate)
@@ -23043,7 +23044,6 @@ public static func resourceApplyAdadelta<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(rho)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23072,11 +23072,11 @@ public static func resourceApplyAdagrad<T: Numeric & TensorFlowScalar>(
   updateSlots: Bool = true
 ) {
   let op = TFE_Op("ResourceApplyAdagrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("update_slots", updateSlots)
   op.execute()
@@ -23109,6 +23109,7 @@ public static func resourceApplyAdagradDA<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAdagradDA")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(gradientAccumulator)
   let _ = op.addInput(gradientSquaredAccumulator)
@@ -23117,7 +23118,6 @@ public static func resourceApplyAdagradDA<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(globalStep)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23162,6 +23162,7 @@ public static func resourceApplyAdam<T: Numeric & TensorFlowScalar>(
   useNesterov: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAdam")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(m)
   let _ = op.addInput(v)
@@ -23172,7 +23173,6 @@ public static func resourceApplyAdam<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(beta2)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("use_nesterov", useNesterov)
   op.execute()
@@ -23218,6 +23218,7 @@ public static func resourceApplyAdamWithAmsgrad<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAdamWithAmsgrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(m)
   let _ = op.addInput(v)
@@ -23229,7 +23230,6 @@ public static func resourceApplyAdamWithAmsgrad<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(beta2)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23264,6 +23264,7 @@ public static func resourceApplyAddSign<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyAddSign")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(m)
   let _ = op.addInput(lr)
@@ -23271,7 +23272,6 @@ public static func resourceApplyAddSign<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(signDecay)
   let _ = op.addInput(beta)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23324,6 +23324,7 @@ public static func resourceApplyCenteredRMSProp<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyCenteredRMSProp")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(mg)
   let _ = op.addInput(ms)
@@ -23333,7 +23334,6 @@ public static func resourceApplyCenteredRMSProp<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(momentum)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23372,6 +23372,7 @@ public static func resourceApplyFtrl<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyFtrl")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(linear)
@@ -23380,7 +23381,6 @@ public static func resourceApplyFtrl<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(lrPower)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23422,6 +23422,7 @@ public static func resourceApplyFtrlV2<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyFtrlV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(linear)
@@ -23431,7 +23432,6 @@ public static func resourceApplyFtrlV2<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(l2)
   let _ = op.addInput(l2Shrinkage)
   let _ = op.addInput(lrPower)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23453,10 +23453,10 @@ public static func resourceApplyGradientDescent<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyGradientDescent")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(alpha)
   let _ = op.addInput(delta)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23493,12 +23493,12 @@ public static func resourceApplyKerasMomentum<T: Numeric & TensorFlowScalar>(
   useNesterov: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyKerasMomentum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
   let _ = op.addInput(momentum)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("use_nesterov", useNesterov)
   op.execute()
@@ -23536,12 +23536,12 @@ public static func resourceApplyMomentum<T: Numeric & TensorFlowScalar>(
   useNesterov: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyMomentum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
   let _ = op.addInput(momentum)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("use_nesterov", useNesterov)
   op.execute()
@@ -23577,6 +23577,7 @@ public static func resourceApplyPowerSign<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyPowerSign")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(m)
   let _ = op.addInput(lr)
@@ -23584,7 +23585,6 @@ public static func resourceApplyPowerSign<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(signDecay)
   let _ = op.addInput(beta)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23616,13 +23616,13 @@ public static func resourceApplyProximalAdagrad<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyProximalAdagrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23651,12 +23651,12 @@ public static func resourceApplyProximalGradientDescent<T: Numeric & TensorFlowS
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyProximalGradientDescent")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(alpha)
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(delta)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23699,6 +23699,7 @@ public static func resourceApplyRMSProp<T: Numeric & TensorFlowScalar>(
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceApplyRMSProp")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(ms)
   let _ = op.addInput(mom)
@@ -23707,7 +23708,6 @@ public static func resourceApplyRMSProp<T: Numeric & TensorFlowScalar>(
   let _ = op.addInput(momentum)
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -23727,9 +23727,9 @@ public static func resourceCountUpTo<T: BinaryInteger & TensorFlowScalar>(
   limit: Int64
 ) -> Tensor<T> {
   let op = TFE_Op("ResourceCountUpTo")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(resource)
   op.setAttr("limit", limit)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -23768,12 +23768,12 @@ public static func resourceGather<
   validateIndices: Bool = true
 ) -> Tensor<Dtype> {
   let op = TFE_Op("ResourceGather")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   op.setAttr("batch_dims", batchDims)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -23786,10 +23786,10 @@ public static func resourceGatherNd<
   indices: Tensor<Tindices>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("ResourceGatherNd")
-  let _ = op.addInput(resource)
-  let _ = op.addInput(indices)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(resource)
+  let _ = op.addInput(indices)
   return op.execute(Int(1))
 }
 
@@ -23838,11 +23838,11 @@ public static func resourceScatterAdd<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterAdd")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -23882,11 +23882,11 @@ public static func resourceScatterDiv<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterDiv")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -23926,11 +23926,11 @@ public static func resourceScatterMax<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterMax")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -23970,11 +23970,11 @@ public static func resourceScatterMin<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterMin")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -24014,11 +24014,11 @@ public static func resourceScatterMul<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterMul")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -24079,11 +24079,11 @@ public static func resourceScatterNdAdd<
   useLocking: Bool = true
 ) {
   let op = TFE_Op("ResourceScatterNdAdd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(ref)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24145,11 +24145,11 @@ public static func resourceScatterNdSub<
   useLocking: Bool = true
 ) {
   let op = TFE_Op("ResourceScatterNdSub")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(ref)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24213,11 +24213,11 @@ public static func resourceScatterNdUpdate<
   useLocking: Bool = true
 ) {
   let op = TFE_Op("ResourceScatterNdUpdate")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(ref)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24258,11 +24258,11 @@ public static func resourceScatterSub<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterSub")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -24293,11 +24293,11 @@ public static func resourceScatterUpdate<
   updates: Tensor<Dtype>
 ) {
   let op = TFE_Op("ResourceScatterUpdate")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.execute()
 }
 
@@ -24330,6 +24330,8 @@ public static func resourceSparseApplyAdadelta<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyAdadelta")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(accumUpdate)
@@ -24338,8 +24340,6 @@ public static func resourceSparseApplyAdadelta<
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24374,13 +24374,13 @@ public static func resourceSparseApplyAdagrad<
   updateSlots: Bool = true
 ) {
   let op = TFE_Op("ResourceSparseApplyAdagrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("update_slots", updateSlots)
   op.execute()
@@ -24418,6 +24418,8 @@ public static func resourceSparseApplyAdagradDA<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyAdagradDA")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(gradientAccumulator)
   let _ = op.addInput(gradientSquaredAccumulator)
@@ -24427,8 +24429,6 @@ public static func resourceSparseApplyAdagradDA<
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(globalStep)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24484,6 +24484,8 @@ public static func resourceSparseApplyCenteredRMSProp<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyCenteredRMSProp")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(mg)
   let _ = op.addInput(ms)
@@ -24494,8 +24496,6 @@ public static func resourceSparseApplyCenteredRMSProp<
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24540,6 +24540,8 @@ public static func resourceSparseApplyFtrl<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyFtrl")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(linear)
@@ -24549,8 +24551,6 @@ public static func resourceSparseApplyFtrl<
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(lrPower)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24598,6 +24598,8 @@ public static func resourceSparseApplyFtrlV2<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyFtrlV2")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(linear)
@@ -24608,8 +24610,6 @@ public static func resourceSparseApplyFtrlV2<
   let _ = op.addInput(l2)
   let _ = op.addInput(l2Shrinkage)
   let _ = op.addInput(lrPower)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24653,14 +24653,14 @@ public static func resourceSparseApplyKerasMomentum<
   useNesterov: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyKerasMomentum")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
   let _ = op.addInput(momentum)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("use_nesterov", useNesterov)
   op.execute()
@@ -24705,14 +24705,14 @@ public static func resourceSparseApplyMomentum<
   useNesterov: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyMomentum")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
   let _ = op.addInput(momentum)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.setAttr("use_nesterov", useNesterov)
   op.execute()
@@ -24752,6 +24752,8 @@ public static func resourceSparseApplyProximalAdagrad<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyProximalAdagrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(accum)
   let _ = op.addInput(lr)
@@ -24759,8 +24761,6 @@ public static func resourceSparseApplyProximalAdagrad<
   let _ = op.addInput(l2)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24795,14 +24795,14 @@ public static func resourceSparseApplyProximalGradientDescent<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyProximalGradientDescent")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(alpha)
   let _ = op.addInput(l1)
   let _ = op.addInput(l2)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24850,6 +24850,8 @@ public static func resourceSparseApplyRMSProp<
   useLocking: Bool = false
 ) {
   let op = TFE_Op("ResourceSparseApplyRMSProp")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(var_)
   let _ = op.addInput(ms)
   let _ = op.addInput(mom)
@@ -24859,8 +24861,6 @@ public static func resourceSparseApplyRMSProp<
   let _ = op.addInput(epsilon)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("use_locking", useLocking)
   op.execute()
 }
@@ -24890,13 +24890,13 @@ public static func resourceStridedSliceAssign<
   shrinkAxisMask: Int64 = 0
 ) {
   let op = TFE_Op("ResourceStridedSliceAssign")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Index", Index.tensorFlowDataType)
   let _ = op.addInput(ref)
   let _ = op.addInput(begin)
   let _ = op.addInput(end)
   let _ = op.addInput(strides)
   let _ = op.addInput(value)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Index", Index.tensorFlowDataType)
   op.setAttr("begin_mask", beginMask)
   op.setAttr("end_mask", endMask)
   op.setAttr("ellipsis_mask", ellipsisMask)
@@ -24952,9 +24952,9 @@ public static func restore<Dt: TensorFlowScalar>(
   preferredShard: Int64 = -1
 ) -> Tensor<Dt> {
   let op = TFE_Op("Restore")
+  op.setAttr("dt", Dt.tensorFlowDataType)
   let _ = op.addInput(filePattern)
   let _ = op.addInput(tensorName)
-  op.setAttr("dt", Dt.tensorFlowDataType)
   op.setAttr("preferred_shard", preferredShard)
   return op.execute(Int(1))
 }
@@ -24990,10 +24990,10 @@ public static func restoreSlice<Dt: TensorFlowScalar>(
   preferredShard: Int64 = -1
 ) -> Tensor<Dt> {
   let op = TFE_Op("RestoreSlice")
+  op.setAttr("dt", Dt.tensorFlowDataType)
   let _ = op.addInput(filePattern)
   let _ = op.addInput(tensorName)
   let _ = op.addInput(shapeAndSlice)
-  op.setAttr("dt", Dt.tensorFlowDataType)
   op.setAttr("preferred_shard", preferredShard)
   return op.execute(Int(1))
 }
@@ -25032,10 +25032,10 @@ public static func restoreV2<Dtypes: TensorGroup>(
   shapeAndSlices: StringTensor
 ) -> Dtypes {
   let op = TFE_Op("RestoreV2")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(prefix)
   let _ = op.addInput(tensorNames)
   let _ = op.addInput(shapeAndSlices)
-  op.setAttr("dtypes", Dtypes._typeList)
   return op.execute(Int(Dtypes._typeList.count))
 }
 
@@ -25044,8 +25044,8 @@ public static func restrict<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Restrict")
-  let _ = op.addInput(a)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(a)
   return op.execute(Int(1))
 }
 
@@ -25054,8 +25054,8 @@ public static func restrict(
   _ a: StringTensor
 ) -> StringTensor {
   let op = TFE_Op("Restrict")
-  let _ = op.addInput(a)
   op.setAttr("T", TensorDataType(TF_STRING))
+  let _ = op.addInput(a)
   return op.execute(Int(1))
 }
 
@@ -25559,9 +25559,9 @@ public static func reverse<T: TensorFlowScalar>(
   dims: Tensor<Bool>
 ) -> Tensor<T> {
   let op = TFE_Op("Reverse")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(dims)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -25623,9 +25623,9 @@ public static func reverse(
   dims: Tensor<Bool>
 ) -> StringTensor {
   let op = TFE_Op("Reverse")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(tensor)
   let _ = op.addInput(dims)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -25707,12 +25707,12 @@ public static func reverseSequence<
   batchDim: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("ReverseSequence")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tlen", Tlen.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(seqLengths)
   op.setAttr("seq_dim", seqDim)
   op.setAttr("batch_dim", batchDim)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tlen", Tlen.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -25780,10 +25780,10 @@ public static func reverseV2<
   axis: Tensor<Tidx>
 ) -> Tensor<T> {
   let op = TFE_Op("ReverseV2")
-  let _ = op.addInput(tensor)
-  let _ = op.addInput(axis)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(tensor)
+  let _ = op.addInput(axis)
   return op.execute(Int(1))
 }
 
@@ -25848,10 +25848,10 @@ public static func reverseV2<Tidx: BinaryInteger & TensorFlowScalar>(
   axis: Tensor<Tidx>
 ) -> StringTensor {
   let op = TFE_Op("ReverseV2")
-  let _ = op.addInput(tensor)
-  let _ = op.addInput(axis)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
   op.setAttr("T", TensorDataType(TF_STRING))
+  let _ = op.addInput(tensor)
+  let _ = op.addInput(axis)
   return op.execute(Int(1))
 }
 
@@ -25868,9 +25868,9 @@ public static func rightShift<T: BinaryInteger & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("RightShift")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -25890,8 +25890,8 @@ public static func rint<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Rint")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -25942,12 +25942,12 @@ public static func roll<
   axis: Tensor<Taxis>
 ) -> Tensor<T> {
   let op = TFE_Op("Roll")
-  let _ = op.addInput(input)
-  let _ = op.addInput(shift)
-  let _ = op.addInput(axis)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tshift", Tshift.tensorFlowDataType)
   op.setAttr("Taxis", Taxis.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(shift)
+  let _ = op.addInput(axis)
   return op.execute(Int(1))
 }
 
@@ -25960,8 +25960,8 @@ public static func round<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Round")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -26064,8 +26064,8 @@ public static func rsqrt<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Rsqrt")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -26079,9 +26079,9 @@ public static func rsqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("RsqrtGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -26171,9 +26171,9 @@ public static func sampleDistortedBoundingBox<T: BinaryInteger & TensorFlowScala
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
   let op = TFE_Op("SampleDistortedBoundingBox")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(imageSize)
   let _ = op.addInput(boundingBoxes)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
   op.setAttr("min_object_covered", minObjectCovered)
@@ -26270,10 +26270,10 @@ public static func sampleDistortedBoundingBoxV2<T: BinaryInteger & TensorFlowSca
   useImageIfNoBoundingBoxes: Bool = false
 ) -> (begin: Tensor<T>, size: Tensor<T>, bboxes: Tensor<Float>) {
   let op = TFE_Op("SampleDistortedBoundingBoxV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(imageSize)
   let _ = op.addInput(boundingBoxes)
   let _ = op.addInput(minObjectCovered)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
   op.setAttr("aspect_ratio_range", aspectRatioRange)
@@ -26300,11 +26300,11 @@ public static func samplingDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("SamplingDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(rate)
   let _ = op.addInput(seed)
   let _ = op.addInput(seed2)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -26328,10 +26328,10 @@ public static func save<T: TensorArrayProtocol>(
   data: T
 ) {
   let op = TFE_Op("Save")
+  op.setAttr("T", data._typeList)
   let _ = op.addInput(filename)
   let _ = op.addInput(tensorNames)
   let _ = op.addInputList(data)
-  op.setAttr("T", data._typeList)
   op.execute()
 }
 
@@ -26374,11 +26374,11 @@ public static func saveSlices<T: TensorArrayProtocol>(
   data: T
 ) {
   let op = TFE_Op("SaveSlices")
+  op.setAttr("T", data._typeList)
   let _ = op.addInput(filename)
   let _ = op.addInput(tensorNames)
   let _ = op.addInput(shapesAndSlices)
   let _ = op.addInputList(data)
-  op.setAttr("T", data._typeList)
   op.execute()
 }
 
@@ -26403,11 +26403,11 @@ public static func saveV2<Dtypes: TensorArrayProtocol>(
   tensors: Dtypes
 ) {
   let op = TFE_Op("SaveV2")
+  op.setAttr("dtypes", tensors._typeList)
   let _ = op.addInput(prefix)
   let _ = op.addInput(tensorNames)
   let _ = op.addInput(shapeAndSlices)
   let _ = op.addInputList(tensors)
-  op.setAttr("dtypes", tensors._typeList)
   op.execute()
 }
 
@@ -26427,9 +26427,9 @@ public static func scalarSummary<T: Numeric & TensorFlowScalar>(
   _ values: Tensor<T>
 ) -> StringTensor {
   let op = TFE_Op("ScalarSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(tags)
   let _ = op.addInput(values)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -26443,11 +26443,11 @@ public static func scaleAndTranslate<T: Numeric & TensorFlowScalar>(
   antialias: Bool = true
 ) -> Tensor<Float> {
   let op = TFE_Op("ScaleAndTranslate")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(images)
   let _ = op.addInput(size)
   let _ = op.addInput(scale)
   let _ = op.addInput(translation)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("kernel_type", kernelType)
   op.setAttr("antialias", antialias)
   return op.execute(Int(1))
@@ -26463,11 +26463,11 @@ public static func scaleAndTranslateGrad<T: FloatingPoint & TensorFlowScalar>(
   antialias: Bool = true
 ) -> Tensor<T> {
   let op = TFE_Op("ScaleAndTranslateGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(grads)
   let _ = op.addInput(originalImage)
   let _ = op.addInput(scale)
   let _ = op.addInput(translation)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("kernel_type", kernelType)
   op.setAttr("antialias", antialias)
   return op.execute(Int(1))
@@ -26575,11 +26575,11 @@ public static func scatterNd<
   shape: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("ScatterNd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
   let _ = op.addInput(shape)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -26638,11 +26638,11 @@ public static func scatterNdNonAliasingAdd<
   updates: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("ScatterNdNonAliasingAdd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -26903,10 +26903,10 @@ public static func segmentMax<
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("SegmentMax")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
   return op.execute(Int(1))
 }
 
@@ -26951,10 +26951,10 @@ public static func segmentMean<
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("SegmentMean")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
   return op.execute(Int(1))
 }
 
@@ -26997,10 +26997,10 @@ public static func segmentMin<
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("SegmentMin")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
   return op.execute(Int(1))
 }
 
@@ -27044,10 +27044,10 @@ public static func segmentProd<
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("SegmentProd")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
   return op.execute(Int(1))
 }
 
@@ -27091,10 +27091,10 @@ public static func segmentSum<
   segmentIds: Tensor<Tindices>
 ) -> Tensor<T> {
   let op = TFE_Op("SegmentSum")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
   return op.execute(Int(1))
 }
 
@@ -27153,10 +27153,10 @@ public static func select<T: TensorFlowScalar>(
   e: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Select")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(condition)
   let _ = op.addInput(t)
   let _ = op.addInput(e)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27178,8 +27178,8 @@ public static func selfAdjointEig<T: FloatingPoint & TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SelfAdjointEig")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -27211,9 +27211,9 @@ public static func selfAdjointEigV2<T: FloatingPoint & TensorFlowScalar>(
   computeV: Bool = true
 ) -> (e: Tensor<T>, v: Tensor<T>) {
   let op = TFE_Op("SelfAdjointEigV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("compute_v", computeV)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -27231,8 +27231,8 @@ public static func selu<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Selu")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -27250,9 +27250,9 @@ public static func seluGrad<T: FloatingPoint & TensorFlowScalar>(
   outputs: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SeluGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(outputs)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27330,11 +27330,11 @@ public static func serializeManySparse<
   sparseShape: Tensor<Int64>
 ) -> Tensor<OutType> {
   let op = TFE_Op("SerializeManySparse")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27362,11 +27362,11 @@ public static func serializeManySparse<T: TensorFlowScalar>(
   sparseShape: Tensor<Int64>
 ) -> StringTensor {
   let op = TFE_Op("SerializeManySparse")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("out_type", TensorDataType(TF_STRING))
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("out_type", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -27389,11 +27389,11 @@ public static func serializeSparse<
   sparseShape: Tensor<Int64>
 ) -> Tensor<OutType> {
   let op = TFE_Op("SerializeSparse")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27413,11 +27413,11 @@ public static func serializeSparse<T: TensorFlowScalar>(
   sparseShape: Tensor<Int64>
 ) -> StringTensor {
   let op = TFE_Op("SerializeSparse")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("out_type", TensorDataType(TF_STRING))
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(sparseShape)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("out_type", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -27433,8 +27433,8 @@ public static func serializeTensor<T: TensorFlowScalar>(
   _ tensor: Tensor<T>
 ) -> StringTensor {
   let op = TFE_Op("SerializeTensor")
-  let _ = op.addInput(tensor)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(tensor)
   return op.execute(Int(1))
 }
 
@@ -27463,11 +27463,11 @@ public static func setSize<T: BinaryInteger & TensorFlowScalar>(
   validateIndices: Bool = true
 ) -> Tensor<Int32> {
   let op = TFE_Op("SetSize")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(setIndices)
   let _ = op.addInput(setValues)
   let _ = op.addInput(setShape)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27496,11 +27496,11 @@ public static func setSize(
   validateIndices: Bool = true
 ) -> Tensor<Int32> {
   let op = TFE_Op("SetSize")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(setIndices)
   let _ = op.addInput(setValues)
   let _ = op.addInput(setShape)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1))
 }
 
@@ -27522,9 +27522,9 @@ public static func shape<
   _ input: Tensor<T>
 ) -> Tensor<OutType> {
   let op = TFE_Op("Shape")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -27539,10 +27539,10 @@ public static func shapeN<
   _ input: [Tensor<T>]
 ) -> [Tensor<OutType>] {
   let op = TFE_Op("ShapeN")
-  let inputCount = op.addInputList(input)
-  op.setAttr("N", inputCount)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let inputCount = op.addInputList(input)
+  op.setAttr("N", inputCount)
   return op.execute(Int(inputCount))
 }
 
@@ -27560,10 +27560,10 @@ public static func shardDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ShardDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(numShards)
   let _ = op.addInput(index)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -27621,12 +27621,12 @@ public static func shuffleAndRepeatDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ShuffleAndRepeatDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(bufferSize)
   let _ = op.addInput(seed)
   let _ = op.addInput(seed2)
   let _ = op.addInput(count)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -27658,12 +27658,12 @@ public static func shuffleDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ShuffleDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(bufferSize)
   let _ = op.addInput(seed)
   let _ = op.addInput(seed2)
   op.setAttr("reshuffle_each_iteration", reshuffleEachIteration)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -27687,8 +27687,8 @@ public static func sigmoid<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sigmoid")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -27702,9 +27702,9 @@ public static func sigmoidGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SigmoidGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27718,8 +27718,8 @@ public static func sign<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sign")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -27747,8 +27747,8 @@ public static func sin<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sin")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -27758,8 +27758,8 @@ public static func sinh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sinh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -27782,9 +27782,9 @@ public static func size<
   _ input: Tensor<T>
 ) -> Tensor<OutType> {
   let op = TFE_Op("Size")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -27800,9 +27800,9 @@ public static func skipDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("SkipDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(count)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -27869,11 +27869,11 @@ public static func slice<
   size: Tensor<Index>
 ) -> Tensor<T> {
   let op = TFE_Op("Slice")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Index", Index.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(begin)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Index", Index.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27883,8 +27883,8 @@ public static func snapshot<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Snapshot")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -27902,8 +27902,8 @@ public static func softmax<T: FloatingPoint & TensorFlowScalar>(
   logits: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Softmax")
-  let _ = op.addInput(logits)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(logits)
   return op.execute(Int(1))
 }
 
@@ -27926,9 +27926,9 @@ public static func softmaxCrossEntropyWithLogits<T: FloatingPoint & TensorFlowSc
   labels: Tensor<T>
 ) -> (loss: Tensor<T>, backprop: Tensor<T>) {
   let op = TFE_Op("SoftmaxCrossEntropyWithLogits")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(features)
   let _ = op.addInput(labels)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -27938,8 +27938,8 @@ public static func softplus<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Softplus")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -27956,9 +27956,9 @@ public static func softplusGrad<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SoftplusGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(features)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -27968,8 +27968,8 @@ public static func softsign<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Softsign")
-  let _ = op.addInput(features)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(features)
   return op.execute(Int(1))
 }
 
@@ -27986,9 +27986,9 @@ public static func softsignGrad<T: FloatingPoint & TensorFlowScalar>(
   features: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SoftsignGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(gradients)
   let _ = op.addInput(features)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28099,10 +28099,10 @@ public static func spaceToBatch<
   blockSize: Int64
 ) -> Tensor<T> {
   let op = TFE_Op("SpaceToBatch")
-  let _ = op.addInput(input)
-  let _ = op.addInput(paddings)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(paddings)
   op.setAttr("block_size", blockSize)
   return op.execute(Int(1))
 }
@@ -28241,12 +28241,12 @@ public static func spaceToBatchND<
   paddings: Tensor<Tpaddings>
 ) -> Tensor<T> {
   let op = TFE_Op("SpaceToBatchND")
-  let _ = op.addInput(input)
-  let _ = op.addInput(blockShape)
-  let _ = op.addInput(paddings)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tblock_shape", TblockShape.tensorFlowDataType)
   op.setAttr("Tpaddings", Tpaddings.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(blockShape)
+  let _ = op.addInput(paddings)
   return op.execute(Int(1))
 }
 
@@ -28344,8 +28344,8 @@ public static func spaceToDepth<T: TensorFlowScalar>(
   dataFormat: DataFormat4 = .nhwc
 ) -> Tensor<T> {
   let op = TFE_Op("SpaceToDepth")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("block_size", blockSize)
   op.setAttr("data_format", dataFormat.cName)
   return op.execute(Int(1))
@@ -28390,6 +28390,8 @@ public static func sparseAdd<
   thresh: Tensor<Treal>
 ) -> (sumIndices: Tensor<Int64>, sumValues: Tensor<T>, sumShape: Tensor<Int64>) {
   let op = TFE_Op("SparseAdd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Treal", Treal.tensorFlowDataType)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(aValues)
   let _ = op.addInput(aShape)
@@ -28397,8 +28399,6 @@ public static func sparseAdd<
   let _ = op.addInput(bValues)
   let _ = op.addInput(bShape)
   let _ = op.addInput(thresh)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Treal", Treal.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -28430,11 +28430,11 @@ public static func sparseAddGrad<T: Numeric & TensorFlowScalar>(
   sumIndices: Tensor<Int64>
 ) -> (aValGrad: Tensor<T>, bValGrad: Tensor<T>) {
   let op = TFE_Op("SparseAddGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(backpropValGrad)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(bIndices)
   let _ = op.addInput(sumIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -28502,12 +28502,12 @@ public static func sparseConcat<T: TensorFlowScalar>(
   concatDim: Int64
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseConcat")
+  op.setAttr("T", T.tensorFlowDataType)
   let indicesCount = op.addInputList(indices)
   op.setAttr("N", indicesCount)
   let _ = op.addInputList(values)
   let _ = op.addInputList(shapes)
   op.setAttr("concat_dim", concatDim)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -28585,6 +28585,10 @@ public static func sparseCross<
   internalType: TensorDataType
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<OutType>, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseCross")
+  op.setAttr("sparse_types", values._typeList)
+  op.setAttr("dense_types", denseInputs._typeList)
+  op.setAttr("out_type", OutType.tensorFlowDataType)
+  op.setAttr("internal_type", internalType)
   let indicesCount = op.addInputList(indices)
   op.setAttr("N", indicesCount)
   let _ = op.addInputList(values)
@@ -28593,10 +28597,6 @@ public static func sparseCross<
   op.setAttr("hashed_output", hashedOutput)
   op.setAttr("num_buckets", numBuckets)
   op.setAttr("hash_key", hashKey)
-  op.setAttr("sparse_types", values._typeList)
-  op.setAttr("dense_types", denseInputs._typeList)
-  op.setAttr("out_type", OutType.tensorFlowDataType)
-  op.setAttr("internal_type", internalType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -28673,6 +28673,10 @@ public static func sparseCross<
   internalType: TensorDataType
 ) -> (outputIndices: Tensor<Int64>, outputValues: StringTensor, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseCross")
+  op.setAttr("sparse_types", values._typeList)
+  op.setAttr("dense_types", denseInputs._typeList)
+  op.setAttr("out_type", TensorDataType(TF_STRING))
+  op.setAttr("internal_type", internalType)
   let indicesCount = op.addInputList(indices)
   op.setAttr("N", indicesCount)
   let _ = op.addInputList(values)
@@ -28681,10 +28685,6 @@ public static func sparseCross<
   op.setAttr("hashed_output", hashedOutput)
   op.setAttr("num_buckets", numBuckets)
   op.setAttr("hash_key", hashKey)
-  op.setAttr("sparse_types", values._typeList)
-  op.setAttr("dense_types", denseInputs._typeList)
-  op.setAttr("out_type", TensorDataType(TF_STRING))
-  op.setAttr("internal_type", internalType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -28715,11 +28715,11 @@ public static func sparseDenseCwiseAdd<T: Numeric & TensorFlowScalar>(
   dense: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseDenseCwiseAdd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(spIndices)
   let _ = op.addInput(spValues)
   let _ = op.addInput(spShape)
   let _ = op.addInput(dense)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28744,11 +28744,11 @@ public static func sparseDenseCwiseDiv<T: Numeric & TensorFlowScalar>(
   dense: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseDenseCwiseDiv")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(spIndices)
   let _ = op.addInput(spValues)
   let _ = op.addInput(spShape)
   let _ = op.addInput(dense)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28777,11 +28777,11 @@ public static func sparseDenseCwiseMul<T: Numeric & TensorFlowScalar>(
   dense: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseDenseCwiseMul")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(spIndices)
   let _ = op.addInput(spValues)
   let _ = op.addInput(spShape)
   let _ = op.addInput(dense)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28845,11 +28845,11 @@ public static func sparseFillEmptyRows<T: TensorFlowScalar>(
   defaultValue: Tensor<T>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, emptyRowIndicator: Tensor<Bool>, reverseIndexMap: Tensor<Int64>) {
   let op = TFE_Op("SparseFillEmptyRows")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(values)
   let _ = op.addInput(denseShape)
   let _ = op.addInput(defaultValue)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1), Int(1))
 }
 
@@ -28877,9 +28877,9 @@ public static func sparseFillEmptyRowsGrad<T: TensorFlowScalar>(
   gradValues: Tensor<T>
 ) -> (dValues: Tensor<T>, dDefaultValue: Tensor<T>) {
   let op = TFE_Op("SparseFillEmptyRowsGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(reverseIndexMap)
   let _ = op.addInput(gradValues)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -28907,14 +28907,14 @@ public static func sparseMatMul<
   bIsSparse: Bool = false
 ) -> Tensor<Float> {
   let op = TFE_Op("SparseMatMul")
+  op.setAttr("Ta", Ta.tensorFlowDataType)
+  op.setAttr("Tb", Tb.tensorFlowDataType)
   let _ = op.addInput(a)
   let _ = op.addInput(b)
   op.setAttr("transpose_a", transposeA)
   op.setAttr("transpose_b", transposeB)
   op.setAttr("a_is_sparse", aIsSparse)
   op.setAttr("b_is_sparse", bIsSparse)
-  op.setAttr("Ta", Ta.tensorFlowDataType)
-  op.setAttr("Tb", Tb.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28952,12 +28952,12 @@ public static func sparseReduceMax<T: Numeric & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("SparseReduceMax")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputValues)
   let _ = op.addInput(inputShape)
   let _ = op.addInput(reductionAxes)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -28993,12 +28993,12 @@ public static func sparseReduceMaxSparse<T: Numeric & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseReduceMaxSparse")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputValues)
   let _ = op.addInput(inputShape)
   let _ = op.addInput(reductionAxes)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -29036,12 +29036,12 @@ public static func sparseReduceSum<T: Numeric & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("SparseReduceSum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputValues)
   let _ = op.addInput(inputShape)
   let _ = op.addInput(reductionAxes)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29077,12 +29077,12 @@ public static func sparseReduceSumSparse<T: Numeric & TensorFlowScalar>(
   keepDims: Bool = false
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseReduceSumSparse")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputValues)
   let _ = op.addInput(inputShape)
   let _ = op.addInput(reductionAxes)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -29114,10 +29114,10 @@ public static func sparseReorder<T: TensorFlowScalar>(
   inputShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   let op = TFE_Op("SparseReorder")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputValues)
   let _ = op.addInput(inputShape)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -29187,11 +29187,11 @@ public static func sparseSegmentMean<
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentMean")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29216,12 +29216,12 @@ public static func sparseSegmentMeanGrad<
   outputDim0: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentMeanGrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
   let _ = op.addInput(outputDim0)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29253,13 +29253,13 @@ public static func sparseSegmentMeanWithNumSegments<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentMeanWithNumSegments")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
+  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
   let _ = op.addInput(numSegments)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
-  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29286,11 +29286,11 @@ public static func sparseSegmentSqrtN<
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentSqrtN")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29315,12 +29315,12 @@ public static func sparseSegmentSqrtNGrad<
   outputDim0: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentSqrtNGrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(grad)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
   let _ = op.addInput(outputDim0)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29354,13 +29354,13 @@ public static func sparseSegmentSqrtNWithNumSegments<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentSqrtNWithNumSegments")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
+  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
   let _ = op.addInput(numSegments)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
-  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29412,11 +29412,11 @@ public static func sparseSegmentSum<
   segmentIds: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentSum")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29469,13 +29469,13 @@ public static func sparseSegmentSumWithNumSegments<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSegmentSumWithNumSegments")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
+  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(indices)
   let _ = op.addInput(segmentIds)
   let _ = op.addInput(numSegments)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
-  op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29520,12 +29520,12 @@ public static func sparseSlice<T: TensorFlowScalar>(
   size: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>, outputShape: Tensor<Int64>) {
   let op = TFE_Op("SparseSlice")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(values)
   let _ = op.addInput(shape)
   let _ = op.addInput(start)
   let _ = op.addInput(size)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -29551,11 +29551,11 @@ public static func sparseSliceGrad<T: Numeric & TensorFlowScalar>(
   outputIndices: Tensor<Int64>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSliceGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(backpropValGrad)
   let _ = op.addInput(inputIndices)
   let _ = op.addInput(inputStart)
   let _ = op.addInput(outputIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29591,10 +29591,10 @@ public static func sparseSoftmax<T: FloatingPoint & TensorFlowScalar>(
   spShape: Tensor<Int64>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseSoftmax")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(spIndices)
   let _ = op.addInput(spValues)
   let _ = op.addInput(spShape)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29624,10 +29624,10 @@ public static func sparseSoftmaxCrossEntropyWithLogits<
   labels: Tensor<Tlabels>
 ) -> (loss: Tensor<T>, backprop: Tensor<T>) {
   let op = TFE_Op("SparseSoftmaxCrossEntropyWithLogits")
-  let _ = op.addInput(features)
-  let _ = op.addInput(labels)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tlabels", Tlabels.tensorFlowDataType)
+  let _ = op.addInput(features)
+  let _ = op.addInput(labels)
   return op.execute(Int(1), Int(1))
 }
 
@@ -29657,13 +29657,13 @@ public static func sparseSparseMaximum<T: Numeric & TensorFlowScalar>(
   bShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   let op = TFE_Op("SparseSparseMaximum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(aValues)
   let _ = op.addInput(aShape)
   let _ = op.addInput(bIndices)
   let _ = op.addInput(bValues)
   let _ = op.addInput(bShape)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -29693,13 +29693,13 @@ public static func sparseSparseMinimum<T: Numeric & TensorFlowScalar>(
   bShape: Tensor<Int64>
 ) -> (outputIndices: Tensor<Int64>, outputValues: Tensor<T>) {
   let op = TFE_Op("SparseSparseMinimum")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(aValues)
   let _ = op.addInput(aShape)
   let _ = op.addInput(bIndices)
   let _ = op.addInput(bValues)
   let _ = op.addInput(bShape)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -29748,12 +29748,12 @@ public static func sparseSplit<T: TensorFlowScalar>(
   numSplit: Int64
 ) -> (outputIndices: [Tensor<Int64>], outputValues: [Tensor<T>], outputShape: [Tensor<Int64>]) {
   let op = TFE_Op("SparseSplit")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(splitDim)
   let _ = op.addInput(indices)
   let _ = op.addInput(values)
   let _ = op.addInput(shape)
   op.setAttr("num_split", numSplit)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(numSplit), Int(numSplit), Int(numSplit))
 }
 
@@ -29777,12 +29777,12 @@ public static func sparseTensorDenseAdd<
   _ b: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SparseTensorDenseAdd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(aValues)
   let _ = op.addInput(aShape)
   let _ = op.addInput(b)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29822,12 +29822,12 @@ public static func sparseTensorDenseMatMul<
   adjointB: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("SparseTensorDenseMatMul")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(aIndices)
   let _ = op.addInput(aValues)
   let _ = op.addInput(aShape)
   let _ = op.addInput(b)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("adjoint_a", adjointA)
   op.setAttr("adjoint_b", adjointB)
   return op.execute(Int(1))
@@ -29841,10 +29841,10 @@ public static func sparseTensorSliceDataset<Tvalues: TensorFlowScalar>(
   denseShape: Tensor<Int64>
 ) -> VariantHandle {
   let op = TFE_Op("SparseTensorSliceDataset")
+  op.setAttr("Tvalues", Tvalues.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(values)
   let _ = op.addInput(denseShape)
-  op.setAttr("Tvalues", Tvalues.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29895,13 +29895,13 @@ public static func sparseToDense<
   validateIndices: Bool = true
 ) -> Tensor<T> {
   let op = TFE_Op("SparseToDense")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(sparseIndices)
   let _ = op.addInput(outputShape)
   let _ = op.addInput(sparseValues)
   let _ = op.addInput(defaultValue)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -29965,6 +29965,7 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: Tensor<T>, resultShape: Tensor<Int64>) {
   let op = TFE_Op("SparseToSparseSetOperation")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(set1Indices)
   let _ = op.addInput(set1Values)
   let _ = op.addInput(set1Shape)
@@ -29973,7 +29974,6 @@ public static func sparseToSparseSetOperation<T: BinaryInteger & TensorFlowScala
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -30037,6 +30037,7 @@ public static func sparseToSparseSetOperation(
   validateIndices: Bool = true
 ) -> (resultIndices: Tensor<Int64>, resultValues: StringTensor, resultShape: Tensor<Int64>) {
   let op = TFE_Op("SparseToSparseSetOperation")
+  op.setAttr("T", TensorDataType(TF_STRING))
   let _ = op.addInput(set1Indices)
   let _ = op.addInput(set1Values)
   let _ = op.addInput(set1Shape)
@@ -30045,7 +30046,6 @@ public static func sparseToSparseSetOperation(
   let _ = op.addInput(set2Shape)
   op.setAttr("set_operation", setOperation)
   op.setAttr("validate_indices", validateIndices)
-  op.setAttr("T", TensorDataType(TF_STRING))
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -30069,10 +30069,10 @@ public static func split<T: TensorFlowScalar>(
   numSplit: Int64
 ) -> [Tensor<T>] {
   let op = TFE_Op("Split")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(splitDim)
   let _ = op.addInput(value)
   op.setAttr("num_split", numSplit)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(numSplit))
 }
 
@@ -30100,12 +30100,12 @@ public static func splitV<
   numSplit: Int64
 ) -> [Tensor<T>] {
   let op = TFE_Op("SplitV")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tlen", Tlen.tensorFlowDataType)
   let _ = op.addInput(value)
   let _ = op.addInput(sizeSplits)
   let _ = op.addInput(splitDim)
   op.setAttr("num_split", numSplit)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tlen", Tlen.tensorFlowDataType)
   return op.execute(Int(numSplit))
 }
 
@@ -30117,8 +30117,8 @@ public static func sqrt<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sqrt")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -30132,9 +30132,9 @@ public static func sqrtGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SqrtGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30146,8 +30146,8 @@ public static func square<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Square")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -30161,9 +30161,9 @@ public static func squaredDifference<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("SquaredDifference")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30202,8 +30202,8 @@ public static func squeeze<T: TensorFlowScalar>(
   squeezeDims: [Int32]
 ) -> Tensor<T> {
   let op = TFE_Op("Squeeze")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   op.setAttr("squeeze_dims", squeezeDims)
   return op.execute(Int(1))
 }
@@ -30232,8 +30232,8 @@ public static func stackPopV2<ElemType: TensorFlowScalar>(
   handle: ResourceHandle
 ) -> Tensor<ElemType> {
   let op = TFE_Op("StackPopV2")
-  let _ = op.addInput(handle)
   op.setAttr("elem_type", ElemType.tensorFlowDataType)
+  let _ = op.addInput(handle)
   return op.execute(Int(1))
 }
 
@@ -30253,9 +30253,9 @@ public static func stackPushV2<T: TensorFlowScalar>(
   swapMemory: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("StackPushV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(elem)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("swap_memory", swapMemory)
   return op.execute(Int(1))
 }
@@ -30278,8 +30278,8 @@ public static func stackV2(
   stackName: String
 ) -> ResourceHandle {
   let op = TFE_Op("StackV2")
-  let _ = op.addInput(maxSize)
   op.setAttr("elem_type", elemType)
+  let _ = op.addInput(maxSize)
   op.setAttr("stack_name", stackName)
   return op.execute(Int(1))
 }
@@ -30309,10 +30309,10 @@ public static func stage<Dtypes: TensorArrayProtocol>(
   sharedName: String
 ) {
   let op = TFE_Op("Stage")
+  op.setAttr("dtypes", values._typeList)
   let _ = op.addInputList(values)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", values._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -30328,9 +30328,9 @@ public static func stageClear(
   sharedName: String
 ) {
   let op = TFE_Op("StageClear")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   op.execute()
@@ -30350,10 +30350,10 @@ public static func stagePeek<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("StagePeek")
+  op.setAttr("dtypes", Dtypes._typeList)
   let _ = op.addInput(index)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -30369,9 +30369,9 @@ public static func stageSize(
   sharedName: String
 ) -> Tensor<Int32> {
   let op = TFE_Op("StageSize")
+  op.setAttr("dtypes", dtypes)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", dtypes)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1))
@@ -30405,9 +30405,9 @@ public static func statefulPartitionedCall<
   executorType: String
 ) -> Tout {
   let op = TFE_Op("StatefulPartitionedCall")
-  let _ = op.addInputList(args)
   op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(args)
   op.setAttr("f", f)
   op.setAttr("config", config)
   op.setAttr("config_proto", configProto)
@@ -30428,14 +30428,14 @@ public static func statefulRandomBinomial<
   probs: Tensor<T>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulRandomBinomial")
+  op.setAttr("S", S.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
   let _ = op.addInput(counts)
   let _ = op.addInput(probs)
-  op.setAttr("S", S.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30459,10 +30459,10 @@ public static func statefulStandardNormal<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulStandardNormal")
-  let _ = op.addInput(resource)
-  let _ = op.addInput(shape)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
+  let _ = op.addInput(resource)
+  let _ = op.addInput(shape)
   return op.execute(Int(1))
 }
 
@@ -30488,11 +30488,11 @@ public static func statefulStandardNormalV2<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulStandardNormalV2")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30520,11 +30520,11 @@ public static func statefulTruncatedNormal<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulTruncatedNormal")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30551,11 +30551,11 @@ public static func statefulUniform<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulUniform")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30581,11 +30581,11 @@ public static func statefulUniformFullInt<
   shape: Tensor<ShapeDtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulUniformFullInt")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30621,13 +30621,13 @@ public static func statefulUniformInt<
   maxval: Tensor<Dtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatefulUniformInt")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   let _ = op.addInput(resource)
   let _ = op.addInput(algorithm)
   let _ = op.addInput(shape)
   let _ = op.addInput(minval)
   let _ = op.addInput(maxval)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("shape_dtype", ShapeDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30670,11 +30670,11 @@ public static func statelessIf<
   elseBranch: (ElsebranchIn) -> ElsebranchOut
 ) -> Tout {
   let op = TFE_Op("StatelessIf")
-  let _ = op.addInput(cond)
-  let _ = op.addInputList(input)
   op.setAttr("Tcond", Tcond.tensorFlowDataType)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInput(cond)
+  let _ = op.addInputList(input)
   op.setAttr("then_branch", thenBranch)
   op.setAttr("else_branch", elseBranch)
   return op.execute(Int(Tout._typeList.count))
@@ -30701,12 +30701,12 @@ public static func statelessMultinomial<
   seed: Tensor<Tseed>
 ) -> Tensor<OutputDtype> {
   let op = TFE_Op("StatelessMultinomial")
-  let _ = op.addInput(logits)
-  let _ = op.addInput(numSamples)
-  let _ = op.addInput(seed)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tseed", Tseed.tensorFlowDataType)
   op.setAttr("output_dtype", OutputDtype.tensorFlowDataType)
+  let _ = op.addInput(logits)
+  let _ = op.addInput(numSamples)
+  let _ = op.addInput(seed)
   return op.execute(Int(1))
 }
 
@@ -30733,11 +30733,11 @@ public static func statelessRandomNormal<
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatelessRandomNormal")
-  let _ = op.addInput(shape)
-  let _ = op.addInput(seed)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tseed", Tseed.tensorFlowDataType)
+  let _ = op.addInput(shape)
+  let _ = op.addInput(seed)
   return op.execute(Int(1))
 }
 
@@ -30765,11 +30765,11 @@ public static func statelessRandomUniform<
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatelessRandomUniform")
-  let _ = op.addInput(shape)
-  let _ = op.addInput(seed)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tseed", Tseed.tensorFlowDataType)
+  let _ = op.addInput(shape)
+  let _ = op.addInput(seed)
   return op.execute(Int(1))
 }
 
@@ -30800,13 +30800,13 @@ public static func statelessRandomUniformInt<
   maxval: Tensor<Dtype>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatelessRandomUniformInt")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tseed", Tseed.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(seed)
   let _ = op.addInput(minval)
   let _ = op.addInput(maxval)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tseed", Tseed.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -30835,11 +30835,11 @@ public static func statelessTruncatedNormal<
   seed: Tensor<Tseed>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("StatelessTruncatedNormal")
-  let _ = op.addInput(shape)
-  let _ = op.addInput(seed)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tseed", Tseed.tensorFlowDataType)
+  let _ = op.addInput(shape)
+  let _ = op.addInput(seed)
   return op.execute(Int(1))
 }
 
@@ -30877,8 +30877,8 @@ public static func statelessWhile<
   body: (BodyIn) -> BodyOut
 ) -> T {
   let op = TFE_Op("StatelessWhile")
-  let _ = op.addInputList(input)
   op.setAttr("T", input._typeList)
+  let _ = op.addInputList(input)
   op.setAttr("cond", cond)
   op.setAttr("body", body)
   return op.execute(Int(input._typeList.count))
@@ -30986,8 +30986,8 @@ public static func stopGradient<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("StopGradient")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -31134,12 +31134,12 @@ public static func stridedSlice<
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("StridedSlice")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Index", Index.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(begin)
   let _ = op.addInput(end)
   let _ = op.addInput(strides)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Index", Index.tensorFlowDataType)
   op.setAttr("begin_mask", beginMask)
   op.setAttr("end_mask", endMask)
   op.setAttr("ellipsis_mask", ellipsisMask)
@@ -31175,13 +31175,13 @@ public static func stridedSliceGrad<
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("StridedSliceGrad")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Index", Index.tensorFlowDataType)
   let _ = op.addInput(shape)
   let _ = op.addInput(begin)
   let _ = op.addInput(end)
   let _ = op.addInput(strides)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Index", Index.tensorFlowDataType)
   op.setAttr("begin_mask", beginMask)
   op.setAttr("end_mask", endMask)
   op.setAttr("ellipsis_mask", ellipsisMask)
@@ -31210,8 +31210,8 @@ public static func stringFormat<T: TensorArrayProtocol>(
   summarize: Int64 = 3
 ) -> StringTensor {
   let op = TFE_Op("StringFormat")
-  let _ = op.addInputList(inputs)
   op.setAttr("T", inputs._typeList)
+  let _ = op.addInputList(inputs)
   op.setAttr("template", template)
   op.setAttr("placeholder", placeholder)
   op.setAttr("summarize", summarize)
@@ -31477,8 +31477,8 @@ public static func stringToNumber<OutType: Numeric & TensorFlowScalar>(
   stringTensor: StringTensor
 ) -> Tensor<OutType> {
   let op = TFE_Op("StringToNumber")
-  let _ = op.addInput(stringTensor)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(stringTensor)
   return op.execute(Int(1))
 }
 
@@ -31503,9 +31503,9 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Sub")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -31607,10 +31607,10 @@ public static func substr<T: BinaryInteger & TensorFlowScalar>(
   unit: Unit = .byte
 ) -> StringTensor {
   let op = TFE_Op("Substr")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(pos)
   let _ = op.addInput(len)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("unit", unit.cName)
   return op.execute(Int(1))
 }
@@ -31640,11 +31640,11 @@ public static func sum<
   keepDims: Bool = false
 ) -> Tensor<T> {
   let op = TFE_Op("Sum")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(reductionIndices)
   op.setAttr("keep_dims", keepDims)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -31699,10 +31699,10 @@ public static func svd<T: FloatingPoint & TensorFlowScalar>(
   fullMatrices: Bool = false
 ) -> (s: Tensor<T>, u: Tensor<T>, v: Tensor<T>) {
   let op = TFE_Op("Svd")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("compute_uv", computeUv)
   op.setAttr("full_matrices", fullMatrices)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -31726,9 +31726,9 @@ public static func switch_<T: TensorFlowScalar>(
   pred: Tensor<Bool>
 ) -> (outputFalse: Tensor<T>, outputTrue: Tensor<T>) {
   let op = TFE_Op("Switch")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(data)
   let _ = op.addInput(pred)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -31770,9 +31770,9 @@ public static func symbolicGradient<
   f: (FIn) -> FOut
 ) -> Tout {
   let op = TFE_Op("SymbolicGradient")
-  let _ = op.addInputList(input)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(input)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -31901,10 +31901,10 @@ public static func tPUPartitionedCall<
   f: (FIn) -> FOut
 ) -> Tout {
   let op = TFE_Op("TPUPartitionedCall")
-  let _ = op.addInputList(args)
-  let _ = op.addInput(deviceOrdinal)
   op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
+  let _ = op.addInputList(args)
+  let _ = op.addInput(deviceOrdinal)
   op.setAttr("f", f)
   return op.execute(Int(Tout._typeList.count))
 }
@@ -31964,6 +31964,10 @@ public static func tPUReplicate<
   stepMarkerLocation: String = "STEP_MARK_AT_ENTRY"
 ) -> OutputTypes {
   let op = TFE_Op("TPUReplicate")
+  op.setAttr("Tinputs", inputs._typeList)
+  op.setAttr("Tbroadcast_inputs", broadcastInputs._typeList)
+  op.setAttr("Tguaranteed_constants", guaranteedConstants._typeList)
+  op.setAttr("output_types", OutputTypes._typeList)
   let _ = op.addInputList(inputs)
   let _ = op.addInputList(broadcastInputs)
   let variablesCount = op.addInputList(variables)
@@ -31976,10 +31980,6 @@ public static func tPUReplicate<
   op.setAttr("use_tpu", useTpu)
   op.setAttr("device_assignment", deviceAssignment)
   op.setAttr("host_compute_core", hostComputeCore)
-  op.setAttr("Tinputs", inputs._typeList)
-  op.setAttr("Tbroadcast_inputs", broadcastInputs._typeList)
-  op.setAttr("Tguaranteed_constants", guaranteedConstants._typeList)
-  op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("padding_map", paddingMap)
   op.setAttr("step_marker_location", stepMarkerLocation)
   return op.execute(Int(OutputTypes._typeList.count))
@@ -32025,9 +32025,9 @@ public static func tPUReplicatedInput<T: TensorFlowScalar>(
   inputs: [Tensor<T>]
 ) -> Tensor<T> {
   let op = TFE_Op("TPUReplicatedInput")
+  op.setAttr("T", T.tensorFlowDataType)
   let inputsCount = op.addInputList(inputs)
   op.setAttr("N", inputsCount)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32038,9 +32038,9 @@ public static func tPUReplicatedOutput<T: TensorFlowScalar>(
   numReplicas: Int64
 ) -> [Tensor<T>] {
   let op = TFE_Op("TPUReplicatedOutput")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("num_replicas", numReplicas)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(numReplicas))
 }
 
@@ -32057,9 +32057,9 @@ public static func takeDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("TakeDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(count)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -32137,8 +32137,8 @@ public static func takeManySparseFromTensorsMap<Dtype: TensorFlowScalar>(
   sharedName: String
 ) -> (sparseIndices: Tensor<Int64>, sparseValues: Tensor<Dtype>, sparseShape: Tensor<Int64>) {
   let op = TFE_Op("TakeManySparseFromTensorsMap")
-  let _ = op.addInput(sparseHandles)
   op.setAttr("dtype", Dtype.tensorFlowDataType)
+  let _ = op.addInput(sparseHandles)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(1), Int(1), Int(1))
@@ -32150,8 +32150,8 @@ public static func tan<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Tan")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -32161,8 +32161,8 @@ public static func tanh<T: FloatingPoint & TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Tanh")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -32176,9 +32176,9 @@ public static func tanhGrad<T: FloatingPoint & TensorFlowScalar>(
   dy: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TanhGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(y)
   let _ = op.addInput(dy)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32215,9 +32215,9 @@ public static func tensorArrayConcatV2<Dtype: TensorFlowScalar>(
   elementShapeExcept0: TensorShape?
 ) -> (value: Tensor<Dtype>, lengths: Tensor<Int64>) {
   let op = TFE_Op("TensorArrayConcatV2")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("element_shape_except0", elementShapeExcept0)
   return op.execute(Int(1), Int(1))
 }
@@ -32260,9 +32260,9 @@ public static func tensorArrayConcatV3<Dtype: TensorFlowScalar>(
   elementShapeExcept0: TensorShape?
 ) -> (value: Tensor<Dtype>, lengths: Tensor<Int64>) {
   let op = TFE_Op("TensorArrayConcatV3")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("element_shape_except0", elementShapeExcept0)
   return op.execute(Int(1), Int(1))
 }
@@ -32276,10 +32276,10 @@ public static func tensorArrayGatherV2<Dtype: TensorFlowScalar>(
   elementShape: TensorShape?
 ) -> Tensor<Dtype> {
   let op = TFE_Op("TensorArrayGatherV2")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(indices)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("element_shape", elementShape)
   return op.execute(Int(1))
 }
@@ -32309,10 +32309,10 @@ public static func tensorArrayGatherV3<Dtype: TensorFlowScalar>(
   elementShape: TensorShape?
 ) -> Tensor<Dtype> {
   let op = TFE_Op("TensorArrayGatherV3")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(indices)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   op.setAttr("element_shape", elementShape)
   return op.execute(Int(1))
 }
@@ -32428,10 +32428,10 @@ public static func tensorArrayReadV2<Dtype: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("TensorArrayReadV2")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(index)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32451,10 +32451,10 @@ public static func tensorArrayReadV3<Dtype: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Dtype> {
   let op = TFE_Op("TensorArrayReadV3")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(index)
   let _ = op.addInput(flowIn)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32467,11 +32467,11 @@ public static func tensorArrayScatterV2<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArrayScatterV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(indices)
   let _ = op.addInput(value)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32494,11 +32494,11 @@ public static func tensorArrayScatterV3<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArrayScatterV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(indices)
   let _ = op.addInput(value)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32541,11 +32541,11 @@ public static func tensorArraySplitV2<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArraySplitV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(value)
   let _ = op.addInput(lengths)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32585,11 +32585,11 @@ public static func tensorArraySplitV3<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArraySplitV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(value)
   let _ = op.addInput(lengths)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32604,8 +32604,8 @@ public static func tensorArrayV2(
   tensorArrayName: String
 ) -> StringTensor {
   let op = TFE_Op("TensorArrayV2")
-  let _ = op.addInput(size)
   op.setAttr("dtype", dtype)
+  let _ = op.addInput(size)
   op.setAttr("element_shape", elementShape)
   op.setAttr("dynamic_size", dynamicSize)
   op.setAttr("clear_after_read", clearAfterRead)
@@ -32653,8 +32653,8 @@ public static func tensorArrayV3(
   tensorArrayName: String
 ) -> (handle: ResourceHandle, flow: Tensor<Float>) {
   let op = TFE_Op("TensorArrayV3")
-  let _ = op.addInput(size)
   op.setAttr("dtype", dtype)
+  let _ = op.addInput(size)
   op.setAttr("element_shape", elementShape)
   op.setAttr("dynamic_size", dynamicSize)
   op.setAttr("clear_after_read", clearAfterRead)
@@ -32672,11 +32672,11 @@ public static func tensorArrayWriteV2<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArrayWriteV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(index)
   let _ = op.addInput(value)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32697,11 +32697,11 @@ public static func tensorArrayWriteV3<T: TensorFlowScalar>(
   flowIn: Tensor<Float>
 ) -> Tensor<Float> {
   let op = TFE_Op("TensorArrayWriteV3")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(handle)
   let _ = op.addInput(index)
   let _ = op.addInput(value)
   let _ = op.addInput(flowIn)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32712,8 +32712,8 @@ public static func tensorDataset<ToutputTypes: TensorArrayProtocol>(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("TensorDataset")
-  let _ = op.addInputList(components)
   op.setAttr("Toutput_types", components._typeList)
+  let _ = op.addInputList(components)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -32840,8 +32840,8 @@ public static func tensorListConcat<ElementDtype: TensorFlowScalar>(
   elementShape: TensorShape?
 ) -> (tensor: Tensor<ElementDtype>, lengths: Tensor<Int64>) {
   let op = TFE_Op("TensorListConcat")
-  let _ = op.addInput(inputHandle)
   op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
+  let _ = op.addInput(inputHandle)
   op.setAttr("element_shape", elementShape)
   return op.execute(Int(1), Int(1))
 }
@@ -32853,9 +32853,9 @@ public static func tensorListConcatLists(
   elementDtype: TensorDataType
 ) -> VariantHandle {
   let op = TFE_Op("TensorListConcatLists")
+  op.setAttr("element_dtype", elementDtype)
   let _ = op.addInput(inputA)
   let _ = op.addInput(inputB)
-  op.setAttr("element_dtype", elementDtype)
   return op.execute(Int(1))
 }
 
@@ -32883,11 +32883,11 @@ public static func tensorListConcatV2<
   leadingDims: Tensor<Int64>
 ) -> (tensor: Tensor<ElementDtype>, lengths: Tensor<Int64>) {
   let op = TFE_Op("TensorListConcatV2")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(elementShape)
   let _ = op.addInput(leadingDims)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
-  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -32900,8 +32900,8 @@ public static func tensorListElementShape<ShapeType: BinaryInteger & TensorFlowS
   inputHandle: VariantHandle
 ) -> Tensor<ShapeType> {
   let op = TFE_Op("TensorListElementShape")
-  let _ = op.addInput(inputHandle)
   op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  let _ = op.addInput(inputHandle)
   return op.execute(Int(1))
 }
 
@@ -32920,10 +32920,10 @@ public static func tensorListFromTensor<
   elementShape: Tensor<ShapeType>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListFromTensor")
-  let _ = op.addInput(tensor)
-  let _ = op.addInput(elementShape)
   op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  let _ = op.addInput(tensor)
+  let _ = op.addInput(elementShape)
   return op.execute(Int(1))
 }
 
@@ -32942,10 +32942,10 @@ public static func tensorListGather<ElementDtype: TensorFlowScalar>(
   elementShape: Tensor<Int32>
 ) -> Tensor<ElementDtype> {
   let op = TFE_Op("TensorListGather")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(indices)
   let _ = op.addInput(elementShape)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32956,10 +32956,10 @@ public static func tensorListGetItem<ElementDtype: TensorFlowScalar>(
   elementShape: Tensor<Int32>
 ) -> Tensor<ElementDtype> {
   let op = TFE_Op("TensorListGetItem")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(index)
   let _ = op.addInput(elementShape)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -32990,9 +32990,9 @@ public static func tensorListPopBack<ElementDtype: TensorFlowScalar>(
   elementShape: Tensor<Int32>
 ) -> (outputHandle: VariantHandle, tensor: Tensor<ElementDtype>) {
   let op = TFE_Op("TensorListPopBack")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(elementShape)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -33009,9 +33009,9 @@ public static func tensorListPushBack<ElementDtype: TensorFlowScalar>(
   _ tensor: Tensor<ElementDtype>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListPushBack")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(tensor)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33021,9 +33021,9 @@ public static func tensorListPushBackBatch<ElementDtype: TensorFlowScalar>(
   _ tensor: Tensor<ElementDtype>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListPushBackBatch")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandles)
   let _ = op.addInput(tensor)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33040,10 +33040,10 @@ public static func tensorListReserve<ShapeType: BinaryInteger & TensorFlowScalar
   elementDtype: TensorDataType
 ) -> VariantHandle {
   let op = TFE_Op("TensorListReserve")
-  let _ = op.addInput(elementShape)
-  let _ = op.addInput(numElements)
   op.setAttr("element_dtype", elementDtype)
   op.setAttr("shape_type", ShapeType.tensorFlowDataType)
+  let _ = op.addInput(elementShape)
+  let _ = op.addInput(numElements)
   return op.execute(Int(1))
 }
 
@@ -33084,11 +33084,11 @@ public static func tensorListScatter<
   elementShape: Tensor<ShapeType>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListScatter")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
   let _ = op.addInput(elementShape)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
-  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33108,10 +33108,10 @@ public static func tensorListScatterIntoExistingList<ElementDtype: TensorFlowSca
   indices: Tensor<Int32>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListScatterIntoExistingList")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33139,12 +33139,12 @@ public static func tensorListScatterV2<
   numElements: Tensor<Int32>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListScatterV2")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
   let _ = op.addInput(elementShape)
   let _ = op.addInput(numElements)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
-  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33155,10 +33155,10 @@ public static func tensorListSetItem<ElementDtype: TensorFlowScalar>(
   item: Tensor<ElementDtype>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListSetItem")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(index)
   let _ = op.addInput(item)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33181,11 +33181,11 @@ public static func tensorListSplit<
   lengths: Tensor<Int64>
 ) -> VariantHandle {
   let op = TFE_Op("TensorListSplit")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
+  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(elementShape)
   let _ = op.addInput(lengths)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
-  op.setAttr("shape_type", ShapeType.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33204,9 +33204,9 @@ public static func tensorListStack<ElementDtype: TensorFlowScalar>(
   numElements: Int64 = -1
 ) -> Tensor<ElementDtype> {
   let op = TFE_Op("TensorListStack")
+  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   let _ = op.addInput(inputHandle)
   let _ = op.addInput(elementShape)
-  op.setAttr("element_dtype", ElementDtype.tensorFlowDataType)
   op.setAttr("num_elements", numElements)
   return op.execute(Int(1))
 }
@@ -33294,11 +33294,11 @@ public static func tensorScatterAdd<
   updates: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TensorScatterAdd")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33385,11 +33385,11 @@ public static func tensorScatterSub<
   updates: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TensorScatterSub")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33488,11 +33488,11 @@ public static func tensorScatterUpdate<
   updates: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TensorScatterUpdate")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   let _ = op.addInput(tensor)
   let _ = op.addInput(indices)
   let _ = op.addInput(updates)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Tindices", Tindices.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33503,8 +33503,8 @@ public static func tensorSliceDataset<ToutputTypes: TensorArrayProtocol>(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("TensorSliceDataset")
-  let _ = op.addInputList(components)
   op.setAttr("Toutput_types", components._typeList)
+  let _ = op.addInputList(components)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -33534,13 +33534,13 @@ public static func tensorStridedSliceUpdate<
   shrinkAxisMask: Int64 = 0
 ) -> Tensor<T> {
   let op = TFE_Op("TensorStridedSliceUpdate")
+  op.setAttr("T", T.tensorFlowDataType)
+  op.setAttr("Index", Index.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(begin)
   let _ = op.addInput(end)
   let _ = op.addInput(strides)
   let _ = op.addInput(value)
-  op.setAttr("T", T.tensorFlowDataType)
-  op.setAttr("Index", Index.tensorFlowDataType)
   op.setAttr("begin_mask", beginMask)
   op.setAttr("end_mask", endMask)
   op.setAttr("ellipsis_mask", ellipsisMask)
@@ -33569,8 +33569,8 @@ public static func tensorSummary<T: TensorFlowScalar>(
   displayName: String
 ) -> StringTensor {
   let op = TFE_Op("TensorSummary")
-  let _ = op.addInput(tensor)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(tensor)
   op.setAttr("description", description)
   op.setAttr("labels", labels)
   op.setAttr("display_name", displayName)
@@ -33591,10 +33591,10 @@ public static func tensorSummaryV2<T: TensorFlowScalar>(
   serializedSummaryMetadata: StringTensor
 ) -> StringTensor {
   let op = TFE_Op("TensorSummaryV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(tag)
   let _ = op.addInput(tensor)
   let _ = op.addInput(serializedSummaryMetadata)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33737,10 +33737,10 @@ public static func tile<
   multiples: Tensor<Tmultiples>
 ) -> Tensor<T> {
   let op = TFE_Op("Tile")
-  let _ = op.addInput(input)
-  let _ = op.addInput(multiples)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tmultiples", Tmultiples.tensorFlowDataType)
+  let _ = op.addInput(input)
+  let _ = op.addInput(multiples)
   return op.execute(Int(1))
 }
 
@@ -33755,9 +33755,9 @@ public static func tileGrad<T: TensorFlowScalar>(
   multiples: Tensor<Int32>
 ) -> Tensor<T> {
   let op = TFE_Op("TileGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(multiples)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33808,10 +33808,10 @@ public static func topK<T: Numeric & TensorFlowScalar>(
   sorted: Bool = true
 ) -> (values: Tensor<T>, indices: Tensor<Int32>) {
   let op = TFE_Op("TopK")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   op.setAttr("k", k)
   op.setAttr("sorted", sorted)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -33846,10 +33846,10 @@ public static func topKV2<T: Numeric & TensorFlowScalar>(
   sorted: Bool = true
 ) -> (values: Tensor<T>, indices: Tensor<Int32>) {
   let op = TFE_Op("TopKV2")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(input)
   let _ = op.addInput(k)
   op.setAttr("sorted", sorted)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1), Int(1))
 }
 
@@ -33866,10 +33866,10 @@ public static func transpose<
   perm: Tensor<Tperm>
 ) -> Tensor<T> {
   let op = TFE_Op("Transpose")
-  let _ = op.addInput(x)
-  let _ = op.addInput(perm)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tperm", Tperm.tensorFlowDataType)
+  let _ = op.addInput(x)
+  let _ = op.addInput(perm)
   return op.execute(Int(1))
 }
 
@@ -33894,9 +33894,9 @@ public static func tridiagonalSolve<T: FloatingPoint & TensorFlowScalar>(
   rhs: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TridiagonalSolve")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(diagonals)
   let _ = op.addInput(rhs)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33915,9 +33915,9 @@ public static func truncateDiv<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TruncateDiv")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33934,9 +33934,9 @@ public static func truncateMod<T: Numeric & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("TruncateMod")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -33967,11 +33967,11 @@ public static func truncatedNormal<
   seed2: Int64 = 0
 ) -> Tensor<Dtype> {
   let op = TFE_Op("TruncatedNormal")
+  op.setAttr("dtype", Dtype.tensorFlowDataType)
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(shape)
   op.setAttr("seed", seed)
   op.setAttr("seed2", seed2)
-  op.setAttr("dtype", Dtype.tensorFlowDataType)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -34137,8 +34137,8 @@ public static func typeList<T: TensorArrayProtocol>(
   _ a: T
 ) {
   let op = TFE_Op("TypeList")
-  let _ = op.addInputList(a)
   op.setAttr("T", a._typeList)
+  let _ = op.addInputList(a)
   op.execute()
 }
 
@@ -34147,8 +34147,8 @@ public static func typeListRestrict<T: TensorArrayProtocol>(
   _ a: T
 ) {
   let op = TFE_Op("TypeListRestrict")
-  let _ = op.addInputList(a)
   op.setAttr("T", a._typeList)
+  let _ = op.addInputList(a)
   op.execute()
 }
 
@@ -34158,9 +34158,9 @@ public static func typeListTwice<T: TensorArrayProtocol>(
   _ b: T
 ) {
   let op = TFE_Op("TypeListTwice")
+  op.setAttr("T", a._typeList)
   let _ = op.addInputList(a)
   let _ = op.addInputList(b)
-  op.setAttr("T", a._typeList)
   op.execute()
 }
 
@@ -34169,8 +34169,8 @@ public static func unary<T: TensorFlowScalar>(
   _ a: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Unary")
-  let _ = op.addInput(a)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(a)
   return op.execute(Int(1))
 }
 
@@ -34204,13 +34204,13 @@ public static func unbatch<T: TensorFlowScalar>(
   sharedName: String
 ) -> Tensor<T> {
   let op = TFE_Op("Unbatch")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(batchedTensor)
   let _ = op.addInput(batchIndex)
   let _ = op.addInput(id)
   op.setAttr("timeout_micros", timeoutMicros)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -34240,13 +34240,13 @@ public static func unbatchGrad<T: TensorFlowScalar>(
   sharedName: String
 ) -> Tensor<T> {
   let op = TFE_Op("UnbatchGrad")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(originalInput)
   let _ = op.addInput(batchIndex)
   let _ = op.addInput(grad)
   let _ = op.addInput(id)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -34607,9 +34607,9 @@ public static func unique<
   _ x: Tensor<T>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
   let op = TFE_Op("Unique")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_idx", OutIdx.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1), Int(1))
 }
 
@@ -34678,11 +34678,11 @@ public static func uniqueV2<
   axis: Tensor<Taxis>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>) {
   let op = TFE_Op("UniqueV2")
-  let _ = op.addInput(x)
-  let _ = op.addInput(axis)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Taxis", Taxis.tensorFlowDataType)
   op.setAttr("out_idx", OutIdx.tensorFlowDataType)
+  let _ = op.addInput(x)
+  let _ = op.addInput(axis)
   return op.execute(Int(1), Int(1))
 }
 
@@ -34720,9 +34720,9 @@ public static func uniqueWithCounts<
   _ x: Tensor<T>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
   let op = TFE_Op("UniqueWithCounts")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_idx", OutIdx.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -34796,11 +34796,11 @@ public static func uniqueWithCountsV2<
   axis: Tensor<Taxis>
 ) -> (y: Tensor<T>, idx: Tensor<OutIdx>, count: Tensor<OutIdx>) {
   let op = TFE_Op("UniqueWithCountsV2")
-  let _ = op.addInput(x)
-  let _ = op.addInput(axis)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Taxis", Taxis.tensorFlowDataType)
   op.setAttr("out_idx", OutIdx.tensorFlowDataType)
+  let _ = op.addInput(x)
+  let _ = op.addInput(axis)
   return op.execute(Int(1), Int(1), Int(1))
 }
 
@@ -34832,9 +34832,9 @@ public static func unpack<T: TensorFlowScalar>(
   axis: Int64 = 0
 ) -> [Tensor<T>] {
   let op = TFE_Op("Unpack")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(value)
   op.setAttr("num", num)
-  op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("axis", axis)
   return op.execute(Int(num))
 }
@@ -34861,9 +34861,9 @@ public static func unravelIndex<Tidx: BinaryInteger & TensorFlowScalar>(
   dims: Tensor<Tidx>
 ) -> Tensor<Tidx> {
   let op = TFE_Op("UnravelIndex")
+  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   let _ = op.addInput(indices)
   let _ = op.addInput(dims)
-  op.setAttr("Tidx", Tidx.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -34917,12 +34917,12 @@ public static func unsortedSegmentMax<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("UnsortedSegmentMax")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
-  let _ = op.addInput(numSegments)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
+  let _ = op.addInput(numSegments)
   return op.execute(Int(1))
 }
 
@@ -34971,12 +34971,12 @@ public static func unsortedSegmentMin<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("UnsortedSegmentMin")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
-  let _ = op.addInput(numSegments)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
+  let _ = op.addInput(numSegments)
   return op.execute(Int(1))
 }
 
@@ -35024,12 +35024,12 @@ public static func unsortedSegmentProd<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("UnsortedSegmentProd")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
-  let _ = op.addInput(numSegments)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
+  let _ = op.addInput(numSegments)
   return op.execute(Int(1))
 }
 
@@ -35079,12 +35079,12 @@ public static func unsortedSegmentSum<
   numSegments: Tensor<Tnumsegments>
 ) -> Tensor<T> {
   let op = TFE_Op("UnsortedSegmentSum")
-  let _ = op.addInput(data)
-  let _ = op.addInput(segmentIds)
-  let _ = op.addInput(numSegments)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("Tnumsegments", Tnumsegments.tensorFlowDataType)
+  let _ = op.addInput(data)
+  let _ = op.addInput(segmentIds)
+  let _ = op.addInput(numSegments)
   return op.execute(Int(1))
 }
 
@@ -35100,9 +35100,9 @@ public static func unstage<Dtypes: TensorGroup>(
   sharedName: String
 ) -> Dtypes {
   let op = TFE_Op("Unstage")
+  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("capacity", capacity)
   op.setAttr("memory_limit", memoryLimit)
-  op.setAttr("dtypes", Dtypes._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
   return op.execute(Int(Dtypes._typeList.count))
@@ -35154,10 +35154,10 @@ public static func upperBound<
   _ values: Tensor<T>
 ) -> Tensor<OutType> {
   let op = TFE_Op("UpperBound")
-  let _ = op.addInput(sortedInputs)
-  let _ = op.addInput(values)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(sortedInputs)
+  let _ = op.addInput(values)
   return op.execute(Int(1))
 }
 
@@ -35177,9 +35177,9 @@ public static func varHandleOp(
   shape: TensorShape?
 ) -> ResourceHandle {
   let op = TFE_Op("VarHandleOp")
+  op.setAttr("dtype", dtype)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
-  op.setAttr("dtype", dtype)
   op.setAttr("shape", shape)
   return op.execute(Int(1))
 }
@@ -35214,8 +35214,8 @@ public static func variableShape<OutType: BinaryInteger & TensorFlowScalar>(
   _ input: ResourceHandle
 ) -> Tensor<OutType> {
   let op = TFE_Op("VariableShape")
-  let _ = op.addInput(input)
   op.setAttr("out_type", OutType.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -35285,8 +35285,8 @@ public static func where_<T: TensorFlowScalar>(
   _ input: Tensor<T>
 ) -> Tensor<Int64> {
   let op = TFE_Op("Where")
-  let _ = op.addInput(input)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(input)
   return op.execute(Int(1))
 }
 
@@ -35323,8 +35323,8 @@ public static func while_<
   parallelIterations: Int64 = 10
 ) -> T {
   let op = TFE_Op("While")
-  let _ = op.addInputList(input)
   op.setAttr("T", input._typeList)
+  let _ = op.addInputList(input)
   op.setAttr("cond", cond)
   op.setAttr("body", body)
   op.setAttr("output_shapes", outputShapes)
@@ -35376,12 +35376,12 @@ public static func windowDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("WindowDataset")
+  op.setAttr("output_types", outputTypes)
   let _ = op.addInput(inputDataset)
   let _ = op.addInput(size)
   let _ = op.addInput(shift)
   let _ = op.addInput(stride)
   let _ = op.addInput(dropRemainder)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }
@@ -35470,11 +35470,11 @@ public static func writeHistogramSummary<T: Numeric & TensorFlowScalar>(
   _ values: Tensor<T>
 ) {
   let op = TFE_Op("WriteHistogramSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(writer)
   let _ = op.addInput(step)
   let _ = op.addInput(tag)
   let _ = op.addInput(values)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -35488,13 +35488,13 @@ public static func writeImageSummary<T: Numeric & TensorFlowScalar>(
   maxImages: Int64 = 3
 ) {
   let op = TFE_Op("WriteImageSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(writer)
   let _ = op.addInput(step)
   let _ = op.addInput(tag)
   let _ = op.addInput(tensor)
   let _ = op.addInput(badColor)
   op.setAttr("max_images", maxImages)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -35519,11 +35519,11 @@ public static func writeScalarSummary<T: Numeric & TensorFlowScalar>(
   value: Tensor<T>
 ) {
   let op = TFE_Op("WriteScalarSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(writer)
   let _ = op.addInput(step)
   let _ = op.addInput(tag)
   let _ = op.addInput(value)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -35536,12 +35536,12 @@ public static func writeSummary<T: TensorFlowScalar>(
   summaryMetadata: StringTensor
 ) {
   let op = TFE_Op("WriteSummary")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(writer)
   let _ = op.addInput(step)
   let _ = op.addInput(tensor)
   let _ = op.addInput(tag)
   let _ = op.addInput(summaryMetadata)
-  op.setAttr("T", T.tensorFlowDataType)
   op.execute()
 }
 
@@ -35552,9 +35552,9 @@ public static func xdivy<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Xdivy")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -35565,9 +35565,9 @@ public static func xlogy<T: FloatingPoint & TensorFlowScalar>(
   _ y: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Xlogy")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(y)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -35581,8 +35581,8 @@ public static func zerosLike<T: TensorFlowScalar>(
   _ x: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("ZerosLike")
-  let _ = op.addInput(x)
   op.setAttr("T", T.tensorFlowDataType)
+  let _ = op.addInput(x)
   return op.execute(Int(1))
 }
 
@@ -35598,9 +35598,9 @@ public static func zeta<T: FloatingPoint & TensorFlowScalar>(
   q: Tensor<T>
 ) -> Tensor<T> {
   let op = TFE_Op("Zeta")
+  op.setAttr("T", T.tensorFlowDataType)
   let _ = op.addInput(x)
   let _ = op.addInput(q)
-  op.setAttr("T", T.tensorFlowDataType)
   return op.execute(Int(1))
 }
 
@@ -35612,9 +35612,9 @@ public static func zipDataset(
   outputShapes: [TensorShape?]
 ) -> VariantHandle {
   let op = TFE_Op("ZipDataset")
+  op.setAttr("output_types", outputTypes)
   let inputDatasetsCount = op.addInputList(inputDatasets)
   op.setAttr("N", inputDatasetsCount)
-  op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   return op.execute(Int(1))
 }

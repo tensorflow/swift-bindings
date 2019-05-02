@@ -337,10 +337,14 @@ public static func {name}{generics}({input_args}
     elif self.mode == 'eager':
       body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
       setters = []
+      for attr in self.attrs:
+        if attr.is_type_attr:
+          setters.append(attr.swift_setter(self.mode, self.string_valued))
       for arg in self.input_args:
         setters.append(arg.swift_setter(self.mode))
       for attr in self.attrs:
-        setters.append(attr.swift_setter(self.mode, self.string_valued))
+        if not attr.is_type_attr:
+          setters.append(attr.swift_setter(self.mode, self.string_valued))
       body += '\n  '.join(setters)
       counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
       if len(self.output_args) == 0:

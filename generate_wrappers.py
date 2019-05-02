@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Generates some swift wrapper from some ops description protobuf."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import collections
 import os
 import six
 import tensorflow as tf
@@ -29,19 +29,20 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    'api_def_path',
-    None,
-    'path to the api_def directory, e.g. tensorflow/core/api_def/base_api')
+  'api_def_path',
+  None,
+  'path to the api_def directory, e.g. tensorflow/core/api_def/base_api')
 
 flags.DEFINE_string(
-    'output_path',
-    None,
-    'path for the generated swift file')
+  'output_path',
+  None,
+  'path for the generated swift file')
 
 _WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!
 //
 """
-_HEADER = """// Copyright 2018 Google LLC
+
+_HEADER = """// Copyright 2018-19 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,83 +55,87 @@ _HEADER = """// Copyright 2018 Google LLC
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 """
 
 _OUTPUT_FILE = 'RawOpsGenerated.swift'
 _RENAMED_KEYWORDS = {
-    '': 'empty',
-    'in': 'in_',
-    'var': 'var_',
-    'where': 'where_',
-    'switch': 'switch_',
-    'protocol': 'protocol_',
-    'init': 'init_',
-}
+  '': 'empty',
+  'in': 'in_',
+  'var': 'var_',
+  'where': 'where_',
+  'if': 'if_',
+  'for': 'for_',
+  'while': 'while_',
+  'switch': 'switch_',
+  'protocol': 'protocol_',
+  'init': 'init_'}
+
 _TYPE_PROTOCOLS = [
-    (set([]), 'TensorFlowScalar'),
-    (set([types_pb2.DT_UINT8,
-          types_pb2.DT_UINT16,
-          types_pb2.DT_UINT32,
-          types_pb2.DT_UINT64]), 'UnsignedInteger & TensorFlowScalar'),
-    (set([types_pb2.DT_UINT8,
-          types_pb2.DT_UINT16,
-          types_pb2.DT_UINT32,
-          types_pb2.DT_UINT64,
-          types_pb2.DT_INT8,
-          types_pb2.DT_INT16,
-          types_pb2.DT_INT32,
-          types_pb2.DT_INT64]), 'BinaryInteger & TensorFlowScalar'),
-    (set([types_pb2.DT_FLOAT,
-          types_pb2.DT_DOUBLE,
-          types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'FloatingPoint & TensorFlowScalar'),
-    (set([types_pb2.DT_UINT8,
-          types_pb2.DT_UINT16,
-          types_pb2.DT_UINT32,
-          types_pb2.DT_UINT64,
-          types_pb2.DT_INT8,
-          types_pb2.DT_INT16,
-          types_pb2.DT_INT32,
-          types_pb2.DT_INT64,
-          types_pb2.DT_FLOAT,
-          types_pb2.DT_DOUBLE,
-          types_pb2.DT_HALF,
-          types_pb2.DT_BFLOAT16]), 'Numeric & TensorFlowScalar'),
-]
+  (set(), 'TensorFlowScalar'),
+  ({types_pb2.DT_UINT8,
+    types_pb2.DT_UINT16,
+    types_pb2.DT_UINT32,
+    types_pb2.DT_UINT64}, 'UnsignedInteger & TensorFlowScalar'),
+  ({types_pb2.DT_UINT8,
+    types_pb2.DT_UINT16,
+    types_pb2.DT_UINT32,
+    types_pb2.DT_UINT64,
+    types_pb2.DT_INT8,
+    types_pb2.DT_INT16,
+    types_pb2.DT_INT32,
+    types_pb2.DT_INT64}, 'BinaryInteger & TensorFlowScalar'),
+  ({types_pb2.DT_FLOAT,
+    types_pb2.DT_DOUBLE,
+    types_pb2.DT_HALF,
+    types_pb2.DT_BFLOAT16}, 'FloatingPoint & TensorFlowScalar'),
+  ({types_pb2.DT_UINT8,
+    types_pb2.DT_UINT16,
+    types_pb2.DT_UINT32,
+    types_pb2.DT_UINT64,
+    types_pb2.DT_INT8,
+    types_pb2.DT_INT16,
+    types_pb2.DT_INT32,
+    types_pb2.DT_INT64,
+    types_pb2.DT_FLOAT,
+    types_pb2.DT_DOUBLE,
+    types_pb2.DT_HALF,
+    types_pb2.DT_BFLOAT16}, 'Numeric & TensorFlowScalar')]
 
 _SWIFTIFIED_TYPES = {
-    types_pb2.DT_FLOAT: 'Float',
-    types_pb2.DT_DOUBLE: 'Double',
-    types_pb2.DT_INT32: 'Int32',
-    types_pb2.DT_UINT8: 'UInt8',
-    types_pb2.DT_INT16: 'Int16',
-    types_pb2.DT_INT8: 'Int8',
-    types_pb2.DT_INT64: 'Int64',
-    types_pb2.DT_BOOL: 'Bool',
-    types_pb2.DT_UINT16: 'UInt16',
-    types_pb2.DT_UINT32: 'UInt32',
-    types_pb2.DT_UINT64: 'UInt64',
-}
+  types_pb2.DT_FLOAT: 'Float',
+  types_pb2.DT_DOUBLE: 'Double',
+  types_pb2.DT_INT32: 'Int32',
+  types_pb2.DT_UINT8: 'UInt8',
+  types_pb2.DT_INT16: 'Int16',
+  types_pb2.DT_INT8: 'Int8',
+  types_pb2.DT_INT64: 'Int64',
+  types_pb2.DT_BOOL: 'Bool',
+  types_pb2.DT_UINT16: 'UInt16',
+  types_pb2.DT_UINT32: 'UInt32',
+  types_pb2.DT_UINT64: 'UInt64'}
 
 _SWIFTIFIED_ATTR_TYPES = {
-    'int': 'Int64',
-    'float': 'Double',
-    'bool': 'Bool',
-    'string': 'String',
-    'list(int)': '[Int32]',
-    'list(float)': '[Double]',
-    'list(bool)': '[Bool]',
-    'list(string)': '[String]',
-}
+  'int': 'Int64',
+  'float': 'Double',
+  'bool': 'Bool',
+  'string': 'String',
+  'type': 'TensorDataType',
+  'shape': 'TensorShape?',
+  'list(int)': '[Int32]',
+  'list(float)': '[Double]',
+  'list(bool)': '[Bool]',
+  'list(string)': '[String]',
+  'list(type)': '[TensorDataType]',
+  'list(shape)': '[TensorShape?]'}
 
-_OMITTED_PARAMETER_NAMES = set(
-    ['x', 'y', 'a', 'b', 'input', 'tensor', 'values'])
+_OMITTED_PARAMETER_NAMES = {
+  'x', 'y', 'a', 'b', 'input', 'tensor', 'values'}
 
 _START_COMMENT = '///'
 
 
 class UnableToGenerateCodeError(Exception):
-
   def __init__(self, details):
     self.details = details
     super(UnableToGenerateCodeError, self).__init__()
@@ -139,7 +144,431 @@ class UnableToGenerateCodeError(Exception):
     return self.details
 
 
-def swift_compatible(s, capitalize=False):
+class Op(object):
+  def __init__(self, op_def, api_def, enum_store, string_valued=False):
+    self.op_def = op_def
+    self.api_def = api_def
+    self.enum_store = enum_store
+    self.string_valued = string_valued
+    self.inferred_counts = dict()
+
+    # Collect all the input and output arguments.
+    self.input_args = [
+      Argument(arg_def, op=self)
+      for arg_def in self.op_def.input_arg]
+    self.output_args = [
+      Argument(arg_def, op=self)
+      for arg_def in self.op_def.output_arg]
+
+    # Collect all attributes.
+    self.attrs = [
+      Attribute(attr, op=self)
+      for attr in op_def.attr]
+    self.type_attrs = [
+      attr for attr in self.attrs
+      if attr.is_type_attr]
+
+  def swift_function(self):
+    return '''
+{documentation}@inlinable @inline(__always)
+public static func {name}{generics}({input_args}
+){return_type} {{
+  {body}
+}}'''.format(
+      documentation=self._swift_documentation(),
+      name=self._swift_name(),
+      generics=self._swift_generics(),
+      input_args=self._swift_input_args(),
+      return_type=self._swift_return_type(),
+      body=self._swift_body())
+
+  def _swift_documentation(self):
+    def comment_block(text, indent_level):
+      """Returns a commented block of text with some specified indentation."""
+      def indent(line_index):
+        if indent_level == 0:
+          return ''
+        if line_index:
+          return '  ' * indent_level
+        return '  ' * (indent_level - 1) + '- '
+
+      return ''.join([
+        (_START_COMMENT + ' ' + indent(line_index) + line + '\n'
+         if line else _START_COMMENT + '\n')
+        for line_index, line in enumerate(text.split('\n'))
+      ])
+
+    def append_list(doc, args, arg_type):
+      """Returns the documentation for lists of inputs/outputs/attributes."""
+      args = [arg for arg in args if arg.description]
+      if len(args) == 1:
+        block = '%s %s: %s' % (arg_type, args[0].name, args[0].description)
+        doc += _START_COMMENT + '\n'
+        doc += comment_block(block, indent_level=1)
+      elif len(args) > 1:
+        doc += '%s\n%s - %ss:\n' % (_START_COMMENT, _START_COMMENT, arg_type)
+        for arg in args:
+          block = '%s: %s' % (arg.name, arg.description)
+          doc += comment_block(block, indent_level=2)
+      return doc
+
+    doc = ''
+    if self.api_def.summary:
+      doc = comment_block(self.api_def.summary, indent_level=0)
+    if self.api_def.description:
+      doc += _START_COMMENT + '\n'
+      doc += comment_block(self.api_def.description, indent_level=0)
+    doc = append_list(doc, self.api_def.in_arg, 'Parameter')
+    doc = append_list(doc, self.api_def.attr, 'Attr')
+    doc = append_list(doc, self.api_def.out_arg, 'Output')
+    if doc and not doc.endswith('\n'):
+      doc = doc + '\n'
+    return doc
+
+  def _swift_name(self):
+    return swift_compatible_identifier(
+      self.op_def.name[0].lower() + self.op_def.name[1:])
+
+  def _swift_generics(self):
+    constraints = [
+      attr.generic_constraints(self.string_valued)
+      for attr in self.attrs]
+    constraints = [c for c in constraints if c is not None]
+    if len(constraints) == 1:
+      return '<' + ', '.join(constraints) + '>'
+    if len(constraints) > 1:
+      return '<\n    ' + ',\n    '.join(constraints) + '\n>'
+    return ''
+
+  def _swift_input_args(self):
+    args = ''
+    for arg in self.input_args:
+      args += '\n  %s: %s,' % (arg.swift_arg_name, str(arg.swift_type(self.string_valued)))
+    for attr in self.attrs:
+      if not attr.is_inferred_type_attr and not attr.is_inferred_number_attr:
+        args += '\n  %s: %s%s,' % (attr.swift_arg_name, attr.swift_type, attr.swift_default)
+    if args != '':
+      args = args[:-1]
+    return args
+
+  def _swift_return_type(self):
+    return_type = ''
+    if len(self.output_args) == 1:
+      return_type = ' -> ' + str(self.output_args[0].swift_type(self.string_valued))
+    elif len(self.output_args) > 1:
+      named_types = [
+        arg.swift_name + ': ' + str(arg.swift_type(self.string_valued))
+        for arg in self.output_args]
+      return_type = ' -> (' + ', '.join(named_types) + ')'
+    return return_type
+
+  def _swift_body(self):
+    body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
+    setters = []
+    for attr in self.attrs:
+      setters.append(attr.swift_setter(self.string_valued))
+    for arg in self.input_args:
+      setters.append(arg.swift_setter())
+    body += '\n  '.join(setters)
+    counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
+    if len(self.output_args) == 0:
+      return body + '\n  op.execute()'
+    body += '\n  return op.execute({})'.format(', '.join(counts))
+    return body
+
+
+class Argument(object):
+  def __init__(self, arg_def, op):
+    self.arg_def = arg_def
+    self.op = op
+    self.is_list = arg_def.number_attr is not '' \
+                   or arg_def.type_list_attr is not ''
+
+  @property
+  def name(self):
+    return self.arg_def.name
+
+  @property
+  def swift_name(self):
+    return swift_compatible_identifier(
+      self.name[0].lower() + self.name[1:])
+
+  @property
+  def swift_arg_name(self):
+    name = self.swift_name
+    if name in _OMITTED_PARAMETER_NAMES:
+      name = '_ ' + name
+    return name
+
+  def swift_type(self, string_valued=False):
+    return self.type.swift_type(
+      string_valued=self.allows_string and string_valued)
+
+  def swift_setter(self):
+    if self.is_list:
+      return 'let _ = op.addInputList({})'.format(self.swift_name)
+    else:
+      return 'let _ = op.addInput({})'.format(self.swift_name)
+
+  @property
+  def swift_count(self):
+    number_attr = self.arg_def.number_attr
+    if number_attr and number_attr in self.op.inferred_counts:
+      return self.op.inferred_counts[number_attr]
+    if self.arg_def.type_list_attr:
+      return self.op.inferred_counts[self.arg_def.type_list_attr]
+    return '1'
+
+  @property
+  def type(self):
+    number = self.arg_def.number_attr
+    if self.arg_def.type_attr:
+      type_attr = next(
+        attr for attr in self.op.type_attrs
+        if attr.name == self.arg_def.type_attr)
+      return Type('Tensor', base_type=type_attr.swift_name, number=number)
+    if self.arg_def.type_list_attr:
+      type_attr = next(
+        attr for attr in self.op.type_attrs
+        if attr.name == self.arg_def.type_list_attr)
+      # There are never any numbered type lists.
+      return Type(type_attr.swift_name)
+    if self.arg_def.type in _SWIFTIFIED_TYPES:
+      base_type = _SWIFTIFIED_TYPES[self.arg_def.type]
+      return Type('Tensor', base_type=base_type, number=number)
+    if self.arg_def.type == types_pb2.DT_STRING:
+      return Type('Tensor', base_type='String', number=number)
+    if self.arg_def.type == types_pb2.DT_RESOURCE:
+      return Type('ResourceHandle', number=number)
+    if self.arg_def.type == types_pb2.DT_VARIANT:
+      return Type('VariantHandle', number=number)
+    raise UnableToGenerateCodeError(
+      'Unsupported type for argument "%s".' % self.name)
+
+  @property
+  def allows_string(self):
+    if self.arg_def.type_attr:
+      type_attr = next(
+        attr for attr in self.op.type_attrs
+        if attr.name == self.arg_def.type_attr)
+      return types_pb2.DT_STRING in type_attr.attr_def.allowed_values.list.type
+    return False
+
+
+class Type(object):
+  def __init__(self, kind, base_type=None, number=None):
+    self.kind = kind
+    self.base_type = base_type
+    self.number = number
+
+  @property
+  def count(self):
+    return self.number if self.number else 1
+
+  def swift_type(self, string_valued=False):
+    if self.kind == 'Tensor':
+      if self.base_type == 'String' or string_valued:
+        name = 'StringTensor'
+      else:
+        name = 'Tensor<' + self.base_type + '>'
+    elif self.kind == 'TensorHandle':
+      name = 'TensorHandle<' + self.base_type + '>'
+    elif self.kind == 'ResourceHandle':
+      name = 'ResourceHandle'
+    elif self.kind == 'VariantHandle':
+      name = 'VariantHandle'
+    else:
+      name = self.kind
+    return ('[%s]' % name) if self.number else name
+
+
+class Attribute(object):
+  """Represents information extracted from op `type` and `list(type)` attributes."""
+
+  def __init__(self, attr_def, op):
+    self.attr_def = attr_def
+    self.op = op
+    self.is_type_attr = attr_def.type in ['type', 'list(type)']
+
+    # Check whether the value of this attribute can be
+    # inferred automatically (this only applies to
+    # type-valued attributes).
+    input_args = list(op.op_def.input_arg)
+    output_args = list(op.op_def.output_arg)
+    input_arg_type_attrs = set(
+      [arg.type_attr for arg in input_args] +
+      [arg.type_list_attr for arg in input_args])
+    output_arg_type_attrs = set(
+      [arg.type_attr for arg in output_args] +
+      [arg.type_list_attr for arg in output_args])
+    arg_type_attrs = input_arg_type_attrs.union(output_arg_type_attrs)
+    self.is_inferred_type_attr = attr_def.name in arg_type_attrs
+    self.is_output_type_attr = attr_def.name in output_arg_type_attrs
+    self.is_func_attr = self.attr_def.type == 'func'
+
+    # We use this for obtaining the `_typeList` property.
+    self.input_arg = None
+    self.is_inferred_number_attr = False
+    for arg in self.op.input_args:
+      if self.attr_def.name in [arg.arg_def.type_attr,
+                                arg.arg_def.type_list_attr] or \
+         self.attr_def.name == arg.arg_def.number_attr:
+        self.input_arg = arg
+        self.is_inferred_number_attr = True
+        break
+
+    # The following properties are only relevant for
+    # non-inferred-type-valued attributes.
+    self._swift_type = ''
+    self._use_enum = False
+    if not self.is_inferred_type_attr and not self.is_func_attr:
+      if self.attr_def.type not in _SWIFTIFIED_ATTR_TYPES:
+        raise UnableToGenerateCodeError(
+          'Unsupported type for attribute "%s".'
+          % self.attr_def.name)
+
+      # Get the arg type.
+      self._swift_type = _SWIFTIFIED_ATTR_TYPES[self.attr_def.type]
+
+      # Check if the arg is an enum type.
+      self._use_enum = False
+      if self.attr_def.type == 'string':
+        allowed_values = tuple(sorted(self.attr_def.allowed_values.list.s))
+        if allowed_values:
+          self._swift_type = self.op.enum_store.maybe_add(
+            allowed_values, self.attr_def.name)
+          self._use_enum = True
+    if self.is_func_attr:
+      input_type = self.swift_name.capitalize() + 'In'
+      output_type = self.swift_name.capitalize() + 'Out'
+      self._swift_type = '({}) -> {}'.format(input_type, output_type)
+
+  @property
+  def name(self):
+    return self.attr_def.name
+
+  @property
+  def swift_name(self):
+    if self.is_inferred_type_attr:
+      return swift_compatible_identifier(
+        self.name, capitalize=True)
+    return swift_compatible_identifier(
+      self.name[0].lower() + self.name[1:])
+
+  @property
+  def swift_arg_name(self):
+    name = self.swift_name
+    if name in _OMITTED_PARAMETER_NAMES:
+      name = '_ ' + name
+    return name
+
+  @property
+  def swift_type(self):
+    return self._swift_type
+
+  @property
+  def swift_default(self):
+    def swift_float(f):
+      if f == float('inf'): return 'Double.infinity'
+      if f == float('-inf'): return '-Double.infinity'
+      return '%g' % f
+
+    if not self.is_inferred_type_attr and self.attr_def.default_value:
+      default_value = self.attr_def.default_value
+      if default_value.HasField('b'):
+        default_value = str(default_value.b).lower()
+      elif default_value.HasField('i'):
+        default_value = str(default_value.i)
+      elif default_value.HasField('f'):
+        default_value = swift_float(default_value.f)
+      elif default_value.HasField('s') and default_value.s:
+        s = str(default_value.s, encoding='utf-8')
+        default_value = '.' + swift_compatible_identifier(s.lower()) \
+          if self._use_enum else '"' + s + '"'
+      elif default_value.HasField('list'):
+        if default_value.list.i:
+          default_values = [str(s) for s in default_value.list.i]
+          default_value = '[' + ', '.join(default_values) + ']'
+        elif default_value.list.f:
+          default_values = [swift_float(s) for s in default_value.list.f]
+          default_value = '[' + ', '.join(default_values) + ']'
+        else:
+          default_value = None
+      else:
+        default_value = None
+      if default_value is not None:
+        default_value = default_value.replace("\t", "\\t")
+        return ' = ' + default_value
+    return ''
+
+  def swift_setter(self, string_valued=False):
+    # Inferred-type-valued attributes.
+    if self.is_inferred_type_attr:
+      name = self.swift_name
+      if self.input_arg is not None:
+        name = self.input_arg.swift_name
+      if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
+        self.op.inferred_counts[self.name] = name + '._typeList.count'
+      if self.attr_def.type == 'list(type)':
+        return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
+      if string_valued and self.allows_string:
+        return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
+      return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
+
+    if self.is_inferred_number_attr:
+      # The following is used for inferring the lengths of output lists.
+      self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
+      return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
+    
+    if self.attr_def.type == 'int':
+      # The following is used for inferring the lengths of output lists.
+      self.op.inferred_counts[self.name] = self.swift_name
+
+    # Remaining attributes.
+    value = self.swift_name + '.cName' if self._use_enum else self.swift_name
+    return 'op.setAttr("{}", {})'.format(self.name, value)
+
+  def generic_constraints(self, string_valued):
+    # We use this for obtaining the `_typeList` property.
+    input_arg = None
+    if self.attr_def.type == 'list(type)':
+      for arg in self.op.input_args:
+        if self.attr_def.name in [arg.arg_def.type_attr,
+                                  arg.arg_def.type_list_attr]:
+          input_arg = arg
+          break
+    if self.is_func_attr:
+      input_type = self.swift_name.capitalize() + 'In'
+      output_type = self.swift_name.capitalize() + 'Out'
+      return '{}: TensorGroup,\n    {}: TensorGroup'.format(
+        input_type, output_type)
+    if not self.is_inferred_type_attr:
+      return None
+    protocol = None
+    if self.attr_def.type == 'list(type)' and input_arg is None:
+      protocol = 'TensorGroup'
+    elif self.attr_def.type == 'list(type)':
+      protocol = 'TensorArrayProtocol'
+    elif self.attr_def.type == 'type':
+      if string_valued and self.allows_string:
+        return None
+      protocol = 'TensorFlowScalar'
+      allowed_types = set(self.attr_def.allowed_values.list.type)
+      allowed_types &= set(_SWIFTIFIED_TYPES.keys())
+      for types, protocol_name in _TYPE_PROTOCOLS:
+        if allowed_types.issubset(types):
+          protocol = protocol_name
+          break
+    if protocol is not None:
+      return self.swift_name + ': ' + protocol
+    return None
+
+  @property
+  def allows_string(self):
+    return types_pb2.DT_STRING in self.attr_def.allowed_values.list.type
+
+
+def swift_compatible_identifier(s, capitalize=False):
   """Transforms an identifier to be more swift idiomatic."""
   if s in _RENAMED_KEYWORDS:
     return _RENAMED_KEYWORDS[s]
@@ -156,14 +585,6 @@ def swift_compatible(s, capitalize=False):
     else:
       without_underscores.append(c)
   return ''.join(without_underscores)
-
-
-def swiftified_name(name):
-  return swift_compatible(name[0].lower() + name[1:])
-
-
-def swiftified_name_for_enums(name):
-  return swift_compatible(name.lower())
 
 
 class EnumStore(object):
@@ -187,7 +608,8 @@ class EnumStore(object):
           '// @_frozen // SR-9739\n' +
           'public enum {} {{\n'.format(type_name) +
           '\n'.join(['  case {}'.format(
-              swiftified_name_for_enums(a)) for a in allowed_values]) +
+            swift_compatible_identifier(a.lower()))
+            for a in allowed_values]) +
           '\n\n' +
           '  @inlinable\n' +
           '  var cName: String {\n' +
@@ -195,7 +617,8 @@ class EnumStore(object):
           '    get {\n' +
           '      switch self {\n' +
           '\n'.join(['      case .{}: return "{}"'.format(
-              swiftified_name_for_enums(a), a) for a in allowed_values]) +
+            swift_compatible_identifier(a.lower()), a)
+            for a in allowed_values]) +
           '\n' +
           '      }\n' +
           '    }\n' +
@@ -206,7 +629,7 @@ class EnumStore(object):
   def maybe_add(self, allowed_values, attr_def_name):
     if allowed_values in self._entries:
       return self._entries[allowed_values]
-    type_name = swift_compatible(attr_def_name, capitalize=True)
+    type_name = swift_compatible_identifier(attr_def_name, capitalize=True)
     while type_name in self._type_names:
       type_name += str(self._counter)
       self._counter += 1
@@ -215,299 +638,10 @@ class EnumStore(object):
     return type_name
 
 
-class Types(object):
-  """Extracts some type information from a type or list(type) attr."""
-
-  def __init__(self, attr_def):
-    self._is_list_attr = attr_def.type == 'list(type)'
-    self.swift_name = swift_compatible(attr_def.name, capitalize=True)
-    self.attr_def_name = attr_def.name
-    allowed_types = set(attr_def.allowed_values.list.type)
-    allowed_types &= set(_SWIFTIFIED_TYPES.keys())
-    self._protocol_name = 'TensorFlowScalar'
-    for handled_types, protocol_name in _TYPE_PROTOCOLS:
-      if allowed_types.issubset(handled_types):
-        self._protocol_name = protocol_name
-        break
-
-  def generics(self):
-    return self.swift_name + ': ' + self._protocol_name
-
-  def op_arg(self):
-    # Do not pass list(type) attr as these have to use an array of types.
-    if self._is_list_attr:
-      return None
-    return self.attr_def_name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
-
-
-def swift_float(f):
-  if f == float('inf'): return 'Double.infinity'
-  if f == float('-inf'): return '-Double.infinity'
-  return '%g' % f
-
-
-def swift_default_value(attr_value, use_enum):
-  """Converts the default value for an attr to a swift value."""
-  if attr_value.HasField('b'):
-    return str(attr_value.b).lower()
-  if attr_value.HasField('i'):
-    return str(attr_value.i)
-  if attr_value.HasField('f'):
-    return swift_float(attr_value.f)
-  if attr_value.HasField('s') and attr_value.s:
-    s = str(attr_value.s, encoding='utf-8')
-    return '.' + swiftified_name_for_enums(s) if use_enum else '"' + s + '"'
-  if attr_value.HasField('list'):
-    if attr_value.list.i:
-      default_values = [str(s) for s in attr_value.list.i]
-      return '[' + ', '.join(default_values) + ']'
-    if attr_value.list.f:
-      default_values = [swift_float(s) for s in attr_value.list.f]
-      return '[' + ', '.join(default_values) + ']'
-    return None
-  return None
-
-
-class AttributeAsInput(object):
-  """Extracts from an attr_def some swift related fields."""
-
-  def __init__(self, attr_def, enum_store):
-    if attr_def.type not in _SWIFTIFIED_ATTR_TYPES:
-      raise UnableToGenerateCodeError('unsupported type for ' + attr_def.name)
-    self.swift_type_and_default_value = _SWIFTIFIED_ATTR_TYPES[attr_def.type]
-    use_enum = False
-    if attr_def.type == 'string':
-      allowed_values = tuple(sorted(attr_def.allowed_values.list.s))
-      if allowed_values:
-        self.swift_type_and_default_value = enum_store.maybe_add(
-            allowed_values, attr_def.name)
-        use_enum = True
-
-    if attr_def.default_value:
-      default_value = swift_default_value(
-          attr_def.default_value, use_enum=use_enum)
-      if default_value is not None:
-        default_value = default_value.replace("\t", "\\t")
-        self.swift_type_and_default_value += ' = ' + default_value
-
-    self.swift_name = swiftified_name(attr_def.name)
-    self.tfop_name = attr_def.name
-    self.swift_value = (
-        self.swift_name if not use_enum
-        else self.swift_name + '.cName')
-
-
-def attr_def_defines_a_type(attr_def):
-  return attr_def.type in ['type', 'list(type)']
-
-
-def arg_def_type_as_string(arg_def, handle=False):
-  """Returns the tensor type for the provided input/output argument."""
-  tensor_type = None
-  if arg_def.type_attr:
-    base_type = swift_compatible(arg_def.type_attr, capitalize=True)
-  elif arg_def.type_list_attr:
-    base_type = swift_compatible(arg_def.type_list_attr, capitalize=True)
-  elif arg_def.type in _SWIFTIFIED_TYPES:
-    base_type = _SWIFTIFIED_TYPES[arg_def.type]
-  elif arg_def.type == types_pb2.DT_STRING:
-    if handle:
-      base_type = "String"
-    else:
-      tensor_type = "StringTensor"
-  else:
-    raise UnableToGenerateCodeError('unsupported type for ' + arg_def.name)
-  if not tensor_type:
-    tensor_type = 'TensorHandle' if handle else 'Tensor'
-    tensor_type += '<' + base_type + '>'
-  if arg_def.number_attr or arg_def.type_list_attr:
-    return '[' + tensor_type + ']'
-  return tensor_type
-
-
-def arg_def_type_is_list(arg_def):
-  return arg_def.number_attr or arg_def.type_list_attr
-
-
-def comment_block(text, indent_level):
-  """Returns a commented block of text with some specified indentation."""
-  def indent(line_index):
-    if indent_level == 0:
-      return ''
-    if line_index:
-      return '  ' * indent_level
-    return '  ' * (indent_level - 1) + '- '
-
-  return ''.join([
-      (_START_COMMENT + ' ' + indent(line_index) + line + '\n'
-       if line else _START_COMMENT + '\n')
-      for line_index, line in enumerate(text.split('\n'))
-  ])
-
-
-def documentation(api_def):
-  """Generates some documentation comment for a given op api def."""
-  def append_list(doc, args, arg_type):
-    """Returns the documentation for lists of inputs/outputs/attrs."""
-    args = [arg for arg in args if arg.description]
-    if len(args) == 1:
-      block = '%s %s: %s' % (arg_type, args[0].name, args[0].description)
-      doc += _START_COMMENT + '\n'
-      doc += comment_block(block, indent_level=1)
-    elif len(args) > 1:
-      doc += '%s\n%s - %ss:\n' % (_START_COMMENT, _START_COMMENT, arg_type)
-      for arg in args:
-        block = '%s: %s' % (arg.name, arg.description)
-        doc += comment_block(block, indent_level=2)
-    return doc
-
-  doc = ''
-  if api_def.summary:
-    doc = comment_block(api_def.summary, indent_level=0)
-  if api_def.description:
-    doc += _START_COMMENT + '\n'
-    doc += comment_block(api_def.description, indent_level=0)
-  doc = append_list(doc, api_def.in_arg, 'Parameter')
-  doc = append_list(doc, api_def.attr, 'Attr')
-  doc = append_list(doc, api_def.out_arg, 'Output')
-  if doc and not doc.endswith('\n'):
-    doc += '\n'
-  return doc
-
-
-def maybe_named(name):
-  if name in _OMITTED_PARAMETER_NAMES:
-    return '_ ' + name
-  return name
-
-
-OutputArg = collections.namedtuple(
-    'output_arg', ['swift_name', 'swift_type', 'swift_handle_type', 'is_list'])
-
-
-# TensorHandle: h -> Tensor(handle: h)
-def convert_handle_to_tensor(handle_var, return_handle_type):
-  if return_handle_type == "TensorHandle<String>":
-    return 'StringTensor(handle: ' + handle_var + ')'
-  return 'Tensor(handle: ' + handle_var + ')'
-
-
-def generate_code(op, api_def, enum_store):
-  """Generates some swift code for a given op."""
-  types = [Types(a) for a in op.attr if attr_def_defines_a_type(a)]
-  generics_type = ''
-  if types:
-    generics_type = '<' + ', '.join([t.generics() for t in types]) + '>'
-
-  input_names_and_types = [
-      (swiftified_name(a.name), arg_def_type_as_string(a))
-      for a in op.input_arg]
-
-  # Do not generate an input parameter for numberAttr as these are inferred from
-  # some array length.
-  excluded_attributes = set([a.number_attr for a in op.input_arg])
-  attributes_as_input = [
-      AttributeAsInput(a, enum_store)
-      for a in op.attr
-      if not attr_def_defines_a_type(a) and a.name not in excluded_attributes
-  ]
-
-  output_args = [
-      OutputArg(swift_name=swiftified_name(a.name),
-                swift_type=arg_def_type_as_string(a),
-                swift_handle_type=arg_def_type_as_string(a, handle=True),
-                is_list=arg_def_type_is_list(a))
-      for a in op.output_arg]
-
-  # Do not generate ops with output lists.
-  # TODO: We could support output lists by giving the outputs generic type that
-  # conforms to TensorGroup.
-  for output_arg in output_args:
-    if output_arg.is_list:
-      raise UnableToGenerateCodeError('output lists not supported')
-
-  return_type = ''
-  if len(output_args) == 1:
-    return_type = ' -> ' + output_args[0].swift_type
-  elif len(output_args) > 1:
-    named_types = [o.swift_name + ': ' + o.swift_type for o in output_args]
-    return_type = ' -> (' + ', '.join(named_types) + ')'
-
-  tfop_args = ',\n    '.join(
-      ['"' + op.name + '"'] +
-      [name for name, _ in input_names_and_types] +
-      list(filter(None, [t.op_arg() for t in types])) +
-      [a.tfop_name + ': ' + a.swift_value for a in attributes_as_input]
-  )
-
-  attr_names_and_types = [
-      (a.swift_name, a.swift_type_and_default_value)
-      for a in attributes_as_input
-  ]
-  all_args = list(op.input_arg) + list(op.output_arg)
-  arg_types = set(
-      [a.type_attr for a in all_args] +
-      [a.type_list_attr for a in all_args])
-  missing_types = [
-      ('type' + t.swift_name, t.swift_name + '.Type')
-      for t in types if t.attr_def_name not in arg_types]
-  all_inputs = [
-      '\n  ' + maybe_named(name) + ': ' + type_and_default_value
-      for name, type_and_default_value in (
-          input_names_and_types +
-          attr_names_and_types +
-          missing_types)]
-  body = ''
-  if not output_args:
-    body = 'return #tfop({tfop_args})'.format(tfop_args=tfop_args)
-  elif len(output_args) >= 1:
-    # Example body with 1 return tensor:
-    # let ret: [TensorHandle<Int32>] = #tfop("ConcatOffset",
-    #   concatDim,
-    #   shape)
-    # return ret.0.map(Tensor.init)
-    #
-    # Example body with 2 return tensors:
-    # let ret: (TensorHandle<T>, TensorHandle<T>) = #tfop("SoftmaxCrossEntr...",
-    #   features,
-    #   labels,
-    #   T: T.self)
-    # return (Tensor(handle: ret.0), Tensor(handle: ret.1))
-    # if ret.0 is [TensorHandle<T>], then we construct ret.0.map(Tensor.init) to
-    # convert it to [Tensor<T>]
-    return_handle_type = ''
-    handle_types = [o.swift_handle_type for o in output_args]
-    if len(output_args) > 1:
-      return_handle_type = '(' + ', '.join(handle_types) + ')'
-    else:
-      return_handle_type = handle_types[0]
-    body = 'let ret: {return_handle_type} = #tfop({tfop_args})'.format(
-        return_handle_type=return_handle_type, tfop_args=tfop_args)
-    body += '\n  return '
-    if len(output_args) > 1:
-      returned_tuple = [
-          convert_handle_to_tensor('ret.' + str(ind), handle_types[ind])
-          for ind, o in enumerate(output_args)]
-      body += '(' + ', '.join(returned_tuple) + ')'
-    else:
-      body += convert_handle_to_tensor('ret', return_handle_type)
-  return (
-      """{documentation}@inlinable @inline(__always)
-public static func {function_name}{generics_type}({joined_inputs}
-){return_type} {{
-  {body}
-}}""".format(documentation=documentation(api_def),
-             function_name=swiftified_name(op.name),
-             generics_type=generics_type,
-             joined_inputs=','.join(all_inputs),
-             return_type=return_type,
-             body=body))
-
-
 def main(argv):
   del argv  # Unused.
   if FLAGS.output_path is None:
-    raise ValueError('no output_path has been set')
+    raise ValueError('No output_path has been set')
 
   api_def_map = c_api_util.ApiDefMap()
 
@@ -526,40 +660,48 @@ def main(argv):
       except Exception as e:
         print('Cannot load api def for %s: %s' % (op_name, str(e)))
 
+  num_generated = 0
   for op_name in sorted(op_names):
     try:
       if op_name[0] == '_': continue
-      op = api_def_map.get_op_def(op_name)
-
-      if any(a.is_ref for a in op.input_arg):
+      op_def = api_def_map.get_op_def(op_name)
+      if any(a.is_ref for a in op_def.input_arg):
         raise UnableToGenerateCodeError('has ref-valued input')
-
-      if any(a.is_ref for a in op.output_arg):
+      if any(a.is_ref for a in op_def.output_arg):
         raise UnableToGenerateCodeError('has ref-valued output')
-
       api_def = api_def_map.get_api_def(bytes(op_name, 'utf8'))
-      op_codes.append(generate_code(op, api_def, enum_store))
+
+      # It would be nicer to handle `StringTensor` in a more
+      # general way by having `String` conform to `TensorFlowScalar`.
+      default_op = Op(op_def, api_def, enum_store, string_valued=False)
+      string_valued_op = Op(op_def, api_def, enum_store, string_valued=True)
+      default_code = default_op.swift_function()
+      string_valued_code = string_valued_op.swift_function()
+      op_codes.append(default_code)
+      if string_valued_code != default_code:
+        op_codes.append(string_valued_code)
+      num_generated += 1
     except UnableToGenerateCodeError as e:
-      print('Cannot generate code for %s: %s' % (op.name, e.details))
-  print('Generated code for %d/%d ops.' % (len(op_codes), len(op_names)))
+      print('Cannot generate code for %s: %s' % (op_name, e.details))
+  print('Generated code for %d/%d ops.' % (num_generated, len(op_names)))
 
   version_codes = [
       'static let generatedTensorFlowVersion = "%s"' % tf.__version__,
-      'static let generatedTensorFlowGitVersion = "%s"' % tf.__git_version__,
-  ]
+      'static let generatedTensorFlowGitVersion = "%s"' % tf.__git_version__]
 
   swift_code = (
       _WARNING +
       _HEADER +
+      'import CTensorFlow\n\n' +
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +
       '\n\n'.join(enum_store.enum_codes()) +
       '\n\n' +
-      '\n\n'.join(op_codes) +
-      '\n\n}')
-  with tf.gfile.Open(FLAGS.output_path, 'w') as fobj:
-    fobj.write(swift_code)
+      '\n'.join(op_codes) +
+      '\n\n}\n')
+  with tf.gfile.Open(FLAGS.output_path, 'w') as f:
+    f.write(swift_code)
 
 
 if __name__ == '__main__':

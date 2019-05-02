@@ -158,18 +158,18 @@ class Op(object):
     self.string_valued = string_valued
     self.inferred_counts = dict()
 
-    # Collect all the attributes that need to be provided
-    # as inputs. Note that we do not generate input
-    # arguments for number attributes as these are always
-    # inferred from provided arrays, and also for type
-    # attributes whose values can be inferred from the rest
-    # of the inputs.
-    excluded_attrs = set([
-      attr.number_attr for attr in op_def.input_arg])
+    # Collect all the input and output arguments.
+    self.input_args = [
+      Argument(arg_def, op=self)
+      for arg_def in self.op_def.input_arg]
+    self.output_args = [
+      Argument(arg_def, op=self)
+      for arg_def in self.op_def.output_arg]
+
+    # Collect all attributes.
     self.attrs = [
       Attribute(attr, op=self)
-      for attr in op_def.attr
-      if attr.name not in excluded_attrs]
+      for attr in op_def.attr]
     self.type_attrs = [
       attr for attr in self.attrs
       if attr.is_type_attr]
@@ -181,14 +181,6 @@ class Op(object):
           'Attributes with shape values are not supported when using the "tfop" mode.')
       elif attr.attr_def.type == 'shape' and mode == 'tfop-eager-fallback':
         self.mode = 'eager'
-
-    # Collect all the input and output arguments.
-    self.input_args = [
-      Argument(arg_def, op=self)
-      for arg_def in self.op_def.input_arg]
-    self.output_args = [
-      Argument(arg_def, op=self)
-      for arg_def in self.op_def.output_arg]
 
     # Check mode-compatibility for the output arguments.
     for output_arg in self.output_args:
@@ -277,7 +269,7 @@ public static func {name}{generics}({input_args}
     for arg in self.input_args:
       args += '\n  %s: %s,' % (arg.swift_arg_name, str(arg.swift_type(self.string_valued)))
     for attr in self.attrs:
-      if not attr.is_inferred_type_attr:
+      if not attr.is_inferred_type_attr and not attr.is_inferred_number_attr:
         args += '\n  %s: %s%s,' % (attr.swift_arg_name, attr.swift_type, attr.swift_default)
     if args != '':
       args = args[:-1]
@@ -338,13 +330,9 @@ public static func {name}{generics}({input_args}
       body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
       setters = []
       for attr in self.attrs:
-        if attr.is_type_attr:
-          setters.append(attr.swift_setter(self.mode, self.string_valued))
+        setters.append(attr.swift_setter(self.mode, self.string_valued))
       for arg in self.input_args:
         setters.append(arg.swift_setter(self.mode))
-      for attr in self.attrs:
-        if not attr.is_type_attr:
-          setters.append(attr.swift_setter(self.mode, self.string_valued))
       body += '\n  '.join(setters)
       counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
       if len(self.output_args) == 0:
@@ -382,9 +370,8 @@ class Argument(object):
     return name
 
   def swift_type(self, string_valued=False):
-    if string_valued and self.allows_string:
-      return 'StringTensor'
-    return self.type.swift_type
+    return self.type.swift_type(
+      string_valued=self.allows_string and string_valued)
 
   def swift_handle_type(self, string_valued=False):
     if string_valued and self.allows_string:
@@ -395,13 +382,7 @@ class Argument(object):
     if mode == 'tfop':
       return self.swift_name
     elif mode == 'eager':
-      number_attr = self.arg_def.number_attr
-      if self.arg_def.number_attr and number_attr not in self.op.inferred_counts:
-        self.op.inferred_counts[number_attr] = self.swift_name + 'Count'
-        return ('let {name}Count = op.addInputList({name})\n  ' +
-                'op.setAttr("{number_attr}", {name}Count)'
-                ).format(name=self.swift_name, number_attr=self.arg_def.number_attr)
-      elif self.is_list:
+      if self.is_list:
         return 'let _ = op.addInputList({})'.format(self.swift_name)
       else:
         return 'let _ = op.addInput({})'.format(self.swift_name)
@@ -416,8 +397,6 @@ class Argument(object):
     number_attr = self.arg_def.number_attr
     if number_attr and number_attr in self.op.inferred_counts:
       return self.op.inferred_counts[number_attr]
-    if number_attr:
-      return self.swift_name + 'Count'
     if self.arg_def.type_list_attr:
       return self.op.inferred_counts[self.arg_def.type_list_attr]
     return '1'
@@ -468,10 +447,9 @@ class Type(object):
   def count(self):
     return self.number if self.number else 1
 
-  @property
-  def swift_type(self):
+  def swift_type(self, string_valued=False):
     if self.kind == 'Tensor':
-      if self.base_type == 'String':
+      if self.base_type == 'String' or string_valued:
         name = 'StringTensor'
       else:
         name = 'Tensor<' + self.base_type + '>'
@@ -522,6 +500,17 @@ class Attribute(object):
     self.is_inferred_type_attr = attr_def.name in arg_type_attrs
     self.is_output_type_attr = attr_def.name in output_arg_type_attrs
     self.is_func_attr = self.attr_def.type == 'func'
+
+    # We use this for obtaining the `_typeList` property.
+    self.input_arg = None
+    self.is_inferred_number_attr = False
+    for arg in self.op.input_args:
+      if self.attr_def.name in [arg.arg_def.type_attr,
+                                arg.arg_def.type_list_attr] or \
+         self.attr_def.name == arg.arg_def.number_attr:
+        self.input_arg = arg
+        self.is_inferred_number_attr = True
+        break
 
     # The following properties are only relevant for
     # non-inferred-type-valued attributes.
@@ -608,14 +597,6 @@ class Attribute(object):
     return ''
 
   def swift_setter(self, mode, string_valued=False):
-    # We use this for obtaining the `_typeList` property.
-    input_arg = None
-    if self.attr_def.type == 'list(type)':
-      for arg in self.op.input_args:
-        if self.attr_def.name in [arg.arg_def.type_attr,
-                                  arg.arg_def.type_list_attr]:
-          input_arg = arg
-          break
     if mode == 'tfop':
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
@@ -641,19 +622,24 @@ class Attribute(object):
     elif mode == 'eager':
       # Inferred-type-valued attributes.
       if self.is_inferred_type_attr:
-        if self.attr_def.type == 'list(type)':
-          name = self.swift_name
-          if input_arg is not None:
-            name = input_arg.swift_name
+        name = self.swift_name
+        if self.input_arg is not None:
+          name = self.input_arg.swift_name
+        if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
           self.op.inferred_counts[self.name] = name + '._typeList.count'
+        if self.attr_def.type == 'list(type)':
           return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
         if string_valued and self.allows_string:
           return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
         return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
+      if self.is_inferred_number_attr:
+        # The following is used for inferring the lengths of output lists.
+        self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
+        return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
+      
       if self.attr_def.type == 'int':
-        # The following is used for inferring the lengths
-        # of output lists.
+        # The following is used for inferring the lengths of output lists.
         self.op.inferred_counts[self.name] = self.swift_name
 
       # Remaining attributes.

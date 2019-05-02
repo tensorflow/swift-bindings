@@ -34,27 +34,21 @@ internal struct TFE_Op {
   @inlinable @inline(__always)
   internal func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
     TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
-    guard TF_GetCode(status) == TF_OK else {
-      return 0
-    }
+    checkOk(status)
     return 1
   }
 
   @inlinable @inline(__always)
   internal func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
     TFE_OpAddInput(op, input.handle._cTensorHandle, status)
-    guard TF_GetCode(status) == TF_OK else {
-      return 0
-    }
+    checkOk(status)
     return 1
   }
 
   @inlinable @inline(__always)
   internal func addInput(_ input: StringTensor) -> Int {
     TFE_OpAddInput(op, input.handle._cTensorHandle, status)
-    guard TF_GetCode(status) == TF_OK else {
-      return 0
-    }
+    checkOk(status)
     return 1
   }
 
@@ -66,9 +60,7 @@ internal struct TFE_Op {
     let pointer = UnsafeMutablePointer<OpaquePointer?>(buffer.baseAddress)
     input._unpackTensorHandles(into: buffer.baseAddress)
     TFE_OpAddInputList(op, pointer, count, status)
-    guard TF_GetCode(status) == TF_OK else {
-      return 0
-    }
+    checkOk(status)
     return Int(count)
   }
 

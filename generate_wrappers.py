@@ -38,11 +38,6 @@ flags.DEFINE_string(
   None,
   'path for the generated swift file')
 
-flags.DEFINE_string(
-  'mode',
-  'eager',
-  'Code generation mode that can be either "tfop", "eager", or "tfop-eager-fallback".')
-
 _WARNING = """// !!! THIS CODE IS AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND !!!
 //
 """
@@ -150,8 +145,7 @@ class UnableToGenerateCodeError(Exception):
 
 
 class Op(object):
-  def __init__(self, mode, op_def, api_def, enum_store, string_valued=False):
-    self.mode = mode
+  def __init__(self, op_def, api_def, enum_store, string_valued=False):
     self.op_def = op_def
     self.api_def = api_def
     self.enum_store = enum_store
@@ -173,24 +167,6 @@ class Op(object):
     self.type_attrs = [
       attr for attr in self.attrs
       if attr.is_type_attr]
-
-    # Check mode-compatibility for the attributes.
-    for attr in self.attrs:
-      if attr.attr_def.type == 'shape' and mode == 'tfop':
-        raise UnableToGenerateCodeError(
-          'Attributes with shape values are not supported when using the "tfop" mode.')
-      elif attr.attr_def.type == 'shape' and mode == 'tfop-eager-fallback':
-        self.mode = 'eager'
-
-    # Check mode-compatibility for the output arguments.
-    for output_arg in self.output_args:
-      if output_arg.is_list and mode == 'tfop':
-        raise UnableToGenerateCodeError(
-          'Output lists are not supported when using the "tfop" mode.')
-      elif output_arg.is_list and mode == 'tfop-eager-fallback':
-        self.mode = 'eager'
-    if self.mode == 'tfop-eager-fallback':
-      self.mode = 'tfop'
 
   def swift_function(self):
     return '''
@@ -287,63 +263,18 @@ public static func {name}{generics}({input_args}
     return return_type
 
   def _swift_body(self):
-    if self.mode == 'tfop':
-      tfop_args = ['"' + self.op_def.name + '"']
-      for arg in self.input_args:
-        tfop_args.append(arg.swift_setter(self.mode))
-      for attr in self.attrs:
-        setter = attr.swift_setter(self.mode, self.string_valued)
-        if setter != '':
-          tfop_args.append(setter)
-      tfop_args = ',\n    '.join(tfop_args)
-      if not self.output_args:
-        return 'return #tfop({})'.format(tfop_args)
-      else:
-        handle_types = [
-          arg.swift_handle_type(self.string_valued)
-          for arg in self.output_args]
-        if len(self.output_args) > 1:
-          return_handle_type = '(' + ', '.join(handle_types) + ')'
-        else:
-          return_handle_type = handle_types[0]
-        body = 'let ret: {} = #tfop({})'.format(
-          return_handle_type, tfop_args)
-        body += '\n  return '
-
-        def convert_for_return(arg, value):
-          if (self.string_valued and arg.allows_string) or \
-              (arg.type.kind == 'Tensor' and arg.type.base_type == 'String'):
-            return 'StringTensor(handle: ' + value + ')'
-          elif arg.type.kind == 'Tensor':
-            return 'Tensor(handle: ' + value + ')'
-          return value
-
-        if len(self.output_args) > 1:
-          returned_tuple = [
-            convert_for_return(arg, 'ret.' + str(i))
-            for i, arg in enumerate(self.output_args)]
-          body += '(' + ', '.join(returned_tuple) + ')'
-        else:
-          body += convert_for_return(self.output_args[0], 'ret')
-        return body
-    elif self.mode == 'eager':
-      body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
-      setters = []
-      for attr in self.attrs:
-        setters.append(attr.swift_setter(self.mode, self.string_valued))
-      for arg in self.input_args:
-        setters.append(arg.swift_setter(self.mode))
-      body += '\n  '.join(setters)
-      counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
-      if len(self.output_args) == 0:
-        return body + '\n  op.execute()'
-      body += '\n  return op.execute({})'.format(', '.join(counts))
-      return body
-
-    # `mode` was neither "tfop" nor "eager".
-    raise UnableToGenerateCodeError(
-      'Invalid mode "%s" provided (only "tfop", "eager", and "tfop-eager-fallback" are supported).'
-      % self.mode)
+    body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
+    setters = []
+    for attr in self.attrs:
+      setters.append(attr.swift_setter(self.string_valued))
+    for arg in self.input_args:
+      setters.append(arg.swift_setter())
+    body += '\n  '.join(setters)
+    counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
+    if len(self.output_args) == 0:
+      return body + '\n  op.execute()'
+    body += '\n  return op.execute({})'.format(', '.join(counts))
+    return body
 
 
 class Argument(object):
@@ -373,24 +304,11 @@ class Argument(object):
     return self.type.swift_type(
       string_valued=self.allows_string and string_valued)
 
-  def swift_handle_type(self, string_valued=False):
-    if string_valued and self.allows_string:
-      return 'TensorHandle<String>'
-    return self.type.swift_handle_type
-
-  def swift_setter(self, mode):
-    if mode == 'tfop':
-      return self.swift_name
-    elif mode == 'eager':
-      if self.is_list:
-        return 'let _ = op.addInputList({})'.format(self.swift_name)
-      else:
-        return 'let _ = op.addInput({})'.format(self.swift_name)
-
-    # `mode` was neither "tfop" nor "eager".
-    raise UnableToGenerateCodeError(
-      'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
-      % mode)
+  def swift_setter(self):
+    if self.is_list:
+      return 'let _ = op.addInputList({})'.format(self.swift_name)
+    else:
+      return 'let _ = op.addInput({})'.format(self.swift_name)
 
   @property
   def swift_count(self):
@@ -461,19 +379,6 @@ class Type(object):
       name = 'VariantHandle'
     else:
       name = self.kind
-    return ('[%s]' % name) if self.number else name
-
-  @property
-  def swift_handle_type(self):
-    if self.kind == 'Tensor' or self.kind == 'TensorHandle':
-      name = 'TensorHandle<' + self.base_type + '>'
-    elif self.kind == 'ResourceHandle':
-      name = 'ResourceHandle'
-    elif self.kind == 'VariantHandle':
-      name = 'VariantHandle'
-    else:
-      # TODO: [tfop]
-      raise UnableToGenerateCodeError('Unsupported handle type "%s".' % self.kind)
     return ('[%s]' % name) if self.number else name
 
 
@@ -596,60 +501,32 @@ class Attribute(object):
         return ' = ' + default_value
     return ''
 
-  def swift_setter(self, mode, string_valued=False):
-    if mode == 'tfop':
-      # Inferred-type-valued attributes.
-      if self.is_inferred_type_attr:
-        if self.attr_def.type == 'list(type)':
-          if input_arg is not None:
-            return self.name + '$dtype: ' + input_arg.swift_name + '._typeList'
-          return self.name + '$dtype: ' + self.swift_name + '._typeList'
-        if string_valued and self.allows_string:
-          return self.name + '$dtype: TensorDataType(TF_STRING)'
-        return self.name + '$dtype: ' + self.swift_name + '.tensorFlowDataType'
+  def swift_setter(self, string_valued=False):
+    # Inferred-type-valued attributes.
+    if self.is_inferred_type_attr:
+      name = self.swift_name
+      if self.input_arg is not None:
+        name = self.input_arg.swift_name
+      if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
+        self.op.inferred_counts[self.name] = name + '._typeList.count'
+      if self.attr_def.type == 'list(type)':
+        return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
+      if string_valued and self.allows_string:
+        return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
+      return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
-      # Type-valued attributes.
-      if self.attr_def.type in ['type', 'list(type)']:
-        return self.name + '$dtype: ' + self.swift_name
+    if self.is_inferred_number_attr:
+      # The following is used for inferring the lengths of output lists.
+      self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
+      return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
+    
+    if self.attr_def.type == 'int':
+      # The following is used for inferring the lengths of output lists.
+      self.op.inferred_counts[self.name] = self.swift_name
 
-      # Function-valued attributes.
-      if self.is_func_attr:
-        return self.name + '$func: _tffunc(' + self.swift_name + ')'
-
-      # Remaining attributes.
-      value = self.swift_name + '.cName' if self._use_enum else self.swift_name
-      return '{name}: {value}'.format(name=self.name, value=value)
-    elif mode == 'eager':
-      # Inferred-type-valued attributes.
-      if self.is_inferred_type_attr:
-        name = self.swift_name
-        if self.input_arg is not None:
-          name = self.input_arg.swift_name
-        if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
-          self.op.inferred_counts[self.name] = name + '._typeList.count'
-        if self.attr_def.type == 'list(type)':
-          return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
-        if string_valued and self.allows_string:
-          return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
-        return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
-
-      if self.is_inferred_number_attr:
-        # The following is used for inferring the lengths of output lists.
-        self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
-        return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
-      
-      if self.attr_def.type == 'int':
-        # The following is used for inferring the lengths of output lists.
-        self.op.inferred_counts[self.name] = self.swift_name
-
-      # Remaining attributes.
-      value = self.swift_name + '.cName' if self._use_enum else self.swift_name
-      return 'op.setAttr("{}", {})'.format(self.name, value)
-
-    # `mode` was neither "tfop" nor "eager".
-    raise UnableToGenerateCodeError(
-      'Invalid mode "%s" provided (only "tfop" and "eager" are supported).'
-      % mode)
+    # Remaining attributes.
+    value = self.swift_name + '.cName' if self._use_enum else self.swift_name
+    return 'op.setAttr("{}", {})'.format(self.name, value)
 
   def generic_constraints(self, string_valued):
     # We use this for obtaining the `_typeList` property.
@@ -796,8 +673,8 @@ def main(argv):
 
       # It would be nicer to handle `StringTensor` in a more
       # general way by having `String` conform to `TensorFlowScalar`.
-      default_op = Op(FLAGS.mode, op_def, api_def, enum_store, string_valued=False)
-      string_valued_op = Op(FLAGS.mode, op_def, api_def, enum_store, string_valued=True)
+      default_op = Op(op_def, api_def, enum_store, string_valued=False)
+      string_valued_op = Op(op_def, api_def, enum_store, string_valued=True)
       default_code = default_op.swift_function()
       string_valued_code = string_valued_op.swift_function()
       op_codes.append(default_code)

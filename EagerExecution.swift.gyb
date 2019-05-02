@@ -283,6 +283,8 @@ internal struct TFE_Op {
   internal func execute() {
     var count: Int32 = 0
     var unused: CTensorHandle?
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, &unused, &count, status)
     checkOk(status)
     TFE_DeleteOp(op)
@@ -297,6 +299,8 @@ internal struct TFE_Op {
     var count = ${" + ".join(["Int32(count" + str(i) + ")" for i in range(n)])}
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
 %for i in range(n):

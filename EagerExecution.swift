@@ -16,6 +16,10 @@
 
 import CTensorFlow
 
+/// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
+/// *exactly once*. If not called, then a memory leak is introduced due to the underlying TensorFlow
+/// eager op object not being freed. If called more than once, then a SEGFAULT may occur due to
+/// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
 internal struct TFE_Op {
   @usableFromInline internal let status: CTFStatus
@@ -270,11 +274,17 @@ internal struct TFE_Op {
     }
   }
 
-  /// NOTE: Any of the following functions can only be executed once.
+  /// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
+  /// *exactly once*. If not called, then a memory leak is introduced due to the underlying
+  /// TensorFlow eager op object not being freed. If called more than once, then a SEGFAULT may
+  /// occur due to trying to execute a TensorFlow eager op that has already been freed.
+
   @inlinable @inline(__always)
   internal func execute() {
     var count: Int32 = 0
     var unused: CTensorHandle?
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, &unused, &count, status)
     checkOk(status)
     TFE_DeleteOp(op)
@@ -288,6 +298,8 @@ internal struct TFE_Op {
     var count = Int32(count0)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -307,6 +319,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -329,6 +343,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -354,6 +370,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -382,6 +400,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -413,6 +433,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -447,6 +469,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -484,6 +508,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -524,6 +550,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7) + Int32(count8)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)
@@ -567,6 +595,8 @@ internal struct TFE_Op {
     var count = Int32(count0) + Int32(count1) + Int32(count2) + Int32(count3) + Int32(count4) + Int32(count5) + Int32(count6) + Int32(count7) + Int32(count8) + Int32(count9)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
+    _TFCOpSetDeviceFromScope(op, status)
+    checkOk(status)
     _TFCEagerExecute(op, UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
     let offset0 = Int32(0)

@@ -64,7 +64,6 @@ internal struct TFE_Op {
     var buffer = UnsafeMutableBufferPointer<CTensorHandle>.allocate(capacity: Int(count))
     defer { buffer.deallocate() }
     var pointer = UnsafeMutablePointer<OpaquePointer?>(buffer.baseAddress)
-    defer { pointer?.deallocate() }
     input._unpackTensorHandles(into: buffer.baseAddress)
     TFE_OpAddInputList(op, pointer, count, status)
     guard TF_GetCode(status) == TF_OK else {

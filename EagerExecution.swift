@@ -24,18 +24,68 @@ import CTensorFlow
 internal struct TFE_Op {
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp
+  // @usableFromInline internal let operands: [(_AnyTensorHandle, CTensorHandle?)]
+  @usableFromInline internal var operands: [(_AnyTensorHandle, TF_Output, CTensorHandle?)]
+  @usableFromInline internal var graphOp: TF_Output?
+  @usableFromInline internal static var placeHolderIndex: Int = 0
+  @usableFromInline internal static var traceGraphFunctionCounter: Int = 0
+  /// The `TF_OperationDescription *` type.
+  @usableFromInline typealias CTFOperation = OpaquePointer
 
   @usableFromInline
   internal init(_ name: String) {
     self.status = TF_NewStatus()
     self.op = TFE_NewOp(_ExecutionContext.global.eagerContext, name, status)
+    self.graphOp = nil
+    self.operands = []
   }
 
   @inlinable @inline(__always)
-  internal func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
+  internal mutating func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
+    print("Adding input")
+    let graph = _ExecutionContext.global.traceContext.graph
+    switch (inputHandle.lazyHandle) {
+    case LazyTensorHandle.conc(let h): do {
+        print("Adding my placeholder..")
+        let desc = TF_NewOperation(graph, "Placeholder", "input_\(TFE_Op.placeHolderIndex)")
+        let dtype = TFE_TensorHandleDataType(h)
+        TF_SetAttrType(desc, "dtype", dtype)
+        let result = TF_FinishOperation(desc, status)
+        checkOk(status)
+        TFE_Op.placeHolderIndex += 1
+        let input = TF_Output(oper: result, index: 0)
+        TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(input, dtype), status)
+        checkOk(status)
+        operands.append((inputHandle, input, h))
+      }
+    case LazyTensorHandle.sym(let argOp): do {
+        guard let graphOp = argOp.graphOp else { assert(false) }
+        let dtype = TF_OperationOutputType(graphOp)
+        TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(graphOp, dtype), self.status)
+        checkOk(self.status)
+        operands.append((inputHandle, graphOp, nil))
+      }
+    }
+    return 1
+  }
+
+  @inlinable @inline(__always)
+  internal func addInput(_ inputHandle: ResourceHandle) -> Int {
     TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
     checkOk(status)
     return 1
+  }
+
+  @inlinable @inline(__always)
+  internal func addInput(_ inputHandle: VariantHandle) -> Int {
+    TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
+    checkOk(status)
+    return 1
+  }
+
+  @inlinable @inline(__always)
+  mutating internal func lazyAddInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
+    return addInput(input.handle)
   }
 
   @inlinable @inline(__always)
@@ -269,6 +319,16 @@ internal struct TFE_Op {
   /// *exactly once*. If not called, then a memory leak is introduced due to the underlying
   /// TensorFlow eager op object not being freed. If called more than once, then a SEGFAULT may
   /// occur due to trying to execute a TensorFlow eager op that has already been freed.
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T: Numeric & TensorFlowScalar>(
+    _ count0: Int
+  ) -> (Tensor<T>) {
+    print("My execute called!\n")
+    // Initialize graphOp field..
+    updateGraphOp()
+    return Tensor<T>(handle: TensorHandle<T>(_lazy: self))
+  }
 
   @inlinable @inline(__always)
   internal func execute() {
@@ -617,4 +677,100 @@ internal struct TFE_Op {
     return result
   }
 
+  @inlinable @inline(__always)
+  internal mutating func updateGraphOp()  {
+    let cTraceContext = _ExecutionContext.global.traceContext.cTraceContext
+    // Device?
+    var count = Int32(10)
+    let buffer: UnsafeMutablePointer<CTensorHandle> =
+      UnsafeMutablePointer.allocate(capacity: Int(count))
+    let tfOp = TFE_AddEagerOpToGraph(op, cTraceContext,
+      UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
+    checkOk(status)
+
+    // TODO: delete all the handles...
+    //let output: CTensorHandle = buffer.advanced(by: Int(offset0))
+    buffer.deallocate()
+
+    // TODO: assuming one output for now.
+    graphOp = TF_Output(oper: tfOp!, index: 0)
+  }
+
+  struct GraphDesc {
+    var opers: Set</*CTFOperation*/OpaquePointer?>
+    var inputs: [TF_Output]
+    var values: [CTensorHandle]
+  }
+
+  func collectOperations(_ res: inout GraphDesc) {
+    let (inserted, _) =  res.opers.insert(graphOp!.oper)
+    if !inserted { return }
+    for  (anyHandle, graphOp, tensorHandle) in operands {
+      switch (anyHandle.lazyHandle) {
+        case LazyTensorHandle.conc(/*TODO: Is this right?*/_): do {
+          res.inputs.append(graphOp)
+          res.values.append(tensorHandle!)
+        }
+        case LazyTensorHandle.sym(let argOp):
+          argOp.collectOperations(&res)
+      }
+    }
+  }
+
+  //@inlinable @inline(__always)
+  func evaluate() -> CTensorHandle {
+    var desc = GraphDesc(opers: [], inputs: [], values: [])
+    collectOperations(&desc)
+    let tracedFunctionName =
+      "lazyTrace_\(TFE_Op.traceGraphFunctionCounter)"
+    TFE_Op.traceGraphFunctionCounter += 1
+
+    let eagerContext = _TFCGetGlobalEagerContext()
+    Array(desc.opers).withUnsafeBufferPointer {opers in
+      let graph = _ExecutionContext.global.traceContext.graph
+      let base = opers.baseAddress
+      let tracedGraphFn =
+      TF_GraphToFunction(graph, tracedFunctionName,
+        /*append_hash_to_fn_name*/ 0,
+        /*num_opers*/ Int32(desc.opers.count),
+        /*opers*/ base,
+        /*numinputs*/ Int32(desc.inputs.count),
+        /*inputs*/ desc.inputs,
+        /*noutputs*/ Int32(1),
+        /*outputs*/ [graphOp!],
+        /*outputnames*/ nil,
+        /*functionoptions*/ nil, "", status)
+      checkOk(status)
+      TFE_ContextAddFunction(eagerContext, tracedGraphFn, status)
+
+      var len: Int = 0
+      let funcDebugStr = TF_FunctionDebugString(tracedGraphFn, &len)!
+      debugLog("The traced function is:\n\(String(cString: funcDebugStr))")
+      free(funcDebugStr)
+    }
+
+    let eagerOp: CTFEOp! = TFE_NewOp(eagerContext, tracedFunctionName, status)
+    defer { TFE_DeleteOp(eagerOp) }
+    checkOk(status)
+
+    let deviceName = _ExecutionContext.global.currentDeviceName
+    if let deviceName = deviceName {
+      debugLog("Placing the trace func on device \(deviceName).")
+      TFE_OpSetDevice(eagerOp, deviceName, status)
+      checkOk(status)
+    }
+
+    for input in desc.values {
+      TFE_OpAddInput(eagerOp, input, status)
+      checkOk(status)
+    }
+
+    // TODO: more than one return value.
+    var returnValues = [CTensorHandle?](repeating: nil,
+      count: 1)
+    var outputReturnValueCount = Int32(1)
+    TFE_Execute(eagerOp, &returnValues, &outputReturnValueCount, status)
+
+    return returnValues[0]!
+  }
 }

@@ -576,11 +576,11 @@ public static func add<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let op = TFE_Op("Add")
+  var op = TFE_Op("Add")
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInput(x)
-  let _ = op.addInput(y)
-  return op.execute(Int(1))
+  let _ = op.lazyAddInput(x)
+  let _ = op.lazyAddInput(y)
+  return op.lazyExecute(Int(1))
 }
 
 /// Returns x + y element-wise.
@@ -31502,11 +31502,11 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   _ x: Tensor<T>,
   _ y: Tensor<T>
 ) -> Tensor<T> {
-  let op = TFE_Op("Sub")
+  var op = TFE_Op("Sub")
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInput(x)
-  let _ = op.addInput(y)
-  return op.execute(Int(1))
+  let _ = op.lazyAddInput(x)
+  let _ = op.lazyAddInput(y)
+  return op.lazyExecute(Int(1))
 }
 
 /// Return substrings from `Tensor` of strings.

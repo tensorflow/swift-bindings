@@ -25,7 +25,7 @@ internal struct TFE_Op {
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp
 
-  @inlinable @inline(__always)
+  @usableFromInline
   internal init(_ name: String) {
     self.status = TF_NewStatus()
     self.op = TFE_NewOp(_ExecutionContext.global.eagerContext, name, status)

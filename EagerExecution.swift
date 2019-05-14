@@ -22,6 +22,24 @@ import CTensorFlow
 /// trying to execute a TensorFlow eager op that has already been freed.
 //@usableFromInline
 /*internal*/ public struct TFE_Op {
+
+  // enum AttrType {
+  //   case Bool
+  //   case Int
+  //   case Int32
+  //   case Int64
+  //   case Float
+  //   case Double
+  //   case String
+  //   case TensorDataType
+  //   case TensorShape
+  //   case BoolArray  
+  //   case IntArray  
+  //   case Int32Array  
+  //   case Int64Array
+  //   case FloatArray
+  // }
+  
   /// The `TF_Operation *` type.
   @usableFromInline typealias CTFOperation = OpaquePointer
   @usableFromInline /*internal*/ let status: CTFStatus
@@ -30,16 +48,24 @@ import CTensorFlow
   @usableFromInline /*internal*/ var operands: [(_AnyTensorHandle, TF_Output, CTensorHandle?)]
   @usableFromInline /*internal*/ var graphOp: CTFOperation?
   @usableFromInline /*internal*/ var outputs: [TF_Output]
+  @usableFromInline /*internal*/ var attrs: [String: Any]
+
   // @usableFromInline /*internal*/ var results: [CTensorHandle?]
   @usableFromInline /*internal*/ static var placeHolderIndex: Int = 0
   @usableFromInline /*internal*/ static var traceGraphFunctionCounter: Int = 0
 
+
   public class Results {
-    var computedOutputs: [CTensorHandle]?
+    public var computedOutputs: [CTensorHandle]?
   }
   // TODO: When to clear cache?
   @usableFromInline /*internal*/ var results: Results
+  @usableFromInline static var lazyCallback: (String) -> () = { (a:String) in return }
 
+  static public func registerLazyCallback(f : @escaping (String) -> ()) {
+    TFE_Op.lazyCallback = f
+  }
+  
 
   @usableFromInline
   /*internal*/ init(_ name: String) {
@@ -49,6 +75,23 @@ import CTensorFlow
     self.operands = []
     self.outputs = []
     self.results = Results()
+    self.attrs = [:]
+  }
+
+  @inlinable @inline(__always)
+  func newPlaceholderInput(graph: CTFGraph?, op: CTFEOp, handle: CTensorHandle) -> TF_Output {
+    TFE_Op.lazyCallback("placeholder")
+    TFE_TensorHandlePrintDebugString(handle)
+    debugLog("Adding place holder for \(handle): \(TFE_Op.placeHolderIndex)")
+    let desc = TF_NewOperation(graph, "Placeholder", "input_\(TFE_Op.placeHolderIndex)")
+    let dtype = TFE_TensorHandleDataType(handle)
+    TF_SetAttrType(desc, "dtype", dtype)
+    let result = TF_FinishOperation(desc, status)
+    checkOk(status)
+    TFE_Op.placeHolderIndex += 1
+    let input = TF_Output(oper: result, index: 0)
+    TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(input, dtype), status)
+    return input
   }
 
   @inlinable @inline(__always)
@@ -58,27 +101,34 @@ import CTensorFlow
     switch (inputHandle.lazyHandle) {
     case LazyTensorHandle.conc(let h): do {
         // print("Adding my placeholder..")
-        TFE_TensorHandlePrintDebugString(h)
-        debugLog("Adding place holder for \(h): \(TFE_Op.placeHolderIndex)")
-        let desc = TF_NewOperation(graph, "Placeholder", "input_\(TFE_Op.placeHolderIndex)")
-        let dtype = TFE_TensorHandleDataType(h)
-        TF_SetAttrType(desc, "dtype", dtype)
-        let result = TF_FinishOperation(desc, status)
-        checkOk(status)
-        TFE_Op.placeHolderIndex += 1
-        let input = TF_Output(oper: result, index: 0)
-        TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(input, dtype), status)
-        checkOk(status)
+        // TFE_Op.lazyCallback("placeholder")
+        // TFE_TensorHandlePrintDebugString(h)
+        // debugLog("Adding place holder for \(h): \(TFE_Op.placeHolderIndex)")
+        // let desc = TF_NewOperation(graph, "Placeholder", "input_\(TFE_Op.placeHolderIndex)")
+        // let dtype = TFE_TensorHandleDataType(h)
+        // TF_SetAttrType(desc, "dtype", dtype)
+        // let result = TF_FinishOperation(desc, status)
+        // checkOk(status)
+        // TFE_Op.placeHolderIndex += 1
+        // let input = TF_Output(oper: result, index: 0)
+        let input = newPlaceholderInput(graph: graph, op: op, handle: h)
         operands.append((inputHandle, input, h))
       }
     case LazyTensorHandle.sym(let argOp, let idx): do {
-        guard let graphOp = argOp.graphOp else { assert(false) }
-        let tensorInput = TF_Output(oper: graphOp, index: idx)
-        let dtype = TF_OperationOutputType(tensorInput)
-        TFE_OpAddInput(op,
-          TFE_NewTensorHandleFromTFOutput(tensorInput, dtype), self.status)
-        checkOk(self.status)
-        operands.append((inputHandle, tensorInput, nil))
+        if let computedOutputs = argOp.results.computedOutputs {
+          // If it is already computed.
+          let h = computedOutputs[Int(idx)]
+          let input = newPlaceholderInput(graph: graph, op: op, handle: h)
+          operands.append((inputHandle, input, h))
+        } else {        
+          guard let graphOp = argOp.graphOp else { assert(false) }
+          let tensorInput = TF_Output(oper: graphOp, index: idx)
+          let dtype = TF_OperationOutputType(tensorInput)
+          TFE_OpAddInput(op,
+            TFE_NewTensorHandleFromTFOutput(tensorInput, dtype), self.status)
+          checkOk(self.status)
+          operands.append((inputHandle, tensorInput, nil))
+        }
       }
     }
     return 1
@@ -156,37 +206,44 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Bool) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Bool) {
     TFE_OpSetAttrBool(op, name, value ? 1 : 0)
+    attrs[name] =  value ? 1: 0
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Int) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Int) {
     TFE_OpSetAttrInt(op, name, Int64(value))
+    attrs[name] = Int64(value)
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Int32) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Int32) {
     TFE_OpSetAttrInt(op, name, Int64(value))
+    attrs[name] = Int64(value)
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Int64) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Int64) {
     TFE_OpSetAttrInt(op, name, value)
+    attrs[name] = value
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Float) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Float) {
     TFE_OpSetAttrFloat(op, name, value)
+    attrs[name] = value
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: Double) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: Double) {
     TFE_OpSetAttrFloat(op, name, Float(value))
+    attrs[name] = value
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: String) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: String) {
+    attrs[name] = value
     value.utf8CString.withUnsafeBufferPointer { buffer in
       // utf8CString is null-terminated; TFE_OpSetAttrString wants
       // non-null-terminated.
@@ -195,12 +252,14 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: TensorDataType) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: TensorDataType) {
+    attrs[name] = value
     TFE_OpSetAttrType(op, name, value._cDataType)
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: TensorShape) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: TensorShape) {
+    attrs[name] = value
     let dimensions: [Int64] = value.dimensions.map(Int64.init)
     dimensions.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrShape(op, name, buffer.baseAddress, Int32(buffer.count), status)
@@ -208,52 +267,62 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: TensorShape?) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: TensorShape?) {
     guard let shape = value else {
       TFE_OpSetAttrShape(op, name, nil, -1, status)
       return
     }
+    attrs[name] = shape
     setAttr(name, shape)
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Bool]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Bool]) {
+    attrs[name] = value
     value.map({ $0 ? UInt8(1) : UInt8(0) }).withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrBoolList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Int]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Int]) {
+    attrs[name] = value
     setAttr(name, value.map(Int64.init))
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Int32]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Int32]) {
+    attrs[name] = value
     setAttr(name, value.map(Int64.init))
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Int64]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Int64]) {
+    attrs[name] = value
     value.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrIntList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Float]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Float]) {
+    attrs[name] = value
     value.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrFloatList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [Double]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [Double]) {
+    attrs[name] = value
     setAttr(name, value.map(Float.init))
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [String]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [String]) {
+    // TODO:
+    // attrs[name] = value
+
     // Collect all the strings' utf8 bytes into a single array so that we can
     // address all the strings with a single
     // `flattenedStringBytes.withUnsafeBufferPointer`.
@@ -288,7 +357,7 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [TensorDataType]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [TensorDataType]) {
     value.withUnsafeBufferPointer { buffer in
       buffer.withMemoryRebound(to: TF_DataType.self) { reboundBuffer in
         TFE_OpSetAttrTypeList(op, name, reboundBuffer.baseAddress, Int32(reboundBuffer.count))
@@ -297,7 +366,9 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [TensorShape]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [TensorShape]) {
+    // TODO:
+    // attrs[name] = value
     let flattenedDims = value.flatMap { $0.dimensions.map(Int64.init) }
     let ranks = value.map { Int32($0.rank) }
     flattenedDims.withUnsafeBufferPointer { flattenedDimsBuffer in
@@ -320,7 +391,9 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr(_ name: String, _ value: [TensorShape?]) {
+  /*internal*/ mutating func setAttr(_ name: String, _ value: [TensorShape?]) {
+    // TODO:
+    // attrs[name] = value
     let flattenedDims = value.flatMap { (tensorShapeOpt) -> [Int64] in
       if let tensorShape = tensorShapeOpt {
         return tensorShape.dimensions.map(Int64.init)
@@ -348,7 +421,9 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ func setAttr<In: TensorGroup, Out: TensorGroup>(_ name: String, _ value: (In) -> Out) {
+  /*internal*/ mutating func setAttr<In: TensorGroup, Out: TensorGroup>(_ name: String, _ value: (In) -> Out) {
+    // TODO:
+    // attrs[name] = value
     _tffunc(value).utf8CString.withUnsafeBufferPointer { buffer in
       // utf8CString is null-terminated; TFE_OpSetAttrFunctionName wants
       // non-null-terminated.
@@ -916,11 +991,11 @@ import CTensorFlow
       UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
 
-    // TODO: Make sure this is correct way to delete all the handles.
-    for i in 0..<count {
-      let output: CTensorHandle = buffer.advanced(by: Int(count))
-      TFE_DeleteTensorHandle(output)
-    }
+    // // TODO: Make sure this is correct way to delete all the handles.
+    // for i in 0..<count {
+    //   let output: CTensorHandle = buffer.advanced(by: Int(count))
+    //   TFE_DeleteTensorHandle(output)
+    // }
     graphOp = tfOp!
     buffer.deallocate()
     for i in 0..<nOutputs {
@@ -938,20 +1013,27 @@ import CTensorFlow
   func collectOperations(_ res: inout GraphDesc) {
     let (inserted, _) =  res.opers.insert(graphOp!)
     if !inserted { return }
-    for  (anyHandle, graphOp, tensorHandle) in operands {
+    for (anyHandle, graphOp, tensorHandle) in operands {
       switch (anyHandle.lazyHandle) {
         case LazyTensorHandle.conc(/*TODO: Is this right?*/_): do {
           res.inputs.append(graphOp)
           res.values.append(tensorHandle!)
         }
-        case LazyTensorHandle.sym(let argOp, let idx):
-          argOp.collectOperations(&res)
+        case LazyTensorHandle.sym(let argOp, let idx): do {
+          if tensorHandle != nil  {
+            res.inputs.append(graphOp)
+            res.values.append(tensorHandle!)
+          } else {
+            argOp.collectOperations(&res)
+          }
+        }
       }
     }
   }
 
   //@inlinable @inline(__always)
   func evaluate(idx : Int32) -> (CTensorHandle) {
+    TFE_Op.lazyCallback("Evaluate")
     if let computedOutputs = results.computedOutputs {
       return computedOutputs[Int(idx)]
     }

@@ -16,40 +16,33 @@
 
 import CTensorFlow
 
-extension TensorArrayProtocol {
-  @usableFromInline
-  init(_lazy op: TFE_Op, idx: Int32) {
-    self.init(_lazy: op, idx: idx)
-  }
-}
-
 /// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
 /// *exactly once*. If not called, then a memory leak is introduced due to the underlying TensorFlow
 /// eager op object not being freed. If called more than once, then a SEGFAULT may occur due to
 /// trying to execute a TensorFlow eager op that has already been freed.
-@usableFromInline
-internal struct TFE_Op {
+//@usableFromInline
+/*internal*/ public struct TFE_Op {
   /// The `TF_Operation *` type.
   @usableFromInline typealias CTFOperation = OpaquePointer
-  @usableFromInline internal let status: CTFStatus
-  @usableFromInline internal let op: CTFEOp
-  // @usableFromInline internal let operands: [(_AnyTensorHandle, CTensorHandle?)]
-  @usableFromInline internal var operands: [(_AnyTensorHandle, TF_Output, CTensorHandle?)]
-  @usableFromInline internal var graphOp: CTFOperation?
-  @usableFromInline internal var outputs: [TF_Output]
-  // @usableFromInline internal var results: [CTensorHandle?]
-  @usableFromInline internal static var placeHolderIndex: Int = 0
-  @usableFromInline internal static var traceGraphFunctionCounter: Int = 0
+  @usableFromInline /*internal*/ let status: CTFStatus
+  @usableFromInline /*internal*/ let op: CTFEOp
+  // @usableFromInline /*internal*/ let operands: [(_AnyTensorHandle, CTensorHandle?)]
+  @usableFromInline /*internal*/ var operands: [(_AnyTensorHandle, TF_Output, CTensorHandle?)]
+  @usableFromInline /*internal*/ var graphOp: CTFOperation?
+  @usableFromInline /*internal*/ var outputs: [TF_Output]
+  // @usableFromInline /*internal*/ var results: [CTensorHandle?]
+  @usableFromInline /*internal*/ static var placeHolderIndex: Int = 0
+  @usableFromInline /*internal*/ static var traceGraphFunctionCounter: Int = 0
 
   public class Results {
     var computedOutputs: [CTensorHandle]?
   }
   // TODO: When to clear cache?
-  @usableFromInline internal var results: Results
+  @usableFromInline /*internal*/ var results: Results
 
 
   @usableFromInline
-  internal init(_ name: String) {
+  /*internal*/ init(_ name: String) {
     self.status = TF_NewStatus()
     self.op = TFE_NewOp(_ExecutionContext.global.eagerContext, name, status)
     self.graphOp = nil
@@ -59,12 +52,14 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal mutating func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
-    print("Adding input")
+  /*internal*/ mutating func addInput(_ inputHandle: _AnyTensorHandle) -> Int {
+    // print("Adding input")
     let graph = _ExecutionContext.global.traceContext.graph
     switch (inputHandle.lazyHandle) {
     case LazyTensorHandle.conc(let h): do {
-        print("Adding my placeholder..")
+        // print("Adding my placeholder..")
+        TFE_TensorHandlePrintDebugString(h)
+        debugLog("Adding place holder for \(h): \(TFE_Op.placeHolderIndex)")
         let desc = TF_NewOperation(graph, "Placeholder", "input_\(TFE_Op.placeHolderIndex)")
         let dtype = TFE_TensorHandleDataType(h)
         TF_SetAttrType(desc, "dtype", dtype)
@@ -90,41 +85,41 @@ internal struct TFE_Op {
   }
 
   // @inlinable @inline(__always)
-  // internal func addInput(_ inputHandle: ResourceHandle) -> Int {
+  // /*internal*/ func addInput(_ inputHandle: ResourceHandle) -> Int {
   //   TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
   //   checkOk(status)
   //   return 1
   // }
 
   // @inlinable @inline(__always)
-  // internal func addInput(_ inputHandle: VariantHandle) -> Int {
+  // /*internal*/ func addInput(_ inputHandle: VariantHandle) -> Int {
   //   TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
   //   checkOk(status)
   //   return 1
   // }
 
   @inlinable @inline(__always)
-  internal mutating func lazyAddInput(_ inputHandle: ResourceHandle) -> Int {
+  /*internal*/ mutating func lazyAddInput(_ inputHandle: ResourceHandle) -> Int {
     return addInput(inputHandle)
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyAddInput(_ inputHandle: VariantHandle) -> Int {
+  /*internal*/ mutating func lazyAddInput(_ inputHandle: VariantHandle) -> Int {
     return addInput(inputHandle)
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyAddInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
+  /*internal*/ mutating func lazyAddInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
     return addInput(input.handle)
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyAddInput(_ input: StringTensor) -> Int {
+  /*internal*/ mutating func lazyAddInput(_ input: StringTensor) -> Int {
     return addInput(input.handle)
   }
 
   @inlinable @inline(__always)
-  internal mutating  func lazyAddInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
+  /*internal*/ mutating  func lazyAddInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
     let count = input._tensorHandleCount
     var expectedCount = 0
     for handle in input._handles {
@@ -135,21 +130,21 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
+  /*internal*/ func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
     TFE_OpAddInput(op, input.handle._cTensorHandle, status)
     checkOk(status)
     return 1
   }
 
   @inlinable @inline(__always)
-  internal func addInput(_ input: StringTensor) -> Int {
+  /*internal*/ func addInput(_ input: StringTensor) -> Int {
     TFE_OpAddInput(op, input.handle._cTensorHandle, status)
     checkOk(status)
     return 1
   }
 
   @inlinable @inline(__always)
-  internal func addInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
+  /*internal*/ func addInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
     let count = input._tensorHandleCount
     var buffer = UnsafeMutableBufferPointer<CTensorHandle>.allocate(capacity: Int(count))
     defer { buffer.deallocate() }
@@ -161,37 +156,37 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Bool) {
+  /*internal*/ func setAttr(_ name: String, _ value: Bool) {
     TFE_OpSetAttrBool(op, name, value ? 1 : 0)
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Int) {
+  /*internal*/ func setAttr(_ name: String, _ value: Int) {
     TFE_OpSetAttrInt(op, name, Int64(value))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Int32) {
+  /*internal*/ func setAttr(_ name: String, _ value: Int32) {
     TFE_OpSetAttrInt(op, name, Int64(value))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Int64) {
+  /*internal*/ func setAttr(_ name: String, _ value: Int64) {
     TFE_OpSetAttrInt(op, name, value)
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Float) {
+  /*internal*/ func setAttr(_ name: String, _ value: Float) {
     TFE_OpSetAttrFloat(op, name, value)
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: Double) {
+  /*internal*/ func setAttr(_ name: String, _ value: Double) {
     TFE_OpSetAttrFloat(op, name, Float(value))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: String) {
+  /*internal*/ func setAttr(_ name: String, _ value: String) {
     value.utf8CString.withUnsafeBufferPointer { buffer in
       // utf8CString is null-terminated; TFE_OpSetAttrString wants
       // non-null-terminated.
@@ -200,12 +195,12 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: TensorDataType) {
+  /*internal*/ func setAttr(_ name: String, _ value: TensorDataType) {
     TFE_OpSetAttrType(op, name, value._cDataType)
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: TensorShape) {
+  /*internal*/ func setAttr(_ name: String, _ value: TensorShape) {
     let dimensions: [Int64] = value.dimensions.map(Int64.init)
     dimensions.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrShape(op, name, buffer.baseAddress, Int32(buffer.count), status)
@@ -213,7 +208,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: TensorShape?) {
+  /*internal*/ func setAttr(_ name: String, _ value: TensorShape?) {
     guard let shape = value else {
       TFE_OpSetAttrShape(op, name, nil, -1, status)
       return
@@ -222,43 +217,43 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Bool]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Bool]) {
     value.map({ $0 ? UInt8(1) : UInt8(0) }).withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrBoolList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Int]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Int]) {
     setAttr(name, value.map(Int64.init))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Int32]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Int32]) {
     setAttr(name, value.map(Int64.init))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Int64]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Int64]) {
     value.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrIntList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Float]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Float]) {
     value.withUnsafeBufferPointer { buffer in
       TFE_OpSetAttrFloatList(op, name, buffer.baseAddress, Int32(buffer.count))
     }
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [Double]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [Double]) {
     setAttr(name, value.map(Float.init))
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [String]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [String]) {
     // Collect all the strings' utf8 bytes into a single array so that we can
     // address all the strings with a single
     // `flattenedStringBytes.withUnsafeBufferPointer`.
@@ -293,7 +288,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [TensorDataType]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [TensorDataType]) {
     value.withUnsafeBufferPointer { buffer in
       buffer.withMemoryRebound(to: TF_DataType.self) { reboundBuffer in
         TFE_OpSetAttrTypeList(op, name, reboundBuffer.baseAddress, Int32(reboundBuffer.count))
@@ -302,7 +297,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [TensorShape]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [TensorShape]) {
     let flattenedDims = value.flatMap { $0.dimensions.map(Int64.init) }
     let ranks = value.map { Int32($0.rank) }
     flattenedDims.withUnsafeBufferPointer { flattenedDimsBuffer in
@@ -325,7 +320,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr(_ name: String, _ value: [TensorShape?]) {
+  /*internal*/ func setAttr(_ name: String, _ value: [TensorShape?]) {
     let flattenedDims = value.flatMap { (tensorShapeOpt) -> [Int64] in
       if let tensorShape = tensorShapeOpt {
         return tensorShape.dimensions.map(Int64.init)
@@ -353,7 +348,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func setAttr<In: TensorGroup, Out: TensorGroup>(_ name: String, _ value: (In) -> Out) {
+  /*internal*/ func setAttr<In: TensorGroup, Out: TensorGroup>(_ name: String, _ value: (In) -> Out) {
     _tffunc(value).utf8CString.withUnsafeBufferPointer { buffer in
       // utf8CString is null-terminated; TFE_OpSetAttrFunctionName wants
       // non-null-terminated.
@@ -366,56 +361,56 @@ internal struct TFE_Op {
   /// TensorFlow eager op object not being freed. If called more than once, then a SEGFAULT may
   /// occur due to trying to execute a TensorFlow eager op that has already been freed.
 
-  @inlinable @inline(__always)
-  internal mutating func lazyExecute<T: Numeric & TensorFlowScalar>(
-    _ count0: Int
-  ) -> (Tensor<T>) {
-    // Initialize graphOp field..
-    updateGraphOp(nOutputs: 1)
-    return Tensor<T>(handle: TensorHandle<T>(_lazy: self, idx: 0))
-  }
+  // @inlinable @inline(__always)
+  // /*internal*/ mutating func lazyExecute<T: Numeric & TensorFlowScalar>(
+  //   _ count0: Int
+  // ) -> (Tensor<T>) {
+  //   // Initialize graphOp field..
+  //   updateGraphOp(nOutputs: 1)
+  //   return Tensor<T>(handle: TensorHandle<T>(_lazy: self, idx: 0))
+  // }
 
 
   @inlinable @inline(__always)
-  internal func lazyExecute() {
+  /*internal*/ func lazyExecute() {
     // TODO:
     assert(false)
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol>(
     _ count0: Int
   ) -> (T0) {
-    updateGraphOp(nOutputs: 2)
-    return T0.init(_lazy: self, idx: 0)
+    updateGraphOp(nOutputs: 1)
+    return T0.init(_lazySingle: self, idx: 0)
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int
   ) -> (T0, T1) {
     updateGraphOp(nOutputs: 2)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int
   ) -> (T0, T1, T2) {
     updateGraphOp(nOutputs: 3)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2))
  }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -424,14 +419,14 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3) {
     updateGraphOp(nOutputs: 4)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -440,15 +435,15 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4) {
     updateGraphOp(nOutputs: 5)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -458,16 +453,16 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4, T5) {
     updateGraphOp(nOutputs: 6)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4),
-      T5.init(_lazy: self, idx: 5))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4),
+      T5.init(_lazySingle: self, idx: 5))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -478,17 +473,17 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4, T5, T6) {
     updateGraphOp(nOutputs: 7)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4),
-      T5.init(_lazy: self, idx: 5),
-      T6.init(_lazy: self, idx: 6))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4),
+      T5.init(_lazySingle: self, idx: 5),
+      T6.init(_lazySingle: self, idx: 6))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -500,18 +495,18 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7) {
     updateGraphOp(nOutputs: 6)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4),
-      T5.init(_lazy: self, idx: 5),
-      T6.init(_lazy: self, idx: 6),
-      T7.init(_lazy: self, idx: 7))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4),
+      T5.init(_lazySingle: self, idx: 5),
+      T6.init(_lazySingle: self, idx: 6),
+      T7.init(_lazySingle: self, idx: 7))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -524,19 +519,19 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8) {
     updateGraphOp(nOutputs: 6)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4),
-      T5.init(_lazy: self, idx: 5),
-      T6.init(_lazy: self, idx: 6),
-      T7.init(_lazy: self, idx: 7),
-      T8.init(_lazy: self, idx: 8))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4),
+      T5.init(_lazySingle: self, idx: 5),
+      T6.init(_lazySingle: self, idx: 6),
+      T7.init(_lazySingle: self, idx: 7),
+      T8.init(_lazySingle: self, idx: 8))
   }
 
   @inlinable @inline(__always)
-  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
+  /*internal*/ mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -550,20 +545,20 @@ internal struct TFE_Op {
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) {
     updateGraphOp(nOutputs: 6)
     return (
-      T0.init(_lazy: self, idx: 0),
-      T1.init(_lazy: self, idx: 1),
-      T2.init(_lazy: self, idx: 2),
-      T3.init(_lazy: self, idx: 3),
-      T4.init(_lazy: self, idx: 4),
-      T5.init(_lazy: self, idx: 5),
-      T6.init(_lazy: self, idx: 6),
-      T7.init(_lazy: self, idx: 7),
-      T8.init(_lazy: self, idx: 8),
-      T9.init(_lazy: self, idx: 9))
+      T0.init(_lazySingle: self, idx: 0),
+      T1.init(_lazySingle: self, idx: 1),
+      T2.init(_lazySingle: self, idx: 2),
+      T3.init(_lazySingle: self, idx: 3),
+      T4.init(_lazySingle: self, idx: 4),
+      T5.init(_lazySingle: self, idx: 5),
+      T6.init(_lazySingle: self, idx: 6),
+      T7.init(_lazySingle: self, idx: 7),
+      T8.init(_lazySingle: self, idx: 8),
+      T9.init(_lazySingle: self, idx: 9))
   }
 
   @inlinable @inline(__always)
-  internal func execute() {
+  /*internal*/ func execute() {
     var count: Int32 = 0
     var unused: CTensorHandle?
     _TFCOpSetDeviceFromScope(op, status)
@@ -575,7 +570,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol>(
     _ count0: Int
   ) -> (T0) {
     var count = Int32(count0)
@@ -595,7 +590,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int
   ) -> (T0, T1) {
@@ -618,7 +613,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int
@@ -644,7 +639,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -673,7 +668,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -705,7 +700,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -740,7 +735,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -778,7 +773,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -819,7 +814,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -863,7 +858,7 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
+  /*internal*/ func execute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol, T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
     _ count0: Int,
     _ count1: Int,
     _ count2: Int,
@@ -910,7 +905,8 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal mutating func updateGraphOp(nOutputs: Int32)  {
+  /*internal*/ mutating func updateGraphOp(nOutputs: Int32)  {
+    // print("[START] Update graph op \(nOutputs)")
     let cTraceContext = _ExecutionContext.global.traceContext.cTraceContext
     // Device?
     var count = Int32(nOutputs)
@@ -920,13 +916,17 @@ internal struct TFE_Op {
       UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
 
-    // TODO: delete all the handles...
-    //let output: CTensorHandle = buffer.advanced(by: Int(offset0))
+    // TODO: Make sure this is correct way to delete all the handles.
+    for i in 0..<count {
+      let output: CTensorHandle = buffer.advanced(by: Int(count))
+      TFE_DeleteTensorHandle(output)
+    }
     graphOp = tfOp!
     buffer.deallocate()
     for i in 0..<nOutputs {
       outputs.append(TF_Output(oper: graphOp, index: i))
     }
+    // print("[END] Update graph op \(nOutputs)")
   }
 
   struct GraphDesc {

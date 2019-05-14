@@ -541,7 +541,7 @@ public static func accumulateNV2<T: Numeric & TensorFlowScalar>(
   op.setAttr("N", inputs.count)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -580,7 +580,7 @@ public static func add<T: Numeric & TensorFlowScalar>(
   op.setAttr("T", T.tensorFlowDataType)
   let _ = op.lazyAddInput(x)
   let _ = op.lazyAddInput(y)
-  return op.lazyLazyExecute(Int(1))
+  return op.lazyExecute(Int(1))
 }
 
 /// Returns x + y element-wise.
@@ -666,7 +666,7 @@ public static func addN<T: Numeric & TensorFlowScalar>(
   var op = TFE_Op("AddN")
   op.setAttr("N", inputs.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -1243,7 +1243,7 @@ public static func assert<T: TensorArrayProtocol>(
   op.setAttr("T", data._typeList)
   op.setAttr("summarize", summarize)
   let _ = op.lazyAddInput(condition)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(data)
   op.lazyExecute()
 }
 
@@ -1469,8 +1469,8 @@ public static func attrListTypeDefault<T: TensorFlowScalar>(
   var op = TFE_Op("AttrListTypeDefault")
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -1875,7 +1875,7 @@ public static func batch<T: TensorArrayProtocol>(
   op.setAttr("shared_name", sharedName)
   op.setAttr("batching_queue", batchingQueue)
   op.setAttr("T", inTensors._typeList)
-  let _ = op.addInputList(inTensors)
+  let _ = op.lazyAddInputList(inTensors)
   return op.lazyExecute(Int(inTensors._typeList.count), Int(1), Int(1))
 }
 
@@ -2042,8 +2042,8 @@ public static func batchFunction<
   op.setAttr("Tin", inTensors._typeList)
   op.setAttr("Tcaptured", capturedTensors._typeList)
   op.setAttr("Tout", Tout._typeList)
-  let _ = op.addInputList(inTensors)
-  let _ = op.addInputList(capturedTensors)
+  let _ = op.lazyAddInputList(inTensors)
+  let _ = op.lazyAddInputList(capturedTensors)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -3154,8 +3154,8 @@ public static func boostedTreesBucketize(
 ) -> [Tensor<Int32>] {
   var op = TFE_Op("BoostedTreesBucketize")
   op.setAttr("num_features", floatValues.count)
-  let _ = op.addInputList(floatValues)
-  let _ = op.addInputList(bucketBoundaries)
+  let _ = op.lazyAddInputList(floatValues)
+  let _ = op.lazyAddInputList(bucketBoundaries)
   return op.lazyExecute(Int(floatValues.count))
 }
 
@@ -3256,7 +3256,7 @@ public static func boostedTreesCalculateBestGainsPerFeature(
   op.setAttr("max_splits", maxSplits)
   op.setAttr("num_features", statsSummaryList.count)
   let _ = op.lazyAddInput(nodeIdRange)
-  let _ = op.addInputList(statsSummaryList)
+  let _ = op.lazyAddInputList(statsSummaryList)
   let _ = op.lazyAddInput(l1)
   let _ = op.lazyAddInput(l2)
   let _ = op.lazyAddInput(treeComplexity)
@@ -3391,7 +3391,7 @@ public static func boostedTreesExampleDebugOutputs(
   op.setAttr("num_bucketized_features", bucketizedFeatures.count)
   op.setAttr("logits_dimension", logitsDimension)
   let _ = op.lazyAddInput(treeEnsembleHandle)
-  let _ = op.addInputList(bucketizedFeatures)
+  let _ = op.lazyAddInputList(bucketizedFeatures)
   return op.lazyExecute(Int(1))
 }
 
@@ -3438,7 +3438,7 @@ public static func boostedTreesMakeQuantileSummaries(
 ) -> [Tensor<Float>] {
   var op = TFE_Op("BoostedTreesMakeQuantileSummaries")
   op.setAttr("num_features", floatValues.count)
-  let _ = op.addInputList(floatValues)
+  let _ = op.lazyAddInputList(floatValues)
   let _ = op.lazyAddInput(exampleWeights)
   let _ = op.lazyAddInput(epsilon)
   return op.lazyExecute(Int(floatValues.count))
@@ -3476,7 +3476,7 @@ public static func boostedTreesMakeStatsSummary(
   let _ = op.lazyAddInput(nodeIds)
   let _ = op.lazyAddInput(gradients)
   let _ = op.lazyAddInput(hessians)
-  let _ = op.addInputList(bucketizedFeaturesList)
+  let _ = op.lazyAddInputList(bucketizedFeaturesList)
   return op.lazyExecute(Int(1))
 }
 
@@ -3504,7 +3504,7 @@ public static func boostedTreesPredict(
   op.setAttr("num_bucketized_features", bucketizedFeatures.count)
   op.setAttr("logits_dimension", logitsDimension)
   let _ = op.lazyAddInput(treeEnsembleHandle)
-  let _ = op.addInputList(bucketizedFeatures)
+  let _ = op.lazyAddInputList(bucketizedFeatures)
   return op.lazyExecute(Int(1))
 }
 
@@ -3525,7 +3525,7 @@ public static func boostedTreesQuantileStreamResourceAddSummaries(
   var op = TFE_Op("BoostedTreesQuantileStreamResourceAddSummaries")
   op.setAttr("num_features", summaries.count)
   let _ = op.lazyAddInput(quantileStreamResourceHandle)
-  let _ = op.addInputList(summaries)
+  let _ = op.lazyAddInputList(summaries)
   op.lazyExecute()
 }
 
@@ -3546,7 +3546,7 @@ public static func boostedTreesQuantileStreamResourceDeserialize(
   var op = TFE_Op("BoostedTreesQuantileStreamResourceDeserialize")
   op.setAttr("num_streams", bucketBoundaries.count)
   let _ = op.lazyAddInput(quantileStreamResourceHandle)
-  let _ = op.addInputList(bucketBoundaries)
+  let _ = op.lazyAddInputList(bucketBoundaries)
   op.lazyExecute()
 }
 
@@ -3664,7 +3664,7 @@ public static func boostedTreesTrainingPredict(
   let _ = op.lazyAddInput(treeEnsembleHandle)
   let _ = op.lazyAddInput(cachedTreeIds)
   let _ = op.lazyAddInput(cachedNodeIds)
-  let _ = op.addInputList(bucketizedFeatures)
+  let _ = op.lazyAddInputList(bucketizedFeatures)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
 
@@ -3712,11 +3712,11 @@ public static func boostedTreesUpdateEnsemble(
   op.setAttr("num_features", nodeIds.count)
   let _ = op.lazyAddInput(treeEnsembleHandle)
   let _ = op.lazyAddInput(featureIds)
-  let _ = op.addInputList(nodeIds)
-  let _ = op.addInputList(gains)
-  let _ = op.addInputList(thresholds)
-  let _ = op.addInputList(leftNodeContribs)
-  let _ = op.addInputList(rightNodeContribs)
+  let _ = op.lazyAddInputList(nodeIds)
+  let _ = op.lazyAddInputList(gains)
+  let _ = op.lazyAddInputList(thresholds)
+  let _ = op.lazyAddInputList(leftNodeContribs)
+  let _ = op.lazyAddInputList(rightNodeContribs)
   let _ = op.lazyAddInput(maxDepth)
   let _ = op.lazyAddInput(learningRate)
   op.lazyExecute()
@@ -4477,7 +4477,7 @@ public static func concat<T: TensorFlowScalar>(
   op.setAttr("N", values.count)
   op.setAttr("T", T.tensorFlowDataType)
   let _ = op.lazyAddInput(concatDim)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   return op.lazyExecute(Int(1))
 }
 
@@ -4508,7 +4508,7 @@ public static func concatOffset(
   var op = TFE_Op("ConcatOffset")
   op.setAttr("N", shape.count)
   let _ = op.lazyAddInput(concatDim)
-  let _ = op.addInputList(shape)
+  let _ = op.lazyAddInputList(shape)
   return op.lazyExecute(Int(shape.count))
 }
 
@@ -4535,7 +4535,7 @@ public static func concatV2<
   op.setAttr("N", values.count)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("Tidx", Tidx.tensorFlowDataType)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   let _ = op.lazyAddInput(axis)
   return op.lazyExecute(Int(1))
 }
@@ -5792,8 +5792,8 @@ public static func cudnnRNNCanonicalToParams<T: FloatingPoint & TensorFlowScalar
   let _ = op.lazyAddInput(numLayers)
   let _ = op.lazyAddInput(numUnits)
   let _ = op.lazyAddInput(inputSize)
-  let _ = op.addInputList(weights)
-  let _ = op.addInputList(biases)
+  let _ = op.lazyAddInputList(weights)
+  let _ = op.lazyAddInputList(biases)
   return op.lazyExecute(Int(1))
 }
 
@@ -6559,7 +6559,7 @@ public static func decodeCSV<OutType: TensorArrayProtocol>(
   op.setAttr("na_value", naValue)
   op.setAttr("select_cols", selectCols)
   let _ = op.lazyAddInput(records)
-  let _ = op.addInputList(recordDefaults)
+  let _ = op.lazyAddInputList(recordDefaults)
   return op.lazyExecute(Int(recordDefaults._typeList.count))
 }
 
@@ -8153,8 +8153,8 @@ public static func dynamicStitch<T: TensorFlowScalar>(
   var op = TFE_Op("DynamicStitch")
   op.setAttr("N", indices.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(indices)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(indices)
+  let _ = op.lazyAddInputList(data)
   return op.lazyExecute(Int(1))
 }
 
@@ -8174,7 +8174,7 @@ public static func eagerPyFunc<
   op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -8536,7 +8536,7 @@ public static func encodeProto<TinputTypes: TensorArrayProtocol>(
   op.setAttr("descriptor_source", descriptorSource)
   op.setAttr("Tinput_types", values._typeList)
   let _ = op.lazyAddInput(sizes)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   return op.lazyExecute(Int(1))
 }
 
@@ -8587,7 +8587,7 @@ public static func enqueueTPUEmbeddingIntegerBatch(
   var op = TFE_Op("EnqueueTPUEmbeddingIntegerBatch")
   op.setAttr("N", batch.count)
   op.setAttr("device_ordinal", deviceOrdinal)
-  let _ = op.addInputList(batch)
+  let _ = op.lazyAddInputList(batch)
   let _ = op.lazyAddInput(modeOverride)
   op.lazyExecute()
 }
@@ -8647,9 +8647,9 @@ public static func enqueueTPUEmbeddingSparseBatch<
   op.setAttr("N", sampleIndices.count)
   op.setAttr("device_ordinal", deviceOrdinal)
   op.setAttr("combiners", combiners)
-  let _ = op.addInputList(sampleIndices)
-  let _ = op.addInputList(embeddingIndices)
-  let _ = op.addInputList(aggregationWeights)
+  let _ = op.lazyAddInputList(sampleIndices)
+  let _ = op.lazyAddInputList(embeddingIndices)
+  let _ = op.lazyAddInputList(aggregationWeights)
   let _ = op.lazyAddInput(modeOverride)
   op.lazyExecute()
 }
@@ -8717,9 +8717,9 @@ public static func enqueueTPUEmbeddingSparseTensorBatch<
   op.setAttr("combiners", combiners)
   op.setAttr("table_ids", tableIds)
   op.setAttr("max_sequence_lengths", maxSequenceLengths)
-  let _ = op.addInputList(sampleIndices)
-  let _ = op.addInputList(embeddingIndices)
-  let _ = op.addInputList(aggregationWeights)
+  let _ = op.lazyAddInputList(sampleIndices)
+  let _ = op.lazyAddInputList(embeddingIndices)
+  let _ = op.lazyAddInputList(aggregationWeights)
   let _ = op.lazyAddInput(modeOverride)
   op.lazyExecute()
 }
@@ -9034,7 +9034,7 @@ public static func experimentalCSVDataset<OutputTypes: TensorArrayProtocol>(
   let _ = op.lazyAddInput(useQuoteDelim)
   let _ = op.lazyAddInput(naValue)
   let _ = op.lazyAddInput(selectCols)
-  let _ = op.addInputList(recordDefaults)
+  let _ = op.lazyAddInputList(recordDefaults)
   return op.lazyExecute(Int(1))
 }
 
@@ -9050,7 +9050,7 @@ public static func experimentalChooseFastestDataset(
   op.setAttr("num_experiments", numExperiments)
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
-  let _ = op.addInputList(inputDatasets)
+  let _ = op.lazyAddInputList(inputDatasets)
   return op.lazyExecute(Int(1))
 }
 
@@ -9136,7 +9136,7 @@ public static func experimentalDirectedInterleaveDataset(
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("N", dataInputDatasets.count)
   let _ = op.lazyAddInput(selectorInputDataset)
-  let _ = op.addInputList(dataInputDatasets)
+  let _ = op.lazyAddInputList(dataInputDatasets)
   return op.lazyExecute(Int(1))
 }
 
@@ -9202,10 +9202,10 @@ public static func experimentalGroupByReducerDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(keyFuncOtherArguments)
-  let _ = op.addInputList(initFuncOtherArguments)
-  let _ = op.addInputList(reduceFuncOtherArguments)
-  let _ = op.addInputList(finalizeFuncOtherArguments)
+  let _ = op.lazyAddInputList(keyFuncOtherArguments)
+  let _ = op.lazyAddInputList(initFuncOtherArguments)
+  let _ = op.lazyAddInputList(reduceFuncOtherArguments)
+  let _ = op.lazyAddInputList(finalizeFuncOtherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -9247,9 +9247,9 @@ public static func experimentalGroupByWindowDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(keyFuncOtherArguments)
-  let _ = op.addInputList(reduceFuncOtherArguments)
-  let _ = op.addInputList(windowSizeFuncOtherArguments)
+  let _ = op.lazyAddInputList(keyFuncOtherArguments)
+  let _ = op.lazyAddInputList(reduceFuncOtherArguments)
+  let _ = op.lazyAddInputList(windowSizeFuncOtherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -9385,7 +9385,7 @@ public static func experimentalMapAndBatchDataset<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(batchSize)
   let _ = op.lazyAddInput(numParallelCalls)
   let _ = op.lazyAddInput(dropRemainder)
@@ -9415,7 +9415,7 @@ public static func experimentalMapDataset<
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -9523,7 +9523,7 @@ public static func experimentalNumaMapAndBatchDataset<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(batchSize)
   let _ = op.lazyAddInput(numParallelCalls)
   let _ = op.lazyAddInput(dropRemainder)
@@ -9566,7 +9566,7 @@ public static func experimentalParallelInterleaveDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(cycleLength)
   let _ = op.lazyAddInput(blockLength)
   let _ = op.lazyAddInput(sloppy)
@@ -9627,7 +9627,7 @@ public static func experimentalParseExampleDataset<Tdense: TensorArrayProtocol>(
   op.setAttr("sloppy", sloppy)
   let _ = op.lazyAddInput(inputDataset)
   let _ = op.lazyAddInput(numParallelCalls)
-  let _ = op.addInputList(denseDefaults)
+  let _ = op.lazyAddInputList(denseDefaults)
   return op.lazyExecute(Int(1))
 }
 
@@ -9720,8 +9720,8 @@ public static func experimentalScanDataset<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(initialState)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(initialState)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -9862,7 +9862,7 @@ public static func experimentalTakeWhileDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -10562,7 +10562,7 @@ public static func filterDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -10783,7 +10783,7 @@ public static func flatMapDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -10942,7 +10942,7 @@ public static func for_<
   let _ = op.lazyAddInput(start)
   let _ = op.lazyAddInput(limit)
   let _ = op.lazyAddInput(delta)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(input._typeList.count))
 }
 
@@ -12125,9 +12125,9 @@ public static func generatorDataset<
   op.setAttr("Tfinalize_func_args", finalizeFuncOtherArgs._typeList)
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
-  let _ = op.addInputList(initFuncOtherArgs)
-  let _ = op.addInputList(nextFuncOtherArgs)
-  let _ = op.addInputList(finalizeFuncOtherArgs)
+  let _ = op.lazyAddInputList(initFuncOtherArgs)
+  let _ = op.lazyAddInputList(nextFuncOtherArgs)
+  let _ = op.lazyAddInputList(finalizeFuncOtherArgs)
   return op.lazyExecute(Int(1))
 }
 
@@ -12465,7 +12465,7 @@ public static func identityN<T: TensorArrayProtocol>(
 ) -> T {
   var op = TFE_Op("IdentityN")
   op.setAttr("T", input._typeList)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(input._typeList.count))
 }
 
@@ -12536,7 +12536,7 @@ public static func if_<
   op.setAttr("else_branch", elseBranch)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(cond)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -12674,8 +12674,8 @@ public static func inPolymorphicTwice<T: TensorFlowScalar>(
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
   op.setAttr("M", b.count)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -12860,7 +12860,7 @@ public static func infeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
   op.setAttr("shapes", shapes)
   op.setAttr("layouts", layouts)
   op.setAttr("device_ordinal", deviceOrdinal)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   op.lazyExecute()
 }
 
@@ -13095,7 +13095,7 @@ public static func interleaveDataset<
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(cycleLength)
   let _ = op.lazyAddInput(blockLength)
   return op.lazyExecute(Int(1))
@@ -13941,7 +13941,7 @@ public static func listInput<T: TensorFlowScalar>(
   var op = TFE_Op("ListInput")
   op.setAttr("N", a.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -15078,7 +15078,7 @@ public static func mapDataset<
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(1))
 }
 
@@ -15131,8 +15131,8 @@ public static func mapDefun<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("f", f)
   op.setAttr("max_intra_op_parallelism", maxIntraOpParallelism)
-  let _ = op.addInputList(arguments)
-  let _ = op.addInputList(capturedInputs)
+  let _ = op.lazyAddInputList(arguments)
+  let _ = op.lazyAddInputList(capturedInputs)
   return op.lazyExecute(Int(OutputTypes._typeList.count))
 }
 
@@ -15229,7 +15229,7 @@ public static func mapStage<FakeDtypes: TensorArrayProtocol>(
   op.setAttr("shared_name", sharedName)
   let _ = op.lazyAddInput(key)
   let _ = op.lazyAddInput(indices)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   op.lazyExecute()
 }
 
@@ -16375,7 +16375,7 @@ public static func merge<T: TensorFlowScalar>(
   var op = TFE_Op("Merge")
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", inputs.count)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1), Int(1))
 }
 
@@ -16399,7 +16399,7 @@ public static func mergeSummary(
 ) -> StringTensor {
   var op = TFE_Op("MergeSummary")
   op.setAttr("N", inputs.count)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -17059,8 +17059,8 @@ public static func nInPolymorphicTwice<T: TensorFlowScalar>(
   var op = TFE_Op("NInPolymorphicTwice")
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -17071,8 +17071,8 @@ public static func nInTwice(
 ) {
   var op = TFE_Op("NInTwice")
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -17088,8 +17088,8 @@ public static func nInTwoTypeVariables<
   op.setAttr("S", S.tensorFlowDataType)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -17099,7 +17099,7 @@ public static func nIntsIn(
 ) {
   var op = TFE_Op("NIntsIn")
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -17128,7 +17128,7 @@ public static func nPolymorphicIn<T: TensorFlowScalar>(
   var op = TFE_Op("NPolymorphicIn")
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -17159,7 +17159,7 @@ public static func nPolymorphicRestrictIn<T: TensorFlowScalar>(
   var op = TFE_Op("NPolymorphicRestrictIn")
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -17170,7 +17170,7 @@ public static func nPolymorphicRestrictIn(
   var op = TFE_Op("NPolymorphicRestrictIn")
   op.setAttr("T", TensorDataType(TF_STRING))
   op.setAttr("N", a.count)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -17266,7 +17266,7 @@ public static func ncclReduce<T: Numeric & TensorFlowScalar>(
   op.setAttr("reduction", reduction.cName)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("num_devices", input.count)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(1))
 }
 
@@ -17941,7 +17941,7 @@ public static func optionalFromValue<ToutputTypes: TensorArrayProtocol>(
 ) -> VariantHandle {
   var op = TFE_Op("OptionalFromValue")
   op.setAttr("Toutput_types", components._typeList)
-  let _ = op.addInputList(components)
+  let _ = op.lazyAddInputList(components)
   return op.lazyExecute(Int(1))
 }
 
@@ -18091,7 +18091,7 @@ public static func orderedMapStage<FakeDtypes: TensorArrayProtocol>(
   op.setAttr("shared_name", sharedName)
   let _ = op.lazyAddInput(key)
   let _ = op.lazyAddInput(indices)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   op.lazyExecute()
 }
 
@@ -18237,7 +18237,7 @@ public static func outfeedEnqueueTuple<Dtypes: TensorArrayProtocol>(
 ) {
   var op = TFE_Op("OutfeedEnqueueTuple")
   op.setAttr("dtypes", inputs._typeList)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   op.lazyExecute()
 }
 
@@ -18278,7 +18278,7 @@ public static func pack<T: TensorFlowScalar>(
   op.setAttr("N", values.count)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("axis", axis)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   return op.lazyExecute(Int(1))
 }
 
@@ -18392,8 +18392,8 @@ public static func paddedBatchDataset<ToutputTypes: TensorArrayProtocol>(
   op.setAttr("N", paddedShapes.count)
   let _ = op.lazyAddInput(inputDataset)
   let _ = op.lazyAddInput(batchSize)
-  let _ = op.addInputList(paddedShapes)
-  let _ = op.addInputList(paddingValues)
+  let _ = op.lazyAddInputList(paddedShapes)
+  let _ = op.lazyAddInputList(paddingValues)
   return op.lazyExecute(Int(1))
 }
 
@@ -18427,8 +18427,8 @@ public static func paddedBatchDatasetV2<ToutputTypes: TensorArrayProtocol>(
   op.setAttr("N", paddedShapes.count)
   let _ = op.lazyAddInput(inputDataset)
   let _ = op.lazyAddInput(batchSize)
-  let _ = op.addInputList(paddedShapes)
-  let _ = op.addInputList(paddingValues)
+  let _ = op.lazyAddInputList(paddedShapes)
+  let _ = op.lazyAddInputList(paddingValues)
   let _ = op.lazyAddInput(dropRemainder)
   return op.lazyExecute(Int(1))
 }
@@ -18509,7 +18509,7 @@ public static func parallelConcat<T: TensorFlowScalar>(
   op.setAttr("N", values.count)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("shape", shape)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   return op.lazyExecute(Int(1))
 }
 
@@ -18584,8 +18584,8 @@ public static func parallelDynamicStitch<T: TensorFlowScalar>(
   var op = TFE_Op("ParallelDynamicStitch")
   op.setAttr("N", indices.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(indices)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(indices)
+  let _ = op.lazyAddInputList(data)
   return op.lazyExecute(Int(1))
 }
 
@@ -18617,7 +18617,7 @@ public static func parallelInterleaveDatasetV2<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("sloppy", sloppy)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(cycleLength)
   let _ = op.lazyAddInput(blockLength)
   let _ = op.lazyAddInput(numParallelCalls)
@@ -18656,7 +18656,7 @@ public static func parallelMapDataset<
   op.setAttr("sloppy", sloppy)
   op.setAttr("preserve_cardinality", preserveCardinality)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(otherArguments)
   let _ = op.lazyAddInput(numParallelCalls)
   return op.lazyExecute(Int(1))
 }
@@ -18773,9 +18773,9 @@ public static func parseExample<
   op.setAttr("dense_shapes", denseShapes)
   let _ = op.lazyAddInput(serialized)
   let _ = op.lazyAddInput(names)
-  let _ = op.addInputList(sparseKeys)
-  let _ = op.addInputList(denseKeys)
-  let _ = op.addInputList(denseDefaults)
+  let _ = op.lazyAddInputList(sparseKeys)
+  let _ = op.lazyAddInputList(denseKeys)
+  let _ = op.lazyAddInputList(denseDefaults)
   return op.lazyExecute(Int(sparseKeys.count), Int(SparseTypes._typeList.count), Int(sparseKeys.count), Int(denseDefaults._typeList.count))
 }
 
@@ -18872,7 +18872,7 @@ public static func parseSequenceExample<
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
   let _ = op.lazyAddInput(serialized)
   let _ = op.lazyAddInput(debugName)
-  let _ = op.addInputList(contextDenseDefaults)
+  let _ = op.lazyAddInputList(contextDenseDefaults)
   return op.lazyExecute(Int(ncontextSparse), Int(ContextSparseTypes._typeList.count), Int(ncontextSparse), Int(contextDenseDefaults._typeList.count), Int(nfeatureListSparse), Int(FeatureListSparseTypes._typeList.count), Int(nfeatureListSparse), Int(FeatureListDenseTypes._typeList.count), Int(nfeatureListDense))
 }
 
@@ -18935,7 +18935,7 @@ public static func parseSingleExample<
   op.setAttr("Tdense", denseDefaults._typeList)
   op.setAttr("dense_shapes", denseShapes)
   let _ = op.lazyAddInput(serialized)
-  let _ = op.addInputList(denseDefaults)
+  let _ = op.lazyAddInputList(denseDefaults)
   return op.lazyExecute(Int(numSparse), Int(SparseTypes._typeList.count), Int(numSparse), Int(denseDefaults._typeList.count))
 }
 
@@ -19023,11 +19023,11 @@ public static func parseSingleSequenceExample<
   op.setAttr("feature_list_dense_shapes", featureListDenseShapes)
   let _ = op.lazyAddInput(serialized)
   let _ = op.lazyAddInput(featureListDenseMissingAssumedEmpty)
-  let _ = op.addInputList(contextSparseKeys)
-  let _ = op.addInputList(contextDenseKeys)
-  let _ = op.addInputList(featureListSparseKeys)
-  let _ = op.addInputList(featureListDenseKeys)
-  let _ = op.addInputList(contextDenseDefaults)
+  let _ = op.lazyAddInputList(contextSparseKeys)
+  let _ = op.lazyAddInputList(contextDenseKeys)
+  let _ = op.lazyAddInputList(featureListSparseKeys)
+  let _ = op.lazyAddInputList(featureListDenseKeys)
+  let _ = op.lazyAddInputList(contextDenseDefaults)
   let _ = op.lazyAddInput(debugName)
   return op.lazyExecute(Int(contextSparseKeys.count), Int(ContextSparseTypes._typeList.count), Int(contextSparseKeys.count), Int(contextDenseDefaults._typeList.count), Int(featureListSparseKeys.count), Int(FeatureListSparseTypes._typeList.count), Int(featureListSparseKeys.count), Int(FeatureListDenseTypes._typeList.count))
 }
@@ -19083,7 +19083,7 @@ public static func partitionedCall<
   op.setAttr("config", config)
   op.setAttr("config_proto", configProto)
   op.setAttr("executor_type", executorType)
-  let _ = op.addInputList(args)
+  let _ = op.lazyAddInputList(args)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -19303,7 +19303,7 @@ public static func prelinearizeTuple<Dtypes: TensorArrayProtocol>(
   op.setAttr("dtypes", inputs._typeList)
   op.setAttr("shapes", shapes)
   op.setAttr("layouts", layouts)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -19367,7 +19367,7 @@ public static func print<
   op.setAttr("first_n", firstN)
   op.setAttr("summarize", summarize)
   let _ = op.lazyAddInput(input)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(data)
   return op.lazyExecute(Int(1))
 }
 
@@ -19487,7 +19487,7 @@ public static func pyFunc<
   op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -19504,7 +19504,7 @@ public static func pyFuncStateless<
   op.setAttr("token", token)
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -20093,9 +20093,9 @@ public static func quantizedConcat<T: TensorFlowScalar>(
   op.setAttr("N", values.count)
   op.setAttr("T", T.tensorFlowDataType)
   let _ = op.lazyAddInput(concatDim)
-  let _ = op.addInputList(values)
-  let _ = op.addInputList(inputMins)
-  let _ = op.addInputList(inputMaxes)
+  let _ = op.lazyAddInputList(values)
+  let _ = op.lazyAddInputList(inputMins)
+  let _ = op.lazyAddInputList(inputMaxes)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
 
@@ -21253,7 +21253,7 @@ public static func queueEnqueueManyV2<Tcomponents: TensorArrayProtocol>(
   op.setAttr("Tcomponents", components._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   let _ = op.lazyAddInput(handle)
-  let _ = op.addInputList(components)
+  let _ = op.lazyAddInputList(components)
   op.lazyExecute()
 }
 
@@ -21282,7 +21282,7 @@ public static func queueEnqueueV2<Tcomponents: TensorArrayProtocol>(
   op.setAttr("Tcomponents", components._typeList)
   op.setAttr("timeout_ms", timeoutMs)
   let _ = op.lazyAddInput(handle)
-  let _ = op.addInputList(components)
+  let _ = op.lazyAddInputList(components)
   op.lazyExecute()
 }
 
@@ -21400,7 +21400,7 @@ public static func raggedGather<
   op.setAttr("Tindices", Tindices.tensorFlowDataType)
   op.setAttr("PARAMS_RAGGED_RANK", paramsNestedSplits.count)
   op.setAttr("OUTPUT_RAGGED_RANK", oUTPUTRAGGEDRANK)
-  let _ = op.addInputList(paramsNestedSplits)
+  let _ = op.lazyAddInputList(paramsNestedSplits)
   let _ = op.lazyAddInput(paramsDenseValues)
   let _ = op.lazyAddInput(indices)
   return op.lazyExecute(Int(oUTPUTRAGGEDRANK), Int(1))
@@ -21475,7 +21475,7 @@ public static func raggedTensorToSparse<T: TensorFlowScalar>(
   var op = TFE_Op("RaggedTensorToSparse")
   op.setAttr("RAGGED_RANK", rtNestedSplits.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(rtNestedSplits)
+  let _ = op.lazyAddInputList(rtNestedSplits)
   let _ = op.lazyAddInput(rtDenseValues)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
@@ -22239,8 +22239,8 @@ public static func reduceDataset<
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("use_inter_op_parallelism", useInterOpParallelism)
   let _ = op.lazyAddInput(inputDataset)
-  let _ = op.addInputList(initialState)
-  let _ = op.addInputList(otherArguments)
+  let _ = op.lazyAddInputList(initialState)
+  let _ = op.lazyAddInputList(otherArguments)
   return op.lazyExecute(Int(OutputTypes._typeList.count))
 }
 
@@ -22444,7 +22444,7 @@ public static func remoteCall<
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
   let _ = op.lazyAddInput(target)
-  let _ = op.addInputList(args)
+  let _ = op.lazyAddInputList(args)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -22476,7 +22476,7 @@ public static func remoteFusedGraphExecute<
   op.setAttr("Tinputs", inputs._typeList)
   op.setAttr("Toutputs", Toutputs._typeList)
   op.setAttr("serialized_remote_fused_graph_execute_info", serializedRemoteFusedGraphExecuteInfo)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(Toutputs._typeList.count))
 }
 
@@ -26331,7 +26331,7 @@ public static func save<T: TensorArrayProtocol>(
   op.setAttr("T", data._typeList)
   let _ = op.lazyAddInput(filename)
   let _ = op.lazyAddInput(tensorNames)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(data)
   op.lazyExecute()
 }
 
@@ -26378,7 +26378,7 @@ public static func saveSlices<T: TensorArrayProtocol>(
   let _ = op.lazyAddInput(filename)
   let _ = op.lazyAddInput(tensorNames)
   let _ = op.lazyAddInput(shapesAndSlices)
-  let _ = op.addInputList(data)
+  let _ = op.lazyAddInputList(data)
   op.lazyExecute()
 }
 
@@ -26407,7 +26407,7 @@ public static func saveV2<Dtypes: TensorArrayProtocol>(
   let _ = op.lazyAddInput(prefix)
   let _ = op.lazyAddInput(tensorNames)
   let _ = op.lazyAddInput(shapeAndSlices)
-  let _ = op.addInputList(tensors)
+  let _ = op.lazyAddInputList(tensors)
   op.lazyExecute()
 }
 
@@ -26749,15 +26749,15 @@ public static func sdcaOptimizer(
   op.setAttr("l2", l2)
   op.setAttr("num_loss_partitions", numLossPartitions)
   op.setAttr("num_inner_iterations", numInnerIterations)
-  let _ = op.addInputList(sparseExampleIndices)
-  let _ = op.addInputList(sparseFeatureIndices)
-  let _ = op.addInputList(sparseFeatureValues)
-  let _ = op.addInputList(denseFeatures)
+  let _ = op.lazyAddInputList(sparseExampleIndices)
+  let _ = op.lazyAddInputList(sparseFeatureIndices)
+  let _ = op.lazyAddInputList(sparseFeatureValues)
+  let _ = op.lazyAddInputList(denseFeatures)
   let _ = op.lazyAddInput(exampleWeights)
   let _ = op.lazyAddInput(exampleLabels)
-  let _ = op.addInputList(sparseIndices)
-  let _ = op.addInputList(sparseWeights)
-  let _ = op.addInputList(denseWeights)
+  let _ = op.lazyAddInputList(sparseIndices)
+  let _ = op.lazyAddInputList(sparseWeights)
+  let _ = op.lazyAddInputList(denseWeights)
   let _ = op.lazyAddInput(exampleStateData)
   return op.lazyExecute(Int(1), Int(sparseExampleIndices.count), Int(denseFeatures.count))
 }
@@ -26850,15 +26850,15 @@ public static func sdcaOptimizerV2(
   op.setAttr("l2", l2)
   op.setAttr("num_loss_partitions", numLossPartitions)
   op.setAttr("num_inner_iterations", numInnerIterations)
-  let _ = op.addInputList(sparseExampleIndices)
-  let _ = op.addInputList(sparseFeatureIndices)
-  let _ = op.addInputList(sparseFeatureValues)
-  let _ = op.addInputList(denseFeatures)
+  let _ = op.lazyAddInputList(sparseExampleIndices)
+  let _ = op.lazyAddInputList(sparseFeatureIndices)
+  let _ = op.lazyAddInputList(sparseFeatureValues)
+  let _ = op.lazyAddInputList(denseFeatures)
   let _ = op.lazyAddInput(exampleWeights)
   let _ = op.lazyAddInput(exampleLabels)
-  let _ = op.addInputList(sparseIndices)
-  let _ = op.addInputList(sparseWeights)
-  let _ = op.addInputList(denseWeights)
+  let _ = op.lazyAddInputList(sparseIndices)
+  let _ = op.lazyAddInputList(sparseWeights)
+  let _ = op.lazyAddInputList(denseWeights)
   let _ = op.lazyAddInput(exampleStateData)
   return op.lazyExecute(Int(1), Int(sparseExampleIndices.count), Int(denseFeatures.count))
 }
@@ -27283,8 +27283,8 @@ public static func sendTPUEmbeddingGradients(
   op.setAttr("N", inputs.count)
   op.setAttr("NN", learningRates.count)
   op.setAttr("config", config)
-  let _ = op.addInputList(inputs)
-  let _ = op.addInputList(learningRates)
+  let _ = op.lazyAddInputList(inputs)
+  let _ = op.lazyAddInputList(learningRates)
   op.lazyExecute()
 }
 
@@ -27542,7 +27542,7 @@ public static func shapeN<
   op.setAttr("N", input.count)
   op.setAttr("T", T.tensorFlowDataType)
   op.setAttr("out_type", OutType.tensorFlowDataType)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(input.count))
 }
 
@@ -28505,9 +28505,9 @@ public static func sparseConcat<T: TensorFlowScalar>(
   op.setAttr("concat_dim", concatDim)
   op.setAttr("N", indices.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(indices)
-  let _ = op.addInputList(values)
-  let _ = op.addInputList(shapes)
+  let _ = op.lazyAddInputList(indices)
+  let _ = op.lazyAddInputList(values)
+  let _ = op.lazyAddInputList(shapes)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
 
@@ -28593,10 +28593,10 @@ public static func sparseCross<
   op.setAttr("dense_types", denseInputs._typeList)
   op.setAttr("out_type", OutType.tensorFlowDataType)
   op.setAttr("internal_type", internalType)
-  let _ = op.addInputList(indices)
-  let _ = op.addInputList(values)
-  let _ = op.addInputList(shapes)
-  let _ = op.addInputList(denseInputs)
+  let _ = op.lazyAddInputList(indices)
+  let _ = op.lazyAddInputList(values)
+  let _ = op.lazyAddInputList(shapes)
+  let _ = op.lazyAddInputList(denseInputs)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
 
@@ -28681,10 +28681,10 @@ public static func sparseCross<
   op.setAttr("dense_types", denseInputs._typeList)
   op.setAttr("out_type", TensorDataType(TF_STRING))
   op.setAttr("internal_type", internalType)
-  let _ = op.addInputList(indices)
-  let _ = op.addInputList(values)
-  let _ = op.addInputList(shapes)
-  let _ = op.addInputList(denseInputs)
+  let _ = op.lazyAddInputList(indices)
+  let _ = op.lazyAddInputList(values)
+  let _ = op.lazyAddInputList(shapes)
+  let _ = op.lazyAddInputList(denseInputs)
   return op.lazyExecute(Int(1), Int(1), Int(1))
 }
 
@@ -30314,7 +30314,7 @@ public static func stage<Dtypes: TensorArrayProtocol>(
   op.setAttr("dtypes", values._typeList)
   op.setAttr("container", container)
   op.setAttr("shared_name", sharedName)
-  let _ = op.addInputList(values)
+  let _ = op.lazyAddInputList(values)
   op.lazyExecute()
 }
 
@@ -30411,7 +30411,7 @@ public static func statefulPartitionedCall<
   op.setAttr("config", config)
   op.setAttr("config_proto", configProto)
   op.setAttr("executor_type", executorType)
-  let _ = op.addInputList(args)
+  let _ = op.lazyAddInputList(args)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -30676,7 +30676,7 @@ public static func statelessIf<
   op.setAttr("then_branch", thenBranch)
   op.setAttr("else_branch", elseBranch)
   let _ = op.lazyAddInput(cond)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -30880,7 +30880,7 @@ public static func statelessWhile<
   op.setAttr("T", input._typeList)
   op.setAttr("cond", cond)
   op.setAttr("body", body)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(input._typeList.count))
 }
 
@@ -31214,7 +31214,7 @@ public static func stringFormat<T: TensorArrayProtocol>(
   op.setAttr("template", template)
   op.setAttr("placeholder", placeholder)
   op.setAttr("summarize", summarize)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -31235,7 +31235,7 @@ public static func stringJoin(
   var op = TFE_Op("StringJoin")
   op.setAttr("N", inputs.count)
   op.setAttr("separator", separator)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -31506,7 +31506,7 @@ public static func sub<T: Numeric & TensorFlowScalar>(
   op.setAttr("T", T.tensorFlowDataType)
   let _ = op.lazyAddInput(x)
   let _ = op.lazyAddInput(y)
-  return op.lazyLazyExecute(Int(1))
+  return op.lazyExecute(Int(1))
 }
 
 /// Return substrings from `Tensor` of strings.
@@ -31773,7 +31773,7 @@ public static func symbolicGradient<
   op.setAttr("Tin", input._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
 
@@ -31904,7 +31904,7 @@ public static func tPUPartitionedCall<
   op.setAttr("Tin", args._typeList)
   op.setAttr("Tout", Tout._typeList)
   op.setAttr("f", f)
-  let _ = op.addInputList(args)
+  let _ = op.lazyAddInputList(args)
   let _ = op.lazyAddInput(deviceOrdinal)
   return op.lazyExecute(Int(Tout._typeList.count))
 }
@@ -31978,10 +31978,10 @@ public static func tPUReplicate<
   op.setAttr("output_types", OutputTypes._typeList)
   op.setAttr("padding_map", paddingMap)
   op.setAttr("step_marker_location", stepMarkerLocation)
-  let _ = op.addInputList(inputs)
-  let _ = op.addInputList(broadcastInputs)
-  let _ = op.addInputList(variables)
-  let _ = op.addInputList(guaranteedConstants)
+  let _ = op.lazyAddInputList(inputs)
+  let _ = op.lazyAddInputList(broadcastInputs)
+  let _ = op.lazyAddInputList(variables)
+  let _ = op.lazyAddInputList(guaranteedConstants)
   return op.lazyExecute(Int(OutputTypes._typeList.count))
 }
 
@@ -32027,7 +32027,7 @@ public static func tPUReplicatedInput<T: TensorFlowScalar>(
   var op = TFE_Op("TPUReplicatedInput")
   op.setAttr("N", inputs.count)
   op.setAttr("T", T.tensorFlowDataType)
-  let _ = op.addInputList(inputs)
+  let _ = op.lazyAddInputList(inputs)
   return op.lazyExecute(Int(1))
 }
 
@@ -32714,7 +32714,7 @@ public static func tensorDataset<ToutputTypes: TensorArrayProtocol>(
   var op = TFE_Op("TensorDataset")
   op.setAttr("Toutput_types", components._typeList)
   op.setAttr("output_shapes", outputShapes)
-  let _ = op.addInputList(components)
+  let _ = op.lazyAddInputList(components)
   return op.lazyExecute(Int(1))
 }
 
@@ -33505,7 +33505,7 @@ public static func tensorSliceDataset<ToutputTypes: TensorArrayProtocol>(
   var op = TFE_Op("TensorSliceDataset")
   op.setAttr("Toutput_types", components._typeList)
   op.setAttr("output_shapes", outputShapes)
-  let _ = op.addInputList(components)
+  let _ = op.lazyAddInputList(components)
   return op.lazyExecute(Int(1))
 }
 
@@ -34138,7 +34138,7 @@ public static func typeList<T: TensorArrayProtocol>(
 ) {
   var op = TFE_Op("TypeList")
   op.setAttr("T", a._typeList)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -34148,7 +34148,7 @@ public static func typeListRestrict<T: TensorArrayProtocol>(
 ) {
   var op = TFE_Op("TypeListRestrict")
   op.setAttr("T", a._typeList)
-  let _ = op.addInputList(a)
+  let _ = op.lazyAddInputList(a)
   op.lazyExecute()
 }
 
@@ -34159,8 +34159,8 @@ public static func typeListTwice<T: TensorArrayProtocol>(
 ) {
   var op = TFE_Op("TypeListTwice")
   op.setAttr("T", a._typeList)
-  let _ = op.addInputList(a)
-  let _ = op.addInputList(b)
+  let _ = op.lazyAddInputList(a)
+  let _ = op.lazyAddInputList(b)
   op.lazyExecute()
 }
 
@@ -35328,7 +35328,7 @@ public static func while_<
   op.setAttr("body", body)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("parallel_iterations", parallelIterations)
-  let _ = op.addInputList(input)
+  let _ = op.lazyAddInputList(input)
   return op.lazyExecute(Int(input._typeList.count))
 }
 
@@ -35615,7 +35615,7 @@ public static func zipDataset(
   op.setAttr("output_types", outputTypes)
   op.setAttr("output_shapes", outputShapes)
   op.setAttr("N", inputDatasets.count)
-  let _ = op.addInputList(inputDatasets)
+  let _ = op.lazyAddInputList(inputDatasets)
   return op.lazyExecute(Int(1))
 }
 

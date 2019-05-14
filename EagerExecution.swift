@@ -16,21 +16,37 @@
 
 import CTensorFlow
 
+extension TensorArrayProtocol {
+  @usableFromInline
+  init(_lazy op: TFE_Op, idx: Int32) {
+    self.init(_lazy: op, idx: idx)
+  }
+}
+
 /// **WARNING:** After constructing a `TFE_Op`, any one of its `execute` methods must be called
 /// *exactly once*. If not called, then a memory leak is introduced due to the underlying TensorFlow
 /// eager op object not being freed. If called more than once, then a SEGFAULT may occur due to
 /// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
 internal struct TFE_Op {
+  /// The `TF_Operation *` type.
+  @usableFromInline typealias CTFOperation = OpaquePointer
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp
   // @usableFromInline internal let operands: [(_AnyTensorHandle, CTensorHandle?)]
   @usableFromInline internal var operands: [(_AnyTensorHandle, TF_Output, CTensorHandle?)]
-  @usableFromInline internal var graphOp: TF_Output?
+  @usableFromInline internal var graphOp: CTFOperation?
+  @usableFromInline internal var outputs: [TF_Output]
+  // @usableFromInline internal var results: [CTensorHandle?]
   @usableFromInline internal static var placeHolderIndex: Int = 0
   @usableFromInline internal static var traceGraphFunctionCounter: Int = 0
-  /// The `TF_OperationDescription *` type.
-  @usableFromInline typealias CTFOperation = OpaquePointer
+
+  public class Results {
+    var computedOutputs: [CTensorHandle]?
+  }
+  // TODO: When to clear cache?
+  @usableFromInline internal var results: Results
+
 
   @usableFromInline
   internal init(_ name: String) {
@@ -38,6 +54,8 @@ internal struct TFE_Op {
     self.op = TFE_NewOp(_ExecutionContext.global.eagerContext, name, status)
     self.graphOp = nil
     self.operands = []
+    self.outputs = []
+    self.results = Results()
   }
 
   @inlinable @inline(__always)
@@ -58,34 +76,62 @@ internal struct TFE_Op {
         checkOk(status)
         operands.append((inputHandle, input, h))
       }
-    case LazyTensorHandle.sym(let argOp): do {
+    case LazyTensorHandle.sym(let argOp, let idx): do {
         guard let graphOp = argOp.graphOp else { assert(false) }
-        let dtype = TF_OperationOutputType(graphOp)
-        TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(graphOp, dtype), self.status)
+        let tensorInput = TF_Output(oper: graphOp, index: idx)
+        let dtype = TF_OperationOutputType(tensorInput)
+        TFE_OpAddInput(op,
+          TFE_NewTensorHandleFromTFOutput(tensorInput, dtype), self.status)
         checkOk(self.status)
-        operands.append((inputHandle, graphOp, nil))
+        operands.append((inputHandle, tensorInput, nil))
       }
     }
     return 1
   }
 
+  // @inlinable @inline(__always)
+  // internal func addInput(_ inputHandle: ResourceHandle) -> Int {
+  //   TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
+  //   checkOk(status)
+  //   return 1
+  // }
+
+  // @inlinable @inline(__always)
+  // internal func addInput(_ inputHandle: VariantHandle) -> Int {
+  //   TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
+  //   checkOk(status)
+  //   return 1
+  // }
+
   @inlinable @inline(__always)
-  internal func addInput(_ inputHandle: ResourceHandle) -> Int {
-    TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
-    checkOk(status)
-    return 1
+  internal mutating func lazyAddInput(_ inputHandle: ResourceHandle) -> Int {
+    return addInput(inputHandle)
   }
 
   @inlinable @inline(__always)
-  internal func addInput(_ inputHandle: VariantHandle) -> Int {
-    TFE_OpAddInput(op, inputHandle._cTensorHandle, status)
-    checkOk(status)
-    return 1
+  internal mutating func lazyAddInput(_ inputHandle: VariantHandle) -> Int {
+    return addInput(inputHandle)
   }
 
   @inlinable @inline(__always)
-  mutating internal func lazyAddInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
+  internal mutating func lazyAddInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int {
     return addInput(input.handle)
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyAddInput(_ input: StringTensor) -> Int {
+    return addInput(input.handle)
+  }
+
+  @inlinable @inline(__always)
+  internal mutating  func lazyAddInputList<T: TensorArrayProtocol>(_ input: T) -> Int {
+    let count = input._tensorHandleCount
+    var expectedCount = 0
+    for handle in input._handles {
+      expectedCount += addInput(handle)
+    }
+    assert(count == expectedCount)
+    return Int(count)
   }
 
   @inlinable @inline(__always)
@@ -324,10 +370,196 @@ internal struct TFE_Op {
   internal mutating func lazyExecute<T: Numeric & TensorFlowScalar>(
     _ count0: Int
   ) -> (Tensor<T>) {
-    print("My execute called!\n")
     // Initialize graphOp field..
-    updateGraphOp()
-    return Tensor<T>(handle: TensorHandle<T>(_lazy: self))
+    updateGraphOp(nOutputs: 1)
+    return Tensor<T>(handle: TensorHandle<T>(_lazy: self, idx: 0))
+  }
+
+
+  @inlinable @inline(__always)
+  internal func lazyExecute() {
+    // TODO:
+    assert(false)
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol>(
+    _ count0: Int
+  ) -> (T0) {
+    updateGraphOp(nOutputs: 2)
+    return T0.init(_lazy: self, idx: 0)
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int
+  ) -> (T0, T1) {
+    updateGraphOp(nOutputs: 2)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int
+  ) -> (T0, T1, T2) {
+    updateGraphOp(nOutputs: 3)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2))
+ }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol, T2 : TensorArrayProtocol, T3 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int
+
+  ) -> (T0, T1, T2, T3) {
+    updateGraphOp(nOutputs: 4)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int
+  ) -> (T0, T1, T2, T3, T4) {
+    updateGraphOp(nOutputs: 5)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int
+  ) -> (T0, T1, T2, T3, T4, T5) {
+    updateGraphOp(nOutputs: 6)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4),
+      T5.init(_lazy: self, idx: 5))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int
+  ) -> (T0, T1, T2, T3, T4, T5, T6) {
+    updateGraphOp(nOutputs: 7)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4),
+      T5.init(_lazy: self, idx: 5),
+      T6.init(_lazy: self, idx: 6))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int
+  ) -> (T0, T1, T2, T3, T4, T5, T6, T7) {
+    updateGraphOp(nOutputs: 6)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4),
+      T5.init(_lazy: self, idx: 5),
+      T6.init(_lazy: self, idx: 6),
+      T7.init(_lazy: self, idx: 7))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int,
+    _ count8: Int
+  ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8) {
+    updateGraphOp(nOutputs: 6)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4),
+      T5.init(_lazy: self, idx: 5),
+      T6.init(_lazy: self, idx: 6),
+      T7.init(_lazy: self, idx: 7),
+      T8.init(_lazy: self, idx: 8))
+  }
+
+  @inlinable @inline(__always)
+  internal mutating func lazyExecute<T0 : TensorArrayProtocol, T1 : TensorArrayProtocol,  T2 : TensorArrayProtocol, T3 : TensorArrayProtocol,  T4 : TensorArrayProtocol, T5 : TensorArrayProtocol, T6 : TensorArrayProtocol, T7 : TensorArrayProtocol, T8 : TensorArrayProtocol, T9 : TensorArrayProtocol>(
+    _ count0: Int,
+    _ count1: Int,
+    _ count2: Int,
+    _ count3: Int,
+    _ count4: Int,
+    _ count5: Int,
+    _ count6: Int,
+    _ count7: Int,
+    _ count8: Int,
+    _ count9: Int
+  ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) {
+    updateGraphOp(nOutputs: 6)
+    return (
+      T0.init(_lazy: self, idx: 0),
+      T1.init(_lazy: self, idx: 1),
+      T2.init(_lazy: self, idx: 2),
+      T3.init(_lazy: self, idx: 3),
+      T4.init(_lazy: self, idx: 4),
+      T5.init(_lazy: self, idx: 5),
+      T6.init(_lazy: self, idx: 6),
+      T7.init(_lazy: self, idx: 7),
+      T8.init(_lazy: self, idx: 8),
+      T9.init(_lazy: self, idx: 9))
   }
 
   @inlinable @inline(__always)
@@ -678,10 +910,10 @@ internal struct TFE_Op {
   }
 
   @inlinable @inline(__always)
-  internal mutating func updateGraphOp()  {
+  internal mutating func updateGraphOp(nOutputs: Int32)  {
     let cTraceContext = _ExecutionContext.global.traceContext.cTraceContext
     // Device?
-    var count = Int32(10)
+    var count = Int32(nOutputs)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
     let tfOp = TFE_AddEagerOpToGraph(op, cTraceContext,
@@ -690,10 +922,11 @@ internal struct TFE_Op {
 
     // TODO: delete all the handles...
     //let output: CTensorHandle = buffer.advanced(by: Int(offset0))
+    graphOp = tfOp!
     buffer.deallocate()
-
-    // TODO: assuming one output for now.
-    graphOp = TF_Output(oper: tfOp!, index: 0)
+    for i in 0..<nOutputs {
+      outputs.append(TF_Output(oper: graphOp, index: i))
+    }
   }
 
   struct GraphDesc {
@@ -703,7 +936,7 @@ internal struct TFE_Op {
   }
 
   func collectOperations(_ res: inout GraphDesc) {
-    let (inserted, _) =  res.opers.insert(graphOp!.oper)
+    let (inserted, _) =  res.opers.insert(graphOp!)
     if !inserted { return }
     for  (anyHandle, graphOp, tensorHandle) in operands {
       switch (anyHandle.lazyHandle) {
@@ -711,14 +944,18 @@ internal struct TFE_Op {
           res.inputs.append(graphOp)
           res.values.append(tensorHandle!)
         }
-        case LazyTensorHandle.sym(let argOp):
+        case LazyTensorHandle.sym(let argOp, let idx):
           argOp.collectOperations(&res)
       }
     }
   }
 
   //@inlinable @inline(__always)
-  func evaluate() -> CTensorHandle {
+  func evaluate(idx : Int32) -> (CTensorHandle) {
+    if let computedOutputs = results.computedOutputs {
+      return computedOutputs[Int(idx)]
+    }
+
     var desc = GraphDesc(opers: [], inputs: [], values: [])
     collectOperations(&desc)
     let tracedFunctionName =
@@ -736,8 +973,8 @@ internal struct TFE_Op {
         /*opers*/ base,
         /*numinputs*/ Int32(desc.inputs.count),
         /*inputs*/ desc.inputs,
-        /*noutputs*/ Int32(1),
-        /*outputs*/ [graphOp!],
+        /*noutputs*/ Int32(outputs.count),
+        /*outputs*/ outputs,
         /*outputnames*/ nil,
         /*functionoptions*/ nil, "", status)
       checkOk(status)
@@ -767,10 +1004,16 @@ internal struct TFE_Op {
 
     // TODO: more than one return value.
     var returnValues = [CTensorHandle?](repeating: nil,
-      count: 1)
-    var outputReturnValueCount = Int32(1)
+      count: outputs.count)
+    var outputReturnValueCount = Int32(outputs.count)
     TFE_Execute(eagerOp, &returnValues, &outputReturnValueCount, status)
-
-    return returnValues[0]!
+    // TODO: preallocate array.
+    var computedOutputs: [CTensorHandle]  = []
+    for value in returnValues {
+      computedOutputs.append(value!) 
+    }
+    results.computedOutputs = computedOutputs
+    return computedOutputs[Int(idx)]
+    // TODO: Clean up, cache, etc...
   }
 }

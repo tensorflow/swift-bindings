@@ -79,7 +79,7 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  func newPlaceholderInput(graph: CTFGraph?, op: CTFEOp, handle: CTensorHandle) -> TF_Output {
+  func newPlaceholderInput(graph: CTFGraph?, handle: CTensorHandle) -> TF_Output {
     TFE_Op.lazyCallback("placeholder")
     TFE_TensorHandlePrintDebugString(handle)
     debugLog("Adding place holder for \(handle): \(TFE_Op.placeHolderIndex)")
@@ -89,8 +89,15 @@ import CTensorFlow
     let result = TF_FinishOperation(desc, status)
     checkOk(status)
     TFE_Op.placeHolderIndex += 1
-    let input = TF_Output(oper: result, index: 0)
+    return TF_Output(oper: result, index: 0)
+  }
+
+  @inlinable @inline(__always)
+  func newPlaceholderInput(graph: CTFGraph?, op: CTFEOp, handle: CTensorHandle) -> TF_Output {
+    let input = newPlaceholderInput(graph: graph, handle: handle)
+    let dtype = TFE_TensorHandleDataType(handle)
     TFE_OpAddInput(op, TFE_NewTensorHandleFromTFOutput(input, dtype), status)
+    checkOk(status)
     return input
   }
 
@@ -208,7 +215,7 @@ import CTensorFlow
   @inlinable @inline(__always)
   /*internal*/ mutating func setAttr(_ name: String, _ value: Bool) {
     TFE_OpSetAttrBool(op, name, value ? 1 : 0)
-    attrs[name] =  value ? 1: 0
+    attrs[name] =  value
   }
 
   @inlinable @inline(__always)
@@ -238,7 +245,7 @@ import CTensorFlow
   @inlinable @inline(__always)
   /*internal*/ mutating func setAttr(_ name: String, _ value: Double) {
     TFE_OpSetAttrFloat(op, name, Float(value))
-    attrs[name] = value
+    attrs[name] = Float(value)
   }
 
   @inlinable @inline(__always)
@@ -980,14 +987,13 @@ import CTensorFlow
   }
 
   @inlinable @inline(__always)
-  /*internal*/ mutating func updateGraphOp(nOutputs: Int32)  {
-    // print("[START] Update graph op \(nOutputs)")
+  func convertEagerToGraphOp(eagerOp: CTFEOp, nOutputs: Int32) -> CTFOperation {
     let cTraceContext = _ExecutionContext.global.traceContext.cTraceContext
     // Device?
     var count = Int32(nOutputs)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
       UnsafeMutablePointer.allocate(capacity: Int(count))
-    let tfOp = TFE_AddEagerOpToGraph(op, cTraceContext,
+    let tfOp = TFE_AddEagerOpToGraph(eagerOp, cTraceContext,
       UnsafeMutablePointer<CTensorHandle?>(buffer), &count, status)
     checkOk(status)
 
@@ -996,39 +1002,141 @@ import CTensorFlow
     //   let output: CTensorHandle = buffer.advanced(by: Int(count))
     //   TFE_DeleteTensorHandle(output)
     // }
-    graphOp = tfOp!
     buffer.deallocate()
+    return tfOp!
+  }
+
+  @inlinable @inline(__always)
+  /*internal*/ mutating func updateGraphOp(nOutputs: Int32)  {
+    graphOp = convertEagerToGraphOp(eagerOp: op, nOutputs: nOutputs)
     for i in 0..<nOutputs {
       outputs.append(TF_Output(oper: graphOp, index: i))
     }
-    // print("[END] Update graph op \(nOutputs)")
   }
-
+  
   struct GraphDesc {
-    var opers: Set</*CTFOperation*/OpaquePointer?>
+    // var opers: Set</*CTFOperation*/OpaquePointer?>
+    var opers: [CTFEOp: /*CTFOperation*/OpaquePointer?]
+    var processed: Set<CTFEOp>
     var inputs: [TF_Output]
     var values: [CTensorHandle]
+    var outputs: [TF_Output]
   }
 
-  func collectOperations(_ res: inout GraphDesc) {
-    let (inserted, _) =  res.opers.insert(graphOp!)
-    if !inserted { return }
-    for (anyHandle, graphOp, tensorHandle) in operands {
+  func collectOperations(_ res: inout GraphDesc) -> (CTFOperation, Bool) {
+    if let collectedOp = res.opers[self.op] {
+      let wasRebuilt: Bool = (collectedOp != graphOp!)
+      return (collectedOp!, wasRebuilt)
+    }
+    // let (inserted, _) = res.processed.insert(self.op)
+    // // let (inserted, _) =  res.opers.insert(graphOp!)
+    // if !inserted { return }
+    let graph = _ExecutionContext.global.traceContext.graph
+    var rebuildGraphOp: Bool = false
+    var rebuildOperands: [TF_Output] = []
+    for (anyHandle, inputOp, tensorHandle) in operands {
       switch (anyHandle.lazyHandle) {
-        case LazyTensorHandle.conc(/*TODO: Is this right?*/_): do {
-          res.inputs.append(graphOp)
+      case LazyTensorHandle.conc(/*TODO: Is this right?*/_): do {
+          rebuildOperands.append(inputOp)
+          res.inputs.append(inputOp)
           res.values.append(tensorHandle!)
         }
         case LazyTensorHandle.sym(let argOp, let idx): do {
           if tensorHandle != nil  {
-            res.inputs.append(graphOp)
+            rebuildOperands.append(inputOp)
+            res.inputs.append(inputOp)
             res.values.append(tensorHandle!)
           } else {
-            argOp.collectOperations(&res)
+            if let computedOutputs = argOp.results.computedOutputs {
+              // Reuse results if they were already computed.
+              // This forces us to create new graph op.
+              rebuildGraphOp = true
+              let handle  = computedOutputs[Int(idx)]
+              let newOp = newPlaceholderInput(graph: graph, handle: handle)
+              // Make this an input
+              res.inputs.append(newOp)
+              res.values.append(handle)
+              rebuildOperands.append(newOp)
+            } else {
+              let (newOp, wasRebuilt) = argOp.collectOperations(&res)
+              if wasRebuilt {
+                rebuildGraphOp = true
+              }
+              rebuildOperands.append(TF_Output(oper: newOp, index: idx))
+            }
           }
         }
       }
     }
+    if !rebuildGraphOp {
+      res.opers[self.op] = graphOp!
+      return (graphOp!, false)
+    } 
+    // Rebuild the graph op now!
+    // We are still building the eager op and adding to graph
+    // We can create a graph node directly.
+    let opName = TF_OperationOpType(graphOp!)
+    let eagerContext = _TFCGetGlobalEagerContext()
+    let newOpOptional = TFE_NewOp(eagerContext, opName, status)
+    checkOk(status)
+    let newOp = newOpOptional!
+    defer { TFE_DeleteOp(newOp) }
+    // Add inputs.
+    for input in rebuildOperands {
+      let dtype = TF_OperationOutputType(input)
+      TFE_OpAddInput(newOp,
+        TFE_NewTensorHandleFromTFOutput(input, dtype), status)
+      checkOk(status)
+    }
+    // Set attributes
+    for (name, attr) in attrs {
+      switch attr {
+        case let value as TensorDataType: do {
+          TFE_OpSetAttrType(newOp, name, value._cDataType)
+        }
+        case let value as Bool: do {
+          TFE_OpSetAttrBool(newOp, name, value ? 1 : 0)
+        }
+        case let value as Int64: do {
+          TFE_OpSetAttrInt(newOp, name, value)
+        }
+        case let value as Float: do {
+          TFE_OpSetAttrFloat(newOp, name, value)
+        }
+        case let value as String: do {
+          value.utf8CString.withUnsafeBufferPointer { buffer in
+            // utf8CString is null-terminated; TFE_OpSetAttrString wants
+            // non-null-terminated.
+            TFE_OpSetAttrString(newOp, name, buffer.baseAddress, buffer.count - 1)
+          }
+        }
+        case let value as [Int32]: do {
+          let values64 = value.map(Int64.init)
+          values64.withUnsafeBufferPointer { buffer in
+            TFE_OpSetAttrIntList(newOp, name, buffer.baseAddress, Int32(buffer.count))
+          }
+        }
+        case let value as [Int64]: do {
+          value.withUnsafeBufferPointer { buffer in
+            TFE_OpSetAttrIntList(newOp, name, buffer.baseAddress, Int32(buffer.count))
+          }
+        }
+        case let value as [Int]: do {
+          let values64 = value.map(Int64.init)
+          values64.withUnsafeBufferPointer { buffer in
+            TFE_OpSetAttrIntList(newOp, name, buffer.baseAddress, Int32(buffer.count))
+          }
+        }
+        default: do {
+          // TODO
+          print("Offending attribute of \(opName) is \(name):\(attr)")
+          assert(false)
+        }
+      }
+    }
+    let newGraphOp = convertEagerToGraphOp(eagerOp: newOp, nOutputs: Int32(outputs.count))
+    res.opers[self.op] = newGraphOp
+    return (newGraphOp, true)
   }
 
   //@inlinable @inline(__always)
@@ -1038,14 +1146,23 @@ import CTensorFlow
       return computedOutputs[Int(idx)]
     }
 
-    var desc = GraphDesc(opers: [], inputs: [], values: [])
-    collectOperations(&desc)
+    var desc = GraphDesc(opers: [:], processed: [], inputs: [], values: [], outputs: [])
+    let (collectedOp, wasRebuilt) = collectOperations(&desc)
+    if wasRebuilt {
+      for i in 0..<outputs.count {
+        desc.outputs.append(TF_Output(oper: collectedOp, index: Int32(i)))
+      }
+    } else {
+      desc.outputs = outputs
+    }
     let tracedFunctionName =
       "lazyTrace_\(TFE_Op.traceGraphFunctionCounter)"
     TFE_Op.traceGraphFunctionCounter += 1
+    // print ("Inputs: \(desc.inputs.count)")
+    // print ("opers: \(desc.opers.count)")
 
     let eagerContext = _TFCGetGlobalEagerContext()
-    Array(desc.opers).withUnsafeBufferPointer {opers in
+    Array(desc.opers.values).withUnsafeBufferPointer {opers in
       let graph = _ExecutionContext.global.traceContext.graph
       let base = opers.baseAddress
       let tracedGraphFn =
@@ -1055,8 +1172,8 @@ import CTensorFlow
         /*opers*/ base,
         /*numinputs*/ Int32(desc.inputs.count),
         /*inputs*/ desc.inputs,
-        /*noutputs*/ Int32(outputs.count),
-        /*outputs*/ outputs,
+        /*noutputs*/ Int32(desc.outputs.count),
+        /*outputs*/ desc.outputs,
         /*outputnames*/ nil,
         /*functionoptions*/ nil, "", status)
       checkOk(status)

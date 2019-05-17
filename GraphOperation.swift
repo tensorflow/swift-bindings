@@ -23,5 +23,5 @@ public protocol GraphOperation {
   func setAttr(_ name: String, _ value: [Double])
   func setAttr(_ name: String, _ value: [String])
 
-  func evaluate(_ nOutputs: Int) -> ([TensorValueHandle])
+  func evaluate() -> ([TensorValueHandle])
 }

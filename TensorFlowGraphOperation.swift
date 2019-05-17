@@ -7,14 +7,14 @@ extension _ExecutionContext {
   }
 }
 
-// A handle that is compatible with the TensorFlow library.
+/// A handle that is compatible with the TensorFlow library.
 public protocol TensorFlowHandle {
   var _cTensorHandle: CTensorHandle {get}
 }
 
 extension _AnyTensorHandle : TensorFlowHandle {}
 
-// A graph operation that is compatible with the Tensor library. 
+/// A graph operation that is compatible with the Tensor library.
 public protocol TensorFlowGraphOperation : GraphOperation
 where TensorValueHandle : TensorFlowHandle {
   // TODO: addInput does not need to return a value, but leaving it

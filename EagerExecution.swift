@@ -289,8 +289,8 @@ internal struct TFE_Op : TensorFlowGraphOperation {
   /// occur due to trying to execute a TensorFlow eager op that has already been freed.
 
   @inlinable @inline(__always)
-  internal func evaluateUnsafe(_ nOutputs: Int) -> UnsafeMutablePointer<CTensorHandle> {
-    var count: Int32 = Int32(nOutputs)
+  internal func evaluateUnsafe() -> UnsafeMutablePointer<CTensorHandle> {
+    var count: Int32 = Int32(self.nOutputs)
     let buffer: UnsafeMutablePointer<CTensorHandle> =
     UnsafeMutablePointer.allocate(capacity: Int(count))
       _TFCOpSetDeviceFromScope(op, status)
@@ -303,7 +303,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
   }
 
   @inlinable @inline(__always)
-  internal func evaluate(_ nOutputs: Int) -> [_AnyTensorHandle] {
+  internal func evaluate() -> [_AnyTensorHandle] {
     // TODO: Ideally, we should only have this function and execute()
     // should call this. However, the TensorArrayProtocol does not
     // have an initializer for [_AnyTensorhandle]. Adding this
@@ -314,15 +314,14 @@ internal struct TFE_Op : TensorFlowGraphOperation {
 
   @inlinable @inline(__always)
   internal func execute() {
-    let _ = evaluateUnsafe(0)
+    let _ = evaluateUnsafe()
   }
 
   @inlinable @inline(__always)
   internal func execute<T0 : TensorArrayProtocol>(
     _ count0: Int
   ) -> (T0) {
-    let count = count0
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let result = (
       T0.init(_owning: buffer.advanced(by: Int(offset0)), count: count0))
@@ -335,8 +334,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count0: Int,
     _ count1: Int
   ) -> (T0, T1) {
-    let count = count0 + count1
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let result = (
@@ -352,8 +350,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count1: Int,
     _ count2: Int
   ) -> (T0, T1, T2) {
-    let count = count0 + count1 + count2
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -372,8 +369,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count2: Int,
     _ count3: Int
   ) -> (T0, T1, T2, T3) {
-    let count = count0 + count1 + count2 + count3
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -395,8 +391,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count3: Int,
     _ count4: Int
   ) -> (T0, T1, T2, T3, T4) {
-    let count = count0 + count1 + count2 + count3 + count4
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -421,8 +416,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count4: Int,
     _ count5: Int
   ) -> (T0, T1, T2, T3, T4, T5) {
-    let count = count0 + count1 + count2 + count3 + count4 + count5 
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -450,8 +444,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count5: Int,
     _ count6: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6) {
-    let count = count0 + count1 + count2 + count3 + count4 + count5 + count6
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -482,9 +475,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count6: Int,
     _ count7: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7) {
-    let count = (count0 + count1 + count2 + count3 + count4 + count5 +
-      count6 + count7)
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -518,9 +509,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count7: Int,
     _ count8: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8) {
-    let count = (count0 + count1 + count2 + count3 +
-      count4 + count5 + count6 + count7 + count8)
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)
@@ -557,9 +546,7 @@ internal struct TFE_Op : TensorFlowGraphOperation {
     _ count8: Int,
     _ count9: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) {
-    let count = (count0 + count1 + count2 + count3 +
-      count4 + count5 + count6 + count7 + count8 + count9)
-    let buffer = evaluateUnsafe(count)
+    let buffer = evaluateUnsafe()
     let offset0 = Int32(0)
     let offset1 = offset0 + Int32(count0)
     let offset2 = offset1 + Int32(count1)

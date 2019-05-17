@@ -263,15 +263,18 @@ public static func {name}{generics}({input_args}
     return return_type
 
   def _swift_body(self):
-    body = 'let op = makeTFEOp("{}", {})\n  '.format(
-        self.op_def.name, len(self.output_args))
     setters = []
     for attr in self.attrs:
       setters.append(attr.swift_setter(self.string_valued))
     for arg in self.input_args:
       setters.append(arg.swift_setter())
-    body += '\n  '.join(setters)
     counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
+    if len(self.output_args) == 0:
+      body = 'let nOutputs = 0'
+    else:
+      body = 'let nOutputs = {}'.format(' + '.join(counts))
+    body += '\n  let op = makeTFEOp("{}", nOutputs)\n  '.format(self.op_def.name)
+    body += '\n  '.join(setters)
     if len(self.output_args) == 0:
       return body + '\n  op.execute()'
     body += '\n  return op.execute({})'.format(', '.join(counts))

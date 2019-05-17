@@ -263,14 +263,18 @@ public static func {name}{generics}({input_args}
     return return_type
 
   def _swift_body(self):
-    body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
     setters = []
     for attr in self.attrs:
       setters.append(attr.swift_setter(self.string_valued))
     for arg in self.input_args:
       setters.append(arg.swift_setter())
-    body += '\n  '.join(setters)
     counts = ['Int({})'.format(arg.swift_count) for arg in self.output_args]
+    if len(self.output_args) == 0:
+      body = 'let nOutputs = 0'
+    else:
+      body = 'let nOutputs = {}'.format(' + '.join(counts))
+    body += '\n  let op = makeOp("{}", nOutputs)\n  '.format(self.op_def.name)
+    body += '\n  '.join(setters)
     if len(self.output_args) == 0:
       return body + '\n  op.execute()'
     body += '\n  return op.execute({})'.format(', '.join(counts))
@@ -306,9 +310,9 @@ class Argument(object):
 
   def swift_setter(self):
     if self.is_list:
-      return 'let _ = op.addInputList({})'.format(self.swift_name)
+      return 'op.addInputList({})'.format(self.swift_name)
     else:
-      return 'let _ = op.addInput({})'.format(self.swift_name)
+      return 'op.addInput({})'.format(self.swift_name)
 
   @property
   def swift_count(self):
@@ -510,15 +514,15 @@ class Attribute(object):
       if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
         self.op.inferred_counts[self.name] = name + '._typeList.count'
       if self.attr_def.type == 'list(type)':
-        return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
+        return 'op.updateAttribute("{}", {}._typeList)'.format(self.name, name)
       if string_valued and self.allows_string:
-        return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
-      return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
+        return 'op.updateAttribute("{}", TensorDataType(TF_STRING))'.format(self.name)
+      return 'op.updateAttribute("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
     if self.is_inferred_number_attr:
       # The following is used for inferring the lengths of output lists.
       self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
-      return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
+      return 'op.updateAttribute("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
     
     if self.attr_def.type == 'int':
       # The following is used for inferring the lengths of output lists.
@@ -526,7 +530,7 @@ class Attribute(object):
 
     # Remaining attributes.
     value = self.swift_name + '.cName' if self._use_enum else self.swift_name
-    return 'op.setAttr("{}", {})'.format(self.name, value)
+    return 'op.updateAttribute("{}", {})'.format(self.name, value)
 
   def generic_constraints(self, string_valued):
     # We use this for obtaining the `_typeList` property.
@@ -693,6 +697,11 @@ def main(argv):
       _WARNING +
       _HEADER +
       'import CTensorFlow\n\n' +
+      '@inlinable @inline(__always)\n' +
+      'func makeOp(_ name: String, _ nOutputs: Int)'+
+      ' -> some TFTensorOperation {\n' +
+      '  _ExecutionContext.makeOp(name, nOutputs)\n' +
+      '}\n'+
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

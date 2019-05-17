@@ -273,7 +273,7 @@ public static func {name}{generics}({input_args}
       body = 'let nOutputs = 0'
     else:
       body = 'let nOutputs = {}'.format(' + '.join(counts))
-    body += '\n  let op = makeTFEOp("{}", nOutputs)\n  '.format(self.op_def.name)
+    body += '\n  let op = makeOp("{}", nOutputs)\n  '.format(self.op_def.name)
     body += '\n  '.join(setters)
     if len(self.output_args) == 0:
       return body + '\n  op.execute()'
@@ -698,7 +698,7 @@ def main(argv):
       _HEADER +
       'import CTensorFlow\n\n' +
       '@inlinable @inline(__always)\n' +
-      'func makeTFEOp(_ name: String, _ nOutputs: Int)'+
+      'func makeOp(_ name: String, _ nOutputs: Int)'+
       ' -> some TensorFlowGraphOperation {\n' +
       '  _ExecutionContext.makeOp(name, nOutputs)\n' +
       '}\n'+

@@ -263,7 +263,8 @@ public static func {name}{generics}({input_args}
     return return_type
 
   def _swift_body(self):
-    body = 'let op = TFE_Op("{}")\n  '.format(self.op_def.name)
+    body = 'let op = makeTFEOp("{}", {})\n  '.format(
+        self.op_def.name, len(self.output_args))
     setters = []
     for attr in self.attrs:
       setters.append(attr.swift_setter(self.string_valued))
@@ -693,6 +694,11 @@ def main(argv):
       _WARNING +
       _HEADER +
       'import CTensorFlow\n\n' +
+      '@inlinable @inline(__always)\n' +
+      'func makeTFEOp(_ name: String, _ nOutputs: Int)'+
+      ' -> some TensorFlowGraphOperation {\n' +
+      '  _ExecutionContext.makeOp(name, nOutputs)\n' +
+      '}\n'+
       '\npublic enum Raw {\n\n' +
       '\n'.join(version_codes) +
       '\n\n' +

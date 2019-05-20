@@ -1,6 +1,6 @@
 extension _ExecutionContext {
   // The execution mode is effectively encoded in the GraphOperation.
-  // We can use this to switch switch between different execution modes.
+  // We can use this to switch between different execution modes.
   // TODO: Can we interop between modes?
   public static func makeOp(_ name: String, _ nOutputs: Int) -> some TensorFlowGraphOperation {
     return TFE_Op(name, nOutputs)
@@ -14,7 +14,7 @@ public protocol TensorFlowHandle {
 
 extension _AnyTensorHandle : TensorFlowHandle {}
 
-/// A graph operation that is compatible with the Tensor library.
+/// A graph operation that is compatible with the TensorFlow library.
 public protocol TensorFlowGraphOperation : GraphOperation
 where TensorValueHandle : TensorFlowHandle {
   // TODO: addInput does not need to return a value, but leaving it

@@ -17,22 +17,20 @@ extension _AnyTensorHandle : TensorFlowHandle {}
 /// A graph operation that is compatible with the TensorFlow library.
 public protocol TensorFlowGraphOperation : GraphOperation
 where TensorValueHandle : TensorFlowHandle {
-  // TODO: addInput does not need to return a value, but leaving it
-  // for now so that it is compatible with the generator script.
-  // We can change `generated_wrappers.py` once we reach a consensus.
-  func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>) -> Int
-  func addInput(_ input: StringTensor) -> Int
-  func addInput(_ input: VariantHandle) -> Int
-  func addInput(_ input: ResourceHandle) -> Int
-  func addInputList<T: TensorArrayProtocol>(_ input: T) -> Int
+  func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>)
+  func addInput(_ input: StringTensor)
+  func addInput(_ input: VariantHandle)
+  func addInput(_ input: ResourceHandle)
+  func addInputList<T: TensorArrayProtocol>(_ input: T)
 
-  func setAttr(_ name: String, _ value: TensorDataType)
-  func setAttr(_ name: String, _ value: TensorShape)
-  func setAttr(_ name: String, _ value: TensorShape?)
-  func setAttr(_ name: String, _ value: [TensorDataType])
-  func setAttr(_ name: String, _ value: [TensorShape])
-  func setAttr(_ name: String, _ value: [TensorShape?])
-  func setAttr<In: TensorGroup, Out: TensorGroup>(_ name: String, _ value: (In) -> Out)
+  func updateAttribute(_ name: String, _ value: TensorDataType)
+  func updateAttribute(_ name: String, _ value: TensorShape)
+  func updateAttribute(_ name: String, _ value: TensorShape?)
+  func updateAttribute(_ name: String, _ value: [TensorDataType])
+  func updateAttribute(_ name: String, _ value: [TensorShape])
+  func updateAttribute(_ name: String, _ value: [TensorShape?])
+  func updateAttribute<In: TensorGroup, Out: TensorGroup>(
+    _ name: String, _ value: (In) -> Out)
 
   func execute()
 
@@ -120,49 +118,4 @@ where TensorValueHandle : TensorFlowHandle {
     _ count8: Int,
     _ count9: Int
   ) -> (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)
-
-  // The following should work as well.
-  // We can change `generated_wrappers.py` once we reach a consensus.
-  // 
-  // func execute0()
-  // func execute1() -> (TensorArrayProtocol)
-  // func execute2() -> (TensorArrayProtocol, TensorArrayProtocol)
-  // func execute3() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol, TensorArrayProtocol)
-  // func execute4() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol)
-  // func execute5() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol
-  // )
-  // func execute6() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol)
-  // func execute7() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol
-  // )
-  // func execute8() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol)
-  // func execute9() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol
-  // )
-  // func execute10() -> (
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol,
-  //   TensorArrayProtocol, TensorArrayProtocol)
 }

@@ -310,9 +310,9 @@ class Argument(object):
 
   def swift_setter(self):
     if self.is_list:
-      return 'let _ = op.addInputList({})'.format(self.swift_name)
+      return 'op.addInputList({})'.format(self.swift_name)
     else:
-      return 'let _ = op.addInput({})'.format(self.swift_name)
+      return 'op.addInput({})'.format(self.swift_name)
 
   @property
   def swift_count(self):
@@ -514,15 +514,15 @@ class Attribute(object):
       if self.attr_def.type == 'list(type)' or self.is_inferred_number_attr:
         self.op.inferred_counts[self.name] = name + '._typeList.count'
       if self.attr_def.type == 'list(type)':
-        return 'op.setAttr("{}", {}._typeList)'.format(self.name, name)
+        return 'op.updateAttribute("{}", {}._typeList)'.format(self.name, name)
       if string_valued and self.allows_string:
-        return 'op.setAttr("{}", TensorDataType(TF_STRING))'.format(self.name)
-      return 'op.setAttr("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
+        return 'op.updateAttribute("{}", TensorDataType(TF_STRING))'.format(self.name)
+      return 'op.updateAttribute("{}", {}.tensorFlowDataType)'.format(self.name, self.swift_name)
 
     if self.is_inferred_number_attr:
       # The following is used for inferring the lengths of output lists.
       self.op.inferred_counts[self.name] = self.input_arg.swift_name + '.count'
-      return 'op.setAttr("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
+      return 'op.updateAttribute("{}", {}.count)'.format(self.name, self.input_arg.swift_name)
     
     if self.attr_def.type == 'int':
       # The following is used for inferring the lengths of output lists.
@@ -530,7 +530,7 @@ class Attribute(object):
 
     # Remaining attributes.
     value = self.swift_name + '.cName' if self._use_enum else self.swift_name
-    return 'op.setAttr("{}", {})'.format(self.name, value)
+    return 'op.updateAttribute("{}", {})'.format(self.name, value)
 
   def generic_constraints(self, string_valued):
     # We use this for obtaining the `_typeList` property.

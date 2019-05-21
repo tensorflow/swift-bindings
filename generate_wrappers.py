@@ -699,7 +699,7 @@ def main(argv):
       'import CTensorFlow\n\n' +
       '@inlinable @inline(__always)\n' +
       'func makeOp(_ name: String, _ nOutputs: Int)'+
-      ' -> some TensorFlowGraphOperation {\n' +
+      ' -> some TFTensorOperation {\n' +
       '  _ExecutionContext.makeOp(name, nOutputs)\n' +
       '}\n'+
       '\npublic enum Raw {\n\n' +

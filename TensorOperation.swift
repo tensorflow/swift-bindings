@@ -1,4 +1,4 @@
-public protocol GraphOperation {
+public protocol TensorOperation {
   associatedtype TensorValueHandle
   // We use functions instead of fields to give freedom in the
   // representation for the conforming types.

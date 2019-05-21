@@ -21,7 +21,7 @@ import CTensorFlow
 /// eager op object not being freed. If called more than once, then a SEGFAULT may occur due to
 /// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
-internal struct TFE_Op : TensorFlowGraphOperation {
+internal struct TFE_Op : TFTensorOperation {
   @usableFromInline typealias TensorValueHandle = _AnyTensorHandle
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp

@@ -28,10 +28,10 @@ public protocol TensorOperation {
   func updateAttribute(_ name: String, _ value: [Double])
   func updateAttribute(_ name: String, _ value: [String])
 
-  // TODO(bgogul): When we are able to use opaque return types
-  // everywhere, we should add an associatedtype requirement and add
-  // the following methods so that we can work with non-tensorflow
-  // backends if neeeded.
+  // TODO(https://bugs.swift.org/browse/TF-522): When we are able to
+  // use opaque return types everywhere, we should add an
+  // associatedtype requirement and add the following methods so that
+  // we can work with non-tensorflow backends if neeeded.
   //
   // associatedtype TensorValueHandle
   //

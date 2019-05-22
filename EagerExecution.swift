@@ -295,16 +295,6 @@ internal struct TFE_Op : TFTensorOperation {
   }
 
   @inlinable @inline(__always)
-  internal func evaluate() -> [_AnyTensorHandle] {
-    // TODO: Ideally, we should only have this function and execute()
-    // should call this. However, the TensorArrayProtocol does not
-    // have an initializer for [_AnyTensorhandle]. Adding this
-    // function to make TFE_Op conform to GraphOperation for
-    // the time being.
-    return []
-  }
-
-  @inlinable @inline(__always)
   internal func execute() {
     let _ = evaluateUnsafe()
   }

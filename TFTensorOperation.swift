@@ -2,7 +2,7 @@ extension _ExecutionContext {
   // The execution mode is effectively encoded in the GraphOperation.
   // We can use this to switch between different execution modes.
   // TODO: Can we interop between modes?
-  public static func makeOp(_ name: String, _ nOutputs: Int) -> some TFTensorOperation {
+  public static func makeOp(_ name: String, _ nOutputs: Int) -> TFTensorOperation {
     return TFE_Op(name, nOutputs)
   }
 }
@@ -14,9 +14,11 @@ public protocol TensorFlowHandle {
 
 extension _AnyTensorHandle : TensorFlowHandle {}
 
+// TODO(bgogul): Add type constraints when opaque return types are
+// generally available
+// where TensorValueHandle : TensorFlowHandle
 /// A graph operation that is compatible with the TensorFlow library.
-public protocol TFTensorOperation : TensorOperation
-where TensorValueHandle : TensorFlowHandle {
+public protocol TFTensorOperation : TensorOperation {
   func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>)
   func addInput(_ input: StringTensor)
   func addInput(_ input: VariantHandle)

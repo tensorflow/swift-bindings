@@ -22,7 +22,6 @@ import CTensorFlow
 /// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
 internal struct TFE_Op : TFTensorOperation {
-  @usableFromInline typealias TensorValueHandle = _AnyTensorHandle
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp
   @usableFromInline internal let outputCount: Int

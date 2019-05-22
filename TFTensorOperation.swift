@@ -7,15 +7,8 @@ extension _ExecutionContext {
   }
 }
 
-/// A handle that is compatible with the TensorFlow library.
-public protocol TensorFlowHandle {
-  var _cTensorHandle: CTensorHandle {get}
-}
-
-extension _AnyTensorHandle : TensorFlowHandle {}
-
-// TODO(bgogul): Add type constraints when opaque return types are
-// generally available
+// TODO(bgogul): Add back the associatedtype requirement when we
+// are able to use opaque return types everywhere. 
 // where TensorValueHandle : TensorFlowHandle
 /// A graph operation that is compatible with the TensorFlow library.
 public protocol TFTensorOperation : TensorOperation {

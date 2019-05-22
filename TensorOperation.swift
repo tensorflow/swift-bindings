@@ -1,14 +1,14 @@
 public protocol TensorOperation {
-  // TODO(bgogul): Enable this when opaque return types are
-  /// generally available
+  // TODO(bgogul): Add back the associatedtype requirement when we
+  // are able to use opaque return types everywhere. 
   // associatedtype TensorValueHandle
 
   // We use functions instead of fields to give freedom in the
   // representation for the conforming types.
   init(_ name: String, _ outputCount: Int)
 
-  // TODO(bgogul): Enable this when opaque return types are
-  /// generally available
+  // TODO(bgogul): Add back the associatedtype requirement when we
+  // are able to use opaque return types everywhere. 
   // func addInput(_ input : TensorValueHandle)
 
   func updateAttribute(_ name: String, _ value: Bool)
@@ -26,7 +26,7 @@ public protocol TensorOperation {
   func updateAttribute(_ name: String, _ value: [Double])
   func updateAttribute(_ name: String, _ value: [String])
 
-  // TODO(bgogul): Enable this when opaque return types are
-  /// generally available
+  // TODO(bgogul): Add back the associatedtype requirement when we
+  // are able to use opaque return types everywhere. 
   // func evaluate() -> ([TensorValueHandle])
 }

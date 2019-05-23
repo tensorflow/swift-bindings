@@ -1,22 +1,46 @@
 extension _ExecutionContext {
-  // The execution mode is effectively encoded in the GraphOperation.
+  // The execution mode is effectively encoded in the TensorOperation.
   // We can use this to switch between different execution modes.
   // TODO: Can we interop between modes?
-  public static func makeOp(_ name: String, _ nOutputs: Int) -> some TFTensorOperation {
+  public static func makeOp(_ name: String, _ nOutputs: Int) -> TFTensorOperation {
     return TFE_Op(name, nOutputs)
   }
 }
 
-/// A handle that is compatible with the TensorFlow library.
-public protocol TensorFlowHandle {
-  var _cTensorHandle: CTensorHandle {get}
+// A protocol for a tensor operation.
+public protocol TensorOperation {
+  // We use functions instead of fields to give freedom in the
+  // representation for the conforming types.
+  init(_ name: String, _ outputCount: Int)
+
+  func updateAttribute(_ name: String, _ value: Bool)
+  func updateAttribute(_ name: String, _ value: Int)
+  func updateAttribute(_ name: String, _ value: Int32)
+  func updateAttribute(_ name: String, _ value: Int64)
+  func updateAttribute(_ name: String, _ value: Float)
+  func updateAttribute(_ name: String, _ value: Double)
+  func updateAttribute(_ name: String, _ value: String)
+  func updateAttribute(_ name: String, _ value: [Bool])
+  func updateAttribute(_ name: String, _ value: [Int])
+  func updateAttribute(_ name: String, _ value: [Int32])
+  func updateAttribute(_ name: String, _ value: [Int64])
+  func updateAttribute(_ name: String, _ value: [Float])
+  func updateAttribute(_ name: String, _ value: [Double])
+  func updateAttribute(_ name: String, _ value: [String])
+
+  // TODO(https://bugs.swift.org/browse/TF-522): When we are able to
+  // use opaque return types everywhere, we should add an
+  // associatedtype requirement and add the following methods so that
+  // we can work with non-tensorflow backends if neeeded.
+  //
+  // associatedtype TensorValueHandle
+  //
+  // func addInput(_ input : TensorValueHandle)
+  // func evaluate() -> ([TensorValueHandle])
 }
 
-extension _AnyTensorHandle : TensorFlowHandle {}
-
-/// A graph operation that is compatible with the TensorFlow library.
-public protocol TFTensorOperation : TensorOperation
-where TensorValueHandle : TensorFlowHandle {
+// A protocol for a tensor operation in TensorFlow library.
+public protocol TFTensorOperation : TensorOperation {
   func addInput<Scalar: TensorFlowScalar>(_ input: Tensor<Scalar>)
   func addInput(_ input: StringTensor)
   func addInput(_ input: VariantHandle)

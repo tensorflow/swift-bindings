@@ -17,7 +17,7 @@
 import CTensorFlow
 
 @inlinable @inline(__always)
-func makeOp(_ name: String, _ nOutputs: Int) -> some TFTensorOperation {
+func makeOp(_ name: String, _ nOutputs: Int) -> TFTensorOperation {
   _ExecutionContext.makeOp(name, nOutputs)
 }
 

@@ -22,7 +22,6 @@ import CTensorFlow
 /// trying to execute a TensorFlow eager op that has already been freed.
 @usableFromInline
 internal struct TFE_Op : TFTensorOperation {
-  @usableFromInline typealias TensorValueHandle = _AnyTensorHandle
   @usableFromInline internal let status: CTFStatus
   @usableFromInline internal let op: CTFEOp
   @usableFromInline internal let outputCount: Int
@@ -293,16 +292,6 @@ internal struct TFE_Op : TFTensorOperation {
     TFE_DeleteOp(op)
     TF_DeleteStatus(status)
     return buffer
-  }
-
-  @inlinable @inline(__always)
-  internal func evaluate() -> [_AnyTensorHandle] {
-    // TODO: Ideally, we should only have this function and execute()
-    // should call this. However, the TensorArrayProtocol does not
-    // have an initializer for [_AnyTensorhandle]. Adding this
-    // function to make TFE_Op conform to GraphOperation for
-    // the time being.
-    return []
   }
 
   @inlinable @inline(__always)

@@ -1,11 +1,3 @@
-extension _ExecutionContext {
-  // The execution mode is effectively encoded in the TensorOperation.
-  // We can use this to switch between different execution modes.
-  // TODO: Can we interop between modes?
-  public static func makeOp(_ name: String, _ nOutputs: Int) -> TFTensorOperation {
-    return TFE_Op(name, nOutputs)
-  }
-}
 
 // A protocol for a tensor operation.
 public protocol TensorOperation {
